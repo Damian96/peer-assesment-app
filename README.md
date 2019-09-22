@@ -14,9 +14,20 @@
 # USE CASE LIST
 [Google Docs Document](https://docs.google.com/document/d/1rcP_pBwRo6hcfKUHs8HJYL7scMWimei8bhs5-gOcijs/edit?usp=sharing)
 
+<!-- # TOOLS & TECHNOLOGIES
+* [Laravel](https://github.com/laravel/laravel)
+* [Composer](https://getcomposer.org/)
+* [Webpack](https://webpack.js.org/) -->
+
+# DEPENDECIES
+* [PHP 7.2.0](https://www.php.net/releases/7_2_0.php)
+* [MySQL 5.7.27](https://ubuntu.pkgs.org/19.04/mysql-5.7-amd64/mysql-server_5.7.27-1ubuntu19.04_amd64.deb.html)
+
 <!-- # DIRECTORY STRUCTURE
 ```
 common
 ..
 ```
+MYSQL USER: root
+MYSQL PASSWORD: dgiankak
  -->
