@@ -1,6 +1,5 @@
 const mix = require('laravel-mix');
 const webpack = require('webpack');
-// const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 class JSPlugins {
 
