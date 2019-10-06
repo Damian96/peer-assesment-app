@@ -100,4 +100,18 @@ return [
         ],
     ],
 
+
+    /* Log the user in after verification */
+    'verification' => [
+        'auto-login' => false,
+        'type' => 'default',
+        'view' => null,
+        'expire' => 60,
+        'strings' => [
+            'subject'   => 'Verify Email Address',
+            'heading'   => 'Please click the button below to verify your email address.',
+            'action'    => 'Verify Email Address',
+            'notice'    => 'If you did not create an account, no further action is required.'
+        ]
+    ],
 ];

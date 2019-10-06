@@ -20,7 +20,8 @@
         "sass-loader": "^7.1.0",
         "vue-template-compiler": "^2.6.10",
         "webpack": "^4.41.0",
-        "webpack-jquery-ui": "^2.0.1"
+        "webpack-jquery-ui": "^2.0.1",
+        "bootstrap": "^4.0.0"
     },
     "dependencies": {}
 }

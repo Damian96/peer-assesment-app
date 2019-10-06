@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Controllers\Auth\LoginController;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,8 +19,15 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         if (Auth::guard($guard)->check()) {
-            return redirect('/home');
+            return redirect('/admin/dashboard');
         }
+
+        if ($request->route()->named('user.login')) {
+            return (new \App\Http\Controllers\Auth\LoginController)->login($request);
+        }
+
+
+//            return redirect('/home');
 
         return $next($request);
     }
