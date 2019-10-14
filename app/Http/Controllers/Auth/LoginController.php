@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
-use App\Models\Admin;
-use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -42,6 +40,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+//        $this->middleware('web');
         $this->middleware('guest')->except('logout');
 
         $this->redirectTo = Config::get('options.student.home');
@@ -55,22 +54,23 @@ class LoginController extends Controller
         if (strtolower($request->method()) == 'get') {
             $title = 'Student Login';
             return response()
-                ->view("user.login",compact('title'));
-//            return view('user.login', ['title' => 'Student Login']);
-//            return redirect(Config::get('options.student.home'));
+                ->view("user.login",compact('title'))
+                ->withHeaders($request->headers);
         }
 
         $validator = Validator::make($request->all(), $request->rules());
-        $validated = $request->validated();
+//        $validated = $request->validated();
 
-        if ($validated) {
-            $request->session()->flash('error', $validator->messages()->first());
+        if ($validator->fails()) {
+            $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->back()->withInput();
         }
 
-        $credentials = [ 'email' => $request->email, $request->password ];
-        if (Auth::attempt($credentials, $request->remember)) {
-            return redirect(Config::get('options.student.home'), 200, [], false);
+        $credentials = [ 'email' => $request->get('email'), 'password' => $request->get('password') ];
+        if (Auth::attempt($credentials)) {
+            return redirect()->to(Config::get('options.student.home'), 301, $request->headers->all(), $request->secure());
+        } else {
+            return redirect()->back(302, $request->headers->all(), false);
         }
     }
 }

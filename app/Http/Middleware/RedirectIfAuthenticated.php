@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Requests\AdminRequest;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +24,17 @@ class RedirectIfAuthenticated
         }
 
         if ($request->route()->named('user.login')) {
-            return (new \App\Http\Controllers\Auth\LoginController)->login($request);
+            $adminRequest = new AdminRequest(
+                $request->query(),
+                $request->post(),
+                $request->attributes->all(),
+                $request->cookies->all(),
+                $request->allFiles(),
+                $request->server(),
+                $request->getContent()
+            );
+            $adminRequest->setLaravelSession($request->session());
+            return (new LoginController)->login($adminRequest);
         }
 
 
