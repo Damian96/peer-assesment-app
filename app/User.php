@@ -56,9 +56,7 @@ class User extends Model implements Authenticatable
      */
     protected $user = null;
 
-    protected $is_admin;
-    protected $email;
-    protected $email_verified_at;
+    protected $is_admin = false;
 
     /**
      * The attributes that aren't mass assignable.
@@ -113,28 +111,15 @@ class User extends Model implements Authenticatable
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-
-        // if (@isset($attributes['id']))
-        // $this->instructor = self::find($attributes['id']);
-
-        if (@isset($attributes['email'])) {
-            try {
-                $this->getUserByEmail($attributes['email']);
-            } catch (ModelNotFoundException $e) {
-                throw $e;
-            }
-            $this->user = $this->replicate();
-        }
     }
 
     /**
      * @param $email String The user's email.
-     * @throws Illuminate\Database\Eloquent\ModelNotFoundException
-     * @return Model
+     * @return User
      */
-    protected function getUserByEmail($email)
+    public static function getUserByEmail($email)
     {
-        return self::where('email', $email)->firstOrFail();
+        return (new User(self::where('email', $email)->first()->attributesToArray()));
     }
 
     /**

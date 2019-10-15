@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Requests\AdminRequest;
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->check()) {
+        if (Auth::guard($guard) === 'backpack') {
             return redirect('/admin/dashboard');
         }
 
@@ -37,8 +38,10 @@ class RedirectIfAuthenticated
             return (new LoginController)->login($adminRequest);
         }
 
-
-//            return redirect('/home');
+        $userControl = new UserController();
+        if ($request->route()->named('user.home')) {
+            return $userControl->home($request);
+        }
 
         return $next($request);
     }

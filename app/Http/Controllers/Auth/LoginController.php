@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
+use App\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -51,7 +53,16 @@ class LoginController extends Controller
      * @return Response
      */
     public function login(AdminRequest $request) {
-        if (strtolower($request->method()) == 'get') {
+        if (Auth::guard('web')->check()) {
+            $user = Auth::user();
+            $request->merge(['user' => $user]);
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
+            return redirect()->to(Config::get('constants.options.student.home'), 301, $request->headers->all(), $request->secure());
+        }
+
+        if (strtolower($request->method()) === 'get') {
             $title = 'Student Login';
             return response()
                 ->view("user.login",compact('title'))
@@ -59,18 +70,23 @@ class LoginController extends Controller
         }
 
         $validator = Validator::make($request->all(), $request->rules());
-//        $validated = $request->validated();
-
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->back()->withInput();
         }
 
         $credentials = [ 'email' => $request->get('email'), 'password' => $request->get('password') ];
+
         if (Auth::attempt($credentials)) {
-            return redirect()->to(Config::get('options.student.home'), 301, $request->headers->all(), $request->secure());
+            $user = User::getUserByEmail($request->get('email'));
+            $request->merge(['user' => $user]);
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
+            Auth::setUser($user);
+            return redirect()->to(Config::get('constants.options.student.home'), 301, $request->headers->all(), $request->secure());
         } else {
-            return redirect()->back(302, $request->headers->all(), false);
+            return redirect()->back()->withInput();
         }
     }
 }

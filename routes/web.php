@@ -20,3 +20,6 @@ Route::namespace('Auth')->group(function () {
 //            return view('user.login', ['title' => 'Student Login']);
 //    });
 });
+Route::namespace('User')->group(function() {
+    Route::match(['get'], '/home', 'UserController@home')->name('user.home');
+});
