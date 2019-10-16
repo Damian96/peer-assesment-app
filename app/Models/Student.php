@@ -3,11 +3,7 @@
 
 namespace App\Models;
 
-
-use Backpack\CRUD\app\Models\Traits\InheritsRelationsFromParentModel;
-
-class Student extends User
+class Student extends Model
 {
-    use InheritsRelationsFromParentModel;
 
 }

@@ -24,6 +24,7 @@ class RedirectIfAuthenticated
             return redirect('/admin/dashboard');
         }
 
+        $userControl = new UserController();
         if ($request->route()->named('user.login')) {
             $adminRequest = new AdminRequest(
                 $request->query(),
@@ -35,10 +36,9 @@ class RedirectIfAuthenticated
                 $request->getContent()
             );
             $adminRequest->setLaravelSession($request->session());
-            return (new LoginController)->login($adminRequest);
+            return $userControl->login($adminRequest);
         }
 
-        $userControl = new UserController();
         if ($request->route()->named('user.home')) {
             return $userControl->home($request);
         }
