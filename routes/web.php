@@ -14,12 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::namespace('Auth')->group(function () {
-//    Route::match(['get', 'post'], '/login', 'LoginController@login')->name('user.login');
-//    Route::match(['get', 'post'], '/login', function () {
-//            return view('user.login', ['title' => 'Student Login']);
-//    });
-});
 Route::namespace('User')->group(function() {
     Route::match(['get'], '/home', 'UserController@home')->name('user.home');
     Route::match(['get', 'post'], '/login', 'UserController@login')->name('user.login');

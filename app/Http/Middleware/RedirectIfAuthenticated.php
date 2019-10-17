@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Requests\AdminRequest;
 use Closure;
@@ -10,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RedirectIfAuthenticated
 {
+
     /**
      * Handle an incoming request.
      *
@@ -20,27 +20,26 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard) === 'backpack') {
-            return redirect('/admin/dashboard');
+        if (Auth::guard($guard)->check()) {
+            return redirect('/home');
         }
 
-        $userControl = new UserController();
+        $controller = new UserController();
+        if ($request->route()->named('user.home') && Auth::guard($guard)->check()) {
+            return $controller->home($request)->send();
+        }
+
         if ($request->route()->named('user.login')) {
             $adminRequest = new AdminRequest(
-                $request->query(),
-                $request->post(),
+                $request->query->all(),
+                $request->request->all(),
                 $request->attributes->all(),
                 $request->cookies->all(),
-                $request->allFiles(),
-                $request->server(),
-                $request->getContent()
+                $request->files->all(),
+                $request->server->all()
             );
             $adminRequest->setLaravelSession($request->session());
-            return $userControl->login($adminRequest);
-        }
-
-        if ($request->route()->named('user.home')) {
-            return $userControl->home($request);
+            return $controller->login($adminRequest);
         }
 
         return $next($request);

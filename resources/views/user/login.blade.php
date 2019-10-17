@@ -6,12 +6,11 @@
             'password' => request('password')
         ];
     ?>
-    <?php $auth_col = config('backpack.base.authentication_column'); ?>
-    <?php $auth_col_name = config('backpack.base.authentication_column_name'); ?>
     <div class="row">
         <div class="col-md-12">
-            <form role="form" method="POST" action="{{ config('constants.options.student.login') }}">
-                {!! csrf_field() !!}
+            <form role="form" method="POST" action="{{ url('/login') }}">
+                @method('POST')
+                @csrf
 
                 <div class="form-group">
                     <label class="control-label" for="email">Email</label>
@@ -38,12 +37,12 @@
                     @endif
                 </div>
 
-{{--                <div class="form-group">--}}
-{{--                    <label><input type="checkbox" name="remember">{{ trans('backpack::base.remember_me') }}</label>--}}
-{{--                </div>--}}
+                <div class="form-group">
+                    <label><input type="checkbox" name="remember">Remember Me</label>
+                </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-block btn-primary">{{ trans('backpack::base.login') }}</button>
+                    <button type="submit" class="btn btn-block btn-primary">Login</button>
                 </div>
             </form>
         </div>

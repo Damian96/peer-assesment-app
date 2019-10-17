@@ -55,8 +55,6 @@ class User extends Model implements Authenticatable
      */
     protected $user = null;
 
-    protected $is_admin = false;
-
     /**
      * The attributes that aren't mass assignable.
      *
@@ -130,7 +128,7 @@ class User extends Model implements Authenticatable
      */
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new ResetPasswordNotification($token));
+//        $this->notify(new ResetPasswordNotification($token));
     }
 
     /**
@@ -200,7 +198,7 @@ class User extends Model implements Authenticatable
     {
         $this[$this->getRememberTokenName()] = $value;
         $this->save();
-        $this->user = $this->replicate();
+//        $this->user = $this->replicate();
     }
 
     /**
