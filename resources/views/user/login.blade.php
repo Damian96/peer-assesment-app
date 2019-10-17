@@ -8,6 +8,13 @@
     ?>
     <div class="row">
         <div class="col-md-12">
+            @if (session()->has('message'))
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">Well Done!</h4>
+                {{ session()->get('message') }}
+            </div>
+            @endif
+
             <form role="form" method="POST" action="{{ url('/login') }}">
                 @method('POST')
                 @csrf
@@ -27,7 +34,7 @@
                 <div class="form-group">
                     <label class="control-label" for="password">Password</label>
 
-                    <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="email"
+                    <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password"
                            name="password" type="password" value="{{ $atts['password'] }}">
 
                     @if ($errors->has('password'))
@@ -39,6 +46,10 @@
 
                 <div class="form-group">
                     <label><input type="checkbox" name="remember">Remember Me</label>
+                </div>
+
+                <div class="form-text">
+                    <label>Don't have an account? <a href="{{ url('/register') }}" title="Register">Register here</a>.</label>
                 </div>
 
                 <div class="form-group">

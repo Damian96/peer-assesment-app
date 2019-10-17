@@ -1,3 +1,17 @@
 //
 
 @import "~bootstrap/scss/bootstrap";
+
+
+form {
+  .form-group {
+    label {
+      position: relative;
+      > input[type="checkbox"] {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
+  }
+}

@@ -4,17 +4,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-/**
- * Class AdminRequest
- * @package App\Http\Requests
- *
- * @TODO rename class to LoginRequest
- */
-class AdminRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     protected $email;
     protected $password;
-    protected $remember = FALSE;
+    protected $name;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -34,8 +28,9 @@ class AdminRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email',
-            'password' => 'required|string|max:50'
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:8|max:50',
+            'name' => 'required|string|max:255'
         ];
     }
 
@@ -60,7 +55,8 @@ class AdminRequest extends FormRequest
     {
         return [
             'email.required' => 'Your email is required',
-            'password.required' => 'Your password is required'
+            'password.required' => 'Your password is required',
+            'name.required' => 'Your name is required'
         ];
     }
 }

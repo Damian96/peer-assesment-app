@@ -51,11 +51,6 @@ class User extends Model implements Authenticatable
     protected $connection = 'mysql';
 
     /**
-     * @var User|null a replicated object of the current model
-     */
-    protected $user = null;
-
-    /**
      * The attributes that aren't mass assignable.
      *
      * @var array
@@ -68,7 +63,14 @@ class User extends Model implements Authenticatable
      * @var array
      */
     protected $attributes = [
-        'email_verified_at' => 0
+        'email_verified_at' => null,
+        'updated_at' => null,
+        'remember_token' => null,
+        'instructor' => '0',
+        'department' => null,
+        'reg_num' => null,
+        'fname' => null,
+        'lname' => null
     ];
 
     /**
@@ -98,7 +100,7 @@ class User extends Model implements Authenticatable
         'email_verified_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'is_admin' => 'int'
+        'instructor' => 'int'
     ];
 
     /**
@@ -144,8 +146,8 @@ class User extends Model implements Authenticatable
     /**
      * @return bool
      */
-    public function isAdmin() {
-        return $this->is_admin == 1;
+    public function isInstructor() {
+        return $this->instructor == 1;
     }
 
     /**

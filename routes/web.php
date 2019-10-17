@@ -17,4 +17,5 @@ Route::get('/', function () {
 Route::namespace('User')->group(function() {
     Route::match(['get'], '/home', 'UserController@home')->name('user.home');
     Route::match(['get', 'post'], '/login', 'UserController@login')->name('user.login');
+    Route::match(['get', 'post'], '/register', 'UserController@register')->name('user.register');
 });
