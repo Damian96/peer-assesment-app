@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <?php $attributes = [
+    <?php
+    $attributes = [
         'email' => request('email'),
         'password' => request('password'),
         'fname' => request('fname'),
@@ -67,7 +68,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="py-0" for="instructor">Instructor<input class="ml-3" id="instructor" name="instructor" type="checkbox" value="{{ $attributes['instructor'] }}">
+                    <label class="py-0" for="instructor">Instructor<input class="ml-3" id="instructor" name="instructor" type="checkbox" value="{{ $attributes['instructor'] }}" onclick="this.value = this.checked ? '1' : '0';">
                     </label>
                 </div>
 
@@ -78,7 +79,7 @@
                         <option value="admin" selected>&nbsp;---&nbsp;</option>
                         <option value="CS">Computer Science</option>
                         <option value="ES">English Studies</option>
-                        <option value="BS">Bussiness Administration & Economics</option>
+                        <option value="BS">Business Administration & Economics</option>
                         <option value="PSY">Psychology Studies</option>
                     </select>
 

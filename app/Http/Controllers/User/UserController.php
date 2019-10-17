@@ -13,6 +13,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\Node\Scalar\String_;
 
 class UserController extends Controller
 {
@@ -37,10 +38,38 @@ class UserController extends Controller
     }
 
     /**
+     * Get the validation rules that apply to the request.
+     *
+     * @param String $action
+     * @return array
+     */
+    public function rules(String $action)
+    {
+        switch ($action) {
+            case 'register':
+                return [
+                    'email' => 'required|email|unique:users',
+                    'password' => 'required|string|min:8|max:50',
+                    'fname' => 'required|string|max:255',
+                    'lname' => 'required|string|max:255',
+                    'instructor' => 'string|min:1|max:3'
+                ];
+            case 'login':
+                return [
+                    'email' => 'required|email',
+                    'password' => 'required|string|min:8|max:50',
+                    'remember' => 'string|min:1|max:3'
+                ];
+            default:
+                return [];
+        }
+    }
+
+    /**
      * @param RegisterRequest $request
      * @return Response
      */
-    public function register(RegisterRequest $request) {
+    public function register(Request $request) {
         # Redirect to /home if already logged in
         if (Auth::guard('web')->check()) {
             $user = Auth::user();
@@ -52,23 +81,26 @@ class UserController extends Controller
         }
 
         $title = 'Register';
-        if (count($request->all()) == 0 && strtolower($request->method()) === 'get') {
+        if (count($request->all()) == 0 || strtolower($request->method()) === 'get') {
             return response()
                 ->view('user.register', compact('title'))
                 ->withHeaders($request->headers->all());
         }
 
-        $validator = Validator::make($request->all(), $request->rules());
+        $validator = Validator::make($request->all(), $this->rules('register'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $validator->getMessageBag());
         }
 
         $attributes = [
-//            'name' => $request->get('name'),
             'fname' => $request->get('fname'),
             'lname' => $request->get('lname'),
             'email' => $request->get('email'),
+            'department' => $request->get('department'),
+            'reg_num' => $request->get('reg_num'),
             'password' => Hash::make($request->get('password')),
             'instructor' => '1'
         ];
@@ -79,11 +111,13 @@ class UserController extends Controller
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
-            $request->session()->flash('message',
-                sprintf('%s<br>%s',
-                    'You have successfully registered!',
-                    'Please check you email at ' . $user->email . ' to complete the registration.')
-            );
+            $message = [
+                'heading' => 'You have successfully registered!',
+                'body' => 'Please check you email at ' .
+                    '<a href="' . $user->email . '" target="_blank">' . $user->email . '</a>' .
+                    'to complete the registration.'
+            ];
+            $request->session()->flash('message', $message);
             return redirect('/login', 302, $request->headers->all(), false);
         }
 
@@ -101,6 +135,7 @@ class UserController extends Controller
             return abort('405');
         }
 
+        $guardWeb = Auth::guard('web')->check();
         if (Auth::guard('web')->check()) {
             $user = Auth::user();
             $title = 'Homepage';
@@ -113,7 +148,7 @@ class UserController extends Controller
     }
 
     /**
-     * @param Request
+     * @param AdminRequest $request
      * @return Response
      */
     public function login(Request $request) {
@@ -124,31 +159,43 @@ class UserController extends Controller
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
-            return redirect('/home', 302, $request->headers->all(), false);
+            return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
-        if (count($request->all()) == 0 && strtolower($request->method()) === 'get') {
+        if (count($request->all()) == 0 || strtolower($request->method()) === 'get') {
             $title = 'Login';
             return response()
                 ->view('user.login', compact('title'))
                 ->withHeaders($request->headers->all());
         }
 
-        $validator = Validator::make($request->all(), $request->rules());
+        $attributes = [
+            'email' => $request->get('email'),
+            'password' => $request->get('password'),
+            'remember' => $request->get('remember')
+        ];
+
+        $validator = Validator::make($attributes, $this->rules('login'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
-            return redirect()->back()->withInput();
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $validator->getMessageBag());
         }
 
-        $credentials = [ 'email' => $request->get('email'), 'password' => $request->get('password') ];
-        if (Auth::attempt($credentials)) {
+        $credentials = [
+            'email' => $request->get('email'),
+            'password' => $request->get('password')
+        ];
+        if (Auth::attempt($credentials,
+            $request->has('remember') && $request->get('remember') === '1')) {
             $user = User::getUserByEmail($request->get('email'));
             $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
             Auth::setUser($user);
-            return redirect('/home', 200, $request->headers->all(), false);
+            return redirect('/home', 302, $request->headers->all(), false);
         }
 
         return redirect()->back()->withInput();
@@ -161,6 +208,6 @@ class UserController extends Controller
     public function logout(Request $request) {
         $request->session()->flush();
         Auth::logout();
-        return redirect('/', 200);
+        return redirect('/', 302);
     }
 }

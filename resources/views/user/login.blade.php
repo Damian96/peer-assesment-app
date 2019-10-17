@@ -1,17 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-    <?php $atts = [
-            'email' => request('email'),
-            'password' => request('password')
-        ];
+    <?php
+    $attributes = [
+        'email' => request('email'),
+        'password' => request('password')
+    ];
     ?>
     <div class="row">
         <div class="col-md-12">
             @if (session()->has('message'))
             <div class="alert alert-success" role="alert">
-                <h4 class="alert-heading">Well Done!</h4>
-                {{ session()->get('message') }}
+                <h4 class="alert-heading">{{ session()->get('message')['heading'] }}</h4>
+                {{ session()->get('message')['body'] }}
             </div>
             @endif
 
@@ -22,7 +23,7 @@
                 <div class="form-group">
                     <label class="control-label" for="email">Email</label>
 
-                    <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ $atts['email'] }}" id="email" autofocus>
+                    <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ $attributes['email'] }}" id="email" autofocus>
 
                     @if ($errors->has('email'))
                         <span class="invalid-feedback">
@@ -35,7 +36,7 @@
                     <label class="control-label" for="password">Password</label>
 
                     <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password"
-                           name="password" type="password" value="{{ $atts['password'] }}">
+                           name="password" type="password" value="{{ $attributes['password'] }}">
 
                     @if ($errors->has('password'))
                         <span class="invalid-feedback">
@@ -45,7 +46,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label><input type="checkbox" name="remember">Remember Me</label>
+                    <label for="remember_me">
+                        <input type="checkbox" name="remember" id="remember" onclick="this.value = this.checked ? '1' : '0';">
+                        <span class="ml-4" onclick="this.previousElementSibling.checked = !this.previousElementSibling.checked; this.previousElementSibling.value = this.previousElementSibling.checked ? '1' : '0';">Remember Me</span>
+                    </label>
                 </div>
 
                 <div class="form-text">

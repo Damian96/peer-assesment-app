@@ -79,7 +79,7 @@ class User extends Model implements Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'email', 'password', 'fname', 'lname', 'reg_num', 'department'
     ];
 
     /**
@@ -128,20 +128,20 @@ class User extends Model implements Authenticatable
      *
      * @return void
      */
-    public function sendPasswordResetNotification($token)
-    {
-//        $this->notify(new ResetPasswordNotification($token));
-    }
+//    public function sendPasswordResetNotification($token)
+//    {
+// $this->notify(new ResetPasswordNotification($token));
+//    }
 
     /**
      * Get the e-mail address where password reset links are sent.
      *
      * @return string
      */
-    public function getEmailForPasswordReset()
-    {
-        return $this->email;
-    }
+//    public function getEmailForPasswordReset()
+//    {
+//        return $this->email;
+//    }
 
     /**
      * @return bool
@@ -200,7 +200,6 @@ class User extends Model implements Authenticatable
     {
         $this[$this->getRememberTokenName()] = $value;
         $this->save();
-//        $this->user = $this->replicate();
     }
 
     /**

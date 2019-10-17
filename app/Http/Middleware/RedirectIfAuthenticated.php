@@ -21,40 +21,21 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        $newRequest = null;
-        if (Auth::guard($guard)->check()) {
-            return redirect('/home');
+        if (!empty($guard) && Auth::guard($guard)->check()) {
+            return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
         $controller = new UserController();
-        if ($request->route()->named('user.home') && Auth::guard($guard)->check()) {
+        if ($request->route()->named('user.home')) {
             return $controller->home($request);
         }
 
         if ($request->route()->named('user.login')) {
-            $newRequest = new AdminRequest(
-                $request->query->all(),
-                $request->request->all(),
-                $request->attributes->all(),
-                $request->cookies->all(),
-                $request->files->all(),
-                $request->server->all()
-            );
-            $newRequest->setLaravelSession($request->session());
-            return $controller->login($newRequest);
+            return $controller->login($request);
         }
 
         if ($request->route()->named('user.register')) {
-            $newRequest = new RegisterRequest(
-                $request->query->all(),
-                $request->request->all(),
-                $request->attributes->all(),
-                $request->cookies->all(),
-                $request->files->all(),
-                $request->server->all()
-            );
-            $newRequest->setLaravelSession($request->session());
-            return $controller->register($newRequest);
+            return $controller->register($request);
         }
 
         return $next($request);
