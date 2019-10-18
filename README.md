@@ -7,4 +7,4 @@
 * [Webpack](https://webpack.js.org/)
 
 # LICENSE
-The tool is licensed under the [GNU GPLv.3 LICENSE](https://github.com/Damian96/peer-assessment-app/blob/master/LICENSE)
+The software is licensed under the [GNU GPLv.3 LICENSE](https://github.com/Damian96/peer-assesment-app/blob/master/LICENSE)
