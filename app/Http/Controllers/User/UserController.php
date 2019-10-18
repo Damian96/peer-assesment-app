@@ -4,7 +4,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterRequest;
 use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -32,7 +31,7 @@ class UserController extends Controller
      */
     public function __construct()
     {
-//        $this->middleware('guest')->except('logout');
+        $this->middleware('web');
     }
 
     /**
@@ -64,7 +63,7 @@ class UserController extends Controller
     }
 
     /**
-     * @param RegisterRequest $request
+     * @param Request $request
      * @return Response
      */
     public function register(Request $request) {
@@ -109,9 +108,7 @@ class UserController extends Controller
             });
             $message = [
                 'heading' => 'You have successfully registered!',
-                'body' => 'Please check you email at ' .
-                    '<a href="' . $user->email . '" target="_blank">' . $user->email . '</a>' .
-                    'to complete the registration.'
+                'body' => 'Please check you email at ' . $user->email . 'to complete the registration.'
             ];
             $request->session()->flash('message', $message);
             return redirect('/login', 302, $request->headers->all(), false);
@@ -129,7 +126,6 @@ class UserController extends Controller
             return abort('405');
         }
 
-        $guardWeb = Auth::guard('web')->check();
         if (Auth::guard('web')->check()) {
             $user = Auth::user();
             $title = 'Homepage';
@@ -149,23 +145,11 @@ class UserController extends Controller
             return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
-//        if ($request->method() === 'POST') {
-//            $input = $request->all();
-//        }
-//        $request->session()->hasOldInput();
-//        $input = $request->session()->getOldInput();
-//        $method = strtolower(isset($input['method']) ? $input['_method'] : $request->method());
-
         if ($request->method() === 'GET') {
             $title = 'Login';
             return view('user.login', compact('title'));
         }
 
-//        $attributes = [
-//            'email' => $input['email'],
-//            'password' => $input['password'],
-//            'remember' => isset($input['remember']) ? $input['remember'] : null
-//        ];
         $attributes = [
             'email' => $request->get('email', null),
             'password' => $request->get('password', null),
@@ -192,13 +176,6 @@ class UserController extends Controller
             Auth::setUser($user);
             return redirect('/home', 302, $request->headers->all(), false);
         }
-//            if (!User::getUserByEmail()) {
-//            $request->session()->flash('error', $validator->getMessageBag()->first());
-//            return redirect()
-//                ->back(302, $request->headers->all(), false)
-//                ->withInput($request->all())
-//                ->withErrors()
-//        }
 
         return redirect()->back(302, $request->headers)->withInput($request->all());
     }

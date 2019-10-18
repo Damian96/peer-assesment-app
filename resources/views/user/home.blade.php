@@ -8,21 +8,25 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
+                        <th>Full Name</th>
                         <th>Email</th>
                         <th>Instructor</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
+                        <th>Registered At</th>
+                        <th>Verified</th>
+                        <th>Registration Number</th>
+                        <th>Department</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>{{ $user->id }}</td>
-                        <td>{{ $user->fname . $user->lname }}</td>
+                        <td>{{ $user->fname . ' ' . $user->lname }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->isInstructor() ? 'Yes' : 'No' }}</td>
-                        <td>{{ $user->created_at }}</td>
-                        <td>{{ $user->updated_at }}</td>
+                        <td>{{ $user->registration_date }}</td>
+                        <td>{{ $user->verification_date }}</td>
+                        <td>{{ $user->reg_num }}</td>
+                        <td>{{ $user->department_title }}</td>
                     </tr>
                 </tbody>
             </table>

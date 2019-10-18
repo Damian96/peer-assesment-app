@@ -1,10 +1,7 @@
 <?php
 
 return [
-    'options' => [
-        'student' => [
-            'home' => '/home',
-            'login' => '/login'
-        ],
+    'date' => [
+        'full' => DATE_COOKIE,
     ]
 ];
