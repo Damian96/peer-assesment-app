@@ -68,7 +68,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="py-0" for="instructor">Instructor<input class="ml-3" id="instructor" name="instructor" type="checkbox" value="{{ $attributes['instructor'] }}" onclick="this.value = this.checked ? '1' : '0';">
+                    <label class="py-0" for="instructor"  onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
+                        Instructor
+                        <input class="ml-3" id="instructor" name="instructor" type="checkbox" value="{{ $attributes['instructor'] }}">
                     </label>
                 </div>
 

@@ -46,9 +46,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="remember_me">
-                        <input type="checkbox" name="remember" id="remember" onclick="this.value = this.checked ? '1' : '0';">
-                        <span class="ml-4" onclick="this.previousElementSibling.checked = !this.previousElementSibling.checked; this.previousElementSibling.value = this.previousElementSibling.checked ? '1' : '0';">Remember Me</span>
+                    <label for="remember" onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
+                        <input type="checkbox" name="remember" id="remember" >
+                        <span class="ml-4">Remember Me</span>
                     </label>
                 </div>
 

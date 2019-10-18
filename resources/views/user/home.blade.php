@@ -10,7 +10,7 @@
                         <th>ID</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Admin</th>
+                        <th>Instructor</th>
                         <th>Created At</th>
                         <th>Updated At</th>
                     </tr>
@@ -18,9 +18,9 @@
                 <tbody>
                     <tr>
                         <td>{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->fname . $user->lname }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->is_admin }}</td>
+                        <td>{{ $user->isInstructor() ? 'Yes' : 'No' }}</td>
                         <td>{{ $user->created_at }}</td>
                         <td>{{ $user->updated_at }}</td>
                     </tr>

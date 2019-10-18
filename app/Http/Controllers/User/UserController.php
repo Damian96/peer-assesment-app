@@ -127,7 +127,7 @@ class UserController extends Controller
     }
 
     /**
-     * @param Request
+     * @param Request $request
      * @return Response
      */
     public function home(Request $request) {
@@ -148,34 +148,29 @@ class UserController extends Controller
     }
 
     /**
-     * @param AdminRequest $request
+     * @param Request $request
      * @return Response
      */
     public function login(Request $request) {
         # Redirect to /home if already logged in
         if (Auth::guard('web')->check()) {
-            $user = Auth::user();
-            $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
             return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
-        if (count($request->all()) == 0 || strtolower($request->method()) === 'get') {
+        if ($request->session()->has('_login')) {
             $title = 'Login';
             return response()
                 ->view('user.login', compact('title'))
                 ->withHeaders($request->headers->all());
         }
 
-        $attributes = [
-            'email' => $request->get('email'),
-            'password' => $request->get('password'),
-            'remember' => $request->get('remember')
+        $data = $request->session()->get('_login');
+        $data = [
+            'email' => isset($data['email']) ? $data['email'] : null,
+            'password' => isset($data['password']) ? $data['password'] : null,
+            'remember' => isset($data['remember']) ? $data['remember'] : null
         ];
-
-        $validator = Validator::make($attributes, $this->rules('login'));
+        $validator = Validator::make($data, $this->rules('login'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->back()
@@ -184,17 +179,18 @@ class UserController extends Controller
         }
 
         $credentials = [
-            'email' => $request->get('email'),
-            'password' => $request->get('password')
+            'email' => $data['email'],
+            'password' => $data['password']
         ];
         if (Auth::attempt($credentials,
-            $request->has('remember') && $request->get('remember') === '1')) {
-            $user = User::getUserByEmail($request->get('email'));
+            isset($data['remember']) && $data['remember'] === '1')) {
+            $user = User::getUserByEmail($data['email']);
             $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
             Auth::setUser($user);
+            $request->session()->forget('_login');
             return redirect('/home', 302, $request->headers->all(), false);
         }
 
