@@ -4,7 +4,6 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AdminRequest;
 use App\Http\Requests\RegisterRequest;
 use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -13,7 +12,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Node\Scalar\String_;
 
 class UserController extends Controller
 {
@@ -34,7 +32,7 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+//        $this->middleware('guest')->except('logout');
     }
 
     /**
@@ -82,9 +80,7 @@ class UserController extends Controller
 
         $title = 'Register';
         if (count($request->all()) == 0 || strtolower($request->method()) === 'get') {
-            return response()
-                ->view('user.register', compact('title'))
-                ->withHeaders($request->headers->all());
+            return view('user.register', compact('title'));
         }
 
         $validator = Validator::make($request->all(), $this->rules('register'));
@@ -121,9 +117,7 @@ class UserController extends Controller
             return redirect('/login', 302, $request->headers->all(), false);
         }
 
-        return response()
-            ->view('user.register', compact('title'))
-            ->withHeaders($request->headers->all());
+        return view('user.register', compact('title'));
     }
 
     /**
@@ -139,9 +133,7 @@ class UserController extends Controller
         if (Auth::guard('web')->check()) {
             $user = Auth::user();
             $title = 'Homepage';
-            return response()
-                ->view('user.home', compact('title', 'user'))
-                ->withHeaders($request->headers->all());
+            return view('user.home', compact('title', 'user'));
         } else {
             return redirect('/login', 302, $request->headers->all(), false);
         }
@@ -157,44 +149,58 @@ class UserController extends Controller
             return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
-        if ($request->session()->has('_login')) {
+//        if ($request->method() === 'POST') {
+//            $input = $request->all();
+//        }
+//        $request->session()->hasOldInput();
+//        $input = $request->session()->getOldInput();
+//        $method = strtolower(isset($input['method']) ? $input['_method'] : $request->method());
+
+        if ($request->method() === 'GET') {
             $title = 'Login';
-            return response()
-                ->view('user.login', compact('title'))
-                ->withHeaders($request->headers->all());
+            return view('user.login', compact('title'));
         }
 
-        $data = $request->session()->get('_login');
-        $data = [
-            'email' => isset($data['email']) ? $data['email'] : null,
-            'password' => isset($data['password']) ? $data['password'] : null,
-            'remember' => isset($data['remember']) ? $data['remember'] : null
+//        $attributes = [
+//            'email' => $input['email'],
+//            'password' => $input['password'],
+//            'remember' => isset($input['remember']) ? $input['remember'] : null
+//        ];
+        $attributes = [
+            'email' => $request->get('email', null),
+            'password' => $request->get('password', null),
+            'remember' => $request->get('remember', null)
         ];
-        $validator = Validator::make($data, $this->rules('login'));
+        $validator = Validator::make($attributes, $this->rules('login'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->back()
-                ->withInput()
+                ->withInput($request->all())
                 ->with('errors', $validator->getMessageBag());
         }
 
         $credentials = [
-            'email' => $data['email'],
-            'password' => $data['password']
+            'email' => $attributes['email'],
+            'password' => $attributes['password']
         ];
-        if (Auth::attempt($credentials,
-            isset($data['remember']) && $data['remember'] === '1')) {
-            $user = User::getUserByEmail($data['email']);
+        if (Auth::attempt($credentials, boolval($attributes['remember']))) {
+            $user = User::getUserByEmail($attributes['email']);
             $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
             Auth::setUser($user);
-            $request->session()->forget('_login');
             return redirect('/home', 302, $request->headers->all(), false);
         }
+//            if (!User::getUserByEmail()) {
+//            $request->session()->flash('error', $validator->getMessageBag()->first());
+//            return redirect()
+//                ->back(302, $request->headers->all(), false)
+//                ->withInput($request->all())
+//                ->withErrors()
+//        }
 
-        return redirect()->back()->withInput();
+        return redirect()->back(302, $request->headers)->withInput($request->all());
     }
 
     /**

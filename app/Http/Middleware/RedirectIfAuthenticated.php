@@ -31,12 +31,13 @@ class RedirectIfAuthenticated
             return $controller->home($request);
         }
 
-        if ($request->route()->named('user.login')) {
-            if (strtolower($request->method()) === 'post' && $request->session()->start()) {
-                $request->session()->put('_login', $request->all());
-            }
-            return $controller->login($request);
-        }
+//        if ($request->route()->named('user.login')) {
+//            if (strtolower($request->method()) === 'post') {
+//                $request->session()->put('_login', $request->all());
+//            }
+//
+//            return $controller->login($request);
+//        }
 
         if ($request->route()->named('user.register')) {
             return $controller->register($request);
