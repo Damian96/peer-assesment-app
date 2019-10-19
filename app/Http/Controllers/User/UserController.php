@@ -5,12 +5,14 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 class UserController extends Controller
 {
@@ -49,7 +51,7 @@ class UserController extends Controller
                     'password' => 'required|string|min:8|max:50',
                     'fname' => 'required|string|max:255',
                     'lname' => 'required|string|max:255',
-                    'instructor' => 'string|min:1|max:3'
+                    'instructor' => 'string|min:1|max:1'
                 ];
             case 'login':
                 return [
@@ -97,20 +99,21 @@ class UserController extends Controller
             'department' => $request->get('department'),
             'reg_num' => $request->get('reg_num'),
             'password' => Hash::make($request->get('password')),
-            'instructor' => '1'
+            'instructor' => $request->get('instructor', 0)
         ];
 
         $user = new User($attributes);
         if ($user->save()) {
+            $user->sendEmailVerificationNotification();
             $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
-            $message = [
+            $request->session()->flash('message', [
+                'level' => 'success',
                 'heading' => 'You have successfully registered!',
-                'body' => 'Please check you email at ' . $user->email . 'to complete the registration.'
-            ];
-            $request->session()->flash('message', $message);
+                'body' => 'Please check you email at ' . $user->email . ' to complete the registration.'
+            ]);
             return redirect('/login', 302, $request->headers->all(), false);
         }
 
@@ -188,5 +191,51 @@ class UserController extends Controller
         $request->session()->flush();
         Auth::logout();
         return redirect('/', 302);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function verify(Request $request) {
+        $request->query = new ParameterBag();
+
+        $id = intval($request->get('id', -1));
+        try {
+            $user = User::whereId($id)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            # invalid user / hacking attempt;
+            return response()
+                ->view('errors.405', ['title' => 'Unauthorized'], 405, $request->headers->all());
+        }
+
+        $hash = $request->get('hash', null);
+        if (strcmp($hash, sha1($user->getEmailForVerification())) != 0) {
+            # invalid user / hacking attempt;
+            return response()
+                ->view('errors.405', ['title' => 'Unauthorized'], 405, $request->headers->all());
+        }
+
+        $expires = $request->get('expires', 0);
+        if (strtotime($expires) < time()) {
+            # link expired;
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'We are sorry.',
+                'body' => 'The verification link has expired. Please login to your account and send a new email verification request.'
+            ]);
+            return redirect('user.login', 304, $request->headers->all(), $request->secure());
+        }
+
+        $user->markEmailAsVerified();
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'You verified your email!',
+            'body' => 'You successfully verified your email.'
+        ]);
+        return redirect('user.login', 304, $request->headers->all(), $request->secure());
+
+//        return response()
+//            ->view('user.verify', ['title' => 'Verify Email'], 200, $request->headers->all());
     }
 }

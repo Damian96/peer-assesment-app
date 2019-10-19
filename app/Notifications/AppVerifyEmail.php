@@ -4,31 +4,71 @@
 namespace App\Notifications;
 
 
+use Closure;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\URL;
 
-class AppVerifyEmail extends VerifyEmail
+class AppVerifyEmail extends Mailable implements Renderable
 {
     /**
-     * Build the mail representation of the notification.
+     * The callback that should be used to build the mail message.
      *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @var \Closure|null
      */
-    public function toMail($notifiable)
+    public static $toMailCallback;
+
+    protected $notifiable;
+
+    /**
+     * AppVerifyEmail constructor.
+     * @param MustVerifyEmail $notifiable
+     * @param Closure|null $toMailCallback
+     */
+    public function __construct(MustVerifyEmail $notifiable, Closure $toMailCallback = null)
     {
-        $verificationUrl = $this->verificationUrl($notifiable);
+        $this->notifiable = $notifiable;
+        self::$toMailCallback = $toMailCallback;
+    }
 
+    /**
+     * Get the verification URL for the given notifiable.
+     *
+     * @param  Model|MustVerifyEmail  $notifiable
+     * @return string
+     */
+    protected function verificationUrl(Model $notifiable)
+    {
+        return URL::temporarySignedRoute(
+            'user.verify',
+            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            [
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable->getEmailForVerification()),
+            ]
+        );
+    }
+
+    /**
+     * Build the message.
+     * @return MailMessage|mixed
+     */
+    public function build() {
+        $verificationUrl = $this->verificationUrl($this->notifiable);
         if (static::$toMailCallback) {
-            return call_user_func(static::$toMailCallback, $notifiable, $verificationUrl);
+            return call_user_func(static::$toMailCallback, $this->notifiable, $verificationUrl);
         }
-
-        return (new MailMessage)
-            ->subject(Lang::get(Config::get('auth.verification.strings.subject')))
-            ->line(Lang::get(Config::get('auth.verification.strings.heading')))
-            ->action(Lang::get(Config::get('auth.verification.strings.action')), $verificationUrl)
-            ->line(Lang::get(Config::get('auth.verification.strings.notice')));
+        $this->notifiable->getEmailForVerification();
+        return $this->from(Config::get('mail.from.address'), Config::get('mail.from.name'))
+            ->subject(Config::get('auth.verification.strings.subject'))
+            ->markdown('emails.verify')
+            ->with([ 'url' => $verificationUrl ]);
     }
 }

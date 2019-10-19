@@ -2,12 +2,15 @@
 
 namespace App;
 
+use App\Notifications\AppVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Class User
@@ -43,7 +46,7 @@ use Illuminate\Support\Facades\Config;
  * @method static User|Model findOrFail(string $string, String $email)
  * @mixin \Eloquent
  */
-class User extends Model implements Authenticatable
+class User extends Model implements Authenticatable, MustVerifyEmail
 {
     use Notifiable;
 
@@ -81,7 +84,7 @@ class User extends Model implements Authenticatable
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'fname', 'lname', 'reg_num', 'department'
+        'email', 'password', 'fname', 'lname', 'reg_num', 'department', 'instructor'
     ];
 
     /**
@@ -173,10 +176,10 @@ class User extends Model implements Authenticatable
      *
      * @return void
      */
-//    public function sendPasswordResetNotification($token)
-//    {
-// $this->notify(new ResetPasswordNotification($token));
-//    }
+    public function sendPasswordResetNotification($token)
+    {
+//        $this->notify(new ResetPasswordNotification($token));
+    }
 
     /**
      * Get the e-mail address where password reset links are sent.
@@ -255,5 +258,48 @@ class User extends Model implements Authenticatable
     public function getRememberTokenName()
     {
         return 'remember_token';
+    }
+
+    /**
+     * Determine if the user has verified their email address.
+     *
+     * @return bool
+     */
+    public function hasVerifiedEmail()
+    {
+        return !empty($this->email_verified_at);
+    }
+
+    /**
+     * Mark the given user's email as verified.
+     *
+     * @throws \Exception
+     * @return bool
+     */
+    public function markEmailAsVerified()
+    {
+        $this->email_verified_at = (new Carbon('now', Config::get('app.timezone')))->format(Config::get('constants.date.stamp'));
+        return true;
+    }
+
+    /**
+     * Send the email verification notification.
+     *
+     * @return void
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $mailer = new AppVerifyEmail($this);
+        Mail::to($this->email)->send($mailer);
+    }
+
+    /**
+     * Get the email address that should be used for verification.
+     *
+     * @return string
+     */
+    public function getEmailForVerification()
+    {
+        return $this->email;
     }
 }

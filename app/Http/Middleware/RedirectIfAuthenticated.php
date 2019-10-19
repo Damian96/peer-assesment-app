@@ -26,23 +26,6 @@ class RedirectIfAuthenticated
             return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
-        $controller = new UserController();
-        if ($request->route()->named('user.home')) {
-            return $controller->home($request);
-        }
-
-//        if ($request->route()->named('user.login')) {
-//            if (strtolower($request->method()) === 'post') {
-//                $request->session()->put('_login', $request->all());
-//            }
-//
-//            return $controller->login($request);
-//        }
-
-        if ($request->route()->named('user.register')) {
-            return $controller->register($request);
-        }
-
         return $next($request);
     }
 }
