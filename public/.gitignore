@@ -1,0 +1,4 @@
+# Ignore public assets, to minimize repository size
+/img/*
+/css/*
+/js/*
