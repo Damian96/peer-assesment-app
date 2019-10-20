@@ -120,19 +120,47 @@ class User extends Model implements Authenticatable, MustVerifyEmail
 
     /**
      * @param string $key
+     * @param mixed $value
+     */
+    public function __set($key, $value)
+    {
+        switch ($key) {
+//            case ('last_login' && ($value == 'now')):
+//                try {
+//                    $value = (new Carbon('now', config('app.timezone')))->format(config('constants.date.stamp'));
+//                } catch (\Exception $e) {
+//                    $value = date(config('constants.date.stamp'));
+//                }
+//                $this->update(['last_login' => $value]);
+//                break;
+            default:
+                parent::__set($key, $value);
+        }
+    }
+
+    /**
+     * @param string $key
      * @return mixed
      */
     public function __get($key)
     {
         switch ($key) {
-            case 'registration_date':
+            case 'registration_date': # Alias of 'registered_at'
                 try {
                     $mutable = new Carbon($this->created_at, Config::get('app.timezone'));
                     return $mutable->format(Config::get('constants.date.full'));
                 } catch (\Exception $e) {
                     return $this->created_at;
                 }
-            case 'verification_date':
+            case 'last_login':
+            case 'updated_date': # Alias of 'update_at'
+                try {
+                    $mutable = new Carbon($this->updated_at, Config::get('app.timezone'));
+                    return $mutable->format(Config::get('constants.date.full'));
+                } catch (\Exception $e) {
+                    return $this->updated_at;
+                }
+            case 'verification_date': # Alias of 'verified_at'
                 if (empty($this->email_verified_at)) {
                     return 'No';
                 } else {
@@ -294,12 +322,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail
     /**
      * Mark the given user's email as verified.
      *
-     * @throws \Exception
      * @return bool
      */
     public function markEmailAsVerified()
     {
-        $datetime = (new Carbon('now', Config::get('app.timezone')))->format(Config::get('constants.date.stamp'));
+        try {
+            $datetime = (new Carbon('now', config('app.timezone')))->format(config('constants.date.stamp'));
+        } catch (\Exception $e) {
+            $datetime = date(config('constants.date.stamp'));
+        }
         $this->email_verified_at = $datetime;
         $this->save();
         return true;

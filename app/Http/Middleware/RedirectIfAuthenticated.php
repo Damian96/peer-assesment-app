@@ -22,7 +22,9 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, $guard = null)
     {
-        if (!empty($guard) && Auth::guard($guard)->check()) {
+        if (!Auth::guard('web')->check() && !$request->route()->named('user.login') && !$request->route()->named('user.verify')) {
+            return redirect('/login', 302, $request->headers->all(), $request->secure());
+        } else if (Auth::guard('web')->check() && $request->route()->named('user.login')) {
             return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 

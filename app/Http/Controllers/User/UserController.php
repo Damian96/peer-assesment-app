@@ -34,6 +34,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('web');
+        $this->middleware('guest');
     }
 
     /**
@@ -125,7 +126,7 @@ class UserController extends Controller
      * @return Response
      */
     public function home(Request $request) {
-        if (Auth::guard('web')->check()) {
+//        if (Auth::guard('web')->check()) {
             $user = Auth::user();
             $title = 'Homepage';
 
@@ -140,9 +141,9 @@ class UserController extends Controller
             }
 
             return response(view('user.home', compact('title', 'user')), 200, $request->headers->all());
-        } else {
-            return redirect('/login', 302, $request->headers->all(), $request->secure());
-        }
+//        } else {
+//            return redirect('/login', 302, $request->headers->all(), $request->secure());
+//        }
     }
 
     /**
@@ -150,12 +151,7 @@ class UserController extends Controller
      * @return Response
      */
     public function login(Request $request) {
-        # Redirect to /home if already logged in
-        if (Auth::guard('web')->check()) {
-            return redirect('/home', 302, $request->headers->all(), $request->secure());
-        }
-
-        if ($request->method() === 'GET') {
+        if (strtolower($request->method()) == 'get') {
             $title = 'Login';
             return response(view('user.login', compact('title')), 200, $request->headers->all());
         }
@@ -205,6 +201,10 @@ class UserController extends Controller
      * @return Response
      */
     public function verify(Request $request) {
+        if(!$request->has(['id', 'hash', 'expires'])) {
+            return response(view('errors.405', ['title' => 'Unauthorized']), 405, $request->headers->all());
+        }
+
         $request->query = new ParameterBag();
 
         $id = intval($request->get('id', -1));
@@ -224,22 +224,27 @@ class UserController extends Controller
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'We are sorry.',
-                'body' => 'The verification link has expired. Please login to your account and send a new email verification request.'
+                'body' => 'The verification link has expired. Please login to your account and try again.'
             ]);
             return redirect('/login', 302, $request->headers->all(), $request->secure());
         }
 
-        try {
-            $user->markEmailAsVerified();
-        } catch (\Exception $e) {
-            return redirect('login', 302, $request->headers->all(), $request->secure());
-        }
-
+        $user->markEmailAsVerified();
         $request->session()->flash('message', [
             'level' => 'success',
-            'heading' => 'You verified your email!',
-            'body' => 'You successfully verified your email.'
+            'heading' => 'Verification Successful',
+            'body' => 'You successfully verified your email!'
         ]);
         return redirect('login', 302, $request->headers->all(), $request->secure());
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function profile(Request $request) {
+        $title = 'Profile';
+        $user = Auth::user();
+        return response(view('user.profile', compact('title', 'user')), 200, $request->headers->all());
     }
 }
