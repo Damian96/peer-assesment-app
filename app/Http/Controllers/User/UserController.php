@@ -81,7 +81,7 @@ class UserController extends Controller
 
         $title = 'Register';
         if (count($request->all()) == 0 || strtolower($request->method()) === 'get') {
-            return view('user.register', compact('title'));
+            return response(view('user.register', compact('title')), 200, $request->headers->all());
         }
 
         $validator = Validator::make($request->all(), $this->rules('register'));
@@ -117,7 +117,7 @@ class UserController extends Controller
             return redirect('/login', 302, $request->headers->all(), false);
         }
 
-        return view('user.register', compact('title'));
+        return response(view('user.register', compact('title')),200, $request->headers->all());
     }
 
     /**
@@ -125,16 +125,23 @@ class UserController extends Controller
      * @return Response
      */
     public function home(Request $request) {
-        if (strtolower($request->method()) !== 'get') {
-            return abort('405');
-        }
-
         if (Auth::guard('web')->check()) {
             $user = Auth::user();
             $title = 'Homepage';
-            return view('user.home', compact('title', 'user'));
+
+            if (!$user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+                $request->session()->flash('message', [
+                    'level' => 'info',
+                    'heading' => 'You need to verify your email',
+                    'body' => 'We\'ve sent a link to ' . $user->getEmailForVerification() . '.' .
+                        'Follow the instructions there to complete your registration.'
+                ]);
+            }
+
+            return response(view('user.home', compact('title', 'user')), 200, $request->headers->all());
         } else {
-            return redirect('/login', 302, $request->headers->all(), false);
+            return redirect('/login', 302, $request->headers->all(), $request->secure());
         }
     }
 
@@ -150,7 +157,7 @@ class UserController extends Controller
 
         if ($request->method() === 'GET') {
             $title = 'Login';
-            return view('user.login', compact('title'));
+            return response(view('user.login', compact('title')), 200, $request->headers->all());
         }
 
         $attributes = [
@@ -190,7 +197,7 @@ class UserController extends Controller
     public function logout(Request $request) {
         $request->session()->flush();
         Auth::logout();
-        return redirect('/', 302);
+        return redirect('/', 302, $request->headers->all());
     }
 
     /**
@@ -203,22 +210,17 @@ class UserController extends Controller
         $id = intval($request->get('id', -1));
         try {
             $user = User::whereId($id)->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            # invalid user / hacking attempt;
-            return response()
-                ->view('errors.405', ['title' => 'Unauthorized'], 405, $request->headers->all());
+        } catch (ModelNotFoundException $e) { # invalid user / hacking attempt;
+            return response(view('errors.405', ['title' => 'Unauthorized']), 405, $request->headers->all());
         }
 
         $hash = $request->get('hash', null);
-        if (strcmp($hash, sha1($user->getEmailForVerification())) != 0) {
-            # invalid user / hacking attempt;
-            return response()
-                ->view('errors.405', ['title' => 'Unauthorized'], 405, $request->headers->all());
+        if (strcmp($hash, sha1($user->getEmailForVerification())) != 0) { # invalid user / hacking attempt;
+            return response(view('errors.405', ['title' => 'Unauthorized']), 405, $request->headers->all());
         }
 
         $expires = $request->get('expires', 0);
-        if (strtotime($expires) > time()) {
-            # link expired;
+        if (strtotime($expires) > time()) { # link expired;
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'We are sorry.',
@@ -231,16 +233,13 @@ class UserController extends Controller
             $user->markEmailAsVerified();
         } catch (\Exception $e) {
             return redirect('login', 302, $request->headers->all(), $request->secure());
-
         }
+
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'You verified your email!',
             'body' => 'You successfully verified your email.'
         ]);
         return redirect('login', 302, $request->headers->all(), $request->secure());
-
-//        return response()
-//            ->view('user.verify', ['title' => 'Verify Email'], 200, $request->headers->all());
     }
 }

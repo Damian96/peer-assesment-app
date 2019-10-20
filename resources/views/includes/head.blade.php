@@ -8,8 +8,8 @@
 
     <title>{{ $title }}</title>
 
-    <link rel="stylesheet" href="css/app.css">
-    <script charset="utf-8" src="js/app.js"></script>
+    <link rel="stylesheet" href="{{ url('/css/app.css') }}">
+    <script charset="utf-8" src="{{ url('/js/app.js') }}"></script>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -32,8 +32,9 @@
             @endif
                 <a class="nav-link" href="{{ url('/home') }}">Home
                 @if (strpos(Route::current()->getName(), 'home') !== false)
-                    <span class="sr-only">(current)</span></a>
+                    <span class="sr-only">(current)</span>
                 @endif
+                </a>
             </li>
         @endif
         </ul>

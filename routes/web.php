@@ -21,3 +21,4 @@ Route::namespace('User')->group(function() {
     Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
     Route::match(['get'], '/verify', 'UserController@verify')->name('user.verify');
 });
+Route::match(['get', 'post'], '/course/create', 'CourseController@create')->name('course.create');
