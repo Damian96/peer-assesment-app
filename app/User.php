@@ -278,7 +278,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail
      */
     public function markEmailAsVerified()
     {
-        $this->email_verified_at = (new Carbon('now', Config::get('app.timezone')))->format(Config::get('constants.date.stamp'));
+        $datetime = (new Carbon('now', Config::get('app.timezone')))->format(Config::get('constants.date.stamp'));
+        $this->email_verified_at = $datetime;
+        $this->save();
         return true;
     }
 

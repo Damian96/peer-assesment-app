@@ -1,8 +1,8 @@
 @include('includes.head')
 
-<div class="container mt-5 pt-5">
+<main class="container" role="main">
     <h1>{{ $title }}</h1>
     @yield('content')
-</div>
+</main>
 
 @include('includes.footer')

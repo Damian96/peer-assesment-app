@@ -217,23 +217,28 @@ class UserController extends Controller
         }
 
         $expires = $request->get('expires', 0);
-        if (strtotime($expires) < time()) {
+        if (strtotime($expires) > time()) {
             # link expired;
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'We are sorry.',
                 'body' => 'The verification link has expired. Please login to your account and send a new email verification request.'
             ]);
-            return redirect('user.login', 304, $request->headers->all(), $request->secure());
+            return redirect('/login', 302, $request->headers->all(), $request->secure());
         }
 
-        $user->markEmailAsVerified();
+        try {
+            $user->markEmailAsVerified();
+        } catch (\Exception $e) {
+            return redirect('login', 302, $request->headers->all(), $request->secure());
+
+        }
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'You verified your email!',
             'body' => 'You successfully verified your email.'
         ]);
-        return redirect('user.login', 304, $request->headers->all(), $request->secure());
+        return redirect('login', 302, $request->headers->all(), $request->secure());
 
 //        return response()
 //            ->view('user.verify', ['title' => 'Verify Email'], 200, $request->headers->all());
