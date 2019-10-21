@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Mail;
  * @property string|null $verification_token
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
+ * @property mixed fname
+ * @property mixed lname
+ * @property mixed department
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
@@ -184,6 +187,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail
                     default:
                         return '-';
                 }
+            case 'name':
+            case 'fullname':
+                return substr($this->fname, 0, 1) . '. ' . $this->lname;
             default:
                 return parent::__get($key);
         }
@@ -192,9 +198,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail
     /**
      * Get the course record associated with the user.
      */
-    public function course()
+    public function courses()
     {
-        return $this->hasOne('App\Models\Course');
+        return $this->hasMany('App\Models\Course');
     }
 
     /**

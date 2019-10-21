@@ -1,9 +1,27 @@
 //
 
+// <OverrideBTVariables>
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1900px
+);
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1610px
+);
+// </OverrideBTVariables>
+
 @import "~bootstrap/scss/bootstrap";
 
 body {
-  padding-top: 5rem;
+  padding: 5rem 0 5rem 0;
 }
 
 form {

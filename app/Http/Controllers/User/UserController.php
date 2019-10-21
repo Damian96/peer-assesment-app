@@ -70,8 +70,7 @@ class UserController extends Controller
      * @return Response
      */
     public function register(Request $request) {
-        # Redirect to /home if already logged in
-        if (Auth::guard('web')->check()) {
+        if (Auth::guard('web')->check()) { # Redirect to /home if already logged in
             $user = Auth::user();
             $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
@@ -126,24 +125,20 @@ class UserController extends Controller
      * @return Response
      */
     public function home(Request $request) {
-//        if (Auth::guard('web')->check()) {
-            $user = Auth::user();
-            $title = 'Homepage';
+        $user = Auth::user();
+        $title = 'Homepage';
 
-            if (!$user->hasVerifiedEmail()) {
-                $user->sendEmailVerificationNotification();
-                $request->session()->flash('message', [
-                    'level' => 'info',
-                    'heading' => 'You need to verify your email',
-                    'body' => 'We\'ve sent a link to ' . $user->getEmailForVerification() . '.' .
-                        'Follow the instructions there to complete your registration.'
-                ]);
-            }
+        if (!$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+            $request->session()->flash('message', [
+                'level' => 'info',
+                'heading' => 'You need to verify your email',
+                'body' => 'We\'ve sent a link to ' . $user->getEmailForVerification() . '.' .
+                    'Follow the instructions there to complete your registration.'
+            ]);
+        }
 
-            return response(view('user.home', compact('title', 'user')), 200, $request->headers->all());
-//        } else {
-//            return redirect('/login', 302, $request->headers->all(), $request->secure());
-//        }
+        return response(view('user.home', compact('title', 'user')), 200, $request->headers->all());
     }
 
     /**

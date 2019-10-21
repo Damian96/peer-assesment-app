@@ -15,17 +15,9 @@ use Illuminate\Support\Facades\Config;
  * Class User
  *
  * @package App
- * @property mixed $id
- * @property string $name
- * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property string $password
- * @property int $is_admin
+ * @property bigint $id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $remember_token
- * @property string|null $verification_token
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
@@ -47,8 +39,6 @@ use Illuminate\Support\Facades\Config;
  */
 class Course extends Model
 {
-    use Notifiable;
-
     protected $table = 'courses';
     protected $primaryKey = 'id';
     protected $keyType = 'int';
@@ -78,7 +68,7 @@ class Course extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'code'
+        'title', 'description', 'code', 'user_id'
     ];
 
     /**
@@ -86,7 +76,7 @@ class Course extends Model
      *
      * @var array
      */
-    protected $hidden = ['user_id'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     /**
      * Course constructor.
