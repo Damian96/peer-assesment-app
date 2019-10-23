@@ -19,6 +19,7 @@ $container-max-widths: (
 // </OverrideBTVariables>
 
 @import "~bootstrap/scss/bootstrap";
+@import "~material-design-icons/iconfont/material-icons.css";
 
 body {
   padding: 5rem 0 5rem 0;
@@ -45,4 +46,9 @@ form {
       //max-width: 110px;
     }
   }
+}
+
+.action-cell > .material-icons {
+  line-height: 20px;
+  font-size: 20px;
 }

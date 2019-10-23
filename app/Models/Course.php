@@ -3,13 +3,8 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 
 /**
  * Class User
@@ -32,9 +27,9 @@ use Illuminate\Support\Facades\Config;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereVerificationToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder where(string $string, String $email)
- * @method static User|Model firstOrFail(string $string, String $email)
- * @method static User|Model findOrFail(string $string, String $email)
+ * @method static \Illuminate\Database\Eloquent\Builder where(int $id)
+ * @method static User|Model firstOrFail(int $id)
+ * @method static User|Model findOrFail(int $id)
  * @mixin Illuminate\Database\Eloquent\Model
  */
 class Course extends Model
@@ -94,6 +89,11 @@ class Course extends Model
     public function __get($key)
     {
         switch ($key) {
+            case 'instructor':
+                return $this->user()->getResults()->id;
+            case 'instructor_name':
+            case 'instructor_fname':
+                return $this->user()->getResults()->fullname;
             default:
                 return parent::__get($key);
         }

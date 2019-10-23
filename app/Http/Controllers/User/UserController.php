@@ -52,13 +52,13 @@ class UserController extends Controller
                     'password' => 'required|string|min:8|max:50',
                     'fname' => 'required|string|max:255',
                     'lname' => 'required|string|max:255',
-                    'instructor' => 'string|min:1|max:1'
+                    'instructor' => 'boolean'
                 ];
             case 'login':
                 return [
                     'email' => 'required|email',
                     'password' => 'required|string|min:8|max:50',
-                    'remember' => 'string|min:1|max:3'
+                    'remember' => 'nullable|boolean'
                 ];
             default:
                 return [];

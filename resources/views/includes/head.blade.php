@@ -7,7 +7,7 @@
 {{--    <meta name="author" content="">--}}
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ $title . ' | ' . config('app.name') }}</title>
+    <title>{{ isset($title) ? $title : (isset($error_number) ? 'Error ' . $error_number : '') . ' | ' . config('app.name') }}</title>
 
     <link rel="stylesheet" href="{{ url('/css/app.css') }}">
     <script charset="utf-8" src="{{ url('/js/app.js') }}"></script>
@@ -34,6 +34,13 @@
                 <a class="nav-link" href="{{ url('/home') }}">Home</a>
             </li>
             @endif
+            <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
+                <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Courses</a>
+                <div class="dropdown-menu" aria-labelledby="course-dropdown">
+                    <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}" href="{{ url('/courses') }}">My Courses</a>
+                    <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}" href="{{ url('/course/create') }}">Create</a>
+                </div>
+            </li>
         </ul>
     </div>
     <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">

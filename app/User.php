@@ -3,10 +3,10 @@
 namespace App;
 
 use App\Notifications\AppVerifyEmail;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -197,6 +197,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail
 
     /**
      * Get the course record associated with the user.
+     * @return HasMany
      */
     public function courses()
     {

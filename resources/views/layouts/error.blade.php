@@ -1,7 +1,7 @@
 @include('includes.head')
 
 <main class="container" role="main">
-    <h1>{{ $title }}</h1>
+    @yield('title')
     @yield('content')
 </main>
 

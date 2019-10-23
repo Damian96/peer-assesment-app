@@ -3,8 +3,9 @@
 @section('content')
     <?php
     $attributes = [
-        'email' => request('email'),
-        'password' => request('password')
+        'email' => request('email', null),
+        'password' => request('password', null),
+        'remember' => request('remember', '0')
     ];
     ?>
     <div class="row">
@@ -47,7 +48,7 @@
 
                 <div class="form-group">
                     <label for="remember" onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
-                        <input type="checkbox" name="remember" id="remember" >
+                        <input type="checkbox" name="remember" id="remember" value="{{ $attributes['remember'] }}" {{ $attributes['remember'] == '1' ? ' checked' : '' }}>
                         <span class="ml-4">Remember Me</span>
                     </label>
                 </div>
