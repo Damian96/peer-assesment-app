@@ -1,12 +1,9 @@
 <?php
 
+namespace App\Http\Controllers;
 
-namespace App\Http\Controllers\User;
-
-use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -16,15 +13,13 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class UserController extends Controller
 {
-    use AuthenticatesUsers;
-
     /**
      * Where to redirect users after login.
      *
      * @deprecated
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/index';
 
     /**
      * Create a new controller instance.
@@ -34,7 +29,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('web');
-        $this->middleware('guest')->except(['logout', 'register']);
+        $this->middleware('guest')->except(['logout', 'create', 'store', 'verify']);
     }
 
     /**
@@ -42,6 +37,8 @@ class UserController extends Controller
      *
      * @param String $action
      * @return array
+     *
+     * TODO: add strong password regex rule
      */
     public function rules(String $action)
     {
@@ -56,7 +53,7 @@ class UserController extends Controller
                 ];
             case 'login':
                 return [
-                    'email' => 'required|email',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im',
                     'password' => 'required|string|min:8|max:50',
                     'remember' => 'nullable|boolean'
                 ];
@@ -66,66 +63,40 @@ class UserController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return Response
+     * @param string $action
+     * @return array
      */
-    public function register(Request $request) {
-        if (Auth::guard('web')->check()) { # Redirect to /home if already logged in
-            $user = Auth::user();
-            $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
-            return redirect('/home', 302, $request->headers->all(), false);
-        }
+    private function messages(string $action)
+    {
+        $messages = [
+            'email.required' => 'We need to know your e-mail address!',
+            'email.regex' => sprintf('%s', 'The email must be an academic one!'),
 
-        $title = 'Register';
-        if (count($request->all()) == 0 || strtolower($request->method()) === 'get') {
-            return response(view('user.register', compact('title')), 200, $request->headers->all());
-        }
-
-        $validator = Validator::make($request->all(), $this->rules('register'));
-        if ($validator->fails()) {
-            $request->session()->flash('error', $validator->getMessageBag()->first());
-            $request->headers->set('Content-Type', 'text/html; charset=utf-8');
-            $request->setMethod('GET');
-            $errors = $validator->getMessageBag();
-            return response(view('user.register', compact('title'), 'errors'), 200, $request->headers->all());
-        }
-
-        $attributes = [
-            'fname' => $request->get('fname'),
-            'lname' => $request->get('lname'),
-            'email' => $request->get('email'),
-            'department' => $request->get('department'),
-            'reg_num' => $request->get('reg_num'),
-            'password' => Hash::make($request->get('password')),
-            'instructor' => $request->get('instructor', 0)
+            'password.required' => 'Your password is required!',
+            'password.min' => 'Your password should be at least 8 characters!',
+            'password.max' => 'Password is too long.',
         ];
 
-        $user = new User($attributes);
-        if ($user->save()) {
-            $user->sendEmailVerificationNotification();
-            $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
-            $request->session()->flash('message', [
-                'level' => 'success',
-                'heading' => 'You have successfully registered!',
-                'body' => 'Please check you email at ' . $user->email . ' to complete the registration.'
-            ]);
-            return redirect('/login', 302, $request->headers->all(), false);
+        switch ($action) {
+            case 'register':
+                $messages = array_merge($messages, [
+                    'fname.required' => 'We need to know your first name!',
+                    'lname.required' => 'We need to know your last name!',
+                ]);
+                break;
         }
 
-        return response(view('user.register', compact('title')),200, $request->headers->all());
+        return $messages;
     }
 
     /**
+     * Display a listing of the resource.
+     *
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function home(Request $request) {
+    public function index(Request $request)
+    {
         $user = Auth::user();
         $title = 'Homepage';
 
@@ -143,6 +114,74 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function create(Request $request)
+    {
+        if (Auth::guard('web')->check()) { # Redirect to /home if already logged in
+            $user = Auth::user();
+            $request->merge(['user' => $user]);
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
+            return redirect('/home', 302, $request->headers->all(), false);
+        }
+
+        $title = 'Register';
+        return response(view('user.register', compact('title')), 200, $request->headers->all());
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), $this->rules('register'), $this->messages('register'));
+        if ($validator->fails()) {
+            $request->session()->flash('error', $validator->getMessageBag()->first());
+            return redirect()->back(302, $request->headers->all())
+                ->withInput($request->input())
+                ->with('title', 'Register')
+                ->with('errors', $validator->getMessageBag());
+        }
+
+        $attributes = [
+            'fname' => $request->get('fname'),
+            'lname' => $request->get('lname'),
+            'email' => $request->get('email'),
+            'department' => $request->get('department'),
+            'reg_num' => $request->get('reg_num'),
+            'password' => Hash::make($request->get('password')),
+            'instructor' => $request->get('instructor', 0)
+        ];
+        $user = new User($attributes);
+        if ($user->save()) {
+            $user->sendEmailVerificationNotification();
+            $request->merge(['user' => $user]);
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => 'You have successfully registered!',
+                'body' => 'Please check you email at ' . $user->email . ' to complete the registration.'
+            ]);
+            return redirect('/login', 302, $request->headers->all(), $request->secure());
+        }
+
+        return redirect()->back(302, $request->headers->all())
+            ->withInput($request->input())
+            ->with('title', 'Register')
+            ->with('errors', $validator->getMessageBag());
+    }
+
+    /**
      * @param Request $request
      * @return Response
      */
@@ -157,10 +196,10 @@ class UserController extends Controller
             'password' => $request->get('password', null),
             'remember' => $request->get('remember', null)
         ];
-        $validator = Validator::make($attributes, $this->rules('login'));
+        $validator = Validator::make($attributes, $this->rules('login'), $this->messages('login'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
-            return redirect()->back()
+            return redirect()->back(302, $request->headers->all())
                 ->withInput($request->all())
                 ->with('errors', $validator->getMessageBag());
         }
@@ -179,8 +218,57 @@ class UserController extends Controller
             return redirect('/home', 302, $request->headers->all(), false);
         }
 
-        return redirect()->back(302, $request->headers)->withInput($request->all());
+        return redirect()->back(302, $request->headers->all())
+            ->withInput($request->all())
+            ->with('errors', $validator->getMessageBag());
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request)
+    {
+        $title = 'Profile';
+        $user = Auth::user();
+        return response(view('user.profile', compact('title', 'user')), 200, $request->headers->all());
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\Response
+     */
+//    public function edit(User $user)
+//    {
+//        //
+//    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\Response
+//     */
+//    public function update(Request $request, User $user)
+//    {
+//        //
+//    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\Response
+     */
+//    public function destroy(User $user)
+//    {
+//        //
+//    }
 
     /**
      * @param Request $request
@@ -232,15 +320,5 @@ class UserController extends Controller
             'body' => 'You successfully verified your email!'
         ]);
         return redirect('login', 302, $request->headers->all(), $request->secure());
-    }
-
-    /**
-     * @param Request $request
-     * @return Response
-     */
-    public function profile(Request $request) {
-        $title = 'Profile';
-        $user = Auth::user();
-        return response(view('user.profile', compact('title', 'user')), 200, $request->headers->all());
     }
 }

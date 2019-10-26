@@ -38,7 +38,9 @@
                 <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Courses</a>
                 <div class="dropdown-menu" aria-labelledby="course-dropdown">
                     <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}" href="{{ url('/courses') }}">My Courses</a>
+                    @if(Auth::user()->isInstructor())
                     <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}" href="{{ url('/course/create') }}">Create</a>
+                    @endif
                 </div>
             </li>
         </ul>

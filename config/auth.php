@@ -111,7 +111,9 @@ return [
             'subject'   => 'Verify Email Address',
             'heading'   => 'Please click the button below to verify your email address.',
             'action'    => 'Verify Email Address',
-            'notice'    => 'If you did not create an account, no further action is required.'
+            'notice'    => 'If you did not register, please send us an email at ' .
+                "<a href='mailto:" . config('constants.mails.support.address') . "' title='" . config('constants.mails.support.name') . "'>" .
+                config('constants.mails.support.address') . '<\/a>'
         ]
     ],
 ];

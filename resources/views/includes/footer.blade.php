@@ -1,5 +1,5 @@
 
-<footer class="container-fluid mt-5 bg-dark text-white fixed-bottom">
+<footer class="container-fluid mt-5 bg-dark text-white">
     <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-6 text-right">
             Powered by  <a title="Laravel" target="_blank" href="https://laravel.com">Laravel Framework</a>

@@ -1,13 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <?php
-    $attributes = [
-        'email' => request('email', null),
-        'password' => request('password', null),
-        'remember' => request('remember', '0')
-    ];
-    ?>
     <div class="row">
         <div class="col-md-12">
             @if (session()->has('message'))
@@ -24,7 +17,7 @@
                 <div class="form-group">
                     <label class="control-label" for="email">Email</label>
 
-                    <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ $attributes['email'] }}" id="email" autofocus>
+                    <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" id="email" autofocus>
 
                     @if ($errors->has('email'))
                         <span class="invalid-feedback">
@@ -37,7 +30,7 @@
                     <label class="control-label" for="password">Password</label>
 
                     <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password"
-                           name="password" type="password" value="{{ $attributes['password'] }}">
+                           name="password" type="password" value="{{ old('password') }}">
 
                     @if ($errors->has('password'))
                         <span class="invalid-feedback">
@@ -48,7 +41,7 @@
 
                 <div class="form-group">
                     <label for="remember" onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
-                        <input type="checkbox" name="remember" id="remember" value="{{ $attributes['remember'] }}" {{ $attributes['remember'] == '1' ? ' checked' : '' }}>
+                        <input type="checkbox" name="remember" id="remember"{{ old('remember') == '1' ? ' checked' : '' }}>
                         <span class="ml-4">Remember Me</span>
                     </label>
                 </div>

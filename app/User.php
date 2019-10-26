@@ -142,6 +142,27 @@ class User extends Model implements Authenticatable, MustVerifyEmail
     }
 
     /**
+     * @param string $abbr
+     * @return string
+     */
+    public static function getDepartmentTitle(string $abbr) {
+        switch ($abbr) {
+            case 'CS':
+                return 'Computer Science';
+            case 'ES':
+                return 'English Studies';
+            case 'PSY':
+                return 'Psychology Studies';
+            case 'BS':
+                return 'Business Administration & Economics';
+            case 'MBA':
+                return 'Executive MBA';
+            default:
+                return '-';
+        }
+    }
+
+    /**
      * @param string $key
      * @return mixed
      */
@@ -175,18 +196,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail
                     }
                 }
             case 'department_title':
-                switch ($this->department) {
-                    case 'CS':
-                        return 'Computer Science';
-                    case 'ES':
-                        return 'English Studies';
-                    case 'PSY':
-                        return 'Psychology';
-                    case 'BS':
-                        return 'Business Studies';
-                    default:
-                        return '-';
-                }
+                return self::getDepartmentTitle($this->department);
             case 'name':
             case 'fullname':
                 return substr($this->fname, 0, 1) . '. ' . $this->lname;
