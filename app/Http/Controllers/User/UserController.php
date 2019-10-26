@@ -34,7 +34,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('web');
-        $this->middleware('guest');
+        $this->middleware('guest')->except(['logout', 'register']);
     }
 
     /**
@@ -48,7 +48,7 @@ class UserController extends Controller
         switch ($action) {
             case 'register':
                 return [
-                    'email' => 'required|email|unique:users',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users',
                     'password' => 'required|string|min:8|max:50',
                     'fname' => 'required|string|max:255',
                     'lname' => 'required|string|max:255',
@@ -87,9 +87,10 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), $this->rules('register'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
-            return redirect()->back()
-                ->withInput()
-                ->with('errors', $validator->getMessageBag());
+            $request->headers->set('Content-Type', 'text/html; charset=utf-8');
+            $request->setMethod('GET');
+            $errors = $validator->getMessageBag();
+            return response(view('user.register', compact('title'), 'errors'), 200, $request->headers->all());
         }
 
         $attributes = [
