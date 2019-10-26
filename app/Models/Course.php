@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class User
@@ -107,5 +108,16 @@ class Course extends Model
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    /**
+     * @param int $id
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getByInstructor(int $id) {
+        return DB::table('courses')
+            ->select('*')
+            ->where('user_id', $id)
+            ->get();
     }
 }

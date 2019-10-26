@@ -39,7 +39,7 @@
                 <div class="dropdown-menu" aria-labelledby="course-dropdown">
                     <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}" href="{{ url('/courses') }}">My Courses</a>
                     @if(Auth::user()->isInstructor())
-                    <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}" href="{{ url('/course/create') }}">Create</a>
+                    <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}" href="{{ url('/courses/create') }}">Create</a>
                     @endif
                 </div>
             </li>

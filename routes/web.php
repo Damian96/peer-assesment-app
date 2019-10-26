@@ -24,8 +24,11 @@ Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 
 # COURSE
 Route::match(['get'], '/courses', 'CourseController@index')->name('course.index');
-Route::group(['prefix' => '/course'], function() {
-    Route::match(['get', 'post'], 'create', 'CourseController@create')->name('course.create');
-    Route::match(['get', 'post'], 'edit/{id}', 'CourseController@edit')->where('id', '[0-9]+')->name('course.edit');
+Route::group(['prefix' => '/courses'], function() {
+    Route::match(['get'], 'create', 'CourseController@create')->name('course.create');
+    Route::match(['get'], '{id}/edit', 'CourseController@edit')->where('id', '[0-9]+')->name('course.edit');
+    Route::match(['put'], '{id}', 'CourseController@update')->where('id', '[0-9]+')->name('course.update');
+    Route::match(['post'], '/store  ', 'CourseController@store')->name('user.store');
+//    Route::match(['get', 'post'], 'view/{id}', 'CourseController@show')->where('id', '[0-9]+')->name('course.view');
 //    Route::match(['get'], '{id}', 'CourseController@course')->where('id', '[0-9]+')->name('course.edit');
 });
