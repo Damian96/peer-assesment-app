@@ -2,8 +2,10 @@
   <dictionary name="damian">
     <words>
       <w>authenticatable</w>
+      <w>biscolab</w>
       <w>cachebusting</w>
       <w>coreui</w>
+      <w>csrf</w>
       <w>damianos</w>
       <w>fillable</w>
       <w>fname</w>

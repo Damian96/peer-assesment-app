@@ -2,11 +2,11 @@
     @method($method)
     @csrf
 
-    <div class="form-group">
+    <div class="form-group" title="{{ $messages['fname.required'] }}">
         <label class="control-label" for="fname">First Name</label>
 
-        <input class="form-control{{ $errors->has('fname') ? ' is-invalid' : '' }}" id="fname"
-               name="fname" type="text" value="{{ old('fname', isset($user) ? $user->fname : '') }}" autofocus>
+        <input class="form-control{{ $errors->has('fname') ? ' is-invalid' : '' }}" id="fname" tabindex="0"
+               name="fname" type="text" value="{{ old('fname', isset($user) ? $user->fname : '') }}" autofocus required oninvalid="this.setCustomValidity('{{ $messages['fname.required'] }}')" oninput="this.setCustomValidity('')">
 
         @if ($errors->has('fname'))
             <span class="invalid-feedback">
@@ -15,11 +15,11 @@
         @endif
     </div>
 
-    <div class="form-group">
+    <div class="form-group" title="{{ $messages['lname.required'] }}">
         <label class="control-label" for="fname">Last Name</label>
 
-        <input class="form-control{{ $errors->has('lname') ? ' is-invalid' : '' }}" id="lname"
-               name="lname" type="text" value="{{ old('lname', isset($user) ? $user->lname : '') }}">
+        <input class="form-control{{ $errors->has('lname') ? ' is-invalid' : '' }}" id="lname" tabindex="0"
+               name="lname" type="text" value="{{ old('lname', isset($user) ? $user->lname : '') }}" required oninvalid="this.setCustomValidity('{{ $messages['lname.required'] }}')" oninput="this.setCustomValidity('')">
 
         @if ($errors->has('lname'))
             <span class="invalid-feedback">
@@ -28,10 +28,10 @@
         @endif
     </div>
 
-    <div class="form-group">
+    <div class="form-group" title="{{ $messages['email.required'] }}">
         <label class="control-label" for="email">Email</label>
 
-        <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email', isset($user) ? $user->email : '') }}" id="email">
+        <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" tabindex="0" name="email" value="{{ old('email', isset($user) ? $user->email : '') }}" id="email" required oninvalid="this.setCustomValidity('{{ $messages['email.required'] }}')" oninput="this.setCustomValidity('')">
 
         @if ($errors->has('email'))
             <span class="invalid-feedback">
@@ -41,11 +41,11 @@
     </div>
 
     @if(!isset($user))
-    <div class="form-group">
+    <div class="form-group" title="{{ $messages['password.required'] }}">
         <label class="control-label" for="password">Password</label>
 
-        <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password"
-               name="password" type="password" value="{{ old('password') }}">
+        <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password" tabindex="0"
+               name="password" type="password" value="{{ old('password') }}" required oninvalid="this.setCustomValidity('{{ $messages['password.required'] }}')" oninput="this.setCustomValidity('')">
 
         @if ($errors->has('password'))
             <span class="invalid-feedback">
@@ -56,16 +56,16 @@
     @endif
 
     <div class="form-group">
-        <label class="py-0" for="instructor"  onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
+        <label class="py-0" for="instructor" onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
             Instructor
-            <input class="ml-3" id="instructor" name="instructor" type="checkbox"{{ old('instructor', isset($user) ? $user->instructor : '') == '1' ? ' checked' : '' }}>
+            <input class="ml-3" id="instructor" name="instructor" type="checkbox"{{ old('instructor', isset($user) ? $user->instructor : '') == '1' ? ' checked' : '' }} tabindex="0">
         </label>
     </div>
 
     <div class="form-group">
         <label class="control-label" for="department">Department</label>
 
-        <select id="department" name="department" class="form-control">
+        <select id="department" name="department" class="form-control" tabindex="0">
             <option value="admin"{{ old('department', isset($user) ? $user->department : '') == 'admin' ? 'selected' : '' }}>&nbsp;---&nbsp;</option>
             <option value="CS"{{ old('department', isset($user) ? $user->department : '') == 'CS' ? 'selected' : '' }}>Computer Science</option>
             <option value="ES"{{ old('department', isset($user) ? $user->department : '') == 'ES' ? 'selected' : '' }}>English Studies</option>
@@ -82,6 +82,22 @@
     </div>
 
     <div class="form-group">
-        <button type="submit" class="btn btn-block btn-primary">Register</button>
+        <label class="py-0" for="terms" title="{{ $messages['terms.required'] }}">Do you agree with {{ config('app.name') }} <b>Terms and Conditions</b>?
+            <input class="ml-3" type="checkbox" required id="terms" name="terms" oninvalid="this.setCustomValidity('{{ $messages['terms.required'] }}');" oninput="this.setCustomValidity('');" tabindex="0">
+        </label>
+    </div>
+
+    <div class="form-group">
+        @if(strtolower($button['label']) == 'register')
+            {!! htmlFormSnippet() !!}
+        @endif
+    </div>
+
+    <div class="form-text">
+        <label>Already registered? <a href="{{ url('/login') }}" title="Login">Login here</a>.</label>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-block btn-primary" role="button" title="{{ $button['title'] }}" aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
     </div>
 </form>

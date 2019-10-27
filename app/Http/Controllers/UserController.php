@@ -49,7 +49,8 @@ class UserController extends Controller
                     'password' => 'required|string|min:8|max:50',
                     'fname' => 'required|string|max:255',
                     'lname' => 'required|string|max:255',
-                    'instructor' => 'boolean'
+                    'instructor' => 'boolean',
+                    'terms' => 'boolean',
                 ];
             case 'login':
                 return [
@@ -82,6 +83,8 @@ class UserController extends Controller
                 $messages = array_merge($messages, [
                     'fname.required' => 'We need to know your first name!',
                     'lname.required' => 'We need to know your last name!',
+
+                    'terms.required' => 'You must accept our Terms and Conditions.'
                 ]);
                 break;
         }
@@ -131,7 +134,8 @@ class UserController extends Controller
         }
 
         $title = 'Register';
-        return response(view('user.register', compact('title')), 200, $request->headers->all());
+        $messages = $this->messages('register');
+        return response(view('user.register', compact('title','messages')), 200, $request->headers->all());
     }
 
     /**
@@ -178,6 +182,7 @@ class UserController extends Controller
         return redirect()->back(302, $request->headers->all())
             ->withInput($request->input())
             ->with('title', 'Register')
+            ->with('messages', $this->messages('register'))
             ->with('errors', $validator->getMessageBag());
     }
 

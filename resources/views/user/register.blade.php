@@ -6,7 +6,12 @@
             @include('user.form', [
                 'method' => 'POST',
                 'action' => url('/store'),
-                'errors' => $errors
+                'errors' => $errors,
+                'button' => [
+                    'label' => 'Register',
+                    'title' => 'Register to the Peer Assessment System',
+                ],
+                'messages' => $messages
             ])
         </div>
     </div>

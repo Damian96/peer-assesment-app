@@ -17,7 +17,7 @@
                 <div class="form-group">
                     <label class="control-label" for="email">Email</label>
 
-                    <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" id="email" autofocus>
+                    <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" id="email" autofocus tabindex="0">
 
                     @if ($errors->has('email'))
                         <span class="invalid-feedback">
@@ -30,7 +30,7 @@
                     <label class="control-label" for="password">Password</label>
 
                     <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password"
-                           name="password" type="password" value="{{ old('password') }}">
+                           name="password" type="password" value="{{ old('password') }}" tabindex="0">
 
                     @if ($errors->has('password'))
                         <span class="invalid-feedback">
@@ -41,17 +41,21 @@
 
                 <div class="form-group">
                     <label for="remember" onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
-                        <input type="checkbox" name="remember" id="remember"{{ old('remember') == '1' ? ' checked' : '' }}>
+                        <input type="checkbox" name="remember" id="remember"{{ old('remember') == '1' ? ' checked' : '' }} tabindex="0">
                         <span class="ml-4">Remember Me</span>
                     </label>
                 </div>
 
+                <div class="form-group">
+                    {!! htmlFormSnippet() !!}
+                </div>
+
                 <div class="form-text">
-                    <label>Don't have an account? <a href="{{ url('/register') }}" title="Register">Register here</a>.</label>
+                    <label>Don't have an account? <a href="{{ url('/register') }}" title="Register" tabindex="-1">Register here</a>.</label>
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-block btn-primary">Login</button>
+                    <button type="submit" class="btn btn-block btn-primary" role="button" aria-roledescription="Login into {{ config('app.name') }}" tabindex="0">Login</button>
                 </div>
             </form>
         </div>
