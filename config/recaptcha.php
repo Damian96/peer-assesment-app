@@ -7,7 +7,7 @@ return [
     'version'                       => 'v2', // supported: "v3"|"v2"|"invisible"
     // @since v3.4.3 changed in v4.0.0
     'curl_timeout'                  => 10,
-    'skip_ip'                       => [], // array of IP addresses - String: dotted quad format e.g.: "127.0.0.1"
+    'skip_ip'                       => ['127.0.0.1'], // array of IP addresses - String: dotted quad format e.g.: "127.0.0.1"
     // @since v3.2.0 changed in v4.0.0
     // the route called via javascript built-in validation script (v3 only)
     'default_validation_route'      => null,

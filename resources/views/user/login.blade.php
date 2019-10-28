@@ -46,9 +46,18 @@
                     </label>
                 </div>
 
+                @if (request()->ip() != '127.0.0.1')
                 <div class="form-group">
                     {!! htmlFormSnippet() !!}
+                    @if ($errors->has('g-recaptcha-response'))
+                        <span class="invalid-feedback" style="display: block;">
+                            <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+                        </span>
+                    @endif
                 </div>
+                @else
+                <input type="hidden" name="localhost" value="1" class="hidden" height="0" width="0" tabindex="-1">
+                @endif
 
                 <div class="form-text">
                     <label class="form-text">Don't have an account? <a href="{{ url('/register') }}" title="Register" tabindex="1">Register here</a>.</label>

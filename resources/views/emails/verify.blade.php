@@ -5,7 +5,7 @@
 
 @component('mail::button', ['url' => $url]){{ config('auth.verification.strings.action') }}@endcomponent
 
-@component('mail::panel'){{ config('auth.verification.strings.notice') }}@endcomponent
+@component('mail::panel'){{ 'If you did not register, please send us an email at ' . config('admin.mails.support.address')  }}@endcomponent
 
 Thanks,<br>
 {{ config('app.name') }}

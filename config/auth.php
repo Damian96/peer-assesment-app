@@ -111,9 +111,7 @@ return [
             'subject'   => 'Verify Email Address',
             'heading'   => 'Please click the button below to verify your email address.',
             'action'    => 'Verify Email Address',
-            'notice'    => 'If you did not register, please send us an email at ' .
-                "<a href='mailto:" . config('constants.mails.support.address') . "' title='" . config('constants.mails.support.name') . "'>" .
-                config('constants.mails.support.address') . '<\/a>'
+            'notice'    => ''
         ]
     ],
 
@@ -121,7 +119,6 @@ return [
      * Reset password
      */
     'password_reset' => [
-        'auto-login' => false,
         'type' => 'markdown',
         'view' => 'emails.reset',
         'expire' => 60,
@@ -129,9 +126,7 @@ return [
             'subject'   => 'Reset Password',
             'heading'   => 'You are almost done!',
             'description' => 'Copy paste the code below, into the Password Reset form, and you are good to go!',
-            'notice'    => 'If you did not perform this action, please send us an email at ' .
-                "<a href='mailto:" . config('constants.mails.support.address') . "' title='" . config('constants.mails.support.name') . "'>" .
-                config('constants.mails.support.address') . '<\/a>'
+            'notice'    => ''
         ]
     ]
 ];

@@ -218,11 +218,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * @param $email String The user's email.
-     * @return User
+     * @return User|Model
      */
     public static function getUserByEmail($email)
     {
-        return (new User(self::where('email', $email)->first()->attributesToArray()));
+        return self::where('email', $email)->first()->refresh();
     }
 
     /**
@@ -372,9 +372,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendPasswordResetNotification($code)
     {
-//        $mailer = new AppVerifyEmail($this);
-//        Mail::to($this->email)->send($mailer);
-        $this->notify(new AppResetPasswordEmail($this, $code));
+        $mailer = new AppResetPasswordEmail($this, $code);
+        Mail::to($this->email)->send($mailer);
     }
 
     /**

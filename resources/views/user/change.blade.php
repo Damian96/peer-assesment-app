@@ -29,6 +29,7 @@
                     @endif
                 </div>
 
+                @if (request()->ip() != '127.0.0.1')
                 <div class="form-group">
                     {!! htmlFormSnippet() !!}
                     @if ($errors->has('g-recaptcha-response'))
@@ -37,6 +38,9 @@
                         </span>
                     @endif
                 </div>
+                @else
+                    <input type="hidden" name="localhost" value="1" class="hidden" height="0" width="0" tabindex="-1">
+                @endif
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-block btn-primary" role="button" aria-roledescription="Send a reset email" tabindex="0">Send</button>
@@ -83,7 +87,7 @@
                     </div>
                 </form>
             @else
-                @php abort(404); @endphp
+
             @endif
         </div>
     </div>

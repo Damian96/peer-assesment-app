@@ -43,7 +43,7 @@ class AppResetPasswordEmail extends Mailable implements Renderable
             return call_user_func(static::$toMailCallback, $this->notifiable, $this->code);
         }
         return $this->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject(config('auth.resetting.strings.subject'))
+            ->subject(config('auth.password_reset.strings.subject'))
             ->markdown('emails.reset')
             ->with('code', $this->code);
     }
