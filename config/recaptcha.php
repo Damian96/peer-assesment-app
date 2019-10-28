@@ -10,7 +10,7 @@ return [
     'skip_ip'                       => [], // array of IP addresses - String: dotted quad format e.g.: "127.0.0.1"
     // @since v3.2.0 changed in v4.0.0
     // the route called via javascript built-in validation script (v3 only)
-    'default_validation_route'      => 'biscolab-recaptcha/validate',
+    'default_validation_route'      => null,
     // @since v3.2.0 changed in v4.0.0
     'default_token_parameter_name' => 'token',
     // @since v3.6.0 changed in v4.0.0

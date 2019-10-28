@@ -2,8 +2,10 @@
   <dictionary name="damian">
     <words>
       <w>authenticatable</w>
+      <w>bcrypt</w>
       <w>biscolab</w>
       <w>cachebusting</w>
+      <w>citycollege</w>
       <w>coreui</w>
       <w>csrf</w>
       <w>damianos</w>

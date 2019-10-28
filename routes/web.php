@@ -20,6 +20,9 @@ Route::match(['get'], '/register', 'UserController@create')->name('user.register
 Route::match(['post'], '/store', 'UserController@store')->name('user.store');
 Route::match(['get'], '/profile', 'UserController@show')->name('user.profile');
 Route::match(['get'], '/verify', 'UserController@verify')->name('user.verify');
+Route::match(['put'], '/users/{id}', 'UserController@update')->where('id', '[0-9]+')->name('user.update');
+Route::match(['post'], '/password/reset', 'UserController@reset')->name('user.reset');
+Route::match(['get', 'post'], '/password/change/{step}', 'UserController@change')->where('step', '[1-3]{1}')->name('user.change');
 Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 
 # COURSE

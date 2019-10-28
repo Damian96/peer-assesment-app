@@ -51,7 +51,8 @@
                 </div>
 
                 <div class="form-text">
-                    <label>Don't have an account? <a href="{{ url('/register') }}" title="Register" tabindex="-1">Register here</a>.</label>
+                    <label class="form-text">Don't have an account? <a href="{{ url('/register') }}" title="Register" tabindex="1">Register here</a>.</label>
+                    <label class="form-text">Forgot your password? <a href="{{ url('/password/change/1') }}" title="Forgot Password" tabindex="2">Reset it here</a>.</label>
                 </div>
 
                 <div class="form-group">
