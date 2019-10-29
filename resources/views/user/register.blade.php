@@ -7,11 +7,11 @@
                 'method' => 'POST',
                 'action' => url('/store'),
                 'errors' => $errors,
+                'messages' => $messages,
                 'button' => [
                     'label' => 'Register',
                     'title' => 'Register to the Peer Assessment System',
                 ],
-                'messages' => $messages
             ])
         </div>
     </div>

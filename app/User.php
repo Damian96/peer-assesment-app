@@ -24,20 +24,18 @@ use Illuminate\Support\Facades\Mail;
  *
  * @package App
  * @property mixed $id
- * @property string $name
+ * @property string $fname
+ * @property string $lname
  * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
- * @property int $is_admin
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $admin
+ * @property int $instructor
+ * @property int|null $email_verified_at
+ * @property int $created_at
+ * @property int|null $updated_at
  * @property string|null $remember_token
  * @property string|null $verification_token
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
- * @property-read int|null $notifications_count
- * @property mixed fname
- * @property mixed lname
- * @property mixed department
+ * @property string|null department
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
@@ -45,7 +43,6 @@ use Illuminate\Support\Facades\Mail;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereIsAdmin($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
@@ -72,7 +69,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      *
      * @var array
      */
-    protected $guarded = ['id'];
+    protected $guarded = ['id', 'admin'];
 
     /**
      * The model's default values for attributes.
@@ -84,6 +81,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         'updated_at' => null,
         'remember_token' => null,
         'instructor' => '0',
+        'admin' => '0',
         'department' => null,
         'reg_num' => null,
         'fname' => null,
@@ -105,7 +103,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'verification_token', 'instructor'
+        'password', 'remember_token', 'verification_token', 'instructor', 'admin'
     ];
 
     /**
@@ -117,7 +115,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         'email_verified_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'instructor' => 'int'
+        'instructor' => 'int',
+        'admin' => 'int',
     ];
 
     private $password_reset_created_at;
@@ -168,7 +167,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         switch ($key) {
             case 'registration_date': # Alias of 'registered_at'
                 try {
-                    $mutable = new Carbon($this->created_at, Config::get('app.timezone'));
+                    $mutable = new Carbon($this->created_at, config('app.timezone'));
                     return $mutable->format(Config::get('constants.date.full'));
                 } catch (\Exception $e) {
                     return $this->created_at;
@@ -176,7 +175,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'last_login':
             case 'updated_date': # Alias of 'update_at'
                 try {
-                    $mutable = new Carbon($this->updated_at, Config::get('app.timezone'));
+                    $mutable = new Carbon($this->updated_at, config('app.timezone'));
                     return $mutable->format(Config::get('constants.date.full'));
                 } catch (\Exception $e) {
                     return $this->updated_at;
@@ -186,7 +185,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                     return 'No';
                 } else {
                     try {
-                        $mutable = new Carbon($this->email_verified_at, Config::get('app.timezone'));
+                        $mutable = new Carbon($this->email_verified_at, config('app.timezone'));
                         return $mutable->format(Config::get('constants.date.full'));
                     } catch (\Exception $e) {
                         return $this->email_verified_at;
@@ -197,6 +196,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'name':
             case 'fullname':
                 return substr($this->fname, 0, 1) . '. ' . $this->lname;
+            case 'role':
+                if ($this->isInstructor()) return 'Instructor';
+                elseif ($this->admin == 1) return 'Admin';
+                else return 'Student';
             default:
                 return parent::__get($key);
         }
@@ -247,6 +250,20 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function isInstructor() {
         return $this->instructor == 1;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStudent() {
+        return $this->instructor == 0 && $this->admin == 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin() {
+        return $this->admin == 1;
     }
 
     /**

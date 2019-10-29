@@ -35,7 +35,11 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('web');
-        $this->middleware('guest')->except(['logout', 'verify', 'forgot', 'forgotSend', 'reset']);
+        $this->middleware('guest')->except([
+            'logout',
+            'verify', 'forgot', 'forgotSend', 'reset',
+            'create', 'store'
+        ]);
     }
 
     /**
@@ -56,21 +60,22 @@ class UserController extends Controller
                     'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
                 ];
             case 'register':
+            case 'create':
                 return [
                     'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users',
-                    'password' => 'required|string|min:8|max:50',
+                    'password' => 'required|string|min:3|max:50',
                     'fname' => 'required|string|min:3|max:255',
                     'lname' => 'required|string|min:3|max:255',
-                    'instructor' => 'boolean',
-                    'terms' => 'boolean',
+                    'instructor' => 'nullable|accepted',
+                    'terms' => 'accepted',
+                    'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             case 'login':
                 return [
                     'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
-                    'password' => 'required|string|min:8|max:50',
+                    'password' => 'required|string|min:3|max:50',
                     'remember' => 'nullable|boolean',
-                    'localhost' => 'nullable|string|max:1',
-                    'g-recaptcha-response' => 'required_unless:localhost,1|string|recaptcha'
+                    'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             default:
                 return [];
@@ -88,7 +93,7 @@ class UserController extends Controller
             'email.regex' => sprintf('%s', 'The email must be an academic one!'),
 
             'password.required' => 'Your password is required!',
-            'password.min' => 'Your password should be at least 8 characters!',
+            'password.min' => 'Your password should be at least 3 characters!',
             'password.max' => 'Password is too long.',
         ];
 
@@ -109,6 +114,7 @@ class UserController extends Controller
                     'g-recaptcha-response.recaptcha' => 'Invalid re-captcha',
                 ]);
             case 'register':
+            case 'create':
                 $messages = array_merge($messages, [
                     'fname.required' => 'We need to know your first name!',
                     'lname.required' => 'We need to know your last name!',
@@ -133,13 +139,14 @@ class UserController extends Controller
         $title = 'Homepage';
 
         if (!$user->hasVerifiedEmail()) {
-            $user->sendEmailVerificationNotification();
-            $request->session()->flash('message', [
-                'level' => 'info',
-                'heading' => 'You need to verify your email',
-                'body' => 'We\'ve sent a link to ' . $user->getEmailForVerification() . '.' .
-                    'Follow the instructions there to complete your registration.'
-            ]);
+            // TODO: add button to route to send mail
+//            $user->sendEmailVerificationNotification();
+//            $request->session()->flash('message', [
+//                'level' => 'info',
+//                'heading' => 'You need to verify your email',
+//                'body' => 'We\'ve sent a link to ' . $user->getEmailForVerification() . '.' .
+//                    'Follow the instructions there to complete your registration.'
+//            ]);
         }
 
         return response(view('user.home', compact('title', 'user')), 200, $request->headers->all());
@@ -156,10 +163,8 @@ class UserController extends Controller
         if (Auth::guard('web')->check()) { # Redirect to /home if already logged in
             $user = Auth::user();
             $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
-            return redirect('/home', 302, $request->headers->all(), false);
+            $request->setUserResolver(function () use ($user) { return $user; });
+            return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
         $title = 'Register';
@@ -170,15 +175,16 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @method POST
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->rules('register'), $this->messages('register'));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-            $request->session()->flash('error', $validator->getMessageBag()->first());
-            return redirect()->back(302, $request->headers->all())
+//            $request->session()->flash('error', $validator->getMessageBag()->first());
+            return redirect()->action('UserController@create', 302)
                 ->withInput($request->input())
                 ->with('title', 'Register')
                 ->with('errors', $validator->getMessageBag());
@@ -197,9 +203,7 @@ class UserController extends Controller
         if ($user->save()) {
             $user->sendEmailVerificationNotification();
             $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
+            $request->setUserResolver(function () use ($user) { return $user; });
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => 'You have successfully registered!',
@@ -220,14 +224,14 @@ class UserController extends Controller
      * @return Response
      */
     public function login(Request $request) {
+        $title = 'Login';
         if (strtolower($request->method()) == 'get') {
-            $title = 'Login';
             return response(view('user.login', compact('title')), 200, $request->headers->all());
         }
 
-        $validator = Validator::make($request->all(), $this->rules('login'), $this->messages('login'));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-            $request->session()->flash('error', $validator->getMessageBag()->first());
+//            $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->all())
                 ->with('errors', $validator->getMessageBag());
@@ -240,9 +244,7 @@ class UserController extends Controller
         if (Auth::attempt($credentials, boolval($request->get('remember')))) {
             $user = User::getUserByEmail($request->get('email'));
             $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
+            $request->setUserResolver(function () use ($user) { return $user; });
             Auth::setUser($user);
             return redirect('/home', 302, $request->headers->all(), false);
         }
@@ -366,7 +368,7 @@ class UserController extends Controller
         }
 
         $expires = $request->get('expires', 0);
-        if (strtotime($expires) > time()) { # link expired;
+        if (strtotime($expires) < time()) { # link expired;
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'We are sorry.',

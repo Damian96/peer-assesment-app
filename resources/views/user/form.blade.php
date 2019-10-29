@@ -31,7 +31,7 @@
     <div class="form-group" title="{{ $messages['email.required'] }}">
         <label class="control-label" for="email">Email</label>
 
-        <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" tabindex="0" name="email" value="{{ old('email', isset($user) ? $user->email : '') }}" id="email" required oninvalid="this.setCustomValidity('{{ $messages['email.required'] }}')" oninput="this.setCustomValidity('')">
+        <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" tabindex="0" name="email" value="{{ old('email', isset($user) ? $user->email : '') }}" id="email" required oninvalid="this.setCustomValidity('{{ $messages['email.required'] }}')" oninput="this.setCustomValidity('')" pattern="^.+@citycollege\.sheffield\.eu">
 
         @if ($errors->has('email'))
             <span class="invalid-feedback">
@@ -87,11 +87,19 @@
         </label>
     </div>
 
+    @if(request()->route()->named('*register') && request()->ip() != '127.0.0.1')
     <div class="form-group">
-        @if(strtolower($button['label']) == 'register')
             {!! htmlFormSnippet() !!}
+
+        @if ($errors->has('g-recaptcha-response'))
+        <span class="invalid-feedback">
+            <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+        </span>
         @endif
     </div>
+    @else
+    <input type="hidden" class="hidden" width="0" height="0" name="localhost" value="1"/>
+    @endif
 
     <div class="form-text">
         <label>Already registered? <a href="{{ url('/login') }}" title="Login">Login here</a>.</label>
