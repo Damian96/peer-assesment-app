@@ -4,7 +4,6 @@
 namespace App\Notifications;
 
 
-use App\User;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
@@ -23,10 +22,11 @@ class AppResetPasswordEmail extends Mailable implements Renderable
     public static $toMailCallback;
 
     protected $resettable;
+    protected $token;
 
     /**
      * AppVerifyEmail constructor.
-     * @param CanResetPassword $resettable
+     * @param Model|CanResetPassword $resettable
      * @param \Closure|null $toMailCallback
      */
     public function __construct(CanResetPassword $resettable, \Closure $toMailCallback = null)
@@ -36,19 +36,19 @@ class AppResetPasswordEmail extends Mailable implements Renderable
     }
 
     /**
-     * @param User|Model|CanResetPassword $notifiable
+     * @param Model $resettable
      * @return string
      */
-    protected function resettingUrl(Model $notifiable)
+    protected function resettingUrl(Model $resettable)
     {
         return URL::temporarySignedRoute(
             'user.verify',
             Carbon::now()->addMinutes(config('auth.password_reset.expire', 60)),
             [
-                'id' => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
+                'id' => $resettable->getKey(),
+                'hash' => sha1($resettable->getEmailForVerification()),
                 'action' => 'password',
-                'token' => $notifiable->getPasswordResetToken()
+                'token' => $resettable->password_reset_token
             ]
         );
     }

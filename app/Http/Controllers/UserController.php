@@ -36,7 +36,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('web');
-        $this->middleware('guest')->except(['logout', 'create', 'store', 'verify', 'change', 'reset']);
+        $this->middleware('guest')->except(['logout', 'verify', 'forgot', 'forgotSend', 'reset']);
     }
 
     /**
@@ -51,6 +51,10 @@ class UserController extends Controller
     public function rules(String $action, array $options = [])
     {
         switch ($action) {
+            case 'forgot':
+                return [
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
+                ];
             case 'register':
                 return [
                     'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users',
@@ -109,6 +113,12 @@ class UserController extends Controller
         ];
 
         switch ($action) {
+            case 'forgot':
+                return [
+                    'email.required' => 'We need to know your e-mail address!',
+                    'email.regex' => sprintf('%s', 'The e-mail must be an academic one!'),
+                    'email.exists' => 'Invalid e-mail address.',
+                ];
             case 'login':
                 return array_merge($messages, [
                     'email.exists' => 'Invalid e-mail address',
@@ -125,28 +135,6 @@ class UserController extends Controller
                     'terms.required' => 'You must accept our Terms and Conditions.'
                 ]);
                 break;
-            case 'change.2':
-                $messages = [
-                    'email.required' => 'We need to know your e-mail address!',
-                    'email.regex' => sprintf('%s', 'The email must be an academic one!'),
-                    'email.unique' => 'Invalid email address',
-
-                    'g-recaptcha-response.required' => 'Please fill the re-captcha',
-                    'g-recaptcha-response.string' => 'Invalid re-captcha',
-                    'g-recaptcha-response.recaptcha' => 'Invalid re-captcha',
-                ];
-                break;
-            case 'change.3':
-                $messages = [
-                    'code.required' => 'The verification code is required!',
-                    'code.max' => 'Invalid verification code',
-                    'code.exists' => 'Invalid verification code',
-                ];
-                break;
-            case 'change.4':
-                return array_merge($messages, [
-                    'password_confirmation' => 'You need to confirm your new password!'
-                ]);
         }
 
         return $messages;
@@ -405,7 +393,7 @@ class UserController extends Controller
                     'The verification link has expired. Please login to your account and try again.' :
                     'The link has expired. Please try again.'
             ]);
-            return redirect('/login', 302, $request->headers->all(), $request->secure());
+            return redirect()->to('user.login', 302, $request->headers->all(), $request->secure());
         }
 
         if ($request->get('action', false) == 'email') {
@@ -415,11 +403,13 @@ class UserController extends Controller
                 'heading' => 'Verification Successful',
                 'body' => 'You successfully verified your email!'
             ]);
-            return redirect('login', 302, $request->headers->all(), $request->secure());
+            return redirect()->to('user.login', 302, $request->headers->all(), $request->secure());
         } elseif ($request->get('action', false) == 'password') {
             $request->setUserResolver(function () use ($user) { return $user; });
             $request->merge(['user' => $user]);
-            return redirect('reset', 302, $request->headers->all(), $request->secure());
+            return redirect()->to('user.reset',302, $request->headers->all(), $request->secure());
+        } else {
+            throw abort(404);
         }
     }
 
@@ -433,5 +423,38 @@ class UserController extends Controller
         $title = 'Reset Password';
         $user = $request->getUserResolver();
         return \response(view('user.reset', compact('title', 'user')), 200, $request->headers->all());
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function forgot(Request $request) {
+        $title = 'Forgot Password';
+        return \response(view('user.forgot', compact('title')), 200, $request->headers->all());
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function forgotSend(Request $request) {
+        $validator = Validator::make($request->all(), $this->rules('forgotSend'), $this->messages('forgotSend'));
+
+        if ($validator->fails()) {
+            return redirect()->action('UserController@forgot', [], 302)
+                ->withInput($request->all())
+                ->with('messages', $this->messages('forgotSend'))
+                ->with('errors', $validator->errors());
+        }
+
+        $user = User::getUserByEmail($request->get('email'));
+        $user->sendPasswordResetNotification($user->getPasswordResetToken());
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'Reset Email Sent Successfully!',
+            'body' => 'Check you inbox for our email, and follow the instructions to reset your password.'
+        ]);
+        return redirect()->action('UserController@login', [], 302);
     }
 }

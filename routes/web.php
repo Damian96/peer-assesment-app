@@ -22,7 +22,9 @@ Route::match(['get'], '/register', 'UserController@create')->name('user.register
 Route::match(['post'], '/store', 'UserController@store')->name('user.store');
 Route::match(['put'], '/update', 'UserController@update')->name('user.update');
 Route::match(['get'], '/profile', 'UserController@show')->name('user.profile');
-Route::match(['get'], '/reset', 'UserController@reset')->name('user.reset');
+Route::match(['get'], '/password/forgot', 'UserController@forgot')->name('user.forgot');
+Route::match(['post'], '/password/send', 'UserController@forgotSend')->name('user.forgotSend');
+Route::match(['get'], '/password/reset', 'UserController@reset')->name('user.reset');
 
 Route::match(['get'], '/verify', 'UserController@verify')->name('user.verify');
 Route::match(['get', 'post'], '/login', 'UserController@login')->name('user.login');
