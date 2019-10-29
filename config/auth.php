@@ -111,9 +111,19 @@ return [
             'subject'   => 'Verify Email Address',
             'heading'   => 'Please click the button below to verify your email address.',
             'action'    => 'Verify Email Address',
-            'notice'    => 'If you did not register, please send us an email at ' .
-                "<a href='mailto:" . config('constants.mails.support.address') . "' title='" . config('constants.mails.support.name') . "'>" .
-                config('constants.mails.support.address') . '<\/a>'
+            'notice'    => 'If you did not register, please send us an email at support@peerassess.test'
+        ]
+    ],
+
+    /* Log the user in after verification */
+    'password_reset' => [
+        'view' => 'emails.reset',
+        'expire' => 60, // minutes
+        'strings' => [
+            'subject'   => 'Reset Password - PeerAssess',
+            'heading'   => 'Click the button below to reset your password.',
+            'action'    => 'Reset your Password',
+            'notice'    => 'If you did not perform this action, please send us an email at support@peerassess.test'
         ]
     ],
 ];

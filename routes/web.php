@@ -15,11 +15,17 @@
 Route::match(['get'], '/', 'UserController@index')->name('user.home');
 Route::match(['get'], '/home', 'UserController@index')->name('user.home');
 Route::match(['get'], '/index', 'UserController@index')->name('user.home');
-Route::match(['get', 'post'], '/login', 'UserController@login')->name('user.login');
+
+// FIXME: make private
 Route::match(['get'], '/register', 'UserController@create')->name('user.register');
+
 Route::match(['post'], '/store', 'UserController@store')->name('user.store');
+Route::match(['put'], '/update', 'UserController@update')->name('user.update');
 Route::match(['get'], '/profile', 'UserController@show')->name('user.profile');
+Route::match(['get'], '/reset', 'UserController@reset')->name('user.reset');
+
 Route::match(['get'], '/verify', 'UserController@verify')->name('user.verify');
+Route::match(['get', 'post'], '/login', 'UserController@login')->name('user.login');
 Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 
 # COURSE

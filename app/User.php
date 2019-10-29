@@ -2,15 +2,21 @@
 
 namespace App;
 
+use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
+use Doctrine\DBAL\Query\QueryException;
+use Illuminate\Auth\Passwords\CanResetPassword as Resetable;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -50,9 +56,11 @@ use Illuminate\Support\Facades\Mail;
  * @method static User|Model findOrFail(string $string, String $email)
  * @mixin \Eloquent
  */
-class User extends Model implements Authenticatable, MustVerifyEmail
+class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword
 {
     use Notifiable;
+    use Resetable;
+    use SendsPasswordResetEmails;
 
     protected $primaryKey = 'id';
     protected $keyType = 'bigint';
@@ -111,15 +119,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail
         'updated_at' => 'datetime',
         'instructor' => 'int'
     ];
-
-    /**
-     * User constructor.
-     * @param array $attributes
-     */
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-    }
+    private $password_reset_code_created_at;
 
     /**
      * @param string $key
@@ -128,6 +128,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail
     public function __set($key, $value)
     {
         switch ($key) {
+            case 'password_reset_code_created_at':
+                $this->password_reset_code_created_at = $value;
+                break;
 //            case ('last_login' && ($value == 'now')):
 //                try {
 //                    $value = (new Carbon('now', config('app.timezone')))->format(config('constants.date.stamp'));
@@ -216,11 +219,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail
 
     /**
      * @param $email String The user's email.
-     * @return User
+     * @return User|Model
      */
     public static function getUserByEmail($email)
     {
-        return (new User(self::where('email', $email)->first()->attributesToArray()));
+        return self::where('email', $email)->first()->refresh();
     }
 
     /**
@@ -233,18 +236,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail
             ->where('instructor', '=', '1')
             ->whereNotNull('email_verified_at')
             ->get();
-    }
-
-    /**
-     * Send the password reset notification.
-     *
-     * @param string $token
-     *
-     * @return void
-     */
-    public function sendPasswordResetNotification($token)
-    {
-//        $this->notify(new ResetPasswordNotification($token));
     }
 
     /**
@@ -373,4 +364,49 @@ class User extends Model implements Authenticatable, MustVerifyEmail
     {
         return $this->email;
     }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param string $code
+     * @return void
+     */
+    public function sendPasswordResetNotification($code)
+    {
+        $mailer = new AppResetPasswordEmail($this, $code);
+        Mail::to($this->email)->send($mailer);
+    }
+
+    /**
+     * Get the password_reset token
+     * @return string the token
+     */
+    public function getPasswordResetToken() {
+        try {
+            $token = $this->generatePasswordResetToken();
+        } catch (QueryException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Generates and stores a token in the password_resets table
+     * @return string
+     * @throws QueryException
+     */
+    private function generatePasswordResetToken() {
+        $token = Hash::make($this->email . ':' . $this->lname . ':' . time());
+        if (!DB::table('password_resets')->insert(['email' => $this->getEmailForPasswordReset(),'token' => $token])) {
+            throw new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token));
+        }
+        return $token;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPasswordResetTokenExpired() {
+        return time() > ($this->password_reset_code_created_at + config('auth.password_reset.expire'));
+    }
+
 }

@@ -9,8 +9,15 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+/**
+ * Class UserController
+ * @package App\Http\Controllers
+ *
+ * TODO: implement ErrorController
+ */
 class UserController extends Controller
 {
     /**
@@ -29,34 +36,57 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('web');
-        $this->middleware('guest')->except(['logout', 'create', 'store', 'verify']);
+        $this->middleware('guest')->except(['logout', 'create', 'store', 'verify', 'change', 'reset']);
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
      * @param String $action
+     * @param array $options
      * @return array
      *
      * TODO: add strong password regex rule
      */
-    public function rules(String $action)
+    public function rules(String $action, array $options = [])
     {
         switch ($action) {
             case 'register':
                 return [
                     'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users',
                     'password' => 'required|string|min:8|max:50',
-                    'fname' => 'required|string|max:255',
-                    'lname' => 'required|string|max:255',
+                    'fname' => 'required|string|min:3|max:255',
+                    'lname' => 'required|string|min:3|max:255',
                     'instructor' => 'boolean',
                     'terms' => 'boolean',
                 ];
             case 'login':
                 return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
                     'password' => 'required|string|min:8|max:50',
-                    'remember' => 'nullable|boolean'
+                    'remember' => 'nullable|boolean',
+                    'localhost' => 'nullable|string|max:1',
+                    'g-recaptcha-response' => 'required_unless:localhost,1|string|recaptcha'
+                ];
+            case 'change.2':
+                return [
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
+                    'g-recaptcha-response' => 'required_unless:localhost,1|string|recaptcha'
+                ];
+            case 'change.3':
+                $rules = [ 'code' => [
+                    'required',
+                    'max' => 6,
+                ]];
+                if (isset($options['email'])) {
+                    array_push($rules['code'], Rule::exists('staff')->where(function ($query) use($options) {
+                        $query->where('email', $options['email']);
+                    }));
+                }
+                return $rules;
+            case 'change.4':
+                return [
+                    'password' => 'required|string|min:8|max:50|confirmed'
                 ];
             default:
                 return [];
@@ -79,6 +109,14 @@ class UserController extends Controller
         ];
 
         switch ($action) {
+            case 'login':
+                return array_merge($messages, [
+                    'email.exists' => 'Invalid e-mail address',
+
+                    'g-recaptcha-response.required' => 'Please fill the re-captcha',
+                    'g-recaptcha-response.string' => 'Invalid re-captcha',
+                    'g-recaptcha-response.recaptcha' => 'Invalid re-captcha',
+                ]);
             case 'register':
                 $messages = array_merge($messages, [
                     'fname.required' => 'We need to know your first name!',
@@ -87,6 +125,28 @@ class UserController extends Controller
                     'terms.required' => 'You must accept our Terms and Conditions.'
                 ]);
                 break;
+            case 'change.2':
+                $messages = [
+                    'email.required' => 'We need to know your e-mail address!',
+                    'email.regex' => sprintf('%s', 'The email must be an academic one!'),
+                    'email.unique' => 'Invalid email address',
+
+                    'g-recaptcha-response.required' => 'Please fill the re-captcha',
+                    'g-recaptcha-response.string' => 'Invalid re-captcha',
+                    'g-recaptcha-response.recaptcha' => 'Invalid re-captcha',
+                ];
+                break;
+            case 'change.3':
+                $messages = [
+                    'code.required' => 'The verification code is required!',
+                    'code.max' => 'Invalid verification code',
+                    'code.exists' => 'Invalid verification code',
+                ];
+                break;
+            case 'change.4':
+                return array_merge($messages, [
+                    'password_confirmation' => 'You need to confirm your new password!'
+                ]);
         }
 
         return $messages;
@@ -196,12 +256,7 @@ class UserController extends Controller
             return response(view('user.login', compact('title')), 200, $request->headers->all());
         }
 
-        $attributes = [
-            'email' => $request->get('email', null),
-            'password' => $request->get('password', null),
-            'remember' => $request->get('remember', null)
-        ];
-        $validator = Validator::make($attributes, $this->rules('login'), $this->messages('login'));
+        $validator = Validator::make($request->all(), $this->rules('login'), $this->messages('login'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->back(302, $request->headers->all())
@@ -210,11 +265,11 @@ class UserController extends Controller
         }
 
         $credentials = [
-            'email' => $attributes['email'],
-            'password' => $attributes['password']
+            'email' => $request->get('email'),
+            'password' => $request->get('password')
         ];
-        if (Auth::attempt($credentials, boolval($attributes['remember']))) {
-            $user = User::getUserByEmail($attributes['email']);
+        if (Auth::attempt($credentials, boolval($request->get('remember')))) {
+            $user = User::getUserByEmail($request->get('email'));
             $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
@@ -255,14 +310,46 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
-     * @return \Illuminate\Http\Response
-//     */
-//    public function update(Request $request, User $user)
-//    {
-//        //
-//    }
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return void //
+     */
+    public function update(Request $request, int $id)
+    {
+        if (!$request->has('action')) {
+            throw abort(404);
+        }
+
+        try {
+            $user = User::whereId($id)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw abort(404);
+        }
+
+        if ($request->get('action') == 'reset' && $request->has('password')) {
+            $validator = Validator::make($request->all(), $this->rules('reset'), $this->messages('reset'));
+            $title = 'Reset Password';
+
+            if ($validator->fails()) {
+                return redirect()->back(302, $request->headers->all())
+                    ->withInput($request->input())
+                    ->with('title', $title)
+                    ->with('errors', $validator->errors());
+            }
+
+            $user->fill([
+                'password' => Hash::make($request->get('password'))
+            ])->save();
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => 'Password Changed!',
+                'body' => 'You successfully changed your password!'
+            ]);
+            return redirect('/login', 200, $request->headers->all(), $request->secure());
+        } else {
+            abort(404);
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -286,26 +373,27 @@ class UserController extends Controller
     }
 
     /**
+     * Verify an email link, and redirect to /reset or verify user's email
      * @param Request $request
      * @return Response
      */
     public function verify(Request $request) {
-        if(!$request->has(['id', 'hash', 'expires'])) {
-            return response(view('errors.405', ['title' => 'Unauthorized']), 405, $request->headers->all());
+        if(!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password'], true)) {
+            return response(view('errors.405', compact('title')), 405, $request->headers->all());
         }
 
         $request->query = new ParameterBag();
 
         $id = intval($request->get('id', -1));
         try {
-            $user = User::whereId($id)->firstOrFail();
+            $user = User::whereId($id)->firstOrFail()->refresh();
         } catch (ModelNotFoundException $e) { # invalid user / hacking attempt;
-            return response(view('errors.405', ['title' => 'Unauthorized']), 405, $request->headers->all());
+            return response(view('errors.405', compact('title')), 405, $request->headers->all());
         }
 
         $hash = $request->get('hash', null);
         if (strcmp($hash, sha1($user->getEmailForVerification())) != 0) { # invalid user / hacking attempt;
-            return response(view('errors.405', ['title' => 'Unauthorized']), 405, $request->headers->all());
+            return response(view('errors.405', compact('title')), 405, $request->headers->all());
         }
 
         $expires = $request->get('expires', 0);
@@ -313,17 +401,37 @@ class UserController extends Controller
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'We are sorry.',
-                'body' => 'The verification link has expired. Please login to your account and try again.'
+                'body' => $request->get('action', false) == 'email' ?
+                    'The verification link has expired. Please login to your account and try again.' :
+                    'The link has expired. Please try again.'
             ]);
             return redirect('/login', 302, $request->headers->all(), $request->secure());
         }
 
-        $user->markEmailAsVerified();
-        $request->session()->flash('message', [
-            'level' => 'success',
-            'heading' => 'Verification Successful',
-            'body' => 'You successfully verified your email!'
-        ]);
-        return redirect('login', 302, $request->headers->all(), $request->secure());
+        if ($request->get('action', false) == 'email') {
+            $user->markEmailAsVerified();
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => 'Verification Successful',
+                'body' => 'You successfully verified your email!'
+            ]);
+            return redirect('login', 302, $request->headers->all(), $request->secure());
+        } elseif ($request->get('action', false) == 'password') {
+            $request->setUserResolver(function () use ($user) { return $user; });
+            $request->merge(['user' => $user]);
+            return redirect('reset', 302, $request->headers->all(), $request->secure());
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function reset(Request $request) {
+        abort_if(!$request->has('user'), 405);
+
+        $title = 'Reset Password';
+        $user = $request->getUserResolver();
+        return \response(view('user.reset', compact('title', 'user')), 200, $request->headers->all());
     }
 }

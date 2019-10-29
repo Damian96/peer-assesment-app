@@ -52,6 +52,7 @@
 
                 <div class="form-text">
                     <label>Don't have an account? <a href="{{ url('/register') }}" title="Register" tabindex="-1">Register here</a>.</label>
+                    <label><a href="#" title="Forgot your password?" tabindex="-1">Forgot your password?</a></label>
                 </div>
 
                 <div class="form-group">
