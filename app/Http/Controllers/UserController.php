@@ -9,7 +9,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -52,6 +51,7 @@ class UserController extends Controller
     {
         switch ($action) {
             case 'forgot':
+            case 'forgotSend':
                 return [
                     'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
                 ];
@@ -71,26 +71,6 @@ class UserController extends Controller
                     'remember' => 'nullable|boolean',
                     'localhost' => 'nullable|string|max:1',
                     'g-recaptcha-response' => 'required_unless:localhost,1|string|recaptcha'
-                ];
-            case 'change.2':
-                return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
-                    'g-recaptcha-response' => 'required_unless:localhost,1|string|recaptcha'
-                ];
-            case 'change.3':
-                $rules = [ 'code' => [
-                    'required',
-                    'max' => 6,
-                ]];
-                if (isset($options['email'])) {
-                    array_push($rules['code'], Rule::exists('staff')->where(function ($query) use($options) {
-                        $query->where('email', $options['email']);
-                    }));
-                }
-                return $rules;
-            case 'change.4':
-                return [
-                    'password' => 'required|string|min:8|max:50|confirmed'
                 ];
             default:
                 return [];
@@ -114,6 +94,7 @@ class UserController extends Controller
 
         switch ($action) {
             case 'forgot':
+            case 'forgotSend':
                 return [
                     'email.required' => 'We need to know your e-mail address!',
                     'email.regex' => sprintf('%s', 'The e-mail must be an academic one!'),
@@ -393,7 +374,7 @@ class UserController extends Controller
                     'The verification link has expired. Please login to your account and try again.' :
                     'The link has expired. Please try again.'
             ]);
-            return redirect()->to('user.login', 302, $request->headers->all(), $request->secure());
+            return redirect()->action('UserController@login', [], 302, $request->headers->all());
         }
 
         if ($request->get('action', false) == 'email') {
@@ -403,11 +384,10 @@ class UserController extends Controller
                 'heading' => 'Verification Successful',
                 'body' => 'You successfully verified your email!'
             ]);
-            return redirect()->to('user.login', 302, $request->headers->all(), $request->secure());
+            return redirect()->action('UserController@login', [], 302, $request->headers->all());
         } elseif ($request->get('action', false) == 'password') {
-            $request->setUserResolver(function () use ($user) { return $user; });
-            $request->merge(['user' => $user]);
-            return redirect()->to('user.reset',302, $request->headers->all(), $request->secure());
+            Auth::setUser($user);
+            return redirect()->action('UserController@reset', [], 302, $request->headers->all());
         } else {
             throw abort(404);
         }
@@ -418,37 +398,48 @@ class UserController extends Controller
      * @return Response
      */
     public function reset(Request $request) {
-        abort_if(!$request->has('user'), 405);
+        $user = Auth::user();
 
         $title = 'Reset Password';
-        $user = $request->getUserResolver();
         return \response(view('user.reset', compact('title', 'user')), 200, $request->headers->all());
     }
 
     /**
      * @param Request $request
+     * @method GET
      * @return Response
      */
     public function forgot(Request $request) {
         $title = 'Forgot Password';
-        return \response(view('user.forgot', compact('title')), 200, $request->headers->all());
+        $messages = $this->messages(__FUNCTION__);
+        return \response(view('user.forgot', compact('title', 'messages')), 200, $request->headers->all());
     }
 
     /**
      * @param Request $request
+     * @method POST
      * @return Response
      */
     public function forgotSend(Request $request) {
-        $validator = Validator::make($request->all(), $this->rules('forgotSend'), $this->messages('forgotSend'));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
             return redirect()->action('UserController@forgot', [], 302)
                 ->withInput($request->all())
-                ->with('messages', $this->messages('forgotSend'))
+                ->with('messages', $this->messages(__FUNCTION__))
                 ->with('errors', $validator->errors());
         }
 
         $user = User::getUserByEmail($request->get('email'));
+        if (!$user->hasVerifiedEmail()) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'You need to verify your e-mail!',
+                'body' => sprintf("We can not send you the reset e-mail, until you verify your email. If you still can not remember your password, please contact us at <a href='mailto:%s' title='Administrator'>%s</a>", config('app.admin.address'), config('app.admin.address'))
+            ]);
+            return redirect()->action('UserController@login', [], 302);
+        }
+
         $user->sendPasswordResetNotification($user->getPasswordResetToken());
         $request->session()->flash('message', [
             'level' => 'success',

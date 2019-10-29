@@ -5,11 +5,11 @@
         @method('PUT')
         @csrf
 
-        <div class="form-group" title="{{ $messages['password.required'] }}">
+        <div class="form-group" title="{{ $messages['password.required'] ?? '' }}">
             <label class="control-label" for="password">Password</label>
 
             <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password" tabindex="0"
-                   name="password" type="password" value="{{ old('password') }}" required oninvalid="this.setCustomValidity('{{ $messages['password.required'] }}')" oninput="this.setCustomValidity('')">
+                   name="password" type="password" value="{{ old('password') }}" required oninvalid="this.setCustomValidity('{{ $messages['password.required'] ?? '' }}')" oninput="this.setCustomValidity('')">
 
             @if ($errors->has('password'))
                 <span class="invalid-feedback">
@@ -18,11 +18,11 @@
             @endif
         </div>
 
-        <div class="form-group" title="{{ $messages['password_confirmation.required'] }}">
+        <div class="form-group" title="{{ $messages['password_confirmation.required'] ?? '' }}">
             <label class="control-label" for="password_confirmation">Confirm Password</label>
 
             <input class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}" id="password_confirmation" tabindex="0"
-                   name="password_confirmation" type="password" value="{{ old('password_confirmation') }}" required oninvalid="this.setCustomValidity('{{ $messages['password_confirmation.required'] }}')" oninput="this.setCustomValidity('')">
+                   name="password_confirmation" type="password" value="{{ old('password_confirmation') }}" required oninvalid="this.setCustomValidity('{{ $messages['password_confirmation.required'] ?? '' }}')" oninput="this.setCustomValidity('')">
 
             @if ($errors->has('password_confirmation'))
                 <span class="invalid-feedback">

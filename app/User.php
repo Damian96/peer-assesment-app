@@ -5,7 +5,7 @@ namespace App;
 use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
 use Doctrine\DBAL\Query\QueryException;
-use Illuminate\Auth\Passwords\CanResetPassword as Resetable;
+use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Mail;
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword
 {
     use Notifiable;
-    use Resetable;
+    use Resettable;
     use SendsPasswordResetEmails;
 
     protected $primaryKey = 'id';
