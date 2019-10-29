@@ -4,10 +4,13 @@
 namespace App\Notifications;
 
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
 
 class AppResetPasswordEmail extends Mailable implements Renderable
 {
@@ -18,20 +21,36 @@ class AppResetPasswordEmail extends Mailable implements Renderable
      */
     public static $toMailCallback;
 
-    protected $notifiable;
-    protected $code;
+    protected $resettable;
+    protected $token;
 
     /**
      * AppVerifyEmail constructor.
-     * @param MustVerifyEmail $notifiable
-     * @param string $code
+     * @param Model|CanResetPassword $resettable
      * @param \Closure|null $toMailCallback
      */
-    public function __construct(MustVerifyEmail $notifiable, string $code, \Closure $toMailCallback = null)
+    public function __construct(CanResetPassword $resettable, \Closure $toMailCallback = null)
     {
-        $this->notifiable = $notifiable;
-        $this->code = $code;
+        $this->resettable = $resettable;
         self::$toMailCallback = $toMailCallback;
+    }
+
+    /**
+     * @param Model $resettable
+     * @return string
+     */
+    protected function resettingUrl(Model $resettable)
+    {
+        return URL::temporarySignedRoute(
+            'user.verify',
+            Carbon::now()->addMinutes(config('auth.password_reset.expire', 60)),
+            [
+                'id' => $resettable->getKey(),
+                'hash' => sha1($resettable->getEmailForVerification()),
+                'action' => 'password',
+                'token' => $resettable->password_reset_token
+            ]
+        );
     }
 
     /**
@@ -40,11 +59,12 @@ class AppResetPasswordEmail extends Mailable implements Renderable
      */
     public function build() {
         if (static::$toMailCallback) {
-            return call_user_func(static::$toMailCallback, $this->notifiable, $this->code);
+            return call_user_func(static::$toMailCallback, $this->resettable);
         }
+        $resettingUrl = $this->resettingUrl($this->resettable);
         return $this->from(config('mail.from.address'), config('mail.from.name'))
             ->subject(config('auth.password_reset.strings.subject'))
             ->markdown('emails.reset')
-            ->with('code', $this->code);
+            ->with([ 'url' => $resettingUrl ]);
     }
 }

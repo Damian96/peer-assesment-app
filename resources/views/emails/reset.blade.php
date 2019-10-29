@@ -3,9 +3,9 @@
 
 {{ config('auth.password_reset.strings.description') }}
 
-<pre style="font-size: 25px;font-weight: bold;margin: 16px 0;">{{ $code }}</pre>
+@component('mail::button', ['url' => $url]){{ config('auth.verification.strings.action') }}@endcomponent
 
-@component('mail::panel'){{ 'If you did not perform this action, please send us an email at ' . config('admin.mails.support.address')  }}@endcomponent
+@component('mail::panel'){{ config('auth.password_reset.strings.notice')  }}@endcomponent
 
 Thanks,<br>
 {{ config('app.name') }}

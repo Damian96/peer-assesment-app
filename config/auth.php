@@ -104,29 +104,26 @@ return [
     /* Log the user in after verification */
     'verification' => [
         'auto-login' => false,
-        'type' => 'markdown',
-        'view' => 'emails.verify',
+        'type' => 'default',
+        'view' => null,
         'expire' => 60,
         'strings' => [
             'subject'   => 'Verify Email Address',
             'heading'   => 'Please click the button below to verify your email address.',
             'action'    => 'Verify Email Address',
-            'notice'    => ''
+            'notice'    => 'If you did not register, please send us an email at support@peerassess.test'
         ]
     ],
 
-    /**
-     * Reset password
-     */
+    /* Log the user in after verification */
     'password_reset' => [
-        'type' => 'markdown',
         'view' => 'emails.reset',
-        'expire' => 60,
+        'expire' => 60, // minutes
         'strings' => [
-            'subject'   => 'Reset Password',
-            'heading'   => 'You are almost done!',
-            'description' => 'Copy paste the code below, into the Password Reset form, and you are good to go!',
-            'notice'    => ''
+            'subject'   => 'Reset Password - PeerAssess',
+            'heading'   => 'Click the button below to reset your password.',
+            'action'    => 'Reset your Password',
+            'notice'    => 'If you did not perform this action, please send us an email at support@peerassess.test'
         ]
-    ]
+    ],
 ];

@@ -228,4 +228,11 @@ return [
 
     ],
 
+    /**
+     * TODO: add admin email and address to env
+     */
+    'admin' => [
+        'address' => 'support@peerassess.test',
+        'from' => 'PeerAssess Support',
+    ]
 ];
