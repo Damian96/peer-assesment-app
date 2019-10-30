@@ -3,12 +3,6 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            @if (session()->has('message'))
-                <div class="alert alert-{{ session()->get('message')['level'] }}" role="alert">
-                    <h4 class="alert-heading">{{ session()->get('message')['heading'] }}</h4>
-                    {{ session()->get('message')['body'] }}
-                </div>
-            @endif
             @if(request()->session()->get('reset_step', false) == 1)
             <form role="form" method="POST" action="{{ url('/password/change/2') }}">
                 @method('POST')

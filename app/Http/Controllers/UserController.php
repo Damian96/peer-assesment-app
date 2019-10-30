@@ -163,20 +163,22 @@ class UserController extends Controller
         if (Auth::guard('web')->check()) { # Redirect to /home if already logged in
             $user = Auth::user();
             $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) { return $user; });
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
             return redirect('/home', 302, $request->headers->all(), $request->secure());
         }
 
         $title = 'Register';
         $messages = $this->messages('register');
-        return response(view('user.register', compact('title','messages')), 200, $request->headers->all());
+        return response(view('user.register', compact('title', 'messages')), 200, $request->headers->all());
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @method POST
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -203,7 +205,9 @@ class UserController extends Controller
         if ($user->save()) {
             $user->sendEmailVerificationNotification();
             $request->merge(['user' => $user]);
-            $request->setUserResolver(function () use ($user) { return $user; });
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => 'You have successfully registered!',
@@ -223,7 +227,8 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $title = 'Login';
         if (strtolower($request->method()) == 'get') {
             return response(view('user.login', compact('title')), 200, $request->headers->all());
@@ -243,7 +248,6 @@ class UserController extends Controller
         ];
         if (Auth::attempt($credentials, boolval($request->get('remember')))) {
             $user = User::getUserByEmail($request->get('email'));
-            $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) { return $user; });
             Auth::setUser($user);
             return redirect('/home', 302, $request->headers->all(), false);
@@ -270,7 +274,7 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User  $user
+     * @param \App\User $user
      * @return \Illuminate\Http\Response
      */
 //    public function edit(User $user)
@@ -325,7 +329,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\User  $user
+     * @param \App\User $user
      * @return \Illuminate\Http\Response
      */
 //    public function destroy(User $user)
@@ -337,7 +341,8 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->session()->flush();
         Auth::logout();
         return redirect('/', 302, $request->headers->all());
@@ -348,23 +353,25 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function verify(Request $request) {
-        if(!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password'], true)) {
-            return response(view('errors.405', compact('title')), 405, $request->headers->all());
+    public function verify(Request $request)
+    {
+        if (!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password'], true)) {
+            throw abort(401);
         }
 
+        $redirect_fail = Auth::check() ? 'UserController@index' : 'UserController@login';
         $request->query = new ParameterBag();
 
         $id = intval($request->get('id', -1));
         try {
             $user = User::whereId($id)->firstOrFail()->refresh();
         } catch (ModelNotFoundException $e) { # invalid user / hacking attempt;
-            return response(view('errors.405', compact('title')), 405, $request->headers->all());
+            throw abort(401);
         }
 
         $hash = $request->get('hash', null);
         if (strcmp($hash, sha1($user->getEmailForVerification())) != 0) { # invalid user / hacking attempt;
-            return response(view('errors.405', compact('title')), 405, $request->headers->all());
+            throw abort(401);
         }
 
         $expires = $request->get('expires', 0);
@@ -376,7 +383,7 @@ class UserController extends Controller
                     'The verification link has expired. Please login to your account and try again.' :
                     'The link has expired. Please try again.'
             ]);
-            return redirect()->action('UserController@login', [], 302, $request->headers->all());
+            return redirect()->action($redirect_fail, [], 302, $request->headers->all());
         }
 
         if ($request->get('action', false) == 'email') {
@@ -386,12 +393,15 @@ class UserController extends Controller
                 'heading' => 'Verification Successful',
                 'body' => 'You successfully verified your email!'
             ]);
-            return redirect()->action('UserController@login', [], 302, $request->headers->all());
+            $request->setUserResolver(function () use ($user) { return $user; });
+            Auth::setUser($user);
+            return redirect()->action('UserController@index', [], 302, $request->headers->all());
         } elseif ($request->get('action', false) == 'password') {
+            $request->setUserResolver(function () use ($user) { return $user; });
             Auth::setUser($user);
             return redirect()->action('UserController@reset', [], 302, $request->headers->all());
-        } else {
-            throw abort(404);
+        } else { # unknown action / hacking attempt
+            throw abort(401);
         }
     }
 
@@ -399,7 +409,8 @@ class UserController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function reset(Request $request) {
+    public function reset(Request $request)
+    {
         $user = Auth::user();
 
         $title = 'Reset Password';
@@ -411,7 +422,8 @@ class UserController extends Controller
      * @method GET
      * @return Response
      */
-    public function forgot(Request $request) {
+    public function forgot(Request $request)
+    {
         $title = 'Forgot Password';
         $messages = $this->messages(__FUNCTION__);
         return \response(view('user.forgot', compact('title', 'messages')), 200, $request->headers->all());
@@ -422,7 +434,8 @@ class UserController extends Controller
      * @method POST
      * @return Response
      */
-    public function forgotSend(Request $request) {
+    public function forgotSend(Request $request)
+    {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {

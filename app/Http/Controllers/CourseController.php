@@ -44,8 +44,12 @@ class CourseController extends Controller
 
         switch ($action) {
             case 'create':
+            case 'store':
+            case 'update':
                 $messages = array_merge($messages, [
                     'instructor.required' => 'Instructor is required!',
+                    'instructor.int' => 'Instructor MUST BE INT!',
+                    'instructor.exists' => 'Instructor MUST A USER!',
                 ]);
                 break;
             case 'edit':
@@ -75,7 +79,7 @@ class CourseController extends Controller
             case 'update':
                 if (Auth::user()->isAdmin()) {
                     return array_merge($rules, [
-                        'instructor' => 'sometimes|nullable',
+                        'instructor' => 'required|int|exists:users,id',
                     ]);
                 } else {
                     return $rules;
@@ -96,7 +100,11 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $title = 'Courses';
-        $courses = Auth::user()->courses()->getResults();
+        if (Auth::user()->isAdmin()) {
+            $courses = Course::all()->all();
+        } else {
+            $courses = Auth::user()->courses()->getResults();
+        }
         return response(view('course.index', compact('title', 'courses')), 200, $request->headers->all());
     }
 
@@ -131,13 +139,10 @@ class CourseController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        $attributes = [
-            'title' => $request->get('title', null),
-            'code' => $request->get('code', null),
-            'user_id' => intval($request->get('instructor', Auth::user()->id)),
-            'updated_at' => Carbon::createFromFormat(config('constants.date.stamp'), 'now', config('app.timezone'))
-        ];
-        $course = new Course($attributes);
+        // TODO: try $request->all()
+        $request->merge(['user_id' => intval($request->get('instructor'))]);
+//        $request->merge(['updated_at' => Carbon::createFromTimestamp(time(), config('app.timezone'))->format(config('constants.date.stamp'))]);
+        $course = new Course($request->all());
         if ($course->save()) {
             $request->session()->flash('message', [
                 'level' => 'success',
@@ -162,7 +167,11 @@ class CourseController extends Controller
      */
     public function show(Request $request, int $id)
     {
-        $course = Course::findOrFail($id)->refresh();
+        try {
+            $course = Course::findOrFail($id)->refresh();
+        } catch (ModelNotFoundException $e) {
+            throw abort(404);
+        }
         $title = $course->title;
 
         return response(view('course.show', compact('title', 'course')), 200, $request->headers->all());
@@ -206,15 +215,18 @@ class CourseController extends Controller
                 ->with('errors', $validator->errors());
         }
 
+        try {
+            $course = Course::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw abort(404);
+        }
+
+        $request->merge(['user_id' => intval($request->get('instructor'))]);
         $request->merge(['updated_at' => Carbon::createFromTimestamp(time(), config('app.timezone'))->format(config('constants.date.stamp'))]);
-        $course = Course::findOrFail($id);
         if ($course->update($request->all())) {
             return redirect()->action('CourseController@show', [$course->id], 302, $request->headers->all());
         } else {
-            return redirect()->action('CourseController@edit', [$id], 302)
-                ->withInput($request->input())
-                ->with('title', $title)
-                ->with('errors', $validator->errors());
+            throw abort(404);
         }
 
     }

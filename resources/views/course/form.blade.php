@@ -33,7 +33,7 @@
         @endif
     </div>
 
-    @if(Auth::user()->isAdmin() && request()->route()->named('course.edit'))
+    @if(Auth::user()->isAdmin() && (request()->route()->named('*edit') || request()->route()->named('*create')))
     <div class="form-group">
         <label class="form-text" for="instructor">Instructor</label>
         <select class="form-control{{ $errors->has('instructor') ? ' is-invalid' : '' }}" name="instructor" id="instructor" required aria-required="true" aria-invalid="{{ $errors->has('instructor') ? 'true' : 'false' }}">
@@ -52,15 +52,15 @@
 
     <div class="form-group">
         <label class="form-text" for="description">Description</label>
-        <textarea class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="description"
+        <textarea class="form-control{{ $errors->has('description') ? ' is-invalid' : '' }}" name="description"
                   id="description" maxlength="150"
                   placeholder="a short description of the course. e.g. level 1 course of java programming, english programme"
                   aria-placeholder="a short description of the course. e.g. level 1 course of java programming, english programme"
                   aria-invalid="{{ $errors->has('code') ? 'true' : 'false' }}">{{ old('description', isset($course) ? $course->description : '') }}</textarea>
 
-        @if ($errors->has('code'))
+        @if ($errors->has('description'))
             <span class="invalid-feedback">
-                <strong>{{ $errors->first('code') }}</strong>
+                <strong>{{ $errors->first('description') }}</strong>
             </span>
         @endif
     </div>

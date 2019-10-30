@@ -1,8 +1,13 @@
 @php
-  $error_number = 405;
+    $error_number = 405;
 @endphp
 
 @extends('layouts.error')
+
+@section('title')
+    <h1>Error {{ $error_number }}</h1>
+    <h3>Method Not Allowed</h3>
+@endsection
 
 @section('content')
     <p>

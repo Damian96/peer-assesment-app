@@ -1,16 +1,19 @@
-@extends('errors.layout')
-
 @php
-  $error_number = 503;
+    $error_number = 503;
 @endphp
 
+@extends('layouts.error')
+
 @section('title')
-  It's not you, it's me.
+    <h1>Error {{ $error_number }}</h1>
+    <h3>Service Unavailable</h3>
 @endsection
 
-@section('description')
-  @php
-    $default_error_message = "The server is overloaded or down for maintenance. Please try again later.";
-  @endphp
-  {!! isset($exception)? ($exception->getMessage()?$exception->getMessage():$default_error_message): $default_error_message !!}
+@section('content')
+    <p>
+        @php
+            $default_error_message = "Please <a href='javascript:history.back()''>go back</a> or return to <a href='".url('')."'>our homepage</a>.";
+        @endphp
+        {!! isset($exception)? ($exception->getMessage()?$exception->getMessage():$default_error_message): $default_error_message !!}
+    </p>
 @endsection

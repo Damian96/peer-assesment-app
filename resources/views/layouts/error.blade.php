@@ -1,6 +1,6 @@
 @include('includes.head')
 
-<main class="container" role="main">
+<main class="container text-center" role="main">
     @yield('title')
     @yield('content')
 </main>
