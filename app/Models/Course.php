@@ -5,16 +5,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Class User
  *
  * @package App
- * @property bigint $id
+ * @property int $id
+ * @property string $title
+ * @property string $code
+ * @property string $description
+ * @property int $user_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read int|null $notifications_count
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
@@ -64,7 +68,7 @@ class Course extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'code', 'user_id'
+        'title', 'description', 'code', 'user_id', 'updated_at'
     ];
 
     /**
@@ -72,7 +76,7 @@ class Course extends Model
      *
      * @var array
      */
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at'];
 
     /**
      * Course constructor.
@@ -95,6 +99,21 @@ class Course extends Model
             case 'instructor_name':
             case 'instructor_fname':
                 return $this->user()->getResults()->fullname;
+            case 'create_date':
+            case 'created_date':
+            case 'creation_date':
+                if (empty($this->created_at)) {
+                    return 'No';
+                } else {
+                    return Carbon::createFromTimestamp(strtotime($this->created_at), config('app.timezone'))->format(config('constants.date.full'));
+                }
+            case 'update_date':
+            case 'updated_date':
+                if (empty($this->updated_at)) {
+                    return 'No';
+                } else {
+                    return Carbon::createFromTimestamp(strtotime($this->updated_at), config('app.timezone'))->format(config('constants.date.full'));
+                }
             default:
                 return parent::__get($key);
         }
@@ -114,7 +133,8 @@ class Course extends Model
      * @param int $id
      * @return \Illuminate\Support\Collection
      */
-    public static function getByInstructor(int $id) {
+    public static function getByInstructor(int $id)
+    {
         return DB::table('courses')
             ->select('*')
             ->where('user_id', $id)

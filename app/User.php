@@ -195,6 +195,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 return self::getDepartmentTitle($this->department);
             case 'name':
             case 'fullname':
+            case 'full_name':
                 return substr($this->fname, 0, 1) . '. ' . $this->lname;
             case 'role':
                 if ($this->isInstructor()) return 'Instructor';

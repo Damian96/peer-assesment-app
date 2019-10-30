@@ -11,9 +11,9 @@
         <div class="col-md-8 offset-md-2">
             @include('course.form', [
                 'method' => 'PUT',
-                'action' => url('/courses/' . request('id', 0) . '/edit/'),
+                'action' => url('/courses/' . request('id', 0)),
                 'errors' => $errors,
-                'default' => $course
+                'course' => $course
             ])
         </div>
     </div>

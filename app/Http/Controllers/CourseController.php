@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,10 +19,11 @@ class CourseController extends Controller
     public function __construct()
     {
         $this->middleware('web');
+        $this->middleware('guest');
     }
 
     /**
-     * @param string $string
+     * @param string $action
      * @return array
      */
     private function messages(string $action)
@@ -64,15 +66,20 @@ class CourseController extends Controller
     {
         $rules = [
             'title' => 'required|string|min:5|max:50',
-            'user_id' => 'required|int',
             'code' => 'required|string|min:6|max:10',
             'description' => 'string|max:150'
         ];
         switch ($action) {
             case 'create':
-                return array_merge($rules, [
-                    'instructor' => 'required|int',
-                ]);
+            case 'store':
+            case 'update':
+                if (Auth::user()->isAdmin()) {
+                    return array_merge($rules, [
+                        'instructor' => 'sometimes|nullable',
+                    ]);
+                } else {
+                    return $rules;
+                }
             case 'edit':
                 break;
             default:
@@ -102,13 +109,14 @@ class CourseController extends Controller
     public function create(Request $request)
     {
         $title = 'Create Course';
-        return response(view('course.create', compact('title')),200, $request->headers->all());
+        return response(view('course.create', compact('title')), 200, $request->headers->all());
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @method POST
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -117,15 +125,17 @@ class CourseController extends Controller
         $validator = Validator::make($request->all(), $this->rules('create'), $this->messages('create'));
         if ($validator->fails()) {
             $request->session()->flash('error', $validator->getMessageBag()->first());
-            return redirect()->back(302, $request->headers->all())
+            return redirect()->action('CourseController@create', [], 302)
                 ->withInput($request->input())
+                ->with('title', $title)
                 ->with('errors', $validator->errors());
         }
 
         $attributes = [
             'title' => $request->get('title', null),
             'code' => $request->get('code', null),
-            'user_id' => intval($request->get('instructor', 0))
+            'user_id' => intval($request->get('instructor', Auth::user()->id)),
+            'updated_at' => Carbon::createFromFormat(config('constants.date.stamp'), 'now', config('app.timezone'))
         ];
         $course = new Course($attributes);
         if ($course->save()) {
@@ -134,25 +144,29 @@ class CourseController extends Controller
                 'heading' => 'Course created successfully!',
                 'body' => ''
             ]);
-            return redirect(sprintf("/view/%s", $course->id), 302, $request->headers->all(), $request->secure());
+            return redirect()->action('CourseController@show', $course->id, 302, $request->headers->all());
         }
 
-        return redirect()->back(302, $request->headers->all())
+        return redirect()->action('CourseController@create', [], 302)
             ->withInput($request->input())
+            ->with('title', $title)
             ->with('errors', $validator->errors());
     }
 
     /**
      * Display the specified resource.
      *
+     * @param Request $request
      * @param int $id
-     * @param \App\Models\Course $course
      * @return void
      */
-//    public function show(Course $course)
-//    {
-//        return response(view('course.show'))
-//    }
+    public function show(Request $request, int $id)
+    {
+        $course = Course::findOrFail($id)->refresh();
+        $title = $course->title;
+
+        return response(view('course.show', compact('title', 'course')), 200, $request->headers->all());
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -161,13 +175,13 @@ class CourseController extends Controller
      * @param Request $request
      * @return void
      */
-    public function edit(int $id, Request $request)
+    public function edit(Request $request, int $id)
     {
         $title = 'Edit Course';
         try {
-            $course = Course::findOrFail($id);
+            $course = Course::findOrFail($id)->refresh();
         } catch (ModelNotFoundException $e) {
-            abort(404);
+            throw abort(404);
         }
 
         return response(view('course.edit', compact('title', 'course')), 200, $request->headers->all());
@@ -176,19 +190,39 @@ class CourseController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @method PUT
      * @param \Illuminate\Http\Request $request
      * @param int $id
      * @return void
      */
     public function update(Request $request, int $id)
     {
-        //
+        $title = 'Edit Course';
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+        if ($validator->fails()) {
+            return redirect()->action('CourseController@edit', [$id], 302)
+                ->withInput($request->input())
+                ->with('title', $title)
+                ->with('errors', $validator->errors());
+        }
+
+        $request->merge(['updated_at' => Carbon::createFromTimestamp(time(), config('app.timezone'))->format(config('constants.date.stamp'))]);
+        $course = Course::findOrFail($id);
+        if ($course->update($request->all())) {
+            return redirect()->action('CourseController@show', [$course->id], 302, $request->headers->all());
+        } else {
+            return redirect()->action('CourseController@edit', [$id], 302)
+                ->withInput($request->input())
+                ->with('title', $title)
+                ->with('errors', $validator->errors());
+        }
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Course  $course
+     * @param \App\Models\Course $course
      * @return \Illuminate\Http\Response
      */
     public function destroy(Course $course)
