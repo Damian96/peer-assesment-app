@@ -94,7 +94,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'fname', 'lname', 'reg_num', 'department'
+        'email', 'password', 'fname', 'lname', 'reg_num', 'department', 'instructor', 'admin'
     ];
 
     /**
@@ -103,7 +103,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'verification_token', 'instructor', 'admin'
+        'password', 'remember_token', 'verification_token'
     ];
 
     /**
@@ -141,7 +141,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @param string $abbr
      * @return string
      */
-    public static function getDepartmentTitle(string $abbr) {
+    public static function getDepartmentTitle(string $abbr)
+    {
         switch ($abbr) {
             case 'CS':
                 return 'Computer Science';
@@ -249,21 +250,24 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     /**
      * @return bool
      */
-    public function isInstructor() {
+    public function isInstructor()
+    {
         return $this->instructor == 1;
     }
 
     /**
      * @return bool
      */
-    public function isStudent() {
+    public function isStudent()
+    {
         return $this->instructor == 0 && $this->admin == 0;
     }
 
     /**
      * @return bool
      */
-    public function isAdmin() {
+    public function isAdmin()
+    {
         return $this->admin == 1;
     }
 
@@ -401,7 +405,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * Get the password_reset token
      * @return string the token
      */
-    public function getPasswordResetToken() {
+    public function getPasswordResetToken()
+    {
         try {
             $token = $this->generatePasswordResetToken();
             $relation = $this->passwordReset()->get();
@@ -416,9 +421,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @return string
      * @throws QueryException
      */
-    private function generatePasswordResetToken() {
+    private function generatePasswordResetToken()
+    {
         $token = Hash::make($this->email . ':' . $this->lname . ':' . time());
-        if (!DB::table('password_resets')->insert(['email' => $this->getEmailForPasswordReset(),'token' => $token])) {
+        if (!DB::table('password_resets')->insert(['email' => $this->getEmailForPasswordReset(), 'token' => $token])) {
             throw new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token));
         }
         $this->password_reset_token = $token;

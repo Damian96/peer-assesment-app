@@ -1,30 +1,14 @@
 //
 
-// <OverrideBTVariables>
-$grid-breakpoints: (
-  xs: 0,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px,
-  xxl: 1900px
-);
-$container-max-widths: (
-  sm: 540px,
-  md: 720px,
-  lg: 960px,
-  xl: 1140px,
-  xxl: 1610px
-);
-// </OverrideBTVariables>
-
 @import "~bootstrap/scss/bootstrap";
+@import 'variables';
+
+@import "~jquery-confirm/dist/jquery-confirm.min.css";
 @import "~material-design-icons/iconfont/material-icons.css";
 
 body {
   min-height: 100vh;
   padding-top: 5rem;
-  //padding: 5rem 0 5rem 0;
 
   main {
     min-height: 70vh;
@@ -47,9 +31,8 @@ form {
 .navbar-expand-md {
   .navbar-nav {
     .dropdown-menu {
-      left: -50%;
-      //min-width: 110px;
-      //max-width: 110px;
+      width: 160px;
+      left: -70%;
     }
   }
 }

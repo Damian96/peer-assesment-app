@@ -11,7 +11,8 @@
                         <th>Code</th>
                         <th>Description</th>
                         <th>Created At</th>
-                        @if(Auth::user()->isAdmin())<th>Instructor</th>@endif
+                        @if(Auth::user()->isAdmin())
+                            <th>Instructor</th>@endif
                         <th></th>
                     </tr>
                     </thead>
@@ -22,10 +23,12 @@
                             <td>{{ $course->code }}</td>
                             <td>{{ $course->description }}</td>
                             <td>{{ $course->created_at }}</td>
-                            @if(Auth::user()->isAdmin())<td>{{ $course->instructor_name }}</td>@endif
+                            @if(Auth::user()->isAdmin())
+                                <td>{{ $course->instructor_name }}</td>@endif
                             <td class="action-cell">
                                 <a href="{{ url('/courses/' . $course->id . '/view') }}" class="material-icons">link</a>
                                 <a href="{{ url('/courses/' . $course->id . '/edit') }}" class="material-icons">edit</a>
+                                <a href="{{ url('/courses/' . $course->id . '/sessions') }}" class="material-icons">assignment</a>
                                 {{--                                <a href="{{ url('/courses/' . $course->id . '/delete') }}" class="material-icons">delete_forever</a>--}}
                             </td>
                         </tr>

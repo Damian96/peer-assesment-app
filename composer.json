@@ -10,6 +10,7 @@
     "require": {
         "php": "^7.2",
         "biscolab/laravel-recaptcha": "^4.0",
+        "egulias/email-validator": "^2.1",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0"

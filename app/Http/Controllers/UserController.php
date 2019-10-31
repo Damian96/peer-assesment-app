@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -61,18 +62,19 @@ class UserController extends Controller
                 ];
             case 'register':
             case 'create':
+            case 'store':
                 return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users',
+                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users',
                     'password' => 'required|string|min:3|max:50',
                     'fname' => 'required|string|min:3|max:255',
                     'lname' => 'required|string|min:3|max:255',
-                    'instructor' => 'nullable|accepted',
+                    'instructor' => 'nullable|boolean',
                     'terms' => 'accepted',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             case 'login':
                 return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
+                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|exists:users',
                     'password' => 'required|string|min:3|max:50',
                     'remember' => 'nullable|boolean',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
@@ -90,7 +92,9 @@ class UserController extends Controller
     {
         $messages = [
             'email.required' => 'We need to know your e-mail address!',
-            'email.regex' => sprintf('%s', 'The email must be an academic one!'),
+            'email.regex' => 'The e-mail must be an academic one!',
+            'email.filter' => 'Invalid e-mail address!',
+            'email.unique' => 'Invalid e-mail address!',
 
             'password.required' => 'Your password is required!',
             'password.min' => 'Your password should be at least 3 characters!',
@@ -114,6 +118,7 @@ class UserController extends Controller
                     'g-recaptcha-response.recaptcha' => 'Invalid re-captcha',
                 ]);
             case 'register':
+            case 'store':
             case 'create':
                 $messages = array_merge($messages, [
                     'fname.required' => 'We need to know your first name!',
@@ -138,8 +143,8 @@ class UserController extends Controller
         $user = Auth::user();
         $title = 'Homepage';
 
-        if (!$user->hasVerifiedEmail()) {
-            // TODO: add button to route to send mail
+//        if (!$user->hasVerifiedEmail()) {
+//            $request->session()->flash('emailVerifiedSent', true);
 //            $user->sendEmailVerificationNotification();
 //            $request->session()->flash('message', [
 //                'level' => 'info',
@@ -147,7 +152,7 @@ class UserController extends Controller
 //                'body' => 'We\'ve sent a link to ' . $user->getEmailForVerification() . '.' .
 //                    'Follow the instructions there to complete your registration.'
 //            ]);
-        }
+//        }
 
         return response(view('user.home', compact('title', 'user')), 200, $request->headers->all());
     }
@@ -192,19 +197,10 @@ class UserController extends Controller
                 ->with('errors', $validator->getMessageBag());
         }
 
-        $attributes = [
-            'fname' => $request->get('fname'),
-            'lname' => $request->get('lname'),
-            'email' => $request->get('email'),
-            'department' => $request->get('department'),
-            'reg_num' => $request->get('reg_num'),
-            'password' => Hash::make($request->get('password')),
-            'instructor' => $request->get('instructor', 0)
-        ];
-        $user = new User($attributes);
+        $request->merge(['password' => Hash::make($request->get('password'))]);
+        $user = new User($request->all());
         if ($user->save()) {
             $user->sendEmailVerificationNotification();
-            $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
@@ -236,20 +232,18 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-//            $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->all())
                 ->with('errors', $validator->getMessageBag());
         }
 
-        $credentials = [
-            'email' => $request->get('email'),
-            'password' => $request->get('password')
-        ];
-        if (Auth::attempt($credentials, boolval($request->get('remember')))) {
+        if (Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')], boolval($request->get('remember', false)))) {
             $user = User::getUserByEmail($request->get('email'));
-            $request->setUserResolver(function () use ($user) { return $user; });
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
             Auth::setUser($user);
+//            if (!$user->hasVerifiedEmail()) $user->sendEmailVerificationNotification();
             return redirect('/home', 302, $request->headers->all(), false);
         }
 
@@ -362,20 +356,17 @@ class UserController extends Controller
         $redirect_fail = Auth::check() ? 'UserController@index' : 'UserController@login';
         $request->query = new ParameterBag();
 
-        $id = intval($request->get('id', -1));
         try {
-            $user = User::whereId($id)->firstOrFail()->refresh();
+            $user = User::whereId(intval($request->get('id', -1)))->firstOrFail()->refresh();
         } catch (ModelNotFoundException $e) { # invalid user / hacking attempt;
             throw abort(401);
         }
 
-        $hash = $request->get('hash', null);
-        if (strcmp($hash, sha1($user->getEmailForVerification())) != 0) { # invalid user / hacking attempt;
+        if (strcmp($request->get('hash', null), sha1($user->getEmailForVerification())) != 0) { # invalid user / hacking attempt;
             throw abort(401);
         }
 
-        $expires = $request->get('expires', 0);
-        if (strtotime($expires) < time()) { # link expired;
+        if (Carbon::now(config('app.timezone'))->timestamp > intval($request->get('expires', 0))) { # link expired;
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'We are sorry.',
@@ -397,7 +388,9 @@ class UserController extends Controller
             Auth::setUser($user);
             return redirect()->action('UserController@index', [], 302, $request->headers->all());
         } elseif ($request->get('action', false) == 'password') {
-            $request->setUserResolver(function () use ($user) { return $user; });
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
             Auth::setUser($user);
             return redirect()->action('UserController@reset', [], 302, $request->headers->all());
         } else { # unknown action / hacking attempt

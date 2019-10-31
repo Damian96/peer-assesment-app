@@ -95,10 +95,10 @@ class Course extends Model
     {
         switch ($key) {
             case 'instructor':
-                return $this->user()->getResults()->id;
+                return $this->user()->id;
             case 'instructor_name':
             case 'instructor_fname':
-                return $this->user()->getResults()->fullname;
+                return $this->user()->fullname;
             case 'create_date':
             case 'created_date':
             case 'creation_date':
@@ -126,7 +126,14 @@ class Course extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User')->getModel();
+    }
+
+    /**
+     * @return mixed|array
+     */
+    public function sessions() {
+        return $this->hasMany('App\Session', 'id', 'course_id');
     }
 
     /**

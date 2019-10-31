@@ -34,20 +34,23 @@
     </div>
 
     @if(Auth::user()->isAdmin() && (request()->route()->named('*edit') || request()->route()->named('*create')))
-    <div class="form-group">
-        <label class="form-text" for="instructor">Instructor</label>
-        <select class="form-control{{ $errors->has('instructor') ? ' is-invalid' : '' }}" name="instructor" id="instructor" required aria-required="true" aria-invalid="{{ $errors->has('instructor') ? 'true' : 'false' }}">
-            @foreach(App\User::getInstructors() as $item)
-                <option value="{{ $item->id }}"{{ intval(old('instructor', isset($course) ? $course->instructor : '')) == $item->id ? ' selected' : ''  }}>{{ $item->name }}</option>
-            @endforeach
-        </select>
+        <div class="form-group">
+            <label class="form-text" for="instructor">Instructor</label>
+            <select class="form-control{{ $errors->has('instructor') ? ' is-invalid' : '' }}" name="instructor"
+                    id="instructor" required aria-required="true"
+                    aria-invalid="{{ $errors->has('instructor') ? 'true' : 'false' }}">
+                @foreach(App\User::getInstructors() as $item)
+                    <option
+                        value="{{ $item->id }}"{{ intval(old('instructor', isset($course) ? $course->instructor : '')) == $item->id ? ' selected' : ''  }}>{{ $item->name }}</option>
+                @endforeach
+            </select>
 
-        @if ($errors->has('instructor'))
-            <span class="invalid-feedback">
+            @if ($errors->has('instructor'))
+                <span class="invalid-feedback">
                 <strong>{{ $errors->first('instructor') }}</strong>
             </span>
-        @endif
-    </div>
+            @endif
+        </div>
     @endif
 
     <div class="form-group">

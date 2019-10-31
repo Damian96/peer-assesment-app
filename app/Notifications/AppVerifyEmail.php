@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
 class AppVerifyEmail extends Mailable implements Renderable
@@ -46,7 +45,7 @@ class AppVerifyEmail extends Mailable implements Renderable
     {
         return URL::temporarySignedRoute(
             'user.verify',
-            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            Carbon::now(config('app.timezone'))->addMinutes(config('auth.verification.expire', 60)),
             [
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
@@ -65,8 +64,8 @@ class AppVerifyEmail extends Mailable implements Renderable
             return call_user_func(static::$toMailCallback, $this->notifiable, $verificationUrl);
         }
         $this->notifiable->getEmailForVerification();
-        return $this->from(Config::get('mail.from.address'), Config::get('mail.from.name'))
-            ->subject(Config::get('auth.verification.strings.subject'))
+        return $this->from(config('mail.from.address'), config('mail.from.name'))
+            ->subject(config('auth.verification.strings.subject'))
             ->markdown('emails.verify')
             ->with([ 'url' => $verificationUrl ]);
     }
