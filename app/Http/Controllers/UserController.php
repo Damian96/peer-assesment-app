@@ -253,12 +253,23 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user's profile.
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(Request $request, User $user)
+    {
+        $title = $user->fullname . ' Profile';
+        return response(view('user.profile', compact('title', 'user')), 200, $request->headers->all());
+    }
+
+    /**
+     * Show the authenticated user's profile
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function profile(Request $request)
     {
         $title = 'Profile';
         $user = Auth::user();
@@ -384,7 +395,9 @@ class UserController extends Controller
                 'heading' => 'Verification Successful',
                 'body' => 'You successfully verified your email!'
             ]);
-            $request->setUserResolver(function () use ($user) { return $user; });
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
             Auth::setUser($user);
             return redirect()->action('UserController@index', [], 302, $request->headers->all());
         } elseif ($request->get('action', false) == 'password') {

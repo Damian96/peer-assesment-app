@@ -18,11 +18,7 @@ class SessionController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest');
-//            ->except([
-//            'logout',
-//            'verify', 'forgot', 'forgotSend', 'reset',
-//            'create', 'store'
-//        ]);
+//            ->except([]);
     }
 
     /**
@@ -35,13 +31,13 @@ class SessionController extends Controller
     public function index(Request $request, int $cid)
     {
         $user = Auth::user();
-        $title = 'Session';
 
         try {
             $course = Course::findOrFail($cid);
         } catch (ModelNotFoundException $e) {
             throw abort(404);
         }
+        $title = $course->code . ' - Sessions';
         $sessions = $course->sessions();
 
         return response(view('session.index', compact('title', 'course', 'sessions')), 200, $request->headers->all());

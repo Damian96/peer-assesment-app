@@ -103,6 +103,8 @@ class Course extends Model
     {
         switch ($key) {
             case 'instructor':
+            case 'user_id':
+            case 'instructor_id':
                 try {
                     $user = $this->user()->getQuery()->firstOrFail();
                 } catch (ModelNotFoundException $e) {
@@ -134,6 +136,9 @@ class Course extends Model
                 } else {
                     return Carbon::createFromTimestamp(strtotime($this->updated_at), config('app.timezone'))->format(config('constants.date.full'));
                 }
+            case 'department':
+            case 'department_title':
+
             default:
                 return parent::__get($key);
         }

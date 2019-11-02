@@ -230,7 +230,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function course()
     {
         if ($this->isAdmin() || $this->isInstructor()) {
-//            return $this->hasOne('\App\Course', 'user_id', 'id');
             return $this->hasOne('\App\Course');
         }
         return false;

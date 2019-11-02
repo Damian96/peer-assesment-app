@@ -118,6 +118,9 @@ class CourseController extends Controller
         } elseif (!Auth::user()->isAdmin()) { # Student
             $query->join('student_course', 'course_id', '=', 'id', 'inner', false);
             $query->where('student_course.user_id', '=', Auth::user()->id, 'and');
+        } else { # Admin
+            $query->leftJoin('users', 'users.id', '=', 'courses.user_id');
+            $query->selectRaw("CONCAT(SUBSTR(fname, 1, 1), '. ', lname) AS instructor_name");
         }
 
         if ($request->get('ac_year', 0) > 0) {
@@ -126,6 +129,7 @@ class CourseController extends Controller
             $ac_year = Carbon::now(config('app.timezone'));
         }
         $query->whereBetween('courses.ac_year', [$ac_year->startOfYear()->toDateTimeString(), $ac_year->endOfYear()->toDateTimeString()], 'and', false);
+        $query->addSelect('courses.*');
 
         $query->orderBy('courses.created_at', 'desc');
         $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $request->get('page', 1));
