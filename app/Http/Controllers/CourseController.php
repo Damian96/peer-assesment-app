@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
+use App\Course;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
@@ -79,7 +81,16 @@ class CourseController extends Controller
             case 'update':
                 if (Auth::user()->isAdmin()) {
                     return array_merge($rules, [
-                        'instructor' => 'required|int|exists:users,id',
+                        'instructor' => [
+                            'required',
+                            'int',
+                            Rule::exists('users', 'id')->where(function ($query) {
+                                $query->where('instructor', '=', '1')
+                                    ->orWhere('admin', '=', '1');
+                            }),
+                        ],
+//                        'instructor' => 'required|int|exists:users,id',
+//                        'instructor' => 'required|int|exists:users,id',
                     ]);
                 } else {
                     return $rules;
@@ -100,12 +111,20 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $title = 'Courses';
-        if (Auth::user()->isAdmin()) {
-            $courses = Course::all()->all();
-        } else {
-            $courses = Auth::user()->courses()->getResults();
+        $cur_year = Carbon::now(config('app.timezone'))->year;
+        $query = DB::table('courses');
+        if (!Auth::user()->isAdmin()) {
+            $query->where('user_id', '=', Auth::user()->id, 'and');
         }
-        return response(view('course.index', compact('title', 'courses')), 200, $request->headers->all());
+        if ($request->get('ac_year', 0) > 0) {
+            $ac_year = Carbon::create($request->get('ac_year'), 1, 1, 0, 0, 0, config('app.timezone'));
+            $query->whereBetween('ac_year', [$ac_year->startOfYear()->toDateTimeString(), $ac_year->endOfYear()->toDateTimeString()], 'and', false);
+        } else {
+            $query->where('ac_year', '>=', config('constants.date.start'), 'and');
+        }
+        $query->orderBy('created_at', 'desc');
+        $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $request->get('page', 1));
+        return response(view('course.index', compact('title', 'courses', 'ac_year')), 200, $request->headers->all());
     }
 
     /**

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8881d7cfe9524f4410458fad5b2ba778",
+    "content-hash": "e5090a94ec762917d659d23998efb319",
     "packages": [
         {
             "name": "biscolab/laravel-recaptcha",
@@ -444,6 +444,64 @@
             "time": "2019-09-03T16:45:42+00:00"
         },
         {
+            "name": "itsgoingd/clockwork",
+            "version": "v4.0.13",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/itsgoingd/clockwork.git",
+                "reference": "c6d5c55473648ed02ac4b5568ca7b99356b77adb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/itsgoingd/clockwork/zipball/c6d5c55473648ed02ac4b5568ca7b99356b77adb",
+                "reference": "c6d5c55473648ed02ac4b5568ca7b99356b77adb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5",
+                "psr/log": "1.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Clockwork\\Support\\Laravel\\ClockworkServiceProvider"
+                    ],
+                    "aliases": {
+                        "Clockwork": "Clockwork\\Support\\Laravel\\Facade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Clockwork\\": "Clockwork/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "itsgoingd",
+                    "email": "itsgoingd@luzer.sk",
+                    "homepage": "https://twitter.com/itsgoingd"
+                }
+            ],
+            "description": "php dev tools integrated to your browser",
+            "homepage": "https://underground.works/clockwork",
+            "keywords": [
+                "Devtools",
+                "debugging",
+                "laravel",
+                "logging",
+                "lumen",
+                "profiling",
+                "slim"
+            ],
+            "time": "2019-10-20T23:00:09+00:00"
+        },
+        {
             "name": "jakub-onderka/php-console-color",
             "version": "v0.2",
             "source": {
@@ -823,6 +881,76 @@
                 "storage"
             ],
             "time": "2019-10-16T21:01:05+00:00"
+        },
+        {
+            "name": "magyarjeti/laravel-lipsum",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/magyarjeti/laravel-lipsum.git",
+                "reference": "defb47d4931cd6ba724e0f62e037c5c463e12431"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/magyarjeti/laravel-lipsum/zipball/defb47d4931cd6ba724e0f62e037c5c463e12431",
+                "reference": "defb47d4931cd6ba724e0f62e037c5c463e12431",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": ">=4.0",
+                "magyarjeti/loripsum-client": "v2.0",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Magyarjeti\\LaravelLipsum": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lorem ipsum generator for Laravel Framework",
+            "time": "2015-02-09T13:54:32+00:00"
+        },
+        {
+            "name": "magyarjeti/loripsum-client",
+            "version": "v2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/magyarjeti/loripsum-client.git",
+                "reference": "ce686fb76ee41baeb65fb8c9474dbbad7e54a03e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/magyarjeti/loripsum-client/zipball/ce686fb76ee41baeb65fb8c9474dbbad7e54a03e",
+                "reference": "ce686fb76ee41baeb65fb8c9474dbbad7e54a03e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.9.2",
+                "phpunit/phpunit": "4.3.1",
+                "squizlabs/php_codesniffer": "2.0.0RC2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Magyarjeti\\Loripsum": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Lorem ipsum generator.",
+            "keywords": [
+                "ipsum",
+                "lipsum",
+                "lorem",
+                "loripsum"
+            ],
+            "time": "2014-10-09T15:07:00+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -5808,7 +5936,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "magyarjeti/laravel-lipsum": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

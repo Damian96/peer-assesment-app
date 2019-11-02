@@ -12,8 +12,10 @@
         "biscolab/laravel-recaptcha": "^4.0",
         "egulias/email-validator": "^2.1",
         "fideloper/proxy": "^4.0",
+        "itsgoingd/clockwork": "^4.0",
         "laravel/framework": "^6.0",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "magyarjeti/laravel-lipsum": "dev-master"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.6",

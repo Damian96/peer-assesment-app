@@ -10,7 +10,6 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -23,7 +22,7 @@ use Illuminate\Support\Facades\Mail;
  * Class User
  *
  * @package App
- * @property mixed $id
+ * @property int $id
  * @property string $fname
  * @property string $lname
  * @property string $email
@@ -59,9 +58,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     use Resettable;
     use SendsPasswordResetEmails;
 
-    protected $primaryKey = 'id';
-    protected $keyType = 'bigint';
     protected $table = 'users';
+    protected $primaryKey = 'id';
+    protected $keyType = 'int';
     protected $connection = 'mysql';
 
     /**
@@ -119,9 +118,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         'admin' => 'int',
     ];
 
-    private $password_reset_created_at;
-    protected $password_reset_token;
-
     /**
      * @param string $key
      * @param mixed $value
@@ -154,6 +150,27 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 return 'Business Administration & Economics';
             case 'MBA':
                 return 'Executive MBA';
+            default:
+                return '-';
+        }
+    }
+
+    /**
+     * @param string $abbr
+     * @return string
+     */
+    public static function getDepartmentCode(string $abbr)
+    {
+        switch ($abbr) {
+            case 'CS':
+                return 'CCP';
+            case 'ES':
+                return 'CES';
+            case 'PSY':
+                return 'CPY';
+            case 'BS':
+                return 'CBE';
+            case 'MBA':
             default:
                 return '-';
         }
@@ -209,11 +226,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the course record associated with the user.
-     * @return HasMany
      */
-    public function courses()
+    public function course()
     {
-        return $this->hasMany('App\Models\Course');
+        if ($this->isAdmin() || $this->isInstructor()) {
+//            return $this->hasOne('\App\Course', 'user_id', 'id');
+            return $this->hasOne('\App\Course');
+        }
+        return false;
     }
 
     /**
@@ -226,7 +246,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     public static function getInstructors()
     {

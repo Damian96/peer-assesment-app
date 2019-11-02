@@ -1,9 +1,10 @@
 <?php
 
 
-namespace App\Models;
+namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,11 @@ class Course extends Model
     protected $primaryKey = 'id';
     protected $keyType = 'int';
     protected $connection = 'mysql';
+    public $incrementing = true;
+    public $perPage = 10;
+    const PER_PAGE = 10;
+
+    protected $user_id;
 
     /**
      * The attributes that aren't mass assignable.
@@ -59,7 +65,7 @@ class Course extends Model
     protected $attributes = [
         'title' => 'Untitled',
         'description' => null,
-        'code' => null
+        'code' => null,
     ];
 
     /**
@@ -68,7 +74,7 @@ class Course extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'code', 'user_id', 'updated_at'
+        'title', 'description', 'code', 'user_id'
     ];
 
     /**
@@ -77,6 +83,17 @@ class Course extends Model
      * @var array
      */
     protected $hidden = ['created_at'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'user_id' => 'int',
+    ];
 
     /**
      * Course constructor.
@@ -95,10 +112,22 @@ class Course extends Model
     {
         switch ($key) {
             case 'instructor':
-                return $this->user()->id;
+                try {
+                    $user = $this->user()->getQuery()->firstOrFail();
+                } catch (ModelNotFoundException $e) {
+                    return 'N/A';
+                }
+                return $user->getModel()->id;
             case 'instructor_name':
+            case 'instructor_fullname':
             case 'instructor_fname':
-                return $this->user()->fullname;
+            case 'instructor_lname':
+                try {
+                    $user = $this->user()->getQuery()->firstOrFail();
+                } catch (ModelNotFoundException $e) {
+                    return 'N/A';
+                }
+                return $user->getModel()->fullname;
             case 'create_date':
             case 'created_date':
             case 'creation_date':
@@ -126,14 +155,16 @@ class Course extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User')->getModel();
+        return $this->belongsTo('\App\User', 'user_id', 'id');
+//        return $this->belongsTo('\App\User');
     }
 
     /**
      * @return mixed|array
      */
-    public function sessions() {
-        return $this->hasMany('App\Session', 'id', 'course_id');
+    public function sessions()
+    {
+        return $this->hasMany('\App\Session', 'id', 'course_id');
     }
 
     /**

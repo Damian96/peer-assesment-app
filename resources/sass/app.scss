@@ -32,7 +32,9 @@ form {
   .navbar-nav {
     .dropdown-menu {
       width: 160px;
-      left: -70%;
+      transform: translateX(-100%);
+      right: 0;
+      left: 100%;
     }
   }
 }
