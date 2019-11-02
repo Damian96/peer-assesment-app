@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -13,7 +14,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException::class,
     ];
 
     /**
@@ -27,10 +28,22 @@ class Handler extends ExceptionHandler
     ];
 
     /**
+     * Determine if the exception should be reported.
+     *
+     * @param \Exception $e
+     * @return bool
+     */
+    public function shouldReport(Exception $e)
+    {
+        return !in_array(Exception::class, $this->dontReport, true);
+    }
+
+    /**
      * Report or log an exception.
      *
-     * @param  \Exception  $exception
+     * @param \Exception $exception
      * @return void
+     * @throws Exception
      */
     public function report(Exception $exception)
     {
@@ -46,6 +59,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        if ($this->shouldReport($exception)) {
+            return parent::render($request, $exception);
+        } else {
+            return parent::render($request, new NotFoundHttpException('The requested page was not found'));
+        }
     }
 }

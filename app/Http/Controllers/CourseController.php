@@ -22,6 +22,7 @@ class CourseController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest');
+        $this->middleware('student');
     }
 
     /**

@@ -18,7 +18,7 @@ class SessionController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest');
-//            ->except([]);
+        $this->middleware('student');
     }
 
     /**
@@ -41,6 +41,11 @@ class SessionController extends Controller
         $sessions = $course->sessions();
 
         return response(view('session.index', compact('title', 'course', 'sessions')), 200, $request->headers->all());
+    }
+
+    public function create(Request $request)
+    {
+
     }
 
 }
