@@ -111,19 +111,25 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $title = 'Courses';
-        $cur_year = Carbon::now(config('app.timezone'))->year;
         $query = DB::table('courses');
-        if (!Auth::user()->isAdmin()) {
+
+        if (Auth::user()->isInstructor()) { # Instructor
             $query->where('user_id', '=', Auth::user()->id, 'and');
+        } elseif (!Auth::user()->isAdmin()) { # Student
+            $query->join('student_course', 'course_id', '=', 'id', 'inner', false);
+            $query->where('student_course.user_id', '=', Auth::user()->id, 'and');
         }
+
         if ($request->get('ac_year', 0) > 0) {
             $ac_year = Carbon::create($request->get('ac_year'), 1, 1, 0, 0, 0, config('app.timezone'));
-            $query->whereBetween('ac_year', [$ac_year->startOfYear()->toDateTimeString(), $ac_year->endOfYear()->toDateTimeString()], 'and', false);
         } else {
-            $query->where('ac_year', '>=', config('constants.date.start'), 'and');
+            $ac_year = Carbon::now(config('app.timezone'));
         }
-        $query->orderBy('created_at', 'desc');
+        $query->whereBetween('courses.ac_year', [$ac_year->startOfYear()->toDateTimeString(), $ac_year->endOfYear()->toDateTimeString()], 'and', false);
+
+        $query->orderBy('courses.created_at', 'desc');
         $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $request->get('page', 1));
+        $ac_year = $ac_year->year;
         return response(view('course.index', compact('title', 'courses', 'ac_year')), 200, $request->headers->all());
     }
 

@@ -96,15 +96,6 @@ class Course extends Model
     ];
 
     /**
-     * Course constructor.
-     * @param array $attributes
-     */
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-    }
-
-    /**
      * @param string $key
      * @return mixed
      */

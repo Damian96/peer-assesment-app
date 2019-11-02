@@ -237,6 +237,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function studentCourses()
+    {
+        return $this->belongsToMany('\App\Course', 'student_course', 'user_id', 'course_id');
+    }
+
+    /**
      * @param $email String The user's email.
      * @return User|Model
      */

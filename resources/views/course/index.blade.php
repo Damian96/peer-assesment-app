@@ -19,8 +19,11 @@
         <div class="col-md-12">
             @if (!empty($courses))
                 <table class="table table-striped">
+                    <caption
+                        class="">{{ sprintf("Showing results %s-%s of total %s Courses", $courses->firstItem(), $courses->lastItem(), $courses->total()) }}</caption>
                     <thead>
                     <tr>
+                        <th>##</th>
                         <th>Title</th>
                         <th>Code</th>
                         <th>Description</th>
@@ -30,8 +33,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($courses as $course)
+                    @foreach($courses as $i => $course)
                         <tr>
+                            <td>{{ $i+1 }}</td>
                             <td>{{ $course->title }}</td>
                             <td>{{ $course->code }}</td>
                             <td>{{ $course->description }}</td>
