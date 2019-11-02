@@ -3,10 +3,11 @@
 <main class="container" role="main">
     <section class="container-fluid px-md-0">
         @if (session()->has('message'))
-            <div class="alert alert-{{ session()->get('message')['level'] }}" role="alert">
-                <h4 class="alert-heading">{{ session()->get('message')['heading'] }}</h4>
-                {{ session()->get('message')['body'] }}
-            </div>
+            @component('includes.alert')
+                @slot('level'){{ session()->get('message')['level'] }}@endslot
+                @slot('heading'){{ session()->get('message')['heading'] }}@endslot
+                @slot('body'){{ session()->get('message')['body'] ?? '' }}@endslot
+            @endcomponent
         @endif
         <h1>{{ $title }}</h1>
         @yield('content')

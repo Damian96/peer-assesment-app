@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -37,9 +38,10 @@ class UserController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest')->except([
-            'logout',
-            'verify', 'forgot', 'forgotSend', 'reset',
-            'create', 'store'
+            'logout', # login-logout
+            'create', 'store', # user-register
+            'verify', # verify-email/password
+            'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
     }
 
@@ -55,6 +57,13 @@ class UserController extends Controller
     public function rules(String $action, array $options = [])
     {
         switch ($action) {
+            case 'reset':
+                return [
+                    '_method' => 'required|string|in:PUT',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
+                    'token' => 'required|string|min:60|max:60|exists:password_resets',
+                    'password' => 'required|confirmed|min:3|max:50',
+                ];
             case 'forgot':
             case 'forgotSend':
                 return [
@@ -243,7 +252,6 @@ class UserController extends Controller
                 return $user;
             });
             Auth::setUser($user);
-//            if (!$user->hasVerifiedEmail()) $user->sendEmailVerificationNotification();
             return redirect('/home', 302, $request->headers->all(), false);
         }
 
@@ -256,6 +264,7 @@ class UserController extends Controller
      * Display the specified user's profile.
      *
      * @param Request $request
+     * @param User $user
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, User $user)
@@ -291,43 +300,40 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return void //
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|Response
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request)
     {
         if (!$request->has('action')) {
             throw abort(404);
         }
 
-        try {
-            $user = User::whereId($id)->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            throw abort(404);
-        }
-
-        if ($request->get('action') == 'reset' && $request->has('password')) {
+        if (strtolower($request->get('action')) == 'reset' && $request->has(['email', 'token'])) { # reset-password
             $validator = Validator::make($request->all(), $this->rules('reset'), $this->messages('reset'));
-            $title = 'Reset Password';
-
-            if ($validator->fails()) {
-                return redirect()->back(302, $request->headers->all())
-                    ->withInput($request->input())
-                    ->with('title', $title)
-                    ->with('errors', $validator->errors());
+            try {
+                $user = User::where('email', $request->get('email'))->firstOrFail();
+            } catch (ModelNotFoundException $e) {
+                throw abort(404);
             }
 
-            $user->fill([
-                'password' => Hash::make($request->get('password'))
-            ])->save();
+            if ($validator->fails()) {
+                $title = 'Reset Password';
+                $token = $request->get('token');
+                $email = $request->get('email');
+                $errors = $validator->errors();
+                return \response(view('user.reset', compact('title', 'token', 'email', 'errors')), 200, $request->headers->all());
+            }
+
+            $user->fill(['password' => Hash::make($request->get('password'))])->save();
             $request->session()->flash('message', [
                 'level' => 'success',
-                'heading' => 'Password Changed!',
-                'body' => 'You successfully changed your password!'
+                'heading' => 'Password successfully changed!',
             ]);
-            return redirect('/login', 200, $request->headers->all(), $request->secure());
+            // TODO: add password copy email,
+            // TODO: remove password_resets row
+            return redirect('/login', 302, $request->headers->all(), $request->secure());
         } else {
-            abort(404);
+            throw abort(404);
         }
     }
 
@@ -392,19 +398,17 @@ class UserController extends Controller
             $user->markEmailAsVerified();
             $request->session()->flash('message', [
                 'level' => 'success',
-                'heading' => 'Verification Successful',
-                'body' => 'You successfully verified your email!'
+                'heading' => 'E-mail Verification successful!',
             ]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
-            Auth::setUser($user);
             return redirect()->action('UserController@index', [], 302, $request->headers->all());
         } elseif ($request->get('action', false) == 'password') {
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
-            Auth::setUser($user);
+            $request->session()->flash('user', $user);
             return redirect()->action('UserController@reset', [], 302, $request->headers->all());
         } else { # unknown action / hacking attempt
             throw abort(401);
@@ -417,10 +421,27 @@ class UserController extends Controller
      */
     public function reset(Request $request)
     {
-        $user = Auth::user();
-
         $title = 'Reset Password';
-        return \response(view('user.reset', compact('title', 'user')), 200, $request->headers->all());
+
+        if (!$request->session()->has('user')) {
+            throw abort(404);
+        }
+        $user = $request->session()->get('user');
+        if (!$user instanceof \App\User) {
+            throw abort(404);
+        }
+        $email = $user->email;
+
+        $token = DB::table('password_resets')
+            ->where('email', $email)
+            ->get('token')->first();
+        if (!property_exists($token, 'token')) {
+            throw abort(404);
+        } else {
+            $token = $token->token;
+        }
+
+        return \response(view('user.reset', compact('title', 'user', 'email', 'token')), 200, $request->headers->all());
     }
 
     /**

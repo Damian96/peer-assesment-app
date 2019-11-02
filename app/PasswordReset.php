@@ -8,6 +8,8 @@ class PasswordReset extends Model
 {
     protected $connection = 'mysql';
     protected $table = 'password_resets';
+    protected $primaryKey = 'email';
+    protected $keyType = 'string';
 
     /**
      * The model's default values for attributes.
@@ -18,5 +20,9 @@ class PasswordReset extends Model
         'email' => null,
         'token' => null,
         'created_at' => null
+    ];
+
+    protected $fillable = [
+        'email', 'token'
     ];
 }

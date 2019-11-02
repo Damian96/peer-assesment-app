@@ -3,7 +3,7 @@
 
 {{ config('auth.password_reset.strings.description') }}
 
-@component('mail::button', ['url' => $url]){{ config('auth.verification.strings.action') }}@endcomponent
+@component('mail::button', ['url' => $url]){{ config('auth.password_reset.strings.action') }}@endcomponent
 
 @component('mail::panel'){{ config('auth.password_reset.strings.notice')  }}@endcomponent
 

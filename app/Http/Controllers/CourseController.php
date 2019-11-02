@@ -168,9 +168,7 @@ class CourseController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        // TODO: try $request->all()
         $request->merge(['user_id' => intval($request->get('instructor'))]);
-//        $request->merge(['updated_at' => Carbon::createFromTimestamp(time(), config('app.timezone'))->format(config('constants.date.stamp'))]);
         $course = new Course($request->all());
         if ($course->save()) {
             $request->session()->flash('message', [
@@ -251,8 +249,11 @@ class CourseController extends Controller
         }
 
         $request->merge(['user_id' => intval($request->get('instructor'))]);
-        $request->merge(['updated_at' => Carbon::createFromTimestamp(time(), config('app.timezone'))->format(config('constants.date.stamp'))]);
         if ($course->update($request->all())) {
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => 'Course Updated successfully!',
+            ]);
             return redirect()->action('CourseController@show', [$course->id], 302, $request->headers->all());
         } else {
             throw abort(404);

@@ -4,8 +4,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -105,22 +103,12 @@ class Course extends Model
             case 'instructor':
             case 'user_id':
             case 'instructor_id':
-                try {
-                    $user = $this->user()->getQuery()->firstOrFail();
-                } catch (ModelNotFoundException $e) {
-                    return 'N/A';
-                }
-                return $user->getModel()->id;
+                return $this->user()->getResults()->id;
             case 'instructor_name':
             case 'instructor_fullname':
             case 'instructor_fname':
             case 'instructor_lname':
-                try {
-                    $user = $this->user()->getQuery()->firstOrFail();
-                } catch (ModelNotFoundException $e) {
-                    return 'N/A';
-                }
-                return $user->getModel()->fullname;
+                return $this->user()->getResults()->fullname;
             case 'create_date':
             case 'created_date':
             case 'creation_date':
@@ -147,12 +135,11 @@ class Course extends Model
     /**
      * Get the user that owns the course.
      *
-     * @return  BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function user()
     {
-        return $this->belongsTo('\App\User', 'user_id', 'id');
-//        return $this->belongsTo('\App\User');
+        return $this->hasOne('\App\User', 'id', 'user_id');
     }
 
     /**

@@ -1,9 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <form role="form" action="{{ '/update' }}">
+    <form role="form" method="POST" action="{{ '/update' }}">
         @method('PUT')
         @csrf
+
+        <input class="hidden" type="hidden" name="action" value="reset">
+        <input class="hidden" type="hidden" name="email" value="{{ $email }}">
+        <input class="hidden" type="hidden" name="token" value="{{ $token }}">
 
         <div class="form-group" title="{{ $messages['password.required'] ?? '' }}">
             <label class="control-label" for="password">Password</label>
