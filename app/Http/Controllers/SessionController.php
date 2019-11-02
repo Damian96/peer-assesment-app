@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
+use App\Course;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,11 +28,11 @@ class SessionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param int $cid
      * @param Request $request
+     * @param int $cid
      * @return \Illuminate\Http\Response
      */
-    public function index(int $cid, Request $request)
+    public function index(Request $request, int $cid)
     {
         $user = Auth::user();
         $title = 'Session';

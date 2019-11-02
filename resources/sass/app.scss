@@ -30,7 +30,7 @@ form {
 
 .navbar-expand-md {
   .navbar-nav {
-    .dropdown-menu {
+    .dropdown-menu[aria-labelledby="user-dropdown"] {
       width: 160px;
       transform: translateX(-100%);
       right: 0;

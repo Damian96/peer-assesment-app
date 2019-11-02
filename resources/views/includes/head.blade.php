@@ -40,18 +40,22 @@
                         <a class="nav-link" href="{{ url('/home') }}">Home</a>
                     </li>
                 @endif
-                <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
-                    <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false">Courses</a>
-                    <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                        <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}"
-                           href="{{ url('/courses') }}">My Courses</a>
-                        @if(Auth::user()->isInstructor() || Auth::user()->isAdmin())
+                @if (Auth::user()->isStudent())
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url('/courses') }}">Courses</a>
+                    </li>
+                @else
+                    <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
+                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">Courses</a>
+                        <div class="dropdown-menu" aria-labelledby="course-dropdown">
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}"
+                               href="{{ url('/courses') }}">My Courses</a>
                             <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}"
                                href="{{ url('/courses/create') }}">Create</a>
-                        @endif
-                    </div>
-                </li>
+                        </div>
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
