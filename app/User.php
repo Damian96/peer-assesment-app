@@ -51,6 +51,17 @@ use Illuminate\Support\Facades\Mail;
  * @method static User|Model firstOrFail(string $string, String $email)
  * @method static User|Model findOrFail(string $string, String $email)
  * @mixin \Eloquent
+ * @property string|null $reg_num
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Course[] $studentCourses
+ * @property-read int|null $student_courses_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereAdmin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereFname($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereInstructor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLname($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRegNum($value)
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword
 {
@@ -406,14 +417,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function getEmailForVerification()
     {
         return $this->email;
-    }
-
-    /**
-     * Get the phone record associated with the user.
-     */
-    public function passwordReset()
-    {
-        return $this->hasOne('App\PasswordReset', 'email', 'email');
     }
 
     /**

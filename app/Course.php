@@ -35,6 +35,17 @@ use Illuminate\Support\Facades\DB;
  * @method static User|Model firstOrFail(int $id)
  * @method static User|Model findOrFail(int $id)
  * @mixin Illuminate\Database\Eloquent\Model
+ * @property string $status
+ * @property string $ac_year
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Session[] $sessions
+ * @property-read int|null $sessions_count
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereAcYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereUserId($value)
  */
 class Course extends Model
 {

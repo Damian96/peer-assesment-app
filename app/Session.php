@@ -7,13 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Session
- * @package App
  *
+ * @package App
  * @property string $table
  * @property string $primaryKey
  * @property string $connection
- *
  * @property int $ac_year
+ * @property int $id
+ * @property int $course_id
+ * @property bool $status
+ * @property string|null $instructions
+ * @property \Illuminate\Support\Carbon $deadline
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read \App\Course $course
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereCourseId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereDeadline($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereInstructions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Session extends Model
 {
