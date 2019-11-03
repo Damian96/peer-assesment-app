@@ -5,21 +5,17 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Class CheckInstructor
- * @package App\Http\Middleware
- *
- * @property array $allowed The allowed routes of a Student
- */
-class CheckStudent
+class CheckInstructor
 {
     const ROLE = 'student';
 
     private $allowed = [
+        'user.home',
         'user.profile',
         'user.forgot',
         'user.forgotSend',
         'user.reset',
+        'user.verify',
         'user.update',
 
         'course.index',
@@ -37,7 +33,7 @@ class CheckStudent
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->isStudent() && !in_array($request->route()->getName(), $this->allowed, true)) {
+        if (Auth::check() && Auth::user()->isInstructor() && !in_array($request->route()->getName(), $this->allowed, true)) {
             throw abort(403);
         }
 

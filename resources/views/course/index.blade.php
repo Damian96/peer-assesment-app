@@ -46,14 +46,21 @@
                                 </td>
                             @endif
                             <td class="action-cell">
-                                <a href="{{ url('/courses/' . $course->id . '/view') }}" class="material-icons"
-                                   title="View Course {{ $course->code }}" aria-label="View Course {{ $course->code }}">link</a>
-                                <a href="{{ url('/courses/' . $course->id . '/edit') }}" class="material-icons"
-                                   title="Update Course {{ $course->code }}"
-                                   aria-label="Update Course {{ $course->code }}">edit</a>
+                                @if(Auth::user()->can('course.view'))
+                                    <a href="{{ url('/courses/' . $course->id . '/view') }}" class="material-icons"
+                                       title="View Course {{ $course->code }}"
+                                       aria-label="View Course {{ $course->code }}">link</a>
+                                @endif
+                                @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
+                                    <a href="{{ url('/courses/' . $course->id . '/edit') }}" class="material-icons"
+                                       title="Update Course {{ $course->code }}"
+                                       aria-label="Update Course {{ $course->code }}">edit</a>
+                                @endif
+                                @if(Auth::user()->can('session.index', ['id'=>$course->id]))
                                 <a href="{{ url('/courses/' . $course->id . '/sessions') }}" class="material-icons"
                                    title="View Sessions of {{ $course->code }}"
                                    aria-label="View Sessions of {{ $course->code }}">assignment</a>
+                                @endif
                                 {{--                                <a href="{{ url('/courses/' . $course->id . '/delete') }}" class="material-icons">delete_forever</a>--}}
                             </td>
                         </tr>

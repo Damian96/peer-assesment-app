@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <form role="form" method="POST" action="{{ url('/login') }}">
+            <form role="form" method="POST" action="{{ url('/auth') }}">
                 @method('POST')
                 @csrf
 
@@ -14,7 +14,7 @@
                            name="email" value="{{ old('email') }}" id="email" autofocus tabindex="0">
 
                     @if ($errors->has('email'))
-                        <span class="invalid-feedback">
+                        <span class="invalid-feedback d-block">
                             <strong>{{ $errors->first('email') }}</strong>
                         </span>
                     @endif
@@ -27,7 +27,7 @@
                            name="password" type="password" value="{{ old('password') }}" tabindex="0">
 
                     @if ($errors->has('password'))
-                        <span class="invalid-feedback">
+                        <span class="invalid-feedback d-block">
                             <strong>{{ $errors->first('password') }}</strong>
                         </span>
                     @endif
@@ -42,14 +42,13 @@
                     </label>
                 </div>
 
-                @if(request()->route()->named('*login') && request()->server('HTTP_X_FORWARDED_FOR', false) != false)
+                @if(env('APP_ENV', false) != 'local' || ! env('APP_DEBUG', false))
                     <div class="form-group">
                         {!! htmlFormSnippet() !!}
 
                         @if ($errors->has('g-recaptcha-response'))
-                            <span class="invalid-feedback">
-                            <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
-                        </span>
+                            <span
+                                class="invalid-feedback d-block"><strong>{{ $errors->first('g-recaptcha-response') }}</strong></span>
                         @endif
                     </div>
                 @else

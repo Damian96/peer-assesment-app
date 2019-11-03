@@ -27,11 +27,13 @@ Homestead.json
 # Custom
 /dbdiagram.info
 /*.sh
-/*.swp
+*.swp
+*.bp
+*.backup
 
 # ADD LATER
 /tests/
 
 # PHPDoc
-/docs/*
-/docs/cache/
+/docs/**/
+/docs/*.html

@@ -28,7 +28,8 @@ Route::match(['post'], '/password/send', 'UserController@forgotSend')->name('use
 Route::match(['get'], '/password/reset', 'UserController@reset')->name('user.reset');
 
 Route::match(['get'], '/verify', 'UserController@verify')->name('user.verify');
-Route::match(['get', 'post'], '/login', 'UserController@login')->name('user.login');
+Route::match(['get'], '/login', 'UserController@login')->name('user.login');
+Route::match(['post'], '/auth', 'UserController@auth')->name('user.auth');
 Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 
 # COURSE

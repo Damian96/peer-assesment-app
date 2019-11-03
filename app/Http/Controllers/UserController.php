@@ -38,8 +38,20 @@ class UserController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest')->except([
-            'logout', # login-logout
-            'create', 'store', # user-register
+            'logout', 'auth', # login-logout
+//            'create', 'store', # user-register
+            'verify', # verify-email/password
+            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+        ]);
+        $this->middleware('student')->except([
+            'logout', 'login', 'auth', # login-logout
+//            'create', 'store', # user-register
+//            'verify', # verify-email/password
+            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+        ]);
+        $this->middleware('instructor')->except([
+            'logout', 'login', 'auth', # login-logout
+//            'create', 'store', # user-register
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
@@ -81,11 +93,12 @@ class UserController extends Controller
                     'terms' => 'accepted',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
+            case 'auth':
             case 'login':
                 return [
                     'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|exists:users',
                     'password' => 'required|string|min:3|max:50',
-                    'remember' => 'nullable|boolean',
+                    'remember' => 'nullable|accepted',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             default:
@@ -118,6 +131,7 @@ class UserController extends Controller
                     'email.regex' => sprintf('%s', 'The e-mail must be an academic one!'),
                     'email.exists' => 'Invalid e-mail address.',
                 ];
+            case 'auth':
             case 'login':
                 return array_merge($messages, [
                     'email.exists' => 'Invalid e-mail address',
@@ -176,7 +190,6 @@ class UserController extends Controller
     {
         if (Auth::guard('web')->check()) { # Redirect to /home if already logged in
             $user = Auth::user();
-            $request->merge(['user' => $user]);
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
@@ -234,16 +247,21 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-        $title = 'Login';
-        if (strtolower($request->method()) == 'get') {
-            return response(view('user.login', compact('title')), 200, $request->headers->all());
-        }
+        return response(view('user.login', ['title' => 'Login']), 200, $request->headers->all());
+    }
 
+    /**
+     * @method POST
+     * @param Request $request
+     * @return Response
+     */
+    public function auth(Request $request)
+    {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-            return redirect()->back(302, $request->headers->all())
-                ->withInput($request->all())
-                ->with('errors', $validator->getMessageBag());
+            return redirect()->back(302, $request->headers->all(), $request->secure())
+                ->withInput($request->input())
+                ->with('errors', $validator->errors()->getMessageBag());
         }
 
         if (Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')], boolval($request->get('remember', false)))) {
@@ -252,12 +270,14 @@ class UserController extends Controller
                 return $user;
             });
             Auth::setUser($user);
-            return redirect('/home', 302, $request->headers->all(), false);
+            if ($user->isStudent()) {
+                return redirect('courses', 302, $request->headers->all(), $request->secure());
+            } else {
+                return redirect($this->redirectTo, 302, $request->headers->all(), $request->secure());
+            }
         }
 
-        return redirect()->back(302, $request->headers->all())
-            ->withInput($request->all())
-            ->with('errors', $validator->getMessageBag());
+        throw abort(500, 'Could not authenticate user', $request->headers->all());
     }
 
     /**

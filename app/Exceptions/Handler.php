@@ -35,7 +35,7 @@ class Handler extends ExceptionHandler
      */
     public function shouldReport(Exception $e)
     {
-        return !in_array(Exception::class, $this->dontReport, true);
+        return !in_array(get_class($e), $this->dontReport, true);
     }
 
     /**

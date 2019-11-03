@@ -6,6 +6,7 @@ use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
+use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -63,7 +64,7 @@ use Illuminate\Support\Facades\Mail;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRegNum($value)
  */
-class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword
+class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
 {
     use Notifiable;
     use Resettable;
@@ -130,6 +131,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     ];
 
     /**
+     * @see https://www.php.net/manual/en/language.oop5.overloading.php#object.set
      * @param string $key
      * @param mixed $value
      */
@@ -145,49 +147,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * @param string $abbr
-     * @return string
-     */
-    public static function getDepartmentTitle(string $abbr)
-    {
-        switch ($abbr) {
-            case 'CS':
-                return 'Computer Science';
-            case 'ES':
-                return 'English Studies';
-            case 'PSY':
-                return 'Psychology Studies';
-            case 'BS':
-                return 'Business Administration & Economics';
-            case 'MBA':
-                return 'Executive MBA';
-            default:
-                return '-';
-        }
-    }
-
-    /**
-     * @param string $abbr
-     * @return string
-     */
-    public static function getDepartmentCode(string $abbr)
-    {
-        switch ($abbr) {
-            case 'CS':
-                return 'CCP';
-            case 'ES':
-                return 'CES';
-            case 'PSY':
-                return 'CPY';
-            case 'BS':
-                return 'CBE';
-            case 'MBA':
-            default:
-                return '-';
-        }
-    }
-
-    /**
+     * @see https://www.php.net/manual/en/language.oop5.overloading.php#object.get
      * @param string $key
      * @return mixed
      */
@@ -236,17 +196,85 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * Get the course record associated with the user.
+     * Retrieve the department's title according to the specified abbreviation
+     * @param string $abbr
+     * @return string
      */
-    public function course()
+    public static function getDepartmentTitle(string $abbr)
+    {
+        switch ($abbr) {
+            case 'CS':
+                return 'Computer Science';
+            case 'ES':
+                return 'English Studies';
+            case 'PSY':
+                return 'Psychology Studies';
+            case 'BS':
+                return 'Business Administration & Economics';
+            case 'MBA':
+                return 'Executive MBA';
+            default:
+                return 'N/A';
+        }
+    }
+
+    /**
+     * Retrieve the department's short code according to the specified abbreviation
+     * @param string $abbr
+     * @return string The short department code
+     */
+    public static function getDepartmentCode(string $abbr)
+    {
+        switch ($abbr) {
+            case 'CS':
+                return 'CCP';
+            case 'ES':
+                return 'CES';
+            case 'PSY':
+                return 'CPY';
+            case 'BS':
+                return 'CBE';
+            case 'MBA':
+                return 'MBA';
+            default:
+                return 'N/A';
+        }
+    }
+
+    /**
+     * Get the course record associated with the instructor.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|false The relation or false on failure
+     */
+    public function courses()
     {
         if ($this->isAdmin() || $this->isInstructor()) {
-            return $this->hasOne('\App\Course');
+            return $this->hasMany('\App\Course');
         }
         return false;
     }
 
     /**
+     * Check if the instructor owns the specified course
+     * @param int $id
+     * @return bool
+     */
+    public function ownsCourse(int $id)
+    {
+        return $this->courses()->get()->toBase()->contains('id', '=', $id);
+    }
+
+    /**
+     * Check if the student is registered in the specified course
+     * @param int $id the course's ID \App\Course\::$id
+     * @return bool
+     */
+    private function isRegistered(int $id)
+    {
+        return $this->studentCourses()->get()->toBase()->contains('id', '=', $id);
+    }
+
+    /**
+     * Retrieve the courses that the users is registered on
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function studentCourses()
@@ -255,6 +283,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * Retrieve a user by his email
+     *
      * @param $email String The user's email.
      * @return User|Model
      */
@@ -264,6 +294,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * Get all the instructors
+     *
      * @return \Illuminate\Support\Collection
      */
     public static function getInstructors()
@@ -439,7 +471,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         try {
             $token = $this->generatePasswordResetToken();
-            $relation = $this->passwordReset()->get();
+//            $relation = $this->passwordReset()->get();
             return $token;
         } catch (QueryException $e) {
             return false;
@@ -457,15 +489,31 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         if (!DB::table('password_resets')->insert(['email' => $this->getEmailForPasswordReset(), 'token' => $token])) {
             throw new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token));
         }
-        $this->password_reset_token = $token;
+//        $this->password_reset_token = $token;
         return $token;
     }
 
     /**
+     * Determine if the entity has a given ability.
+     *
+     * @param string $ability
+     * @param array|mixed $arguments
      * @return bool
      */
-//    public function hasPasswordResetTokenExpired() {
-//        return time() > ($this->password_reset_code_created_at + config('auth.password_reset.expire'));
-//    }
+    public function can($ability, $arguments = [])
+    {
+        if ($this->isAdmin()) return true;
 
+        switch ($ability) {
+            case 'user.home':
+            case 'course.view':
+                return $this->isInstructor();
+            case 'course.edit':
+                return array_key_exists('id', $arguments) && $this->isInstructor() && $this->ownsCourse($arguments['id']);
+            case 'session.index':
+                return array_key_exists('id', $arguments) && $this->isInstructor() || ($this->isStudent() && $this->isRegistered($arguments['id']));
+            default:
+                return false;
+        }
+    }
 }

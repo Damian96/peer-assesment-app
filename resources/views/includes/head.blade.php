@@ -17,9 +17,12 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    @if (Route::current()->named('login') || Route::current()->named('register'))
     {!! htmlScriptTagJsApi([
         'action' => 'homepage',
     ]) !!}
+    @endif
 </head>
 <body>
 
@@ -31,19 +34,28 @@
     @if (Auth::check())
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2" id="mainMenu">
             <ul class="navbar-nav mr-auto">
-                @if (strpos(Route::current()->getName(), 'home') !== false)
-                    <li class="nav-item active">
-                        <a class="nav-link" href="{{ url('/home') }}">Home<span class="sr-only">(current)</span></a>
-                    </li>
-                @else
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/home') }}">Home</a>
-                    </li>
+                @if(Auth::user()->can('user.home'))
+                    @if (strpos(Route::current()->getName(), 'home') !== false)
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url('/home') }}">Home<span class="sr-only">(current)</span></a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/home') }}">Home</a>
+                        </li>
+                    @endif
                 @endif
                 @if (Auth::user()->isStudent())
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/courses') }}">Courses</a>
-                    </li>
+                    @if (strpos(Route::current()->getName(), 'course.index') !== false)
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url('/courses') }}">Courses<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/courses') }}">Courses</a>
+                        </li>
+                    @endif
                 @else
                     <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
                         <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
