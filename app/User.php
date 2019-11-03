@@ -505,10 +505,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         if ($this->isAdmin()) return true;
 
         switch ($ability) {
-            case 'user.home':
             case 'course.index':
             case 'user.profile':
                 return true;
+            case 'user.home':
             case 'course.view':
                 return $this->isInstructor();
             case 'course.update':

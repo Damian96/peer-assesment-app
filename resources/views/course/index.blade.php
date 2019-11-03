@@ -56,7 +56,7 @@
                                        title="Update Course {{ $course->code }}"
                                        aria-label="Update Course {{ $course->code }}">edit</a>
                                 @endif
-                                @if(Auth::user()->can('session.index', ['id'=>$course->id]))
+                                @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
                                 <a href="{{ url('/courses/' . $course->id . '/sessions') }}" class="material-icons"
                                    title="View Sessions of {{ $course->code }}"
                                    aria-label="View Sessions of {{ $course->code }}">assignment</a>
