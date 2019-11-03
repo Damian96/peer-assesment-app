@@ -18,7 +18,7 @@ class SessionController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest');
-        $this->middleware('student');
+        $this->middleware('role');
     }
 
     /**

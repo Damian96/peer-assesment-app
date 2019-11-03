@@ -22,7 +22,7 @@ class CourseController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest');
-        $this->middleware('student');
+        $this->middleware('role');
     }
 
     /**
@@ -93,7 +93,7 @@ class CourseController extends Controller
 //                        'instructor' => 'required|int|exists:users,id',
 //                        'instructor' => 'required|int|exists:users,id',
                     ]);
-                } else {
+                } elseif (Auth::user()->isInstructor()) {
                     return $rules;
                 }
             case 'edit':
@@ -249,7 +249,13 @@ class CourseController extends Controller
             throw abort(404);
         }
 
-        $request->merge(['user_id' => intval($request->get('instructor'))]);
+        if (Auth::user()->isAdmin()) {
+            $request->merge(['user_id' => intval($request->get('instructor', $course->user_id))]);
+        } elseif (Auth::user()->can('course.edit', ['id' => $id])) { # instructor-owner
+            $request->merge(['user_id' => $course->user_id]);
+        } else {
+            throw abort(403);
+        }
         if ($course->update($request->all())) {
             $request->session()->flash('message', [
                 'level' => 'success',

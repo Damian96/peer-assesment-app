@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\DB;
  *
  * @package App
  * @property int $id
+ * @property int $user_id
  * @property string $title
  * @property string $code
  * @property string $description
- * @property int $user_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
@@ -56,8 +56,6 @@ class Course extends Model
     public $incrementing = true;
     public $perPage = 10;
     const PER_PAGE = 10;
-
-    protected $user_id;
 
     /**
      * The attributes that aren't mass assignable.

@@ -43,16 +43,10 @@ class UserController extends Controller
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
-        $this->middleware('student')->except([
+        $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
 //            'create', 'store', # user-register
 //            'verify', # verify-email/password
-            'forgot', 'forgotSend', 'reset', 'update', # reset-password
-        ]);
-        $this->middleware('instructor')->except([
-            'logout', 'login', 'auth', # login-logout
-//            'create', 'store', # user-register
-            'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
     }

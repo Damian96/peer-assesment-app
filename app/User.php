@@ -506,12 +506,16 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
         switch ($ability) {
             case 'user.home':
+            case 'course.index':
+            case 'user.profile':
+                return true;
             case 'course.view':
                 return $this->isInstructor();
+            case 'course.update':
             case 'course.edit':
                 return array_key_exists('id', $arguments) && $this->isInstructor() && $this->ownsCourse($arguments['id']);
             case 'session.index':
-                return array_key_exists('id', $arguments) && $this->isInstructor() || ($this->isStudent() && $this->isRegistered($arguments['id']));
+                return array_key_exists('cid', $arguments) && ($this->isInstructor() || ($this->isStudent() && $this->isRegistered($arguments['cid'])));
             default:
                 return false;
         }
