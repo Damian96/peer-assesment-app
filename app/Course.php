@@ -72,6 +72,7 @@ class Course extends Model
     protected $attributes = [
         'title' => 'Untitled',
         'description' => null,
+        'ac_year' => null,
         'code' => null,
     ];
 
@@ -81,7 +82,7 @@ class Course extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'code', 'user_id'
+        'title', 'description', 'code', 'user_id', 'ac_year'
     ];
 
     /**
@@ -89,7 +90,7 @@ class Course extends Model
      *
      * @var array
      */
-    protected $hidden = ['created_at'];
+    protected $hidden = ['created_at', 'updated_at', 'status'];
 
     /**
      * The attributes that should be cast to native types.
@@ -99,6 +100,7 @@ class Course extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'ac_year' => 'datetime',
         'user_id' => 'int',
     ];
 
@@ -133,9 +135,14 @@ class Course extends Model
                 } else {
                     return Carbon::createFromTimestamp(strtotime($this->updated_at), config('app.timezone'))->format(config('constants.date.full'));
                 }
+            case 'ac_year_int':
+                return intval(Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format('Y'));
+            case 'ac_year_stamp':
+                return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format(config('constants.date.stamp'));
+            case 'ac_year_full':
+                return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format('Y');
             case 'department':
             case 'department_title':
-
             default:
                 return parent::__get($key);
         }

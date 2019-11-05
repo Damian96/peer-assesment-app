@@ -53,6 +53,24 @@
         </div>
     @endif
 
+    @if (Auth::user()->isAdmin() || Auth::user()->can('course.create') || (isset($course) && Auth::user()->can('course.edit', ['id' => $course->id])))
+        <div class="form-group">
+            <label for="ac_year">Academic Year</label>
+            <select id="ac_year" name="ac_year" class="form-control{{ $errors->has('ac_year') ? ' is-invalid' : '' }}">
+                @foreach(range(intval(date('Y')), config('constants.date.start'), -1) as $year)
+                    <option
+                        value="{{ $year }}"{{ $year == old('ac_year', isset($course) ? $course->ac_year_int : intval(date('Y'))) ? ' selected' : null }}>{{ $year }}</option>
+                @endforeach
+            </select>
+
+            @if ($errors->has('ac_year'))
+                <span class="invalid-feedback">
+                <strong>{{ $errors->first('ac_year') }}</strong>
+            </span>
+            @endif
+        </div>
+    @endif
+
     <div class="form-group">
         <label class="form-text" for="description">Description</label>
         <textarea class="form-control{{ $errors->has('description') ? ' is-invalid' : '' }}" name="description"
@@ -69,6 +87,7 @@
     </div>
 
     <div class="form-group">
-        <button type="submit" class="btn btn-block btn-primary">Update</button>
+        <button type="submit" class="btn btn-block btn-primary" role="button" title="{{ $button['title'] }}"
+                aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
     </div>
 </form>

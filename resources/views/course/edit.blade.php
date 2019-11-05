@@ -7,7 +7,11 @@
                 'method' => 'PUT',
                 'action' => url('/courses/' . request('id', 0)),
                 'errors' => $errors,
-                'course' => $course
+                'course' => $course,
+                'button' => [
+                    'title' => 'Update Course ' . $course->code,
+                    'label' => 'Update'
+                ],
             ])
         </div>
     </div>

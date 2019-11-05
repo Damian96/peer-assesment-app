@@ -37,10 +37,10 @@ Route::match(['get'], '/courses', 'CourseController@index')->name('course.index'
 Route::group(['prefix' => '/courses'], function() {
     Route::match(['get'], 'create', 'CourseController@create')->name('course.create');
 //    Route::match(['get'], '{id}/edit', 'CourseController@edit')->where('id', '[0-9]+')->name('course.edit');
-    Route::match(['get'], '{id}/edit', 'CourseController@edit')->where('id', '[0-9]+')->name('course.edit');
+    Route::match(['get'], '{course}/edit', 'CourseController@edit')->name('course.edit');
     Route::match(['put'], '{id}', 'CourseController@update')->where('id', '[0-9]+')->name('course.update');
     Route::match(['post'], '/store  ', 'CourseController@store')->name('user.store');
-    Route::match(['get'], '{id}/view', 'CourseController@show')->where('id', '[0-9]+')->name('course.view');
+    Route::match(['get'], '{course}/view', 'CourseController@show')->name('course.view');
 //    Route::match(['get'], '{id}', 'CourseController@course')->where('id', '[0-9]+')->name('course.edit');
 });
 

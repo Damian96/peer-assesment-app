@@ -38,7 +38,7 @@ class SessionController extends Controller
             throw abort(404);
         }
         $title = $course->code . ' - Sessions';
-        $sessions = $course->sessions();
+        $sessions = $course->sessions()->getResults();
 
         return response(view('session.index', compact('title', 'course', 'sessions')), 200, $request->headers->all());
     }

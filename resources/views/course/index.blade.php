@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+    @if (!Auth::user()->isStudent())
     <div class="row my-2">
         <div class="col-md-12">
             <form method="GET" class="form-inline" onchange="this.submit()">
                 <input type="hidden" value="{{ request('page', 1) }}" class="hidden" name="page" id="page">
                 <label for="ac_year">Academic Year
                     <select id="ac_year" name="ac_year" class="ml-2 form-control-sm">
-                        @foreach(range(intval(date('Y')), config('constants.start'), -1) as $year)
+                        @foreach(range(intval(date('Y')), config('constants.date.start'), -1) as $year)
                             <option
                                 value="{{ $year }}"{{ $year == request('ac_year', $ac_year) ? ' selected' : null }}>{{ $year }}</option>
                         @endforeach
@@ -16,15 +17,16 @@
             </form>
         </div>
     </div>
+    @endif
     <div class="row">
         <div class="col-md-12">
-            @if (!empty($courses))
-                <table class="table table-striped">
+            @if ($courses->total() || ! Auth::user()->isStudent())
+                <table id="my-courses" class="table table-striped ts">
                     <caption
                         class="">{{ sprintf("Showing results %s-%s of total %s Courses", $courses->firstItem(), $courses->lastItem(), $courses->total()) }}</caption>
                     <thead>
-                    <tr>
-                        <th>##</th>
+                    <tr class="tsTitles">
+                        <th>#</th>
                         <th>Title</th>
                         <th>Code</th>
                         @if(Auth::user()->isAdmin())
@@ -32,7 +34,7 @@
                         <th>Links</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="tsGroup">
                     @foreach($courses as $i => $course)
                         <tr>
                             <td>{{ ($courses->firstItem()+$i) }}</td>
@@ -41,7 +43,6 @@
                             @if(Auth::user()->isAdmin())
                                 <td>
                                     <a href="{{ url($course->user_id . '/show') }}"
-                                       title="View {{ $course->instructor_name }} Profile"
                                        title="View {{ $course->instructor_name }} Profile">{{ $course->instructor_name }}</a>
                                 </td>
                             @endif
@@ -57,9 +58,10 @@
                                        aria-label="Update Course {{ $course->code }}">edit</a>
                                 @endif
                                 @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
-                                <a href="{{ url('/courses/' . $course->id . '/sessions') }}" class="material-icons"
-                                   title="View Sessions of {{ $course->code }}"
-                                   aria-label="View Sessions of {{ $course->code }}">assignment</a>
+                                        <a href="{{ url('/courses/' . $course->id . '/sessions') }}"
+                                           class="material-icons"
+                                           title="View Sessions of {{ $course->code }}"
+                                           aria-label="View Sessions of {{ $course->code }}">assignment</a>
                                 @endif
                                 {{--                                <a href="{{ url('/courses/' . $course->id . '/delete') }}" class="material-icons">delete_forever</a>--}}
                             </td>
@@ -74,4 +76,20 @@
             @endif
         </div>
     </div>
+@endsection
+
+@section('end_footer')
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Initialize table
+            @if (Auth::user()->isAdmin())
+            {!! "let cols = [{col: 0, order: 'asc'}, {col: 3, order: 'asc'}];" !!}
+            @elseif (Auth::user()->isInstructor())
+            {!! "let cols = [{col: 0, order: 'asc'}, {col: 2, order: 'asc'}];" !!}
+            @else
+            {!! "let cols = [{col: 0, order: 'asc'}, {col: 2, order: 'asc'}];" !!}
+            @endif
+            $('#my-courses').tablesorter({tablesorterColumns: cols});
+        });
+    </script>
 @endsection

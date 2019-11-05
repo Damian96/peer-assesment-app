@@ -90,6 +90,7 @@ class CourseController extends Controller
                                     ->orWhere('admin', '=', '1');
                             }),
                         ],
+                        'ac_year' => 'sometimes|dateFormat:Y',
 //                        'instructor' => 'required|int|exists:users,id',
 //                        'instructor' => 'required|int|exists:users,id',
                     ]);
@@ -124,17 +125,22 @@ class CourseController extends Controller
             $query->selectRaw("CONCAT(SUBSTR(fname, 1, 1), '. ', lname) AS instructor_name");
         }
 
-        if ($request->get('ac_year', 0) > 0) {
-            $ac_year = Carbon::create($request->get('ac_year'), 1, 1, 0, 0, 0, config('app.timezone'));
+        if (!Auth::user()->isStudent()) {
+            if ($request->get('ac_year', 0) > 0) {
+                $ac_year = Carbon::create($request->get('ac_year'), 1, 1, 0, 0, 0, config('app.timezone'));
+            } else {
+                $ac_year = Carbon::now(config('app.timezone'));
+            }
+            $query->whereBetween('courses.ac_year', [$ac_year->startOfYear()->toDateTimeString(), $ac_year->endOfYear()->toDateTimeString()], 'and', false);
+            $ac_year = $ac_year->year;
         } else {
-            $ac_year = Carbon::now(config('app.timezone'));
+            $ac_year = intval(date('Y'));
         }
-        $query->whereBetween('courses.ac_year', [$ac_year->startOfYear()->toDateTimeString(), $ac_year->endOfYear()->toDateTimeString()], 'and', false);
+
         $query->addSelect('courses.*');
 
         $query->orderBy('courses.created_at', 'desc');
         $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $request->get('page', 1));
-        $ac_year = $ac_year->year;
         return response(view('course.index', compact('title', 'courses', 'ac_year')), 200, $request->headers->all());
     }
 
@@ -170,6 +176,7 @@ class CourseController extends Controller
         }
 
         $request->merge(['user_id' => intval($request->get('instructor'))]);
+        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year', date('Y'))), 1, 1, config('app.timezone'))->format(config('constants.date.stamp'))]);
         $course = new Course($request->all());
         if ($course->save()) {
             $request->session()->flash('message', [
@@ -177,7 +184,7 @@ class CourseController extends Controller
                 'heading' => 'Course created successfully!',
                 'body' => ''
             ]);
-            return redirect()->action('CourseController@show', $course->id, 302, $request->headers->all());
+            return redirect()->action('CourseController@show', [$course->id], 302, $request->headers->all());
         }
 
         return redirect()->action('CourseController@create', [], 302)
@@ -190,18 +197,12 @@ class CourseController extends Controller
      * Display the specified resource.
      *
      * @param Request $request
-     * @param int $id
+     * @param Course $course
      * @return void
      */
-    public function show(Request $request, int $id)
+    public function show(Request $request, Course $course)
     {
-        try {
-            $course = Course::findOrFail($id)->refresh();
-        } catch (ModelNotFoundException $e) {
-            throw abort(404);
-        }
         $title = $course->title;
-
         return response(view('course.show', compact('title', 'course')), 200, $request->headers->all());
     }
 
@@ -212,15 +213,9 @@ class CourseController extends Controller
      * @param Request $request
      * @return void
      */
-    public function edit(Request $request, int $id)
+    public function edit(Request $request, Course $course)
     {
-        $title = 'Edit Course';
-        try {
-            $course = Course::findOrFail($id)->refresh();
-        } catch (ModelNotFoundException $e) {
-            throw abort(404);
-        }
-
+        $title = 'Edit Course ' . $course->code;
         return response(view('course.edit', compact('title', 'course')), 200, $request->headers->all());
     }
 
@@ -249,14 +244,14 @@ class CourseController extends Controller
             throw abort(404);
         }
 
-        if (Auth::user()->isAdmin()) {
+        if (Auth::user()->isAdmin()) { # administrator
             $request->merge(['user_id' => intval($request->get('instructor', $course->user_id))]);
         } elseif (Auth::user()->can('course.edit', ['id' => $id])) { # instructor-owner
             $request->merge(['user_id' => $course->user_id]);
-        } else {
-            throw abort(403);
         }
-        if ($course->update($request->all())) {
+        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year')), 1, 1, config('app.timezone'))->format(config('constants.date.stamp'))]);
+
+        if ($course->fill($request->all())->save()) {
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => 'Course Updated successfully!',

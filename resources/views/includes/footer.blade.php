@@ -15,5 +15,7 @@
     </div>
 </footer>
 
+@yield('end_footer')
+
 </body>
 </html>

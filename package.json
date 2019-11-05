@@ -27,6 +27,7 @@
         "popper.js": "^1.16.0"
     },
     "dependencies": {
+      "@curveballerpacks/tablesorter": "^1.0.0",
         "@myspace-nu/jquery.fancytable": "^1.0.9",
         "jquery-confirm": "^3.3.4"
     }

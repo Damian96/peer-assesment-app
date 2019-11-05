@@ -6,7 +6,12 @@
             @include('course.form', [
                 'method' => 'POST',
                 'action' => url('/courses/store'),
-                'errors' => $errors
+                'errors' => $errors,
+                'course' => null,
+                'button' => [
+                    'title' => 'Create a Course',
+                    'label' => 'Create'
+                ],
             ])
         </div>
     </div>

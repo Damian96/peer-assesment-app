@@ -10,10 +10,12 @@
                         <th>Owner</th>
                         <th>Title</th>
                         <th>Code</th>
+                        <th>Academic Year</th>
                         <th>Description</th>
                     @else
                         <th>Title</th>
                         <th>Code</th>
+                        <th>Academic Year</th>
                         <th>Description</th>
                     @endif
                 </tr>
@@ -25,10 +27,12 @@
                         <td>{{ $course->instructor_name }}</td>
                         <td>{{ $course->title }}</td>
                         <td>{{ $course->code }}</td>
+                        <td>{{ $course->ac_year_full }}</td>
                         <td>{{ $course->description }}</td>
                     @else
                         <td>{{ $course->title }}</td>
                         <td>{{ $course->code }}</td>
+                        <td>{{ $course->ac_year_full }}</td>
                         <td>{{ $course->description }}</td>
                     @endif
                 </tr>
