@@ -510,12 +510,32 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 return true;
             case 'user.home':
             case 'course.view':
+            case 'course.create':
+            case 'course.store':
+            case 'session.store':
                 return $this->isInstructor();
+//            case 'session.update':
+            case 'session.create':
             case 'course.update':
             case 'course.edit':
-                return array_key_exists('id', $arguments) && $this->isInstructor() && $this->ownsCourse($arguments['id']);
+            case 'course.add-student':
+                if (array_key_exists('id', $arguments)) {
+                    $cid = $arguments['id'];
+                } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
+                    $cid = $arguments['course']->id;
+                } else {
+                    return false;
+                }
+                return $this->isInstructor() && $this->ownsCourse($cid);
             case 'session.index':
-                return array_key_exists('cid', $arguments) && ($this->isInstructor() || ($this->isStudent() && $this->isRegistered($arguments['cid'])));
+                if (array_key_exists('id', $arguments)) {
+                    $cid = $arguments['id'];
+                } elseif (array_key_exists('cid', $arguments)) {
+                    $cid = $arguments['cid'];
+                } else {
+                    return false;
+                }
+                return $this->isInstructor() || ($this->isStudent() && $this->isRegistered($cid));
             default:
                 return false;
         }

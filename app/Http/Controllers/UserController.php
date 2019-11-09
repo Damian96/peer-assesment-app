@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Course;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -45,7 +46,8 @@ class UserController extends Controller
         ]);
         $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
-//            'create', 'store', # user-register
+            'create', 'store', # user-register
+            'addStudent', 'storeStudent',
 //            'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
@@ -75,14 +77,24 @@ class UserController extends Controller
                 return [
                     'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
                 ];
+            case 'storeStudent':
+            case 'register.student':
+                return [
+                    'fname' => 'required|string|min:3|max:25',
+                    'lname' => 'required|string|min:3|max:25',
+                    'department' => 'required|string|max:5|different:admin',
+                    'reg_num' => 'required|string|regex:/^@[A-Z]{2}[0-9]{4}$/im|max:6',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email',
+                ];
+            case 'register.user':
             case 'register':
             case 'create':
             case 'store':
                 return [
                     'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users',
                     'password' => 'required|string|min:3|max:50',
-                    'fname' => 'required|string|min:3|max:255',
-                    'lname' => 'required|string|min:3|max:255',
+                    'fname' => 'required|string|min:3|max:25',
+                    'lname' => 'required|string|min:3|max:25',
                     'instructor' => 'nullable|boolean',
                     'terms' => 'accepted',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
@@ -110,6 +122,7 @@ class UserController extends Controller
             'email.required' => 'We need to know your e-mail address!',
             'email.regex' => 'The e-mail must be an academic one!',
             'email.filter' => 'Invalid e-mail address!',
+            'email.email' => 'Invalid e-mail address!',
             'email.unique' => 'Invalid e-mail address!',
 
             'password.required' => 'Your password is required!',
@@ -134,7 +147,34 @@ class UserController extends Controller
                     'g-recaptcha-response.string' => 'Invalid re-captcha',
                     'g-recaptcha-response.recaptcha' => 'Invalid re-captcha',
                 ]);
-            case 'register':
+            case 'register.student':
+            case 'storeStudent':
+                return [
+                    'email.required' => 'We need to know your e-mail address!',
+                    'email.regex' => 'The e-mail must be an academic one!',
+                    'email.email' => 'Invalid e-mail address!',
+                    'email.filter' => 'Invalid e-mail address!',
+                    'email.unique' => 'Invalid e-mail address!',
+
+                    'department.required' => 'The student should be assigned to a Department!',
+                    'department.different' => 'The student should be assigned to a Department!',
+                    'department.max' => 'Invalid Department.',
+                    'department.string' => 'Invalid Department.',
+
+                    'reg_num.required' => 'The student should have a Registration number!',
+                    'reg_num.string' => 'Invalid Registration number.',
+                    'reg_num.regex' => 'Invalid Registration number format! Correct format is: "AB12013"',
+                    'reg_num.max' => 'Invalid Registration number.',
+
+                    'fname.required' => 'The student should have a first name!',
+                    'fname.min' => 'First name should be at least 3 characters!',
+                    'fname.max' => 'First name should be at most 25 characters!',
+
+                    'lname.required' => 'The student should have a last name!',
+                    'lname.min' => 'First name should be at least 3 characters!',
+                    'lname.max' => 'First name should be at most 25 characters!',
+                ];
+            case 'register.user':
             case 'store':
             case 'create':
                 $messages = array_merge($messages, [
@@ -196,6 +236,52 @@ class UserController extends Controller
     }
 
     /**
+     * @method GET
+     * @param Request $request
+     * @param Course $course
+     * @return Response
+     */
+    public function addStudent(Request $request, Course $course)
+    {
+        $title = 'Add Student';
+        $messages = $this->messages('register.student');
+        return response(view('user.addStudent', [
+            'title' => $title,
+            'messages' => $messages,
+            'user' => Auth::user(),
+            'course' => $course,
+        ]), 200, $request->headers->all());
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @method POST
+     * @param \Illuminate\Http\Request $request
+     * @param Course $course
+     * @return void
+     */
+    public function storeStudent(Request $request, Course $course)
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+        if ($validator->fails()) {
+            return redirect()->action('UserController@create', 302)
+                ->withInput($request->input())
+                ->with('title', 'Register')
+                ->with('errors', $validator->getMessageBag());
+        }
+
+        try {
+            $password = random_int(1000, 2000) .
+                substr($request->get('fname'), 0, 3) .
+                substr($request->get('reg_num'), -3);
+        } catch (\Exception $e) {
+            throw abort(500);
+        }
+        $request->merge(['password' => Hash::make($password)]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @method POST
@@ -206,7 +292,6 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-//            $request->session()->flash('error', $validator->getMessageBag()->first());
             return redirect()->action('UserController@create', 302)
                 ->withInput($request->input())
                 ->with('title', 'Register')

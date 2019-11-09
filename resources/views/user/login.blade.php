@@ -34,12 +34,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="remember"
-                           onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
-                        <input type="checkbox" name="remember" id="remember"
-                               {{ old('remember') == '1' ? ' checked' : '' }} tabindex="0">
-                        <span class="ml-4">Remember Me</span>
-                    </label>
+                    @component('includes.checkbox')
+                        @slot('label'){{ 'Remember Me' }}@endslot
+                        @slot('name'){{ 'remember' }}@endslot
+                        @slot('checked'){{ old('remember') == '1' ? ' checked' : '' }}@endslot
+                    @endcomponent
                 </div>
 
                 @if(env('APP_ENV', false) != 'local' || ! env('APP_DEBUG', false))

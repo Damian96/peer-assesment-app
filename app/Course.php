@@ -6,6 +6,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Laravel\Scout\Searchable;
 
 /**
  * Class User
@@ -176,5 +177,20 @@ class Course extends Model
             ->select('*')
             ->where('user_id', $id)
             ->get();
+    }
+
+    /**
+     * @return Course|false
+     */
+    public function copyToCurrentYear()
+    {
+        $clone = $this->refresh()->replicate(['id', 'status']);
+        $clone->ac_year = Carbon::now(config('app.timezone'))->format(config('constants.date.ac_year'));
+        try {
+            $clone->saveOrFail();
+        } catch (\Throwable $e) {
+            return false;
+        }
+        return $clone;
     }
 }

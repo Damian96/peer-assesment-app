@@ -4,6 +4,9 @@
 @import "~jquery-confirm/dist/jquery-confirm.min.css";
 @import "~@curveballerpacks/tablesorter/dst/css/main.css";
 @import "~material-design-icons/iconfont/material-icons.css";
+@import "~jquery-ui/themes/base/core.css";
+@import "~jquery-ui/themes/base/theme.css";
+@import "~jquery-ui/themes/base/datepicker.css";
 
 body {
   min-height: 100vh;
@@ -17,6 +20,10 @@ body {
 form {
   .form-group {
     label {
+      //&.error {
+      //
+      //}
+
       position: relative;
 
       > input[type="checkbox"] {
@@ -58,7 +65,7 @@ table.ts tr.tsTitles {
       border-top: 5px solid transparent;
       border-bottom: 5px solid transparent;
       position: absolute;
-      left: 50%;
+      left: 25%;
       transform: translateX(-50%);
     }
   }
@@ -82,4 +89,9 @@ table.ts tr.tsTitles {
       border-bottom: 5px solid #333;
     }
   }
+}
+
+tr.separator {
+  border-top: 2px dashed #000;
+  border-bottom: 2px dashed #000;
 }

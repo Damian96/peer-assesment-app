@@ -9,7 +9,8 @@
                 @slot('body'){{ session()->get('message')['body'] ?? '' }}@endslot
             @endcomponent
         @endif
-        <h1>{{ $title }}</h1>
+        @yield('breadcrumbs')
+        <h1>{{ $title ?? '' }}</h1>
         @yield('content')
     </section>
 </main>

@@ -53,13 +53,13 @@
         </div>
     @endif
 
-    @if (Auth::user()->isAdmin() || Auth::user()->can('course.create') || (isset($course) && Auth::user()->can('course.edit', ['id' => $course->id])))
+    @if (Auth::user()->isAdmin())
         <div class="form-group">
             <label for="ac_year">Academic Year</label>
             <select id="ac_year" name="ac_year" class="form-control{{ $errors->has('ac_year') ? ' is-invalid' : '' }}">
                 @foreach(range(intval(date('Y')), config('constants.date.start'), -1) as $year)
                     <option
-                        value="{{ $year }}"{{ $year == old('ac_year', isset($course) ? $course->ac_year_int : intval(date('Y'))) ? ' selected' : null }}>{{ $year }}</option>
+                        value="{{ $year . '-' . ($year+1) }}"{{ $year == old('ac_year', isset($course) ? $course->ac_year_int : intval(date('Y'))) ? ' selected' : null }}>{{ $year }}</option>
                 @endforeach
             </select>
 
@@ -69,6 +69,8 @@
             </span>
             @endif
         </div>
+    @elseif (Auth::user()->can('course.create') || (isset($course) && Auth::user()->can('course.edit', ['id' => $course->id])))
+        <input type="hidden" class="hidden" value="{{ date('Y') }}" width="0" height="0">
     @endif
 
     <div class="form-group">
@@ -90,4 +92,13 @@
         <button type="submit" class="btn btn-block btn-primary" role="button" title="{{ $button['title'] }}"
                 aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
     </div>
+
+    @if (isset($course) && Auth::user()->can('course.edit', ['course' =>  $course]))
+        <div class="form-group">
+            <button type="submit" class="btn btn-block btn-outline-info" role="button" name="copy" id="copy"
+                    title="Copy to current Academic Year"
+                    aria-roledescription="Copy to current Academic Year" tabindex="0">Copy
+            </button>
+        </div>
+    @endif
 </form>

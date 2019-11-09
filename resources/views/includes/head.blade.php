@@ -18,7 +18,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @if (Route::current()->named('login') || Route::current()->named('register'))
+    @if (Route::current() && (Route::current()->named('login') || Route::current()->named('register')))
     {!! htmlScriptTagJsApi([
         'action' => 'homepage',
     ]) !!}

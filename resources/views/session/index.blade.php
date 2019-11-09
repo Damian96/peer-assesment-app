@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render('session.index', $sessions, $course) }}
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12">
@@ -32,6 +36,10 @@
                 </table>
             @else
                 <h2>You do not have any Sessions yet!</h2>
+                <p>
+                    Maybe <a href="{{ url('/sessions/create/' . $course->id) }}" title="Add Session"
+                             aria-roledescription="Add Session"> add a new Session</a>?
+                </p>
             @endif
         </div>
     </div>

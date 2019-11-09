@@ -74,7 +74,7 @@ class CourseController extends Controller
         $rules = [
             'title' => 'required|string|min:5|max:50',
             'code' => 'required|string|min:6|max:10',
-            'description' => 'string|max:150'
+            'description' => 'nullable|string|max:150'
         ];
         switch ($action) {
             case 'create':
@@ -90,13 +90,11 @@ class CourseController extends Controller
                                     ->orWhere('admin', '=', '1');
                             }),
                         ],
-                        'ac_year' => 'sometimes|dateFormat:Y',
-//                        'instructor' => 'required|int|exists:users,id',
-//                        'instructor' => 'required|int|exists:users,id',
+                        'ac_year' => 'sometimes|dateFormat:Y|after:' . config('constants.date.start'),
                     ]);
                 } elseif (Auth::user()->isInstructor()) {
                     return $rules;
-                }
+                } else break;
             case 'edit':
                 break;
             default:
@@ -175,7 +173,7 @@ class CourseController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        $request->merge(['user_id' => intval($request->get('instructor'))]);
+        $request->merge(['user_id' => intval($request->get('instructor', Auth::user()->id))]);
         $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year', date('Y'))), 1, 1, config('app.timezone'))->format(config('constants.date.stamp'))]);
         $course = new Course($request->all());
         if ($course->save()) {
@@ -203,14 +201,23 @@ class CourseController extends Controller
     public function show(Request $request, Course $course)
     {
         $title = $course->title;
-        return response(view('course.show', compact('title', 'course')), 200, $request->headers->all());
+
+        $similars = Course::whereCode($course->code)
+            ->whereNotIn('id', [$course->id])
+            ->getModels();
+//        $similars = DB::table('courses')
+//            ->where('code', $course->code)
+//            ->whereNotIn('id', [$course->id])
+//            ->get();
+
+        return response(view('course.show', compact('title', 'course', 'similars')), 200, $request->headers->all());
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
      * @param Request $request
+     * @param Course $course
      * @return void
      */
     public function edit(Request $request, Course $course)
@@ -230,6 +237,20 @@ class CourseController extends Controller
     public function update(Request $request, int $id)
     {
         $title = 'Edit Course';
+
+        try {
+            $course = Course::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            throw abort(404);
+        }
+
+        if ($request->has('copy')) {
+            $clone = $course->copyToCurrentYear();
+            return redirect()->action('CourseController@show', [$clone], 302)
+                ->withInput($request->input())
+                ->with('title', $title);
+        }
+
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
             return redirect()->action('CourseController@edit', [$id], 302)
@@ -238,18 +259,12 @@ class CourseController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        try {
-            $course = Course::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw abort(404);
-        }
-
         if (Auth::user()->isAdmin()) { # administrator
             $request->merge(['user_id' => intval($request->get('instructor', $course->user_id))]);
         } elseif (Auth::user()->can('course.edit', ['id' => $id])) { # instructor-owner
             $request->merge(['user_id' => $course->user_id]);
         }
-        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year')), 1, 1, config('app.timezone'))->format(config('constants.date.stamp'))]);
+        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year', date('Y'))), 1, 1, config('app.timezone'))->format(config('constants.date.stamp'))]);
 
         if ($course->fill($request->all())->save()) {
             $request->session()->flash('message', [
