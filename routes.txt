@@ -1,35 +1,38 @@
-+--------+----------+----------------------------------------+-----------------+---------------------------------------------------------------+----------------+
-| Domain | Method   | URI                                    | Name            | Action                                                        | Middleware     |
-+--------+----------+----------------------------------------+-----------------+---------------------------------------------------------------+----------------+
-|        | GET|HEAD | /                                      | user.home       | App\Http\Controllers\UserController@index                     | web,guest,role |
-|        | GET|HEAD | __clockwork                            |                 | Clockwork\Support\Laravel\ClockworkController@webRedirect     |                |
-|        | GET|HEAD | __clockwork/app                        |                 | Clockwork\Support\Laravel\ClockworkController@webIndex        |                |
-|        | POST     | __clockwork/auth                       |                 | Clockwork\Support\Laravel\ClockworkController@authenticate    |                |
-|        | GET|HEAD | __clockwork/{id}/extended              |                 | Clockwork\Support\Laravel\ClockworkController@getExtendedData |                |
-|        | GET|HEAD | __clockwork/{id}/{direction?}/{count?} |                 | Clockwork\Support\Laravel\ClockworkController@getData         |                |
-|        | GET|HEAD | __clockwork/{path}                     |                 | Clockwork\Support\Laravel\ClockworkController@webAsset        |                |
-|        | GET|HEAD | api/user                               |                 | Closure                                                       | api,auth:api   |
-|        | POST     | auth                                   | user.auth       | App\Http\Controllers\UserController@auth                      | web            |
-|        | GET|HEAD | courses                                | course.index    | App\Http\Controllers\CourseController@index                   | web,guest,role |
-|        | GET|HEAD | courses/create                         | course.create   | App\Http\Controllers\CourseController@create                  | web,guest,role |
-|        | POST     | courses/store                          | user.store      | App\Http\Controllers\CourseController@store                   | web,guest,role |
-|        | GET|HEAD | courses/{cid}/sessions                 | session.index   | App\Http\Controllers\SessionController@index                  | web,guest,role |
-|        | GET|HEAD | courses/{course}/edit                  | course.edit     | App\Http\Controllers\CourseController@edit                    | web,guest,role |
-|        | GET|HEAD | courses/{course}/view                  | course.view     | App\Http\Controllers\CourseController@show                    | web,guest,role |
-|        | PUT      | courses/{id}                           | course.update   | App\Http\Controllers\CourseController@update                  | web,guest,role |
-|        | GET|HEAD | home                                   | user.home       | App\Http\Controllers\UserController@index                     | web,guest,role |
-|        | GET|HEAD | index                                  | user.home       | App\Http\Controllers\UserController@index                     | web,guest,role |
-|        | GET|HEAD | login                                  | user.login      | App\Http\Controllers\UserController@login                     | web,guest      |
-|        | GET|HEAD | logout                                 | user.logout     | App\Http\Controllers\UserController@logout                    | web            |
-|        | GET|HEAD | password/forgot                        | user.forgot     | App\Http\Controllers\UserController@forgot                    | web            |
-|        | GET|HEAD | password/reset                         | user.reset      | App\Http\Controllers\UserController@reset                     | web            |
-|        | POST     | password/send                          | user.forgotSend | App\Http\Controllers\UserController@forgotSend                | web            |
-|        | GET|HEAD | profile                                | user.profile    | App\Http\Controllers\UserController@profile                   | web,guest,role |
-|        | GET|HEAD | register                               | user.register   | App\Http\Controllers\UserController@create                    | web,guest,role |
-|        | GET|HEAD | sessions/create                        | session.create  | App\Http\Controllers\SessionController@create                 | web,guest,role |
-|        | GET|HEAD | sessions/{id}/view                     | session.view    | App\Http\Controllers\SessionController@show                   | web,guest,role |
-|        | POST     | store                                  | user.store      | App\Http\Controllers\UserController@store                     | web,guest,role |
-|        | PUT      | update                                 | user.update     | App\Http\Controllers\UserController@update                    | web            |
-|        | GET|HEAD | verify                                 | user.verify     | App\Http\Controllers\UserController@verify                    | web,role       |
-|        | GET|HEAD | {user}/show                            | user.show       | App\Http\Controllers\UserController@show                      | web,guest,role |
-+--------+----------+----------------------------------------+-----------------+---------------------------------------------------------------+----------------+
++--------+----------+----------------------------------------+--------------------+---------------------------------------------------------------+----------------+
+| Domain | Method   | URI                                    | Name               | Action                                                        | Middleware     |
++--------+----------+----------------------------------------+--------------------+---------------------------------------------------------------+----------------+
+|        | GET|HEAD | /                                      | user.home          | App\Http\Controllers\UserController@index                     | web,guest,role |
+|        | GET|HEAD | __clockwork                            |                    | Clockwork\Support\Laravel\ClockworkController@webRedirect     |                |
+|        | GET|HEAD | __clockwork/app                        |                    | Clockwork\Support\Laravel\ClockworkController@webIndex        |                |
+|        | POST     | __clockwork/auth                       |                    | Clockwork\Support\Laravel\ClockworkController@authenticate    |                |
+|        | GET|HEAD | __clockwork/{id}/extended              |                    | Clockwork\Support\Laravel\ClockworkController@getExtendedData |                |
+|        | GET|HEAD | __clockwork/{id}/{direction?}/{count?} |                    | Clockwork\Support\Laravel\ClockworkController@getData         |                |
+|        | GET|HEAD | __clockwork/{path}                     |                    | Clockwork\Support\Laravel\ClockworkController@webAsset        |                |
+|        | GET|HEAD | api/user                               |                    | Closure                                                       | api,auth:api   |
+|        | POST     | auth                                   | user.auth          | App\Http\Controllers\UserController@auth                      | web            |
+|        | GET|HEAD | courses                                | course.index       | App\Http\Controllers\CourseController@index                   | web,guest,role |
+|        | GET|HEAD | courses/create                         | course.create      | App\Http\Controllers\CourseController@create                  | web,guest,role |
+|        | POST     | courses/store                          | course.store       | App\Http\Controllers\CourseController@store                   | web,guest,role |
+|        | GET|HEAD | courses/{cid}/sessions                 | session.index      | App\Http\Controllers\SessionController@index                  | web,guest,role |
+|        | GET|HEAD | courses/{course}/add-student           | course.add-student | App\Http\Controllers\UserController@addStudent                | web,guest      |
+|        | GET|HEAD | courses/{course}/edit                  | course.edit        | App\Http\Controllers\CourseController@edit                    | web,guest,role |
+|        | POST     | courses/{course}/store-student         | user.store-student | App\Http\Controllers\UserController@storeStudent              | web,guest      |
+|        | GET|HEAD | courses/{course}/view                  | course.view        | App\Http\Controllers\CourseController@show                    | web,guest,role |
+|        | PUT      | courses/{id}                           | course.update      | App\Http\Controllers\CourseController@update                  | web,guest,role |
+|        | GET|HEAD | home                                   | user.home          | App\Http\Controllers\UserController@index                     | web,guest,role |
+|        | GET|HEAD | index                                  | user.home          | App\Http\Controllers\UserController@index                     | web,guest,role |
+|        | GET|HEAD | login                                  | user.login         | App\Http\Controllers\UserController@login                     | web,guest      |
+|        | GET|HEAD | logout                                 | user.logout        | App\Http\Controllers\UserController@logout                    | web            |
+|        | GET|HEAD | password/forgot                        | user.forgot        | App\Http\Controllers\UserController@forgot                    | web            |
+|        | GET|HEAD | password/reset                         | user.reset         | App\Http\Controllers\UserController@reset                     | web            |
+|        | POST     | password/send                          | user.forgotSend    | App\Http\Controllers\UserController@forgotSend                | web            |
+|        | GET|HEAD | profile                                | user.profile       | App\Http\Controllers\UserController@profile                   | web,guest,role |
+|        | GET|HEAD | register                               | user.register      | App\Http\Controllers\UserController@create                    | web,guest      |
+|        | GET|HEAD | sessions/create/{course?}              | session.create     | App\Http\Controllers\SessionController@create                 | web,guest,role |
+|        | POST     | sessions/store                         | session.store      | App\Http\Controllers\SessionController@store                  | web,guest,role |
+|        | GET|HEAD | sessions/{id}/view                     | session.view       | App\Http\Controllers\SessionController@show                   | web,guest,role |
+|        | POST     | store                                  | user.store         | App\Http\Controllers\UserController@store                     | web,guest      |
+|        | PUT      | update                                 | user.update        | App\Http\Controllers\UserController@update                    | web            |
+|        | GET|HEAD | verify                                 | user.verify        | App\Http\Controllers\UserController@verify                    | web,role       |
+|        | GET|HEAD | {user}/show                            | user.show          | App\Http\Controllers\UserController@show                      | web,guest,role |
++--------+----------+----------------------------------------+--------------------+---------------------------------------------------------------+----------------+
