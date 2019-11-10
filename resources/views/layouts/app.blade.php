@@ -10,7 +10,9 @@
             @endcomponent
         @endif
         @yield('breadcrumbs')
-        <h1>{{ $title ?? '' }}</h1>
+        @if (isset($title))
+            <h1>{{ $title ?? '' }}</h1>
+        @endif
         @yield('content')
     </section>
 </main>

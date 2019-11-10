@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Course;
+use App\StudentCourse;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -80,17 +81,25 @@ class UserController extends Controller
             case 'storeStudent':
             case 'register.student':
                 return [
-                    'fname' => 'required|string|min:3|max:25',
-                    'lname' => 'required|string|min:3|max:25',
-                    'department' => 'required|string|max:5|different:admin',
-                    'reg_num' => 'required|string|regex:/^@[A-Z]{2}[0-9]{4}$/im|max:6',
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email',
+                    '_method' => 'required|string|in:POST',
+
+                    'csv' => 'required_if:form,import-students|string',
+
+                    'studentid' => 'required_if:form,select-student|different:---|numeric|exists:users,id',
+
+                    'email' => 'required_if:form,add-student|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email',
+                    'fname' => 'required_if:form,add-student|string|min:3|max:25',
+                    'lname' => 'required_if:form,add-student|string|min:3|max:25',
+                    'department' => 'required_if:form,add-student|string|max:5|different:admin',
+                    'reg_num' => 'required_if:form,add-student|string|regex:/^@[A-Z]{2}[0-9]{5}$/im',
                 ];
             case 'register.user':
             case 'register':
             case 'create':
             case 'store':
                 return [
+                    '_method' => 'required|string|in:POST',
+
                     'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users',
                     'password' => 'required|string|min:3|max:50',
                     'fname' => 'required|string|min:3|max:25',
@@ -150,27 +159,31 @@ class UserController extends Controller
             case 'register.student':
             case 'storeStudent':
                 return [
-                    'email.required' => 'We need to know your e-mail address!',
+                    'studentid.required_if' => 'The student\'s id is required!',
+                    'studentid.different' => 'The student\'s id is required!',
+                    'studentid.numeric' => 'Invalid student!',
+                    'studentid.exists' => 'Invalid student!',
+
+                    'email.required_if' => 'We need to know your e-mail address!',
                     'email.regex' => 'The e-mail must be an academic one!',
                     'email.email' => 'Invalid e-mail address!',
                     'email.filter' => 'Invalid e-mail address!',
-                    'email.unique' => 'Invalid e-mail address!',
+                    'email.unique' => 'Student already exists!',
 
-                    'department.required' => 'The student should be assigned to a Department!',
+                    'department.required_if' => 'The student should be assigned to a Department!',
                     'department.different' => 'The student should be assigned to a Department!',
                     'department.max' => 'Invalid Department.',
                     'department.string' => 'Invalid Department.',
 
-                    'reg_num.required' => 'The student should have a Registration number!',
+                    'reg_num.required_if' => 'The student should have a Registration number!',
                     'reg_num.string' => 'Invalid Registration number.',
-                    'reg_num.regex' => 'Invalid Registration number format! Correct format is: "AB12013"',
-                    'reg_num.max' => 'Invalid Registration number.',
+                    'reg_num.regex' => 'Invalid Registration number format!',
 
-                    'fname.required' => 'The student should have a first name!',
+                    'fname.required_if' => 'The student should have a first name!',
                     'fname.min' => 'First name should be at least 3 characters!',
                     'fname.max' => 'First name should be at most 25 characters!',
 
-                    'lname.required' => 'The student should have a last name!',
+                    'lname.required_if' => 'The student should have a last name!',
                     'lname.min' => 'First name should be at least 3 characters!',
                     'lname.max' => 'First name should be at most 25 characters!',
                 ];
@@ -243,18 +256,21 @@ class UserController extends Controller
      */
     public function addStudent(Request $request, Course $course)
     {
-        $title = 'Add Student';
+        $title = 'Add Students to ' . $course->code;
         $messages = $this->messages('register.student');
         return response(view('user.addStudent', [
             'title' => $title,
             'messages' => $messages,
             'user' => Auth::user(),
             'course' => $course,
+            'students' => User::getAllStudents()->filter(function ($student) use ($course) {
+                return !$student->isRegistered($course->id);
+            }),
         ]), 200, $request->headers->all());
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created student / user resource in storage, or register an existing student to a course.
      *
      * @method POST
      * @param \Illuminate\Http\Request $request
@@ -265,20 +281,66 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-            return redirect()->action('UserController@create', 302)
+            return redirect()->action('UserController@addStudent', [$course], 302)
                 ->withInput($request->input())
-                ->with('title', 'Register')
+                ->with('title', 'Add Student')
                 ->with('errors', $validator->getMessageBag());
         }
 
+        if ($request->get('form') == 'add-student') {
+            try {
+                $password = random_int(1000, 2000) .
+                    substr($request->get('fname'), 0, 3) .
+                    substr($request->get('reg_num'), -3);
+            } catch (\Exception $e) {
+                throw abort(500);
+            }
+            $request->merge(['password' => Hash::make($password)]);
+            $request->merge(['instructor' => '0', 'admin' => '0']);
+            $result = new User($request->all());
+            $onAfterSave = function () use ($result, $course) {
+                $result->sendStudentInvitationEmail($course);
+            };
+            $message = [
+                'level' => 'success',
+                'heading' => 'Student successfully created.',
+                'body' => 'We have sent an e-mail to ' . $result->email . ', inviting him to your course.',
+            ];
+        } elseif ($request->get('form') == 'select-student') {
+            try {
+                $user = User::whereId(intval($request->get('studentid', 0)))
+                    ->firstOrFail();
+            } catch (ModelNotFoundException $e) {
+                throw abort(404); # hacking-attempt
+            }
+            $exists = StudentCourse::whereUserId($user->id)
+                ->where('course_id', '=', $course->id)
+                ->exists();
+            if ($exists) {
+                $request->session()->flash('message', [
+                    'level' => 'warning',
+                    'heading' => 'Student ' . $user->name . ', is already registered to ' . $course->code . '!',
+                ]);
+            }
+            $result = new StudentCourse(['user_id' => $user->id, 'course_id' => $course->id]);
+            $onAfterSave = function () use ($user, $course) {
+                $user->sendEnrollmentEmail($course);
+            };
+            $message = [
+                'level' => 'success',
+                'heading' => 'Student successfully added to ' . $course->code . '!',
+                'body' => 'We have sent an e-mail to ' . $user->email . ', inviting him to your course.',
+            ];
+        } else throw abort(404); // fallback
+
         try {
-            $password = random_int(1000, 2000) .
-                substr($request->get('fname'), 0, 3) .
-                substr($request->get('reg_num'), -3);
-        } catch (\Exception $e) {
-            throw abort(500);
+            $result->saveOrFail();
+            call_user_func($onAfterSave);
+            $request->session()->flash('message', $message);
+            return redirect()->action('CourseController@show', [$course], 302, $request->headers->all());
+        } catch (\Throwable $e) {
+            throw abort(500, $e->getMessage()); // fallback
         }
-        $request->merge(['password' => Hash::make($password)]);
     }
 
     /**

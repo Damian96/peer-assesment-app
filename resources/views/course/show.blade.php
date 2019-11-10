@@ -77,7 +77,7 @@
                             @endif
                             {{--                                <a href="{{ url('/courses/' . $course->id . '/delete') }}" class="material-icons">delete_forever</a>--}}
                         </td>
-                </tr>
+                    </tr>
                 @endforeach
                 </tbody>
                 @if (Auth::user()->isAdmin())
@@ -94,12 +94,12 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <h3>Add Students</h3>
-            <p>
-                <a href="{{ url('/courses/' . $course->id . '/add-student') }}" title="Add a single user"
-                   aria-roledescription="Add a single user">Add a single User</a> or
-                <a href="#" title="Import a CSV" aria-roledescription="Import a CSV">Import a CSV</a>
-            </p>
+            <a href="{{ url('/courses/' . $course->id . '/add-student') }}"
+               class="btn btn-md btn-primary"
+               title="Add Students to {{ $course->code }}"
+               aria-roledescription="Add Students to {{ $course->code }}">
+                Add Students to {{ $course->code }}
+            </a>
         </div>
     </div>
 @endsection

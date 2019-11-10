@@ -3,13 +3,9 @@
 
     {{ $description }}
 
-    @component('mail::button', ['url' => $url])
-        {{ config('auth.verification.strings.action') }}
-    @endcomponent
+    @component('mail::button', ['url' => $url]){{ $action }}@endcomponent
 
-    @component('mail::panel')
-        {{ $notice  }}
-    @endcomponent
+    @component('mail::panel'){{ $notice  }}@endcomponent
 
     Thanks,<br>
     {{ config('app.name') }}

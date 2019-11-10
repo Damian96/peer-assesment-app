@@ -4,7 +4,7 @@
 namespace App\Notifications;
 
 
-use App\Models\Course;
+use App\Course;
 use Closure;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Support\Renderable;
@@ -67,6 +67,7 @@ class StudentInviteEmail extends Mailable implements Renderable
             [
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
+                'action' => 'student-invite',
             ]
         );
     }
@@ -80,11 +81,10 @@ class StudentInviteEmail extends Mailable implements Renderable
         if (static::$toMailCallback) {
             return call_user_func(static::$toMailCallback, $this->notifiable, $verificationUrl);
         }
-        $this->notifiable->getEmailForVerification();
         $parameters = [
             'url' => $verificationUrl,
             'heading' => 'You are invited to ' . config('app.name'),
-            'description' => 'You are invited to ' . $this->course->title,
+            'description' => 'You have been registered to ' . $this->course->title . ' of Prof. ' . $this->course->instructor_name,
             'action' => 'Enroll to ' . $this->course->code,
             'notice' => 'If you are already enrolled in the course, you can skip this email.',
             'course' => $this->course,

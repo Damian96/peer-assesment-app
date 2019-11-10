@@ -4,6 +4,7 @@ namespace App;
 
 use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
+use App\Notifications\StudentInviteEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
 use Illuminate\Contracts\Auth\Access\Authorizable;
@@ -268,7 +269,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @param int $id the course's ID \App\Course\::$id
      * @return bool
      */
-    private function isRegistered(int $id)
+    public function isRegistered(int $id)
     {
         return $this->studentCourses()->get()->toBase()->contains('id', '=', $id);
     }
@@ -291,6 +292,18 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public static function getUserByEmail($email)
     {
         return self::where('email', $email)->first()->refresh();
+    }
+
+    /**
+     * Retrieve all verified students
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getAllStudents()
+    {
+        return self::whereInstructor('0')
+            ->where('admin', '=', '0')
+            ->whereNotNull('email_verified_at')
+            ->get();
     }
 
     /**
@@ -539,5 +552,29 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             default:
                 return false;
         }
+    }
+
+    /**
+     * Send an invitational email to the newly created student / user, regarding the specified course.
+     * @param Course $course
+     * @return void
+     */
+    public function sendStudentInvitationEmail(Course $course)
+    {
+        clock()->info("StudentInviteEmail sent to {$this->fullname}");
+        $mailer = new StudentInviteEmail($this, $course);
+        Mail::to($this->email)->send($mailer);
+    }
+
+    /**
+     * Send an enrollment email to the current user, regarding the specified course.
+     * @param Course $course
+     * @return void
+     */
+    public function sendEnrollmentEmail(Course $course)
+    {
+        clock()->info("StudentEnrollEmail sent to {$this->fullname}");
+//        $mailer = new StudentEnrollEmail($this, $course);
+//        Mail::to($this->email)->send($mailer);
     }
 }

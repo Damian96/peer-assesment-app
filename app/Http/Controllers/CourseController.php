@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Course;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -205,12 +206,13 @@ class CourseController extends Controller
         $similars = Course::whereCode($course->code)
             ->whereNotIn('id', [$course->id])
             ->getModels();
-//        $similars = DB::table('courses')
-//            ->where('code', $course->code)
-//            ->whereNotIn('id', [$course->id])
-//            ->get();
 
-        return response(view('course.show', compact('title', 'course', 'similars')), 200, $request->headers->all());
+        $students = User::whereInstructor('0')
+            ->where('admin', '=', '0')
+            ->whereNotNull('email_verified_at')
+            ->getModels();
+
+        return response(view('course.show', compact('title', 'course', 'similars', 'students')), 200, $request->headers->all());
     }
 
     /**
