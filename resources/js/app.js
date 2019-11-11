@@ -5,11 +5,11 @@ import $ from 'jquery';
 import 'jquery-ui/ui/widgets/datepicker.js'; //add as many widget as you may need
 
 window.$ = window.jQuery = $;
+window.Papa = require('papaparse/papaparse');
+
 require('popper.js');
 require('bootstrap');
-require('jquery-confirm');
-require('@curveballerpacks/tablesorter');
-
-require('./jquery.parse.min.js');
 
 require('jquery-validation/dist/jquery.validate');
+require('@curveballerpacks/tablesorter');
+require('jquery-confirm');

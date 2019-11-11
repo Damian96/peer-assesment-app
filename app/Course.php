@@ -168,6 +168,15 @@ class Course extends Model
     }
 
     /**
+     * Retrieve the courses that the users is registered on
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function students()
+    {
+        return $this->belongsToMany('\App\User', 'student_course', 'course_id', 'user_id');
+    }
+
+    /**
      * @param int $id
      * @return \Illuminate\Support\Collection
      */

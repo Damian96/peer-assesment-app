@@ -30,6 +30,7 @@
       "@curveballerpacks/tablesorter": "^1.0.0",
         "@myspace-nu/jquery.fancytable": "^1.0.9",
       "jquery-confirm": "^3.3.4",
-      "jquery-validation": "^1.19.1"
+      "jquery-validation": "^1.19.1",
+      "papaparse": "^5.1.0"
     }
 }

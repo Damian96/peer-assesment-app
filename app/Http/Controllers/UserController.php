@@ -91,7 +91,7 @@ class UserController extends Controller
                     'fname' => 'required_if:form,add-student|string|min:3|max:25',
                     'lname' => 'required_if:form,add-student|string|min:3|max:25',
                     'department' => 'required_if:form,add-student|string|max:5|different:admin',
-                    'reg_num' => 'required_if:form,add-student|string|regex:/^@[A-Z]{2}[0-9]{5}$/im',
+                    'reg_num' => 'required_if:form,add-student|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
                 ];
             case 'register.user':
             case 'register':
@@ -159,8 +159,8 @@ class UserController extends Controller
             case 'register.student':
             case 'storeStudent':
                 return [
-                    'studentid.required_if' => 'The student\'s id is required!',
-                    'studentid.different' => 'The student\'s id is required!',
+                    'studentid.required_if' => "The student's id is required!",
+                    'studentid.different' => "The student's id is required!",
                     'studentid.numeric' => 'Invalid student!',
                     'studentid.exists' => 'Invalid student!',
 
@@ -182,10 +182,12 @@ class UserController extends Controller
                     'fname.required_if' => 'The student should have a first name!',
                     'fname.min' => 'First name should be at least 3 characters!',
                     'fname.max' => 'First name should be at most 25 characters!',
+                    'fname.regex' => 'Invalid first name!',
 
                     'lname.required_if' => 'The student should have a last name!',
                     'lname.min' => 'First name should be at least 3 characters!',
                     'lname.max' => 'First name should be at most 25 characters!',
+                    'lname.regex' => 'Invalid last name!',
                 ];
             case 'register.user':
             case 'store':
