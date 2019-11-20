@@ -93,7 +93,7 @@
                 aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
     </div>
 
-    @if (isset($course) && Auth::user()->can('course.edit', ['course' =>  $course]))
+    @if (isset($course) && ! $course->copied() && Auth::user()->can('course.edit', ['course' =>  $course]))
         <div class="form-group">
             <button type="submit" class="btn btn-block btn-outline-info" role="button" name="copy" id="copy"
                     title="Copy to current Academic Year"

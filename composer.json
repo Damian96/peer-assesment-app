@@ -16,7 +16,9 @@
         "itsgoingd/clockwork": "^4.0",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
-        "magyarjeti/laravel-lipsum": "dev-master"
+      "magyarjeti/laravel-lipsum": "dev-master",
+      "ext-json": "*",
+      "ext-xdebug": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.6",

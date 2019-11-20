@@ -8,29 +8,55 @@
 // Courses
 Breadcrumbs::for('courses', function ($trail) {
     $trail->push('My Courses', route('course.index'));
+
+    $crumbs = session()->get('crumbs');
+    $current = Route::current()->getName();
+    if ($current == 'course.index') # Restart $crumbs
+        session()->put('crumbs', [$current]);
+    elseif ($current == 'session.index') # Restart $crumbs
+        session()->put('crumbs', ['course.index', 'course.view', $current]);
+    elseif (last($crumbs) != $current) # Push to $current
+        session()->push('crumbs', $current);
 });
 
 // Courses > Show [Course]
 Breadcrumbs::for('course.show', function ($trail, $course) {
+    $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
+
     $trail->push('Course ' . $course->code, route('course.view', $course));
 });
 
 // Courses > Show [Course] > Add Student
 Breadcrumbs::for('course.add-student', function ($trail, $user, $course) {
-    $trail->parent('course.show', $course);
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    if (last($crumbs) == 'course.view' || $crumbs[count($crumbs) - 2] == 'course.view')
+        $trail->push('Course ' . $course->code, route('course.view', $course));
+
     $trail->push('Add Student to ' . $course->code, route('course.add-student', $course));
 });
 
-// Courses > Edit [Course]
+// Courses > ? > Edit [Course]
 Breadcrumbs::for('course.edit', function ($trail, $course) {
+    $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
+
+    if (last($crumbs) == 'course.view' || $crumbs[count($crumbs) - 2] == 'course.view')
+        $trail->push('Course ' . $course->code, route('course.view', $course));
+
     $trail->push('Edit Course ' . $course->code, route('course.edit', $course));
 });
 
-// Courses > [Sessions]
+// Courses > ? > Sessions of [CCPX]
 Breadcrumbs::for('session.index', function ($trail, $sessions, $course) {
-    $trail->parent('course.show', $course);
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    if (last($crumbs) == 'course.view' || $crumbs[count($crumbs) - 2] == 'course.view')
+        $trail->push('Course ' . $course->code, route('course.view', $course));
+
     $trail->push('Sessions', route('session.index', $sessions, $course));
 });
 

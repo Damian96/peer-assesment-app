@@ -191,6 +191,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 if ($this->isInstructor()) return 'Instructor';
                 elseif ($this->admin == 1) return 'Admin';
                 else return 'Student';
+            case 'crumbs':
+                return empty($this->crumbs) ? [] : $this->crumbs;
             default:
                 return parent::__get($key);
         }
@@ -576,5 +578,19 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         clock()->info("StudentEnrollEmail sent to {$this->fullname}");
 //        $mailer = new StudentEnrollEmail($this, $course);
 //        Mail::to($this->email)->send($mailer);
+    }
+
+    /**
+     * @return string
+     */
+    public function generateStudentPassword()
+    {
+        try {
+            return Hash::make(random_int(1000, 2000) .
+                substr($this->fname, 0, 3) .
+                substr($this->reg_num, -3));
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

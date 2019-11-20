@@ -11,6 +11,8 @@
 
                 <input type="hidden" class="hidden" name="form" value="import-students" width="0" height="0">
 
+                <input type="hidden" class="hidden" name="csv-data" id="csv-data" value="none" width="0" height="0">
+
                 <legend>Import from <i>.csv</i></legend>
 
                 <div class="form-group">
@@ -20,7 +22,7 @@
                                accept="text/csv">
                     </label>
 
-                    <span class="invalid-feedback">
+                    <span class="invalid-feedback {{ $errors->has('csv') ? 'd-inline' : '' }}">
                     @if ($errors->has('csv'))
                             <strong>{{ $errors->first('csv') }}</strong>
                         @endif
@@ -374,7 +376,20 @@
                         preview: 5,
                         skipEmptyLines: true,
                         transformHeader: function (head) {
-                            return head.toLowerCase().trim().replace(/\s/g, '_');
+                            head = head.toLowerCase().trim();
+                            switch (head) {
+                                case 'first name':
+                                    return 'fname';
+                                case 'last name':
+                                    return 'lname';
+                                case 'reg num':
+                                    return 'reg_num';
+                                case 'email':
+                                case 'e-mail':
+                                    return 'email';
+                                default:
+                                    return head.replace(/\s/g, '_');
+                            }
                         },
                         transform: function (value) {
                             return value.trim();
@@ -382,7 +397,13 @@
                         complete: function (e, r, results) {
                             // console.debug('done:r', r);
                             results = r;
-                            // console.debug('done:results', results);
+                            console.debug('done:results', results);
+                            if (results.errors.length > 0) {
+                                $('#csv-data').val('');
+                                console.error(results.errors[0]);
+                            } else {
+                                $('#csv-data').val(JSON.stringify(results.data));
+                            }
                         }.bind(this, results)
                     });
                 }.bind(this, results));

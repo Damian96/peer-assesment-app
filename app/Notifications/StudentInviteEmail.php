@@ -67,7 +67,7 @@ class StudentInviteEmail extends Mailable implements Renderable
             [
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
-                'action' => 'student-invite',
+                'action' => 'student',
             ]
         );
     }
@@ -84,11 +84,9 @@ class StudentInviteEmail extends Mailable implements Renderable
         $parameters = [
             'url' => $verificationUrl,
             'heading' => 'You are invited to ' . config('app.name'),
-            'description' => 'You have been registered to ' . $this->course->title . ' of Prof. ' . $this->course->instructor_name,
-            'action' => 'Enroll to ' . $this->course->code,
-            'notice' => 'If you are already enrolled in the course, you can skip this email.',
-            'course' => $this->course,
-            'user' => $this->notifiable
+            'description' => sprintf("You have been registered to '%s'", $this->course->title),
+            'action' => sprintf("Enroll to %s", $this->course->code),
+            'user' => $this->notifiable,
         ];
         return $this->from(Config::get('mail.from.address'), Config::get('mail.from.name'))
             ->subject($parameters['heading'])

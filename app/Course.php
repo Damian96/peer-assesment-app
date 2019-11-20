@@ -17,6 +17,7 @@ use Laravel\Scout\Searchable;
  * @property string $title
  * @property string $code
  * @property string $description
+ * @property array $ac_year_arr
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
@@ -141,7 +142,27 @@ class Course extends Model
             case 'ac_year_stamp':
                 return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format(config('constants.date.stamp'));
             case 'ac_year_full':
-                return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format('Y');
+                return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format(config('constants.date.full'));
+            case 'ac_year_pair':
+                $carbon = Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'));
+                if ($carbon->month <= 5) {
+                    return ($carbon->year - 1) . '-' . substr($carbon->year, -2);
+                } else {
+                    return $carbon->year . '-' . substr($carbon->year + 1, -2);
+                }
+            case 'ac_year_arr':
+                $carbon = Carbon::now(config('app.timezone'));
+                if ($carbon->month <= 5) { // Spring Semester
+                    return [
+                        Carbon::create($carbon->year - 1, 10)->format(config('constants.date.stamp')),
+                        Carbon::create($carbon->year, 5)->format(config('constants.date.stamp')),
+                    ];
+                } else { // Fall Semester
+                    return [
+                        Carbon::create($carbon->year, 10)->format(config('constants.date.stamp')),
+                        Carbon::create($carbon->year + 1, 5)->format(config('constants.date.stamp')),
+                    ];
+                }
             case 'department':
             case 'department_title':
             default:
@@ -201,5 +222,18 @@ class Course extends Model
             return false;
         }
         return $clone;
+    }
+
+    /**
+     * Returns whether the course has been already copied to the current academic year
+     * @return bool
+     */
+    public function copied()
+    {
+        return DB::table($this->table)
+            ->where('code', '=', $this->code)
+            ->where('status', '=', '1')
+            ->whereBetween('ac_year', $this->ac_year_arr)
+            ->exists();
     }
 }
