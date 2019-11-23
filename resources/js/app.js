@@ -2,7 +2,10 @@ require('./bootstrap');
 
 // Bootstrap 4.0
 import $ from 'jquery';
-import 'jquery-ui/ui/widgets/datepicker.js'; //add as many widget as you may need
+// jQuery-UI
+import 'jquery-ui/ui/widgets/datepicker.js';
+import 'webpack-jquery-ui/autocomplete.js';
+import 'webpack-jquery-ui/selectmenu.js';
 
 window.$ = window.jQuery = $;
 window.Papa = require('papaparse/papaparse');
@@ -13,3 +16,5 @@ require('bootstrap');
 require('jquery-validation/dist/jquery.validate');
 require('@curveballerpacks/tablesorter');
 require('jquery-confirm');
+
+require('./combobox.js');

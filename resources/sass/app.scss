@@ -7,6 +7,7 @@
 @import "~jquery-ui/themes/base/core.css";
 @import "~jquery-ui/themes/base/theme.css";
 @import "~jquery-ui/themes/base/datepicker.css";
+@import "~jquery-ui/themes/base/selectmenu.css";
 
 body {
   min-height: 100vh;
@@ -28,6 +29,49 @@ form {
         transform: translateY(-50%);
       }
     }
+
+    textarea.form-control {
+      min-height: 100px;
+      max-height: 250px;
+      max-width: 100%;
+    }
+  }
+
+  button.btn-link {
+    font-size: 24px;
+    padding: .5rem .9rem;
+  }
+
+  .custom-combobox {
+    position: relative;
+    display: inline-block;
+  }
+
+  .custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+    background: darkgray;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background: orange;
+      color: black;
+    }
+
+    & > i {
+      position: relative;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+  }
+
+  .custom-combobox-input {
+    margin: 0;
+    padding: 5px 10px;
   }
 }
 
@@ -68,7 +112,7 @@ table {
     }
   }
 
-  .ts { // jQuery.tableSorter Icon Fix
+  &.ts { // jQuery.tableSorter Icon Fix
     tr.tsTitles {
       th.sortable {
         position: relative;
@@ -96,13 +140,13 @@ table {
       th.desc {
         &:after {
           border-top: 5px solid #333;
-          border-bottom: 0px solid transparent;
+          border-bottom: 0 solid transparent;
         }
       }
 
       th.asc {
         &:after {
-          border-top: 0px solid transparent;
+          border-top: 0 solid transparent;
           border-bottom: 5px solid #333;
         }
       }

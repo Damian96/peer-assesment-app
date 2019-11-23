@@ -201,7 +201,7 @@ class CourseController extends Controller
      */
     public function show(Request $request, Course $course)
     {
-        $title = $course->title;
+        $title = $course->code . ' - ' . $course->ac_year_pair;
 
         $similars = Course::whereCode($course->code)
             ->whereNotIn('id', [$course->id])
@@ -283,11 +283,36 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Course $course
+     * @method DELETE
+     * @param Request $request
+     * @param Course $course
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
-    public function destroy(Course $course)
+    public function destroy(Request $request, Course $course)
     {
-        //
+        try {
+            if ($course->delete()) {
+                $request->session()->flash('message', [
+                    'level' => 'success',
+                    'heading' => sprintf("Course %s, was deleted successfully!", $course->code),
+                    'body' => '',
+                ]);
+                return redirect()->action('CourseController@index', [], 302);
+            } elseif (env('APP_DEBUG', false)) {
+                $request->session()->flash('message', [
+                    'level' => 'danger',
+                    'heading' => sprintf("Something went wrong while deleting %s!", $course->code),
+                    'body' => 'Please contact the administrator, at : '. config('app.admin.address'),
+                ]);
+                return redirect()->back(302);
+            }
+        } catch (\Exception $e) {
+            if (env('APP_DEBUG', false)) {
+                throw abort(500, $e->getMessage());
+            } else {
+                return redirect()->back(302);
+            }
+        }
     }
 }

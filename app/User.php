@@ -36,7 +36,8 @@ use Illuminate\Support\Facades\Mail;
  * @property int|null $updated_at
  * @property string|null $remember_token
  * @property string|null $verification_token
- * @property string|null department
+ * @property string|null $department
+ * @property string|null $password_plain
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()
@@ -75,6 +76,13 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     protected $primaryKey = 'id';
     protected $keyType = 'int';
     protected $connection = 'mysql';
+
+    /**
+     * The student's newly generated password.
+     * @see \App\Notifications\StudentInviteEmail
+     * @var string|null
+     */
+    public $password_plain = null;
 
     /**
      * The attributes that aren't mass assignable.
@@ -527,6 +535,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.view':
             case 'course.create':
             case 'course.store':
+            case 'course.destroy':
             case 'session.store':
                 return $this->isInstructor();
 //            case 'session.update':
@@ -564,6 +573,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function sendStudentInvitationEmail(Course $course)
     {
         clock()->info("StudentInviteEmail sent to {$this->fullname}");
+        $this->password = $this->generateStudentPassword();
         $mailer = new StudentInviteEmail($this, $course);
         Mail::to($this->email)->send($mailer);
     }
@@ -581,14 +591,17 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * @return string
+     * Generates a new password for the student.
+     * Pattern: /[0-9]{3}[a-z]{3}[0-9a-z]{3}/i
+     * @return string|false
      */
     public function generateStudentPassword()
     {
         try {
-            return Hash::make(random_int(1000, 2000) .
+            $this->password_plain = random_int(1000, 2000) .
                 substr($this->fname, 0, 3) .
-                substr($this->reg_num, -3));
+                substr($this->reg_num, -3);
+            return Hash::make($this->password_plain);
         } catch (\Exception $e) {
             return false;
         }

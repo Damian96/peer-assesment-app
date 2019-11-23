@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Session;
 use App\Course;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class SessionController extends Controller
                 return [
                     'status' => 'nullable|boolean',
                     'instructions' => 'required|string|max:1000',
-                    'deadline' => 'required|date_format:Y-m-d',
+                    'deadline' => 'required|date_format:m-d-Y',
                 ];
             default:
                 return [];
@@ -110,6 +111,17 @@ class SessionController extends Controller
             return redirect()->back(302)
                 ->withInput($request->input())
                 ->with('errors', $validator->errors());
+        }
+
+        $session = new Session($request->all());
+        if ($session->save()) {
+
+        }
+
+        if (env('APP_DEBUG', false)) {
+            throw abort(500, 'Could not save Session!');
+        } else {
+            return redirect()->back(302);
         }
     }
 

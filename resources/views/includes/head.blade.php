@@ -31,7 +31,7 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu"
             aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 
-    @if (Auth::check())
+    @auth
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2" id="mainMenu">
             <ul class="navbar-nav mr-auto">
                 @if(Auth::user()->can('user.home'))
@@ -82,7 +82,7 @@
                 </li>
             </ul>
         </div>
-    @else
+    @elseauth
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
@@ -95,7 +95,7 @@
                 </li>
             </ul>
         </div>
-    @endif
+    @endauth
     {{--    @TODO add course search form right menu --}}
     {{--        <form class="form-inline my-2 my-lg-0">--}}
     {{--            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">--}}

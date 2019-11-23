@@ -17,6 +17,8 @@ use Laravel\Scout\Searchable;
  * @property string $title
  * @property string $code
  * @property string $description
+ * * @property boolean $status
+ * @property string $ac_year
  * @property array $ac_year_arr
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -37,8 +39,6 @@ use Laravel\Scout\Searchable;
  * @method static User|Model firstOrFail(int $id)
  * @method static User|Model findOrFail(int $id)
  * @mixin Illuminate\Database\Eloquent\Model
- * @property string $status
- * @property string $ac_year
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Session[] $sessions
  * @property-read int|null $sessions_count
  * @property-read \App\User $user
@@ -56,8 +56,8 @@ class Course extends Model
     protected $keyType = 'int';
     protected $connection = 'mysql';
     public $incrementing = true;
-    public $perPage = 10;
-    const PER_PAGE = 10;
+    public $perPage = 15;
+    const PER_PAGE = 15;
 
     /**
      * The attributes that aren't mass assignable.
@@ -104,6 +104,7 @@ class Course extends Model
         'updated_at' => 'datetime',
         'ac_year' => 'datetime',
         'user_id' => 'int',
+        'status' => 'boolean',
     ];
 
     /**
@@ -163,6 +164,8 @@ class Course extends Model
                         Carbon::create($carbon->year + 1, 5)->format(config('constants.date.stamp')),
                     ];
                 }
+            case 'status_full':
+                return $this->status ? 'Enabled' : 'Disabled';
             case 'department':
             case 'department_title':
             default:

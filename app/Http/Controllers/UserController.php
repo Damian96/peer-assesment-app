@@ -95,6 +95,13 @@ class UserController extends Controller
                     'department' => 'required_if:form,add-student|string|max:5|different:admin',
                     'reg_num' => 'required_if:form,add-student|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
                 ];
+            case 'storeCsv':
+                return [
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email',
+                    'fname' => 'required|string|min:3|max:25',
+                    'lname' => 'required|string|min:3|max:25',
+                    'reg_num' => 'required|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
+                ];
             case 'register.user':
             case 'register':
             case 'create':
@@ -299,17 +306,27 @@ class UserController extends Controller
             }
             $success = 0;
             foreach ($data as $row) {
+                if (!property_exists($row, 'fname') || !property_exists($row, 'lname') || !property_exists($row, 'email') || !property_exists($row, 'reg_num')) {
+                    continue;
+                }
                 $attributes = [
                     'fname' => $row->fname,
                     'lname' => $row->lname,
                     'email' => $row->email,
                     'reg_num' => $row->reg_num,
+                    'password' => '',
                 ];
-                $student = new User($attributes);
-                $student->password = $student->generateStudentPassword();
-                if ($student->save()) {
-                    $success++;
-                    $student->sendStudentInvitationEmail($course);
+                $validator = Validator::make($attributes, $this->rules('storeCsv'));
+                if ($validator->fails()) {
+                    continue;
+                } else {
+                    $student = new User();
+                    if ($student->fill($attributes)->save()) {
+                        $success++;
+                        if ($request->get('register', false)) {
+                            $student->sendStudentInvitationEmail($course);
+                        }
+                    }
                 }
             }
 

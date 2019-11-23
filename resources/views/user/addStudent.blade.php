@@ -32,7 +32,7 @@
                 <div class="form-group">
                     @component('includes.checkbox', [
                         'name' => 'register',
-                        'label' => 'Register new students',
+                        'label' => 'Register new students' . "<span class='ml-2 text-muted'>(will send mail)</span>",
                         'checked' => old('register'),
                     ])@endcomponent
                 </div>
@@ -63,20 +63,33 @@
 
                 <div class="form-group">
                     <label class="control-label" for="studentid">Student</label>
-                    <select id="studentid" name="studentid" required
-                            data-rule-required="true"
-                            data-rule-digits="true"
-                            data-rule-different="---"
-                            data-msg-required="{{ $messages['studentid.required_if'] }}"
-                            data-msg-digits="{{ $messages['studentid.numeric'] }}"
-                            data-msg-different="{{ $messages['studentid.different'] }}"
-                            class="form-control{{ $errors->has('studentid') ? ' is-invalid' : '' }}">
-                        <option value="---"{{ old('studentid', '---') == '---' ? ' selected' : '' }}>---</option>
-                        @foreach($students as $student)
-                            <option
-                                value="{{ $student->id }}"{{ old('studentid') == $student->id ? ' selected' : '' }}>{{ $student->name }}</option>
-                        @endforeach
-                    </select>
+
+                    @if (!empty($students))
+                        <select id="studentid" name="studentid" required>
+                            @foreach($students as $student)
+                                <option
+                                    value="{{ $student->id }}">{{ $student->name }}</option>
+                            @endforeach
+                        </select>
+                    @else
+                        <select name="studentid" class="form-control" disabled readonly>
+                            <option value="N/A">N/A</option>
+                        </select>
+                    @endif
+                    {{--                    <select id="studentid" name="studentid" required--}}
+                    {{--                            data-rule-required="true"--}}
+                    {{--                            data-rule-digits="true"--}}
+                    {{--                            data-rule-different="---"--}}
+                    {{--                            data-msg-required="{{ $messages['studentid.required_if'] }}"--}}
+                    {{--                            data-msg-digits="{{ $messages['studentid.numeric'] }}"--}}
+                    {{--                            data-msg-different="{{ $messages['studentid.different'] }}"--}}
+                    {{--                            class="form-control{{ $errors->has('studentid') ? ' is-invalid' : '' }}">--}}
+                    {{--                        <option value="---"{{ old('studentid', '---') == '---' ? ' selected' : '' }}>---</option>--}}
+                    {{--                        @foreach($students as $student)--}}
+                    {{--                            <option--}}
+                    {{--                                value="{{ $student->id }}"{{ old('studentid') == $student->id ? ' selected' : '' }}>{{ $student->name }}</option>--}}
+                    {{--                        @endforeach--}}
+                    {{--                    </select>--}}
 
                     <span class="invalid-feedback">
                     @if ($errors->has('studentid'))
@@ -243,7 +256,7 @@
 @endsection
 
 @section('end_footer')
-    <script type="text/javascript">
+    <script type="text/javascript" defer>
         $.validator.setDefaults({
             onkeyup: false,
             errorPlacement: function (error, element) {
@@ -276,6 +289,7 @@
         $(document).on('submit', 'form', function (event) {
             return validateForm($(event.target));
         });
+
         function validateForm(form) {
             switch (form[0].id) {
                 case 'select-student':
@@ -373,16 +387,19 @@
                     Papa.parse(text, {
                         delimiter: ',',
                         header: true,
-                        preview: 5,
+                        preview: 2,
                         skipEmptyLines: true,
                         transformHeader: function (head) {
                             head = head.toLowerCase().trim();
                             switch (head) {
                                 case 'first name':
+                                case 'name':
                                     return 'fname';
                                 case 'last name':
+                                case 'surname':
                                     return 'lname';
                                 case 'reg num':
+                                case 'reg_num':
                                     return 'reg_num';
                                 case 'email':
                                 case 'e-mail':
@@ -409,6 +426,10 @@
                 }.bind(this, results));
             }.bind(this, base64, results);
             fileReader.readAsDataURL(el.prop('files')[0]);
+        });
+
+        $(function () {
+            $('#studentid').combobox();
         });
     </script>
 @endsection
