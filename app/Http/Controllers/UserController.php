@@ -50,7 +50,7 @@ class UserController extends Controller
             'logout', 'login', 'auth', # login-logout
             'create', 'store', # user-register
             'addStudent', 'storeStudent',
-//            'verify', # verify-email/password
+            'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
     }
@@ -87,12 +87,12 @@ class UserController extends Controller
 //                    'csv' => 'required_if:form,import-students|file|mimes:csv|lt:5000',
                     'csv-data' => 'required_if:form,import-students|string|min:10|max:10000',
 
-                    'studentid' => 'required_if:form,select-student|different:---|numeric|exists:users,id',
+                    'studentid' => 'required_if:form,select-student|not_in:---,N/A|numeric|exists:users,id',
 
                     'email' => 'required_if:form,add-student|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email',
                     'fname' => 'required_if:form,add-student|string|min:3|max:25',
                     'lname' => 'required_if:form,add-student|string|min:3|max:25',
-                    'department' => 'required_if:form,add-student|string|max:5|different:admin',
+                    'department' => 'required_if:form,add-student|string|max:5|not_in:admin',
                     'reg_num' => 'required_if:form,add-student|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
                 ];
             case 'storeCsv':
@@ -290,6 +290,7 @@ class UserController extends Controller
      */
     public function storeStudent(Request $request, Course $course)
     {
+//        return dd($this->rules(__FUNCTION__), $request->all(), $this->messages(__FUNCTION__));
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
             return redirect()->action('UserController@addStudent', [$course], 302)
@@ -305,6 +306,7 @@ class UserController extends Controller
                     ->with('errors', new MessageBag(['csv' => 'Could not import the csv data!']));
             }
             $success = 0;
+            $fail = 0;
             foreach ($data as $row) {
                 if (!property_exists($row, 'fname') || !property_exists($row, 'lname') || !property_exists($row, 'email') || !property_exists($row, 'reg_num')) {
                     continue;
@@ -318,6 +320,7 @@ class UserController extends Controller
                 ];
                 $validator = Validator::make($attributes, $this->rules('storeCsv'));
                 if ($validator->fails()) {
+                    $fail++;
                     continue;
                 } else {
                     $student = new User();
@@ -330,11 +333,19 @@ class UserController extends Controller
                 }
             }
 
-            $request->session()->flash('message', [
-                'level' => 'success',
-                'heading' => 'Students successfully imported.',
-                'body' => sprintf("Imported %d out of %d students.", $success, count($data)),
-            ]);
+            if ($success) {
+                $request->session()->flash('message', [
+                    'level' => 'success',
+                    'heading' => 'Students successfully imported.',
+                    'body' => sprintf("Imported %d out of %d students.", $success, count($data)),
+                ]);
+            } else {
+                $request->session()->flash('message', [
+                    'level' => 'warning',
+                    'heading' => 'No students imported.',
+                    'body' => 'All students were already registered into the system.',
+                ]);
+            }
             return redirect()->action('CourseController@show', [$course], 302, $request->headers->all());
         } elseif ($request->get('form') == 'add-student') {
             $request->merge(['instructor' => '0', 'admin' => '0']);
@@ -373,7 +384,7 @@ class UserController extends Controller
                 'heading' => 'Student successfully added to ' . $course->code . '!',
                 'body' => 'We have sent an e-mail to ' . $user->email . ', inviting him to your course.',
             ];
-        } else throw abort(404); // fallback
+        } else throw abort(403);
 
         try {
             $result->saveOrFail();
@@ -569,7 +580,7 @@ class UserController extends Controller
      */
     public function verify(Request $request)
     {
-        if (!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password', 'student'], true)) {
+        if (!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password', 'invite', 'enroll'], true)) {
             throw abort(401);
         }
 
@@ -597,17 +608,15 @@ class UserController extends Controller
             return redirect()->action($redirect_fail, [], 302, $request->headers->all());
         }
 
-        if ($request->get('action', false) == 'email' || $request->get('action', false) == 'student') {
+        if ($request->get('action', false) == 'email' || $request->get('action', false) == 'invite') {
             $user->markEmailAsVerified();
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => 'E-mail Verification successful!',
+                'body' => 'You can login with your credentials.'
             ]);
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
-            if ($request->get('action', false) == 'student') {
-                return redirect()->action('CourseController@index', [], 302, $request->headers->all());
+            if ($request->get('action', false) == 'invite') {
+                return redirect()->action('UserController@login', [], 302, $request->headers->all());
             } else {
                 return redirect()->action('UserController@index', [], 302, $request->headers->all());
             }

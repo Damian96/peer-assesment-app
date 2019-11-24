@@ -4,6 +4,7 @@ namespace App;
 
 use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
+use App\Notifications\StudentEnrollEmail;
 use App\Notifications\StudentInviteEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Class User
@@ -475,18 +477,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * Send the password reset notification.
-     *
-     * @param $token
-     * @return void
-     */
-    public function sendPasswordResetNotification($token)
-    {
-        $mailer = new AppResetPasswordEmail($this);
-        Mail::to($this->email)->send($mailer);
-    }
-
-    /**
      * Get the password_reset token
      * @return string the token
      */
@@ -566,16 +556,29 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * Send the password reset notification.
+     *
+     * @param $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+//        $mailer = new AppResetPasswordEmail($this);
+//        Mail::to($this->email)->send($mailer);
+        clock()->info("StudentInviteEmail sent to {$this->fullname}");
+    }
+
+    /**
      * Send an invitational email to the newly created student / user, regarding the specified course.
      * @param Course $course
      * @return void
      */
     public function sendStudentInvitationEmail(Course $course)
     {
-        clock()->info("StudentInviteEmail sent to {$this->fullname}");
         $this->password = $this->generateStudentPassword();
-        $mailer = new StudentInviteEmail($this, $course);
-        Mail::to($this->email)->send($mailer);
+//        $mailer = new StudentInviteEmail($this, $course);
+//        Mail::to($this->email)->send($mailer);
+        clock()->info("StudentInviteEmail sent to {$this->fullname}");
     }
 
     /**
@@ -585,9 +588,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-        clock()->info("StudentEnrollEmail sent to {$this->fullname}");
 //        $mailer = new StudentEnrollEmail($this, $course);
 //        Mail::to($this->email)->send($mailer);
+        clock()->info("StudentEnrollEmail sent to {$this->fullname}");
     }
 
     /**
@@ -605,5 +608,24 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Get the verification URL for the given notifiable.
+     *
+     * @param string $action
+     * @return string
+     */
+    public function verificationUrl(String $action)
+    {
+        return URL::temporarySignedRoute(
+            'user.verify',
+            Carbon::now()->addMinutes(config('auth.verification.expire', 60)),
+            [
+                'id' => $this->getKey(),
+                'hash' => sha1($this->getEmailForVerification()),
+                'action' => $action,
+            ]
+        );
     }
 }

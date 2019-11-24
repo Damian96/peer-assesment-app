@@ -5,7 +5,6 @@ namespace App\Notifications;
 
 
 use App\Course;
-use Closure;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +14,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
-class StudentInviteEmail extends Mailable implements Renderable
+class StudentEnrollEmail extends Mailable implements Renderable
 {
     /**
      * The callback that should be used to build the mail message.
@@ -34,7 +33,7 @@ class StudentInviteEmail extends Mailable implements Renderable
      *
      * @var string
      */
-    protected $markdown = 'emails.invite';
+    protected $markdown = 'emails.enroll';
 
     /**
      * The Course that the Student was invited to.
@@ -47,13 +46,13 @@ class StudentInviteEmail extends Mailable implements Renderable
      * The verification action.
      * @var string
      */
-    private $action = 'invite';
+    private $action = 'enroll';
 
     /**
      * StudentInviteEmail constructor.
      * @param MustVerifyEmail $notifiable
      * @param Course $course
-     * @param Closure|null $toMailCallback The callback to executed when the mail is sent.
+     * @param \Closure $toMailCallback The callback to executed when the mail is sent.
      */
     public function __construct(MustVerifyEmail $notifiable, Course $course, \Closure $toMailCallback = null)
     {
@@ -72,7 +71,7 @@ class StudentInviteEmail extends Mailable implements Renderable
             return call_user_func(static::$toMailCallback, $this->notifiable, $verificationUrl);
         }
         return $this->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject("Welcome to " . config('app.name'))
+            ->subject("You have been enrolled to " . $this->course->code)
             ->markdown($this->markdown)
             ->with([
                 'url' => $verificationUrl,
@@ -80,5 +79,4 @@ class StudentInviteEmail extends Mailable implements Renderable
                 'course' => $this->course
             ]);
     }
-
 }

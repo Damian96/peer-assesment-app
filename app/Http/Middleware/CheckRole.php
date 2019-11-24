@@ -9,6 +9,7 @@ class CheckRole
 {
     protected $allowed = [
         'user.login',
+        'user.verify',
         'user.auth',
         'user.logout',
         'user.profile',

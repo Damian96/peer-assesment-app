@@ -45,33 +45,50 @@ form {
   .custom-combobox {
     position: relative;
     display: inline-block;
-  }
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
-  .custom-combobox-toggle {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    margin-left: -1px;
-    padding: 0;
-    background: darkgray;
-    color: white;
-    cursor: pointer;
-
-    &:hover {
-      background: orange;
-      color: black;
+    &.is-invalid {
+      border: 1px solid #dc3545;
+      border-radius: 0.25rem;
+      .custom-combobox-toggle {
+        border: 1px solid #dc3545;
+        border-left-width: 0;
+        border-radius: 0.25rem;
+        border-left-radius: 0;
+        margin-top: -1px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin-bottom: -1px;
+      }
     }
 
-    & > i {
-      position: relative;
-      top: 50%;
-      transform: translate(0, -50%);
-    }
-  }
+    .custom-combobox-toggle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      margin-left: -1px;
+      padding: 0;
+      background: darkgray;
+      color: white;
+      cursor: pointer;
 
-  .custom-combobox-input {
-    margin: 0;
-    padding: 5px 10px;
+      &:hover {
+        background: orange;
+        color: black;
+      }
+
+      & > i {
+        position: relative;
+        top: 50%;
+        transform: translate(0, -50%);
+      }
+    }
+
+    .custom-combobox-input {
+      margin: 0;
+      padding: 5px 10px;
+    }
+
   }
 }
 

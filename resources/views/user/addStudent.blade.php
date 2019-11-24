@@ -65,7 +65,8 @@
                     <label class="control-label" for="studentid">Student</label>
 
                     @if (!empty($students))
-                        <select id="studentid" name="studentid" required>
+                        <select id="studentid" class="{{ $errors->has('studentid') ? 'is-invalid' : '' }}"
+                                name="studentid" required>
                             @foreach($students as $student)
                                 <option
                                     value="{{ $student->id }}">{{ $student->name }}</option>
@@ -76,25 +77,9 @@
                             <option value="N/A">N/A</option>
                         </select>
                     @endif
-                    {{--                    <select id="studentid" name="studentid" required--}}
-                    {{--                            data-rule-required="true"--}}
-                    {{--                            data-rule-digits="true"--}}
-                    {{--                            data-rule-different="---"--}}
-                    {{--                            data-msg-required="{{ $messages['studentid.required_if'] }}"--}}
-                    {{--                            data-msg-digits="{{ $messages['studentid.numeric'] }}"--}}
-                    {{--                            data-msg-different="{{ $messages['studentid.different'] }}"--}}
-                    {{--                            class="form-control{{ $errors->has('studentid') ? ' is-invalid' : '' }}">--}}
-                    {{--                        <option value="---"{{ old('studentid', '---') == '---' ? ' selected' : '' }}>---</option>--}}
-                    {{--                        @foreach($students as $student)--}}
-                    {{--                            <option--}}
-                    {{--                                value="{{ $student->id }}"{{ old('studentid') == $student->id ? ' selected' : '' }}>{{ $student->name }}</option>--}}
-                    {{--                        @endforeach--}}
-                    {{--                    </select>--}}
 
-                    <span class="invalid-feedback">
-                    @if ($errors->has('studentid'))
-                            <strong>{{ $errors->first('studentid') }}</strong>
-                        @endif
+                    <span class="invalid-feedback{{ $errors->has('studentid') ? ' d-block' : '' }}">
+                    @if ($errors->has('studentid'))<strong>{{ $errors->first('studentid') }}</strong>@endif
                     </span>
                 </div>
 
@@ -134,7 +119,7 @@
                            data-msg-email="{{ $messages['email.email'] }}"
                            data-msg-pattern="{{ $messages['email.regex'] }}">
 
-                    <span class="invalid-feedback">
+                    <span class="invalid-feedback{{ $errors->has('email') ? 'd-block' : '' }}">
                     @if ($errors->has('email'))<strong>{{ $errors->first('email') }}</strong>@endif
                     </span>
                 </div>
@@ -153,7 +138,7 @@
                            data-msg-minlength="{{ $messages['fname.min'] }}"
                            data-msg-maxlength="{{ $messages['fname.max'] }}">
 
-                    <span class="invalid-feedback">
+                    <span class="invalid-feedback{{ $errors->has('fname') ? 'd-block' : '' }}">
                     @if ($errors->has('fname'))
                             <strong>{{ $errors->first('fname') }}</strong>
                         @endif
@@ -383,7 +368,7 @@
                 base64 = fileReader.result;  // data in Base64 format
                 // console.debug('onload:base64', base64);
                 $.get(base64, function (e, text, results) {
-                    console.log('get:text', text);
+                    // console.debug('get:text', text);
                     Papa.parse(text, {
                         delimiter: ',',
                         header: true,
@@ -430,6 +415,10 @@
 
         $(function () {
             $('#studentid').combobox();
+            @if ($errors->has('studentid'))
+            $('.custom-combobox')
+                .addClass('is-invalid');
+            @endif
         });
     </script>
 @endsection
