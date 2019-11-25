@@ -26,9 +26,10 @@ class CoursesTableSeeder extends Seeder
             $code = $departments[rand(0, count($departments)-1)] . random_int((1000), (1000+$i+self::MAX));
             DB::table($this->table)->insert([
                 'user_id' => $instructors[rand(0, count($instructors)-1)],
-                'title' => substr($lipsum, 0, (50-$i)),
+                'title' => substr($lipsum, rand(0, 15), (31-$i)),
                 'code' => $code,
-                'description' => substr($lipsum, 0, (150-$i)),
+                'department' => $departments[array_rand($departments, 1)],
+                'description' => substr($lipsum, 0, (100-$i)),
             ]);
         }
     }

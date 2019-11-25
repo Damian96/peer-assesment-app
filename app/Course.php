@@ -17,8 +17,9 @@ use Laravel\Scout\Searchable;
  * @property string $title
  * @property string $code
  * @property string $description
- * * @property boolean $status
+ * @property boolean $status
  * @property string $ac_year
+ * @property string $department
  * @property array $ac_year_arr
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -73,6 +74,7 @@ class Course extends Model
      */
     protected $attributes = [
         'title' => 'Untitled',
+        'department' => 'none',
         'description' => null,
         'ac_year' => null,
         'code' => null,
@@ -84,7 +86,7 @@ class Course extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'code', 'user_id', 'ac_year'
+        'title', 'description', 'code', 'user_id', 'ac_year', 'department'
     ];
 
     /**
@@ -93,19 +95,6 @@ class Course extends Model
      * @var array
      */
     protected $hidden = ['created_at', 'updated_at', 'status'];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'ac_year' => 'datetime',
-        'user_id' => 'int',
-        'status' => 'boolean',
-    ];
 
     /**
      * @param string $key
@@ -166,8 +155,14 @@ class Course extends Model
                 }
             case 'status_full':
                 return $this->status ? 'Enabled' : 'Disabled';
-            case 'department':
             case 'department_title':
+            case 'department_full':
+                switch ($this->department) {
+                    case 'none':
+                        return 'N/A';
+                    default:
+                        return User::getDepartmentTitle($this->department);
+                }
             default:
                 return parent::__get($key);
         }
@@ -182,6 +177,20 @@ class Course extends Model
     {
         return $this->hasOne('\App\User', 'id', 'user_id');
     }
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'department' => 'string',
+        'ac_year' => 'datetime',
+        'user_id' => 'int',
+        'status' => 'boolean',
+    ];
 
     /**
      * @return mixed|array

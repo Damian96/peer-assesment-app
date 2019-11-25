@@ -2,10 +2,7 @@
 
 namespace App;
 
-use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
-use App\Notifications\StudentEnrollEmail;
-use App\Notifications\StudentInviteEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
 use Illuminate\Contracts\Auth\Access\Authorizable;
@@ -217,12 +214,16 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         switch ($abbr) {
             case 'CS':
+            case 'CCP':
                 return 'Computer Science';
             case 'ES':
+            case 'CES':
                 return 'English Studies';
             case 'PSY':
+            case 'CPY':
                 return 'Psychology Studies';
             case 'BS':
+            case 'CBE':
                 return 'Business Administration & Economics';
             case 'MBA':
                 return 'Executive MBA';
@@ -520,19 +521,24 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         switch ($ability) {
             case 'course.index':
             case 'user.profile':
+            case 'user.show':
                 return true;
             case 'user.home':
             case 'course.view':
             case 'course.create':
             case 'course.store':
-            case 'course.destroy':
             case 'session.store':
+            case 'session.active':
                 return $this->isInstructor();
 //            case 'session.update':
             case 'session.create':
             case 'course.update':
             case 'course.edit':
+            case 'course.destroy':
+            case 'course.delete':
+            case 'course.trash':
             case 'course.add-student':
+            case 'session.index':
                 if (array_key_exists('id', $arguments)) {
                     $cid = $arguments['id'];
                 } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
@@ -541,15 +547,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                     return false;
                 }
                 return $this->isInstructor() && $this->ownsCourse($cid);
-            case 'session.index':
-                if (array_key_exists('id', $arguments)) {
-                    $cid = $arguments['id'];
-                } elseif (array_key_exists('cid', $arguments)) {
-                    $cid = $arguments['cid'];
-                } else {
-                    return false;
-                }
-                return $this->isInstructor() || ($this->isStudent() && $this->isRegistered($cid));
+//                if (array_key_exists('id', $arguments)) {
+//                    $cid = $arguments['id'];
+//                } elseif (array_key_exists('cid', $arguments)) {
+//                    $cid = $arguments['cid'];
+//                } else {
+//                    return false;
+//                }
+//                return $this->isInstructor() || ($this->isStudent() && $this->isRegistered($cid));
             default:
                 return false;
         }

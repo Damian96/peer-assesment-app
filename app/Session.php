@@ -46,6 +46,8 @@ class Session extends Model
     public function __get($name)
     {
         switch ($name) {
+            case 'deadline_full':
+                return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
             case 'ac_year':
                 return Carbon::createFromTimestamp($this->ac_year, config('app.timezone'))->format('Y');
             default:

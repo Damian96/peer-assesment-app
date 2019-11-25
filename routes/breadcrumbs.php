@@ -24,6 +24,10 @@ Breadcrumbs::for('course.show', function ($trail, $course) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
+//    TODO: convert to PHP's end($crumbs);
+    if (last($crumbs) == 'session.active' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.active'))
+        $trail->push('Active Sessions', route('session.active'));
+
     $trail->push('Course ' . $course->code, route('course.view', $course));
 });
 
@@ -58,6 +62,17 @@ Breadcrumbs::for('session.index', function ($trail, $sessions, $course) {
         $trail->push('Course ' . $course->code, route('course.view', $course));
 
     $trail->push('Sessions', route('session.index', $sessions, $course));
+});
+
+// ? > Active Sessions
+Breadcrumbs::for('session.active', function ($trail, $sessions) {
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+//    if (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view'))
+//        $trail->push('Course ' . $course->code, route('course.view', $course));
+
+    $trail->push('Active Sessions', route('session.active', $sessions));
 });
 
 //// Home > Blog > [Category]

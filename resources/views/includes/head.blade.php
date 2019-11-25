@@ -19,9 +19,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @if (Route::current() && (Route::current()->named('login') || Route::current()->named('register')))
-    {!! htmlScriptTagJsApi([
-        'action' => 'homepage',
-    ]) !!}
+        {!! htmlScriptTagJsApi([
+            'action' => 'homepage',
+        ]) !!}
     @endif
 </head>
 <body>
@@ -67,16 +67,24 @@
                                href="{{ url('/courses/create') }}">Create</a>
                         </div>
                     </li>
+                    <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'session.') !== false) ? ' active' : '' }}">
+                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">Sessions</a>
+                        <div class="dropdown-menu" aria-labelledby="course-dropdown">
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.active') !== false) ? ' active' : '' }}"
+                               href="{{ url('/sessions') }}">Active</a>
+                        </div>
+                    </li>
                 @endif
             </ul>
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'user.show') !== false || strpos(Route::current()->getName(), 'user.profile') !== false) ? ' active' : '' }}">
                     <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }}</a>
                     <div class="dropdown-menu" aria-labelledby="user-dropdown">
-                        <a class="dropdown-item" href="{{ url('/profile') }}">Profile</a>
+                        <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'user.show') !== false || strpos(Route::current()->getName(), 'user.profile') !== false) ? ' active' : '' }}" href="{{ url('/profile') }}">Profile</a>
                         <a class="dropdown-item" href="{{ url('/logout') }}">Logout</a>
                     </div>
                 </li>

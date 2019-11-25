@@ -15,13 +15,19 @@
                         <th>Owner</th>
                         <th>Title</th>
                         <th class="text-center">Code</th>
+                        <th class="text-center">Department</th>
                         <th class="text-center">Academic Year</th>
                     @else
                         <th>Title</th>
                         <th class="text-center">Code</th>
+                        <th class="text-center">Department</th>
                         <th class="text-center">Academic Year</th>
                     @endif
-                    <th class="text-right">Links</th>
+                    @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
+                        <th class="text-right">Links</th>
+                    @else
+                        <th class="text-center">Instructor</th>
+                    @endif
                 </tr>
                 </thead>
                 <tbody>
@@ -35,6 +41,7 @@
                     @else
                         <td>{{ $course->title }}</td>
                         <td class="text-center">{{ $course->code }}</td>
+                        <td class="text-center">{{ $course->department_title }}</td>
                         <td class="text-center">
                             <select id="similarid" name="similarid"
                                     class="form-control-sm{{ $errors->has('similarid') ? ' is-invalid' : '' }}"
@@ -48,33 +55,45 @@
                             </select>
                         </td>
                     @endif
-                    <td class="action-cell text-right">
-                        @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
-                            <a href="{{ url('/courses/' . $course->id . '/edit') }}" class="material-icons text-warning"
-                               title="Update Course {{ $course->code }}"
-                               aria-label="Update Course {{ $course->code }}">edit</a>
-                        @endif
-                        @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
-                            <a href="{{ url('/courses/' . $course->id . '/sessions') }}"
-                               class="material-icons"
-                               title="View Sessions of {{ $course->code }}"
-                               aria-label="View Sessions of {{ $course->code }}">assignment</a>
-                        @endif
-                        @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
-                            <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}">
-                                @method('DELETE')
-                                @csrf
-                                <button type="submit"
-                                        id="delete-course"
-                                        class="btn btn-lg btn-link material-icons text-danger"
-                                        data-title="Are you sure you want to delete this course?"
-                                        data-content="This action is irreversible."
-                                        title="Delete {{ $course->code }}"
-                                        aria-label="Delete {{ $course->code }}">delete_forever
-                                </button>
-                            </form>
-                        @endif
-                    </td>
+                    {{--                            TODO: add user avatar to link --}}
+                    @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
+                        <td class="action-cell text-right">
+                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
+                                <a href="{{ url('/courses/' . $course->id . '/edit') }}"
+                                   class="material-icons text-warning"
+                                   title="Update Course {{ $course->code }}"
+                                   aria-label="Update Course {{ $course->code }}">edit</a>
+                            @endif
+                            @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
+                                <a href="{{ url('/courses/' . $course->id . '/sessions') }}"
+                                   class="material-icons"
+                                   title="View Sessions of {{ $course->code }}"
+                                   aria-label="View Sessions of {{ $course->code }}">assignment</a>
+                            @endif
+                            @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
+                                <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit"
+                                            id="delete-course"
+                                            class="btn btn-lg btn-link material-icons text-danger"
+                                            data-title="Are you sure you want to delete this course?"
+                                            data-content="This action is irreversible."
+                                            title="Delete {{ $course->code }}"
+                                            aria-label="Delete {{ $course->code }}">delete_forever
+                                    </button>
+                                </form>
+                            @endif
+                        </td>
+                    @else
+                        <td class="text-center">
+                            <a href="{{ url($course->instructor . '/show/') }}"
+                               title="View Instructor's profile"
+                               aria-label="View Instructor's profile">
+                                {{ $course->instructor_name }}
+                            </a>
+                        </td>
+                    @endif
                 </tr>
                 </tbody>
                 @if (Auth::user()->isAdmin())
@@ -88,12 +107,14 @@
                 @endif
             </table>
         </div>
-        <div class="col-sm-12 col-md-12">
-            <a href="{{ url( '/courses/' . $course->id . '/add-student') }}"
-               class="btn btn-success">
-                Add Students to {{ $course->code }}
-            </a>
-        </div>
+        @if (Auth::user()->can('course.edit', ['id' => $course->id]))
+            <div class="col-sm-12 col-md-12">
+                <a href="{{ url( '/courses/' . $course->id . '/add-student') }}"
+                   class="btn btn-success">
+                    Add Students to {{ $course->code }}
+                </a>
+            </div>
+        @endif
     </div>
 @endsection
 

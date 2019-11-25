@@ -35,11 +35,13 @@
                     </tbody>
                 </table>
             @else
+                @if (Auth::user()->can('session.create', ['id' => $course->id]))
                 <h2>You do not have any Sessions yet!</h2>
                 <p>
-                    Maybe <a href="{{ url('/sessions/create/' . $course->id) }}" title="Add Session"
-                             aria-roledescription="Add Session"> add a new Session</a>?
+                    <a class="btn btn-primary" href="{{ url('/sessions/create/' . $course->id) }}" title="Add Session"
+                             aria-roledescription="Add Session">Add Session</a>
                 </p>
+                @endif
             @endif
         </div>
     </div>

@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Session;
 use App\Course;
+use App\Session;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SessionController extends Controller
 {
+    const PER_PAGE = 10;
+
     /**
      * Create a new controller instance.
      *
@@ -84,6 +87,22 @@ class SessionController extends Controller
         $sessions = $course->sessions()->getResults();
 
         return response(view('session.index', compact('title', 'course', 'sessions')), 200, $request->headers->all());
+    }
+
+    /**
+     * @method GET
+     * @param Request $request
+     * @return Response
+     */
+    public function active(Request $request) {
+        $title = 'Active Sessions';
+        $sessions = Session::whereStatus('1')
+            ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
+            ->orderBy('deadline', 'ASC')
+            ->paginate(self::PER_PAGE);
+//            ->getModels();
+
+        return response(view('session.active', compact('sessions', 'title')), 200, $request->headers->all());
     }
 
     /**
