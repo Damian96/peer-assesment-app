@@ -13,7 +13,7 @@
     <script charset="utf-8" src="{{ url('/js/app.js') }}"></script>
 
     <!-- Fonts -->
-    <!-- @TODO find a better font -->
+    <!-- @TODO find a caligraphic font for footer and login -->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -23,6 +23,38 @@
             'action' => 'homepage',
         ]) !!}
     @endif
+
+    <script type="text/javascript" defer>
+        $.validator.setDefaults({
+            onkeyup: false,
+            errorPlacement: function (error, element) {
+                element.addClass('is-invalid')
+                    .siblings('.invalid-feedback')
+                    .html("<strong>" + error.text() + "</strong>")
+                    .addClass('d-block');
+                return true;
+            },
+            success: function (label, element) {
+                element = $(element);
+                element.removeClass('is-invalid')
+                    .addClass('is-valid')
+                    .siblings('.invalid-feedback')
+                    .html('')
+                    .removeClass('d-block');
+                return true;
+            },
+        });
+        $.validator.addMethod('in', function (value, element, params) {
+            let arr = params.split(',');
+            return this.optional(element) || (arr.length && arr.includes(value));
+        });
+        $.validator.addMethod('pattern', function (value, element, params) {
+            return this.optional(element) || (new RegExp(params, 'im')).test(value);
+        });
+        $.validator.addMethod('different', function (value, element, params) {
+            return this.optional(element) || value !== params;
+        });
+    </script>
 </head>
 <body>
 
@@ -84,7 +116,8 @@
                     <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }}</a>
                     <div class="dropdown-menu" aria-labelledby="user-dropdown">
-                        <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'user.show') !== false || strpos(Route::current()->getName(), 'user.profile') !== false) ? ' active' : '' }}" href="{{ url('/profile') }}">Profile</a>
+                        <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'user.show') !== false || strpos(Route::current()->getName(), 'user.profile') !== false) ? ' active' : '' }}"
+                           href="{{ url('/profile') }}">Profile</a>
                         <a class="dropdown-item" href="{{ url('/logout') }}">Logout</a>
                     </div>
                 </li>

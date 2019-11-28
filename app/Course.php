@@ -19,6 +19,8 @@ use Laravel\Scout\Searchable;
  * @property string $description
  * @property boolean $status
  * @property string $ac_year
+ * @property int $ac_year_int
+ * @property int $ac_year_month
  * @property string $department
  * @property array $ac_year_arr
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -59,6 +61,8 @@ class Course extends Model
     public $incrementing = true;
     public $perPage = 15;
     const PER_PAGE = 15;
+    const SPRING = 5;
+    const FALL = 9;
 
     /**
      * The attributes that aren't mass assignable.
@@ -133,6 +137,8 @@ class Course extends Model
                 return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format(config('constants.date.stamp'));
             case 'ac_year_full':
                 return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format(config('constants.date.full'));
+            case 'ac_year_month':
+                return intval(Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format('m'));
             case 'ac_year_pair':
                 $carbon = Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'));
                 if ($carbon->month <= 5) {
@@ -226,8 +232,14 @@ class Course extends Model
      */
     public function copyToCurrentYear()
     {
+        if ($this->copied()) return false;
         $clone = $this->refresh()->replicate(['id', 'status']);
-        $clone->ac_year = Carbon::now(config('app.timezone'))->format(config('constants.date.ac_year'));
+        $now = Carbon::now(config('app.timezone'));
+        if ($now->month >= 8) {
+            $clone->ac_year = $now->setMonth(10)->format(config('constants.date.stamp'));
+        } else {
+            $clone->ac_year = $now->setMonth(1)->format(config('constants.date.stamp'));
+        }
         try {
             $clone->saveOrFail();
         } catch (\Throwable $e) {
@@ -242,10 +254,14 @@ class Course extends Model
      */
     public function copied()
     {
+        $now = Carbon::now(config('app.timezone'));
+        if ($this->ac_year_month > self::FALL) $ac_year = $now->setMonth(9)->startOfMonth()->startOfDay();
+        else $ac_year = $now->subYear()->setMonth(9)->startOfMonth()->startOfDay();
+
         return DB::table($this->table)
             ->where('code', '=', $this->code)
             ->where('status', '=', '1')
-            ->whereBetween('ac_year', $this->ac_year_arr)
+            ->where('ac_year', '>=', $ac_year->toDateString())
             ->exists();
     }
 }

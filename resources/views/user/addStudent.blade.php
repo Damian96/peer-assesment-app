@@ -242,32 +242,6 @@
 
 @section('end_footer')
     <script type="text/javascript" defer>
-        $.validator.setDefaults({
-            onkeyup: false,
-            errorPlacement: function (error, element) {
-                element.addClass('is-invalid')
-                    .siblings('.invalid-feedback')
-                    .html("<strong>" + error.text() + "</strong>")
-                    .addClass('d-block');
-                return true;
-            },
-            success: function (label, element) {
-                element = $(element);
-                element.removeClass('is-invalid')
-                    .addClass('is-valid')
-                    .siblings('.invalid-feedback')
-                    .html('')
-                    .removeClass('d-block');
-                return true;
-            },
-        });
-        $.validator.addMethod('pattern', function (value, element, params) {
-            return this.optional(element) || (new RegExp(params, 'im')).test(value);
-        });
-        $.validator.addMethod('different', function (value, element, params) {
-            return this.optional(element) || value !== params;
-        });
-
         $(document).on('focusout change', 'input, select', function () {
             return $(this).valid();
         });

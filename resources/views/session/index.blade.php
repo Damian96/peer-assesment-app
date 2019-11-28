@@ -22,7 +22,7 @@
                         <tr>
                             <td>{{ $session->status }}</td>
                             <td>{{ $session->instructions }}</td>
-                            <td>{{ $session->deadline }}</td>
+                                <td>{{ $session->deadline }}</td>
                             <td class="action-cell">
                                 <a href="{{ url('/sessions/' . $session->id . '/view') }}"
                                    class="material-icons">link</a>

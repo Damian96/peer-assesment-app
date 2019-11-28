@@ -6,38 +6,46 @@
     <div class="form-group">
         <label class="form-text" for="title">Title</label>
         <input class="form-control{{ $errors->has('title') ? ' is-invalid' : '' }}" name="title" id="title" type="text"
-               required aria-required="true" maxlength="50" aria-valuemax="50"
+               aria-required="true" maxlength="50" aria-valuemax="50"
                placeholder="a title to display to students. e.g. 2019-CCP3300-Java"
                aria-placeholder="a title to display to students. e.g. 2019-CCP3300-Java"
                aria-invalid="{{ $errors->has('title') ? 'true' : 'false' }}" pattern="[a-zA-Z0-9\-_].*"
-               value="{{ old('title', isset($course) ? $course->title : '') }}">
+               value="{{ old('title', isset($course) ? $course->title : '') }}"
+               data-rule-required="true"
+               data-msg-required="{{ $messages['title.required'] }}"
+               data-rule-minlength="5"
+               data-msg-minlength="{{ $messages['title.min'] }}"
+               data-rule-maxlength="10"
+               data-msg-maxlength="{{ $messages['title.max'] }}">
 
-        @if ($errors->has('title'))
-            <span class="invalid-feedback">
-                <strong>{{ $errors->first('title') }}</strong>
+        <span class="invalid-feedback">
+                <strong>{{ $errors->first('title') ?? '' }}</strong>
             </span>
-        @endif
     </div>
 
     <div class="form-group">
         <label class="form-text" for="code">Code</label>
         <input class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" id="code" type="text"
-               required aria-required="true" maxlength="10" aria-valuemax="10" placeholder="e.g. CCP1903"
+               aria-required="true" maxlength="10" aria-valuemax="10" placeholder="e.g. CCP1903"
                aria-placeholder="e.g. CCP1903" aria-invalid="{{ $errors->has('code') ? 'true' : 'false' }}"
-               pattern="[a-zA-Z0-9\-_].*" value="{{ old('code', isset($course) ? $course->code : '') }}">
+               pattern="[a-zA-Z0-9\-_].*" value="{{ old('code', isset($course) ? $course->code : '') }}"
+               data-rule-required="true"
+               data-msg-required="{{ $messages['code.required'] }}"
+               data-rule-minlength="5"
+               data-msg-minlength="{{ $messages['code.min'] }}"
+               data-rule-maxlength="10"
+               data-msg-maxlength="{{ $messages['code.max'] }}">
 
-        @if ($errors->has('code'))
-            <span class="invalid-feedback">
-                <strong>{{ $errors->first('code') }}</strong>
-            </span>
-        @endif
+        <span class="invalid-feedback">
+            <strong>{{ $errors->first('code') ?? '' }}</strong>
+        </span>
     </div>
 
     @if(Auth::user()->isAdmin() && (request()->route()->named('*edit') || request()->route()->named('*create')))
         <div class="form-group">
             <label class="form-text" for="instructor">Instructor</label>
             <select class="form-control{{ $errors->has('instructor') ? ' is-invalid' : '' }}" name="instructor"
-                    id="instructor" required aria-required="true"
+                    id="instructor" aria-required="true"
                     aria-invalid="{{ $errors->has('instructor') ? 'true' : 'false' }}">
                 @foreach(App\User::getInstructors() as $item)
                     <option
@@ -45,13 +53,43 @@
                 @endforeach
             </select>
 
-            @if ($errors->has('instructor'))
-                <span class="invalid-feedback">
-                <strong>{{ $errors->first('instructor') }}</strong>
+            <span class="invalid-feedback">
+                <strong>{{ $errors->first('instructor') ?? '' }}</strong>
             </span>
-            @endif
         </div>
     @endif
+
+    <div class="form-group">
+        <label for="department">Department</label>
+        <select name="department" id="department"
+                class="form-control{{ $errors->has('department') ? ' is-invalid' : '' }}">
+            <option
+                value="admin"{{ old('department', isset($course) ? $course->department : '') == 'admin' ? 'selected' : '' }}>
+                ---
+            </option>
+            <option value="CS"{{ old('department', isset($course) ? $course->department : '') == 'CS' ? 'selected' : '' }}>
+                Computer Science
+            </option>
+            <option value="ES"{{ old('department', isset($course) ? $course->department : '') == 'ES' ? 'selected' : '' }}>
+                English Studies
+            </option>
+            <option value="BS"{{ old('department', isset($course) ? $course->department : '') == 'BS' ? 'selected' : '' }}>
+                Business Administration & Economics
+            </option>
+            <option
+                value="PSY"{{ old('department', isset($course) ? $course->department : '') == 'PSY' ? 'selected' : '' }}>
+                Psychology Studies
+            </option>
+            <option
+                value="MBA"{{ old('department', isset($course) ? $course->department : '') == 'MBA' ? 'selected' : '' }}>
+                Executive MBA
+            </option>
+        </select>
+
+        <span class="invalid-feedback">
+                <strong>{{ $errors->first('department') ?? '' }}</strong>
+        </span>
+    </div>
 
     @if (Auth::user()->isAdmin())
         <div class="form-group">
@@ -93,7 +131,8 @@
                 aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
     </div>
 
-    @if (isset($course) && ! $course->copied() && Auth::user()->can('course.edit', ['course' =>  $course]))
+    @if (false)
+        {{--    @if (isset($course) && ! $course->copied() && Auth::user()->can('course.edit', ['course' =>  $course]))--}}
         <div class="form-group">
             <button type="submit" class="btn btn-block btn-outline-info" role="button" name="copy" id="copy"
                     title="Copy to current Academic Year"
@@ -102,3 +141,60 @@
         </div>
     @endif
 </form>
+
+@section('end_footer')
+    <script type="text/javascript" defer>
+        $(document).on('focusout change', 'input, select, textarea', function () {
+            return $(this).valid();
+        });
+        $(document).on('submit', 'form', function (event) {
+            let form = $(event.target);
+            form.validate({
+                rules: {
+                    title: {
+                        required: true,
+                        minlength: 5,
+                        maxlength: 50
+                    },
+                    code: {
+                        required: true,
+                        minlength: 6,
+                        maxlength: 10
+                    },
+                    department: {
+                        required: true,
+                        in: 'CS,ES,BS,PSY,MBA',
+                        maxlength: 10
+                    },
+                    description: {
+                        maxlength: 150
+                    }
+                },
+                messages: {
+                    title: {
+                        required: "{!! $messages['title.required'] !!}",
+                        minlength: "{!! $messages['title.min'] !!}",
+                        maxlength: "{!! $messages['title.max'] !!}"
+                    },
+                    code: {
+                        required: "{!! $messages['code.required'] !!}",
+                        minlength: "{!! $messages['code.min'] !!}",
+                        maxlength: "{!! $messages['code.max'] !!}"
+                    },
+                    department: {
+                        required: "{!! $messages['department.required'] !!}",
+                        in: "{!! $messages['department.in'] !!}"
+                    },
+                    description: {
+                        maxlength: "{!! $messages['description.max'] !!}"
+                    }
+                }
+            });
+
+            // console.log(form, form.valid());
+            // event.preventDefault();
+            // return false;
+            return form.valid();
+        });
+    </script>
+@endsection

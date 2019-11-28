@@ -14,20 +14,17 @@
                         <th scope="col">ID</th>
                         <th>Owner</th>
                         <th>Title</th>
-                        <th class="text-center">Code</th>
                         <th class="text-center">Department</th>
                         <th class="text-center">Academic Year</th>
                     @else
                         <th>Title</th>
-                        <th class="text-center">Code</th>
                         <th class="text-center">Department</th>
                         <th class="text-center">Academic Year</th>
                     @endif
-                    @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
-                        <th class="text-right">Links</th>
-                    @else
+                    @if(!Auth::user()->can('session.index', ['cid'=>$course->id]))
                         <th class="text-center">Instructor</th>
                     @endif
+                    <th class="text-right">Links</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -36,11 +33,9 @@
                         <th scope="row">{{ $course->id }}</th>
                         <td>{{ $course->instructor_name }}</td>
                         <td>{{ $course->title }}</td>
-                        <td class="text-center">{{ $course->code }}</td>
                         <td class="text-center">{{ $course->ac_year_pair }}</td>
                     @else
                         <td>{{ $course->title }}</td>
-                        <td class="text-center">{{ $course->code }}</td>
                         <td class="text-center">{{ $course->department_title }}</td>
                         <td class="text-center">
                             <select id="similarid" name="similarid"
@@ -56,8 +51,26 @@
                         </td>
                     @endif
                     {{--                            TODO: add user avatar to link --}}
-                    @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
+                    @if (Auth::user()->ownsCourse($course->id))
                         <td class="action-cell text-right">
+                            <a href="#"
+                               class="material-icons text-info"
+                               title="Show Students"
+                               aria-label="Show Students">person</a>
+                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]) && !$course->copied())
+                                <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
+                                    @method('POST')
+                                    @csrf
+                                    <button type="submit"
+                                            id="copy-course"
+                                            class="btn btn-lg btn-link material-icons text-warning"
+                                            title="Copy to current Academic Year"
+                                            data-title="Copy to current Academic Year?"
+                                            data-content="This will create a duplicate."
+                                            aria-label="Copy to current Academic Year">next_week
+                                    </button>
+                                </form>
+                            @endif
                             @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
                                 <a href="{{ url('/courses/' . $course->id . '/edit') }}"
                                    class="material-icons text-warning"
@@ -113,6 +126,62 @@
                    class="btn btn-success">
                     Add Students to {{ $course->code }}
                 </a>
+                <a href="{{ url( '/sessions/create/' . $course->id ) }}"
+                   class="btn btn-success">
+                    Add Sessions to {{ $course->code }}
+                </a>
+            </div>
+        @endif
+    </div>
+    <div class="row mt-3">
+        @if (Auth::user()->ownsCourse($course->id))
+            <div class="col-sm-12 col-md-12">
+                @if ($course->students()->first())
+                    <table class="table table-striped">
+                        <caption></caption>
+                        <thead>
+                        <th>#</th>
+                        <th>Name</th>
+                        </thead>
+                        <tbody>
+                        @foreach($course->students()->getModels() as $s)
+                            <tr>
+                                <td scope="row"></td>
+                                <td class="text-left">{{ $s->name }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <h3 class="text-info">This course does not have any Students</h3>
+                @endif
+            </div>
+        @endif
+    </div>
+    <div class="row mt-3">
+        @if (Auth::user()->ownsCourse($course->id))
+            <div class="col-sm-12 col-md-12">
+                @if ($course->sessions()->first())
+                    <table class="table table-striped">
+                        <caption></caption>
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th class="text-center">Deadline</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($course->sessions()->getModels() as $i => $s)
+                            <tr>
+                                <td scope="row">{{ $i }}</td>
+                                <td class="text-center">{{ $s->deadline }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <h3 class="text-info">This course does not have any Sessions</h3>
+                @endif
             </div>
         @endif
     </div>
@@ -128,6 +197,25 @@
                     return false;
                 }
                 return true;
+            });
+            $('#copy-course').confirm({
+                escapeKey: 'close',
+                buttons: {
+                    copy: {
+                        text: 'Copy',
+                        btnClass: 'btn-warning',
+                        action: function (e) {
+                            this.$target.closest('form').submit();
+                            // window.location.replace(this.$target.closest('form').attr('action'));
+                            return true;
+                        }
+                    },
+                    close: function () {
+                    }
+                },
+                theme: 'material',
+                type: 'red',
+                typeAnimated: true,
             });
             $('#delete-course').confirm({
                 escapeKey: 'close',

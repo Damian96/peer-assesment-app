@@ -11,7 +11,7 @@
         @endif
         @yield('breadcrumbs')
         @if (isset($title))
-            <h1>{{ $title ?? '' }}</h1>
+            <h3 class="title">{{ $title ?? '' }}</h3>
         @endif
         @yield('content')
     </section>

@@ -43,6 +43,9 @@ class CourseController extends Controller
 
             'instructor.required' => 'Instructor is required!',
 
+            'department.required' => 'A Department is required!',
+            'department.in' => 'Invalid Department!',
+
             'description.max' => 'description is too long.',
         ];
 
@@ -75,6 +78,7 @@ class CourseController extends Controller
         $rules = [
             'title' => 'required|string|min:5|max:50',
             'code' => 'required|string|min:6|max:10',
+            'department' => 'required|string|in:CS,ES,BS,PSY,MBA|max:255',
             'description' => 'nullable|string|max:150'
         ];
         switch ($action) {
@@ -116,6 +120,7 @@ class CourseController extends Controller
 
         if (Auth::user()->isInstructor()) { # Instructor
             $query->where('user_id', '=', Auth::user()->id, 'and');
+//            $query->whereIntegerInRaw('user_id', [Auth::user()->id]);
         } elseif (!Auth::user()->isAdmin()) { # Student
             $query->join('student_course', 'course_id', '=', 'id', 'inner', false);
             $query->where('student_course.user_id', '=', Auth::user()->id, 'and');
@@ -125,18 +130,20 @@ class CourseController extends Controller
         }
 
         if (!Auth::user()->isStudent()) {
-            if ($request->get('ac_year', 0) > 0) {
-                $ac_year = Carbon::create($request->get('ac_year'), 1, 1, 0, 0, 0, config('app.timezone'));
+            if (intval(date('m')) >= 8) {
+                $ac_year = Carbon::now(config('app.timezone'))->setMonth(9)->startOfMonth();
             } else {
-                $ac_year = Carbon::now(config('app.timezone'));
+                $ac_year = Carbon::now(config('app.timezone'))->setMonth(4)->startOfMonth();
             }
-            $query->whereBetween('courses.ac_year', [$ac_year->startOfYear()->toDateTimeString(), $ac_year->endOfYear()->toDateTimeString()], 'and', false);
-            $ac_year = $ac_year->year;
+            if ($request->get('ac_year', false) == 'previous') {
+                $query->where('ac_year', '<=', $ac_year->toDateString());
+            } else {
+                $query->where('ac_year', '>=', $ac_year->toDateString());
+            }
+//            return dd($query->toSql(), $ac_year->toDateString());
         } else {
             $ac_year = intval(date('Y'));
         }
-
-        $query->addSelect('courses.*');
 
         $query->orderBy('courses.created_at', 'desc');
         $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $request->get('page', 1));
@@ -152,7 +159,8 @@ class CourseController extends Controller
     public function create(Request $request)
     {
         $title = 'Create Course';
-        return response(view('course.create', compact('title')), 200, $request->headers->all());
+        $messages = $this->messages(__FUNCTION__);
+        return response(view('course.create', compact('title', 'messages')), 200, $request->headers->all());
     }
 
     /**
@@ -246,12 +254,12 @@ class CourseController extends Controller
             throw abort(404);
         }
 
-        if ($request->has('copy')) {
-            $clone = $course->copyToCurrentYear();
-            return redirect()->action('CourseController@show', [$clone], 302)
-                ->withInput($request->input())
-                ->with('title', $title);
-        }
+//        if ($request->has('copy')) {
+//            $clone = $course->copyToCurrentYear();
+//            return redirect()->action('CourseController@show', [$clone], 302)
+//                ->withInput($request->input())
+//                ->with('title', $title);
+//        }
 
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
@@ -281,6 +289,25 @@ class CourseController extends Controller
     }
 
     /**
+     * Copy the specified Course to the current academic year.
+     * @method POST
+     * @param Request $request
+     * @return void
+     */
+    public function copy(Request $request, Course $course)
+    {
+        $clone = $course->copyToCurrentYear();
+        $title = 'Course ' . $course->code;
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'The Course has been successfully copied!',
+        ]);
+        return redirect()->action('CourseController@show', [$clone], 302)
+            ->withInput($request->input())
+            ->with('title', $title);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @method DELETE
@@ -303,7 +330,7 @@ class CourseController extends Controller
                 $request->session()->flash('message', [
                     'level' => 'danger',
                     'heading' => sprintf("Something went wrong while deleting %s!", $course->code),
-                    'body' => 'Please contact the administrator, at : '. config('app.admin.address'),
+                    'body' => 'Please contact the administrator, at : ' . config('app.admin.address'),
                 ]);
                 return redirect()->back(302);
             }

@@ -12,9 +12,22 @@
 body {
   min-height: 100vh;
   padding-top: 5rem;
+  font-family: $font-family-base;
 
   main {
     min-height: 70vh;
+
+    .title {
+      border-bottom: 1px solid #fcab0e;
+      padding-bottom: 9px;
+      position: relative;
+      font-family: $font-family-monospace;
+      font-size: 20px;
+      font-weight: 300;
+      margin-bottom: 15px;
+      margin-top: 20px;
+      text-transform: uppercase;
+    }
   }
 }
 
@@ -50,6 +63,7 @@ form {
     &.is-invalid {
       border: 1px solid #dc3545;
       border-radius: 0.25rem;
+
       .custom-combobox-toggle {
         border: 1px solid #dc3545;
         border-left-width: 0;
@@ -111,10 +125,27 @@ form {
   }
 }
 
-.action-cell > .material-icons {
-  line-height: 20px;
-  font-size: 20px;
+.action-cell {
+  position: relative;
+  .material-icons {
+    line-height: 20px;
+    font-size: 20px;
+  }
+  form {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+
+    .btn {
+      padding: 0 !important;
+      //margin-top: -12px;
+    }
+  }
 }
+
 
 table {
   tr.separator {
