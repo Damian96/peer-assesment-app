@@ -541,6 +541,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.trash':
             case 'course.add-student':
             case 'session.index':
+            case 'course.students':
                 if (array_key_exists('id', $arguments)) {
                     $cid = $arguments['id'];
                 } elseif (array_key_exists('cid', $arguments)) {

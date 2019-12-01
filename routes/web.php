@@ -42,6 +42,7 @@ Route::group(['prefix' => '/courses'], function() {
     Route::match(['delete'], '/{course}/delete', 'CourseController@destroy')->name('course.destroy');
     Route::match(['post'], '/{course}/duplicate', 'CourseController@copy')->name('course.copy');
     Route::match(['get'], '{course}/view', 'CourseController@show')->name('course.view');
+    Route::match(['get'], '{course}/students', 'CourseController@students')->name('course.students');
     Route::match(['get'], '{course}/add-student', 'UserController@addStudent')->name('course.add-student');
     Route::match(['post'], '{course}/store-student', 'UserController@storeStudent')->name('user.store-student');
 });

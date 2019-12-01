@@ -29,7 +29,7 @@ class CoursesTableSeeder extends Seeder
             $code = $departments[rand(0, count($departments)-1)] . random_int((1000), (1000+$i+self::MAX));
             DB::table($this->table)->insert([
                 'user_id' => $instructors[array_rand($instructors, 1)],
-                'title' => substr($lipsum, rand(0, 15), (31-$i)),
+                'title' => substr($lipsum, rand(1, 15), (50-$i)),
                 'code' => $code,
                 'ac_year' => Carbon::createFromDate($years[array_rand($years, 1)], $months[array_rand($months, 1)], 1, config('app.timezone'))->format(config('constants.date.stamp')),
                 'department' => $departments[array_rand($departments, 1)],

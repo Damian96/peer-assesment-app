@@ -233,7 +233,8 @@ class CourseController extends Controller
     public function edit(Request $request, Course $course)
     {
         $title = 'Edit Course ' . $course->code;
-        return response(view('course.edit', compact('title', 'course')), 200, $request->headers->all());
+        $messages = $this->messages(__FUNCTION__);
+        return response(view('course.edit', compact('title', 'course', 'messages')), 200, $request->headers->all());
     }
 
     /**
@@ -253,13 +254,6 @@ class CourseController extends Controller
         } catch (ModelNotFoundException $e) {
             throw abort(404);
         }
-
-//        if ($request->has('copy')) {
-//            $clone = $course->copyToCurrentYear();
-//            return redirect()->action('CourseController@show', [$clone], 302)
-//                ->withInput($request->input())
-//                ->with('title', $title);
-//        }
 
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
@@ -341,5 +335,16 @@ class CourseController extends Controller
                 return redirect()->back(302);
             }
         }
+    }
+
+    /**
+     * @method GET
+     * @param Request $request
+     * @param Course $course
+     * @return \Illuminate\Http\Response
+     */
+    public function students(Request $request, Course $course)
+    {
+        return \response(view('course.students', compact('title', 'students', 'course')));
     }
 }

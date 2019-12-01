@@ -23,8 +23,9 @@
                     @endif
                     @if(!Auth::user()->can('session.index', ['cid'=>$course->id]))
                         <th class="text-center">Instructor</th>
+                    @else
+                        <th class="text-right">Links</th>
                     @endif
-                    <th class="text-right">Links</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -167,6 +168,7 @@
                         <thead>
                         <tr>
                             <th>#</th>
+                            <th class="text-center">Title</th>
                             <th class="text-center">Deadline</th>
                         </tr>
                         </thead>
@@ -174,6 +176,7 @@
                         @foreach($course->sessions()->getModels() as $i => $s)
                             <tr>
                                 <td scope="row">{{ $i }}</td>
+                                <td class="text-center">{{ $s->title }}</td>
                                 <td class="text-center">{{ $s->deadline }}</td>
                             </tr>
                         @endforeach

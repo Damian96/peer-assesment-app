@@ -22,7 +22,7 @@
                 <tbody>
                 @foreach($sessions as $k => $s)
                     <tr>
-                        <th scope="row">{{ $k }}</th>
+                        <th scope="row">{{ ($sessions->firstItem()+$k) }}</th>
                         @if($s->course)
                             <td>
                                 <a href="{{ url('courses/' . $s->course->id . '/view') }}"

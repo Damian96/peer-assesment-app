@@ -290,7 +290,6 @@ class UserController extends Controller
      */
     public function storeStudent(Request $request, Course $course)
     {
-//        return dd($this->rules(__FUNCTION__), $request->all(), $this->messages(__FUNCTION__));
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
             return redirect()->action('UserController@addStudent', [$course], 302)
@@ -343,7 +342,7 @@ class UserController extends Controller
                 $request->session()->flash('message', [
                     'level' => 'warning',
                     'heading' => 'No students imported.',
-                    'body' => 'All students were already registered into the system.',
+                    'body' => sprintf("All students were already registered into %s.", $course->code),
                 ]);
             }
             return redirect()->action('CourseController@show', [$course], 302, $request->headers->all());
@@ -357,7 +356,7 @@ class UserController extends Controller
             $message = [
                 'level' => 'success',
                 'heading' => 'Student successfully created.',
-                'body' => 'We have sent an e-mail to ' . $result->email . ', inviting him to your course.',
+                'body' => sprintf("We have sent an e-mail to %s, inviting him to your course.", $result->email),
             ];
         } elseif ($request->get('form') == 'select-student') {
             try {
@@ -372,7 +371,7 @@ class UserController extends Controller
             if ($exists) {
                 $request->session()->flash('message', [
                     'level' => 'warning',
-                    'heading' => 'Student ' . $user->name . ', is already registered to ' . $course->code . '!',
+                    'heading' => sprintf("Student %s, is already registered to %s!", $user->name, $course->code),
                 ]);
             }
             $result = new StudentCourse(['user_id' => $user->id, 'course_id' => $course->id]);
@@ -381,8 +380,8 @@ class UserController extends Controller
             };
             $message = [
                 'level' => 'success',
-                'heading' => 'Student successfully added to ' . $course->code . '!',
-                'body' => 'We have sent an e-mail to ' . $user->email . ', inviting him to your course.',
+                'heading' => sprintf("Student successfully added to %s!", $course->code),
+                'body' => sprintf("We have sent an e-mail to %s, inviting him to your course.", $user->email),
             ];
         } else throw abort(403);
 

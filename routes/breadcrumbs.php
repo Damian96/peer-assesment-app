@@ -9,7 +9,7 @@
 Breadcrumbs::for('courses', function ($trail) {
     $trail->push('My Courses', route('course.index'));
 
-    $crumbs = session()->get('crumbs');
+    $crumbs = session()->get('crumbs', []);
     $current = Route::current()->getName();
     if ($current == 'course.index') # Restart $crumbs
         session()->put('crumbs', [$current]);

@@ -203,7 +203,7 @@ class Course extends Model
      */
     public function sessions()
     {
-        return $this->hasMany('\App\Session', 'id', 'course_id');
+        return $this->hasMany('\App\Session', 'course_id', 'id');
     }
 
     /**
@@ -263,5 +263,20 @@ class Course extends Model
             ->where('status', '=', '1')
             ->where('ac_year', '>=', $ac_year->toDateString())
             ->exists();
+    }
+
+    /**
+     * Retrieve the courses of the current academic year.
+     * @return Model[]|\Illuminate\Database\Builder[]|array|false
+     */
+    public static function getCurrentYears()
+    {
+        $month = intval(date('m'));
+        if ($month > 5) $ac_year = Carbon::createFromDate(intval(date('Y')), 9, 1);
+        else $ac_year = Carbon::createFromDate(intval(date('Y'))-1, 9, 1);
+        return self::whereStatus('1')
+            ->where('ac_year', '>=', $ac_year->toDateString())
+            ->whereNotNull('department')
+            ->get();
     }
 }

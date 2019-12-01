@@ -1,5 +1,6 @@
 <?php
 
+use App\Course;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -7,7 +8,7 @@ use Magyarjeti\LaravelLipsum\LipsumFacade as Lipsum;
 
 class SessionsTableSeeder extends Seeder
 {
-    const MAX = 30;
+    const MAX = 60;
     private $table = 'sessions';
 
     /**
@@ -19,12 +20,14 @@ class SessionsTableSeeder extends Seeder
     public function run()
     {
         DatabaseSeeder::refreshTable($this->table, true);
-//        $instructors = array_column(User::getInstructors()->toArray(), 'id');
-        $departments = ['CCP', 'CBE', 'CES', 'CPY'];
+        $courses = Course::getCurrentYears();
+        $cids = array_column($courses->toArray(), 'id');
         $lipsum = Lipsum::short()->text(3);
         for($i=1; $i<=self::MAX; $i++) {
+            $c = array_rand($cids, 1);
             DB::table($this->table)->insert([
-                'course_id' => rand(1, CoursesTableSeeder::MAX),
+                'course_id' => $cids[$c],
+                'title' => $courses[$c]->code . '-Session',
                 'status' => '1',
                 'instructions' => substr($lipsum, -(rand(0, 50))),
                 'deadline' => Carbon::now(config('app.timezone'))->addMonths(rand(1,5)),
