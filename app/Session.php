@@ -92,4 +92,13 @@ class Session extends Model
     {
         return $this->hasOne('App\Course', 'id', 'course_id');
     }
+
+    /**
+     * @method void
+     * @return boolean
+     */
+    public function sendEmailNotification()
+    {
+
+    }
 }

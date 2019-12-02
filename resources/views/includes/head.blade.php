@@ -29,7 +29,8 @@
             onkeyup: false,
             errorPlacement: function (error, element) {
                 element.addClass('is-invalid')
-                    .siblings('.invalid-feedback')
+                    .closest('.form-group')
+                    .find('.invalid-feedback')
                     .html("<strong>" + error.text() + "</strong>")
                     .addClass('d-block');
                 return true;
@@ -38,7 +39,8 @@
                 element = $(element);
                 element.removeClass('is-invalid')
                     .addClass('is-valid')
-                    .siblings('.invalid-feedback')
+                    .closest('.form-group')
+                    .find('.invalid-feedback')
                     .html('')
                     .removeClass('d-block');
                 return true;
@@ -48,11 +50,21 @@
             let arr = params.split(',');
             return this.optional(element) || (arr.length && arr.includes(value));
         });
+        $.validator.addMethod('checked', function (value, element, params) {
+            return this.optional(element) || element.checked || value === 'on' || value === '1';
+        });
         $.validator.addMethod('pattern', function (value, element, params) {
             return this.optional(element) || (new RegExp(params, 'im')).test(value);
         });
         $.validator.addMethod('different', function (value, element, params) {
             return this.optional(element) || value !== params;
+        });
+        $.widget("ui.tooltip", $.ui.tooltip, {
+            _open: function () {
+                console.log(this.element.siblings('[class*=toggle]').tooltip('show'));
+                return false;
+                // throw Error('tooltip:open');
+            },
         });
     </script>
 </head>
@@ -104,8 +116,9 @@
                         <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">Sessions</a>
                         <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.active') !== false) ? ' active' : '' }}"
-                               href="{{ url('/sessions') }}">Active</a>
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.active') !== false) ? ' active' : '' }}">Active</a>
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.create') !== false) ? ' active' : '' }}"
+                               href="{{ url('/sessions/create') }}">Create</a>
                         </div>
                     </li>
                 @endif

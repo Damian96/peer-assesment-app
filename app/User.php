@@ -529,6 +529,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.store':
             case 'session.store':
             case 'session.active':
+            case 'session.create':
                 return $this->isInstructor();
 //            case 'session.update':
             case 'session.create':

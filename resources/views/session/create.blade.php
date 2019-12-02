@@ -4,8 +4,11 @@
     @include('session.form', [
         'action' => url('/sessions/store'),
         'method' => 'POST',
+        'course' => $course,
+        'courses' => isset($courses) ? $courses : null,
+        'messages' => $messages,
         'button' => [
-            'title' => 'Create Session for ' . $course->code,
+            'title' => 'Create Session' . (isset($course) ? 'for ' . $course->code : ''),
             'label' => 'Create',
         ],
     ])

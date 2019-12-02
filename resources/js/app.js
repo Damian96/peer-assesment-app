@@ -5,6 +5,7 @@ import $ from 'jquery';
 // jQuery-UI
 import 'jquery-ui/ui/widgets/datepicker.js';
 import 'webpack-jquery-ui/autocomplete.js';
+import 'webpack-jquery-ui/tooltip.js';
 import 'webpack-jquery-ui/selectmenu.js';
 
 window.$ = window.jQuery = $;

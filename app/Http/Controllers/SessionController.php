@@ -37,6 +37,8 @@ class SessionController extends Controller
             case 'create':
             case 'store':
                 return [
+                    'course' => 'required|numeric|exists:courses,id',
+                    'title' => 'required|string|min:3|max:50',
                     'status' => 'nullable|boolean',
                     'instructions' => 'required|string|max:1000',
                     'deadline' => 'required|date_format:m-d-Y',
@@ -56,9 +58,16 @@ class SessionController extends Controller
             case 'create':
             case 'store':
                 return [
+                    'course.required' => 'The target Course is required!',
+                    'course.numeric' => 'Invalid Course!',
+                    'course.exists' => 'Invalid Course!',
+                    'title.required' => 'The Session title is required!',
+                    'title.min' => 'The title should be at least 3 characters!',
+                    'title.max' => 'The title should not exceed 50 characters!',
                     'status.required' => 'The Session status is required!',
                     'status.boolean' => 'The Session status must be boolean!',
-                    'instructions.required' => 'The Session should have instructions',
+                    'instructions.required' => 'The Session should have instructions!',
+                    'instructions.max' => 'The Session instructions should not exceed 1000 characters!',
                     'deadline.required' => 'The Session deadline is required!',
                     'deadline.date_format' => 'The Session deadline should have a valid format!',
                 ];
@@ -94,13 +103,13 @@ class SessionController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function active(Request $request) {
+    public function active(Request $request)
+    {
         $title = 'Active Sessions';
         $sessions = Session::whereStatus('1')
             ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
             ->orderBy('deadline', 'ASC')
             ->paginate(self::PER_PAGE);
-//            ->getModels();
 
         return response(view('session.active', compact('sessions', 'title')), 200, $request->headers->all());
     }
@@ -113,8 +122,16 @@ class SessionController extends Controller
      */
     public function create(Request $request, Course $course)
     {
-        $title = 'Create Session - ' . $course->code;
-        return \response(view('session.create', compact('title', 'course')), 200, $request->headers->all());
+        if ($course instanceof Course && $course->code) {
+            $courses = null;
+            $title = 'Create Session - ' . $course->code;
+        } else {
+            $course = null;
+            $courses = Course::getCurrentYears();
+            $title = 'Create Session';
+        }
+        $messages = $this->messages(__FUNCTION__);
+        return \response(view('session.create', compact('title', 'course', 'messages', 'courses')), 200, $request->headers->all());
     }
 
     /**
@@ -134,6 +151,9 @@ class SessionController extends Controller
 
         $session = new Session($request->all());
         if ($session->save()) {
+            if ($request->get('status', false) == '1') {
+//                $session->
+            }
 
         }
 
