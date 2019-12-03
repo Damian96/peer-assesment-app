@@ -115,13 +115,15 @@ form {
   }
 }
 
-.navbar-expand-md {
-  .navbar-nav {
-    .dropdown-menu[aria-labelledby="user-dropdown"] {
-      width: 160px;
-      transform: translateX(-100%);
-      right: 0;
-      left: 100%;
+@include media-breakpoint-up(md) {
+  .navbar-expand-md {
+    .navbar-nav {
+      .dropdown-menu[aria-labelledby="user-dropdown"] {
+        width: 160px;
+        transform: translateX(-100%);
+        right: 0;
+        left: 100%;
+      }
     }
   }
 }

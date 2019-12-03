@@ -10,7 +10,10 @@
     </div>
     <div class="row">
         <div class="col-md-12 text-center">
-            <strong class="text-warning">Pre-Alpha</strong> version
+            <strong class="text-warning">Beta</strong> version
+        </div>
+        <div class="col-md-12 text-center">
+            Copyright &copy; <?php echo date('Y'); ?> <strong class="text-primary"><a title="Damian96" target="_blank" href="https://github.com/Damian96">@Damian96</a></strong>
         </div>
     </div>
 </footer>

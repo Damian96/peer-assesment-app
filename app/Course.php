@@ -185,6 +185,15 @@ class Course extends Model
     }
 
     /**
+     * Alias of self::user.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function instructor()
+    {
+        return $this->user()->first();
+    }
+
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array

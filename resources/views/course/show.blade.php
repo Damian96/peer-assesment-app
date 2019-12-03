@@ -54,7 +54,7 @@
                     {{--                            TODO: add user avatar to link --}}
                     @if (Auth::user()->ownsCourse($course->id))
                         <td class="action-cell text-right">
-                            <a href="#"
+                            <a href="{{ url($course->instructor()->id . '/show') }}"
                                class="material-icons text-info"
                                title="Show Students"
                                aria-label="Show Students">person</a>
@@ -154,7 +154,7 @@
                         </tbody>
                     </table>
                 @else
-                    <h3 class="text-info">This course does not have any Students</h3>
+                    <h3 class="text-warning my-3">This course does not have any Students</h3>
                 @endif
             </div>
         @endif
@@ -175,7 +175,7 @@
                         <tbody>
                         @foreach($course->sessions()->getModels() as $i => $s)
                             <tr>
-                                <td scope="row">{{ $i }}</td>
+                                <td scope="row">{{ $i+1 }}</td>
                                 <td class="text-center">{{ $s->title }}</td>
                                 <td class="text-center">{{ $s->deadline }}</td>
                             </tr>
@@ -183,7 +183,7 @@
                         </tbody>
                     </table>
                 @else
-                    <h3 class="text-info">This course does not have any Sessions</h3>
+                    <h3 class="text-warning my-3">This course does not have any Sessions</h3>
                 @endif
             </div>
         @endif

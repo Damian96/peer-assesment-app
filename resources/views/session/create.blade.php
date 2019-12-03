@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render('session.create') }}
+@endsection
+
 @section('content')
     @include('session.form', [
         'action' => url('/sessions/store'),

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render('course.create') }}
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-md-8 offset-md-2">

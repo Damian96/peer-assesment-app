@@ -66,6 +66,17 @@
                 // throw Error('tooltip:open');
             },
         });
+        $(function () {
+            // Show User's Menu
+            $('.navbar-toggler').on('click', function (e) {
+                if (!$('#userMenu').hasClass('show')) {
+                    $('#userMenu').addClass('show');
+                } else {
+                    $('#userMenu').removeClass('show');
+                }
+                return true;
+            });
+        })
     </script>
 </head>
 <body>
@@ -82,7 +93,7 @@
                 @if(Auth::user()->can('user.home'))
                     @if (strpos(Route::current()->getName(), 'home') !== false)
                         <li class="nav-item active">
-                            <a class="nav-link" href="{{ url('/home') }}">Home<span class="sr-only">(current)</span></a>
+                            <a class="nav-link" href="{{ url('/home') }}">Home</a>
                         </li>
                     @else
                         <li class="nav-item">
@@ -125,7 +136,7 @@
                 @endif
             </ul>
         </div>
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <div class="navbar-collapse collapse w-100 order-2 order-md-1 dual-collapse2" id="userMenu">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'user.show') !== false || strpos(Route::current()->getName(), 'user.profile') !== false) ? ' active' : '' }}">
                     <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" data-toggle="dropdown"
@@ -139,7 +150,7 @@
             </ul>
         </div>
     @elseauth
-        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+        <div class="navbar-collapse collapse w-100 order-2 dual-collapse2">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" data-toggle="dropdown"
