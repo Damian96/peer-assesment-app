@@ -21,6 +21,7 @@ class Version0620191203Sessions extends Migration
             $table->string('title', 255);
             $table->timestamp('deadline')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->text('instructions');
+            $table->char('status', 1)->default('0');
             $table->timestamp('open_data')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));

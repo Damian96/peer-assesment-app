@@ -31,6 +31,7 @@ class CoursesTableSeeder extends Seeder
                 'user_id' => $instructors[array_rand($instructors, 1)],
                 'title' => substr($lipsum, rand(1, 15), (50-$i)),
                 'code' => $code,
+                'status' => '1',
                 'ac_year' => Carbon::createFromDate($years[array_rand($years, 1)], $months[array_rand($months, 1)], 1, config('app.timezone'))->format(config('constants.date.stamp')),
                 'department' => $departments[array_rand($departments, 1)],
                 'description' => substr($lipsum, 0, (100-$i)),

@@ -116,7 +116,8 @@
                         <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">Sessions</a>
                         <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.active') !== false) ? ' active' : '' }}">Active</a>
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.active') !== false) ? ' active' : '' }}"
+                               href="{{ url('/sessions') }}">Active</a>
                             <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.create') !== false) ? ' active' : '' }}"
                                href="{{ url('/sessions/create') }}">Create</a>
                         </div>

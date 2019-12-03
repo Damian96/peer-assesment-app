@@ -30,7 +30,7 @@ class SessionsTableSeeder extends Seeder
                 'title' => $courses[$c]->code . '-Session',
                 'status' => '1',
                 'instructions' => substr($lipsum, -(rand(0, 50))),
-                'deadline' => Carbon::now(config('app.timezone'))->addMonths(rand(1,5)),
+                'deadline' => Carbon::now(config('app.timezone'))->addSeconds(5)->addMonths(rand(1,5)),
             ]);
         }
     }

@@ -521,6 +521,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         switch ($ability) {
             case 'course.index':
             case 'user.profile':
+//            case 'user.create':
+//            case 'user.store':
             case 'user.show':
                 return true;
             case 'user.home':

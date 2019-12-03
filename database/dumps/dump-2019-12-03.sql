@@ -187,5 +187,9 @@ CREATE TABLE `users`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
 
-
+SET NAMES utf8mb4;
+INSERT INTO `users` (`id`, `email`, `email_verified_at`, `fname`, `lname`, `department`, `reg_num`, `instructor`, `admin`, `password`, `remember_token`, `created_at`, `updated_at`, `last_login`) VALUES
+(1,	'dgiankakis@citycollege.sheffield.eu',	'2019-12-03 21:43:48',	'Damianos',	'Giankakis',	'admin',	'',	'0',	'1',	'$2y$10$ze/vyyQir2SBaGrUlcZ59uDP7oz/EZwOf75R5NiFDrazSOiaCU9iO',	'kVF9JylL5Itfp8xI533JyhOtNeEgWzZPZ7xkQlKI3FAHmpwPO0mZ6pZgt7lp',	'2019-12-03 21:40:59',	'2019-12-03 21:43:58',	'2019-12-03 21:40:59');
+INSERT INTO `users` (`id`, `email`, `email_verified_at`, `fname`, `lname`, `department`, `reg_num`, `instructor`, `admin`, `password`, `remember_token`, `created_at`, `updated_at`, `last_login`) VALUES
+(2,	'istamatopoulou@citycollege.sheffield.eu',	'2019-12-03 22:04:48',	'Ioanna',	'Stamatopoulou',	'admin',	NULL,	'1',	'0',	'$2y$10$YbCkEvrAgn7Pdiz7lJU28eeTokSJit9fuG7vZcneshd/EPU5Q/XKu',	'PBdepPPr3CwCA4KhvFMAeXMWneOyyh8qVyJT1yzK4dCXvUlmhQ32ZvJzBY8r',	'2019-12-03 22:03:28',	'2019-12-03 22:07:03',	'2019-12-03 22:03:29');
 -- 2019-12-03 19:18:15

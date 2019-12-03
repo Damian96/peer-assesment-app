@@ -42,7 +42,7 @@ class UserController extends Controller
         $this->middleware('web');
         $this->middleware('guest')->except([
             'logout', 'auth', # login-logout
-//            'create', 'store', # user-register
+            'create', 'store', # user-register
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
@@ -142,6 +142,11 @@ class UserController extends Controller
             'email.filter' => 'Invalid e-mail address!',
             'email.email' => 'Invalid e-mail address!',
             'email.unique' => 'Invalid e-mail address!',
+
+            'fname.required' => 'We need to know your first name!',
+            'lname.required' => 'We need to know your last name!',
+
+            'terms.required' => 'Please accept the terms and conditions!',
 
             'password.required' => 'Your password is required!',
             'password.min' => 'Your password should be at least 3 characters!',
@@ -446,7 +451,9 @@ class UserController extends Controller
     /**
      * @method POST
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     *
+     * TODO: add verified check or Middleware?
      */
     public function auth(Request $request)
     {
@@ -617,7 +624,7 @@ class UserController extends Controller
             if ($request->get('action', false) == 'invite') {
                 return redirect()->action('UserController@login', [], 302, $request->headers->all());
             } else {
-                return redirect()->action('UserController@index', [], 302, $request->headers->all());
+                return redirect()->action('UserController@login', [], 302);
             }
         } elseif ($request->get('action', false) == 'password') {
             $request->setUserResolver(function () use ($user) {

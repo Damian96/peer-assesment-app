@@ -272,8 +272,8 @@ class Course extends Model
     public static function getCurrentYears()
     {
         $month = intval(date('m'));
-        if ($month > 5) $ac_year = Carbon::createFromDate(intval(date('Y')), 9, 1);
-        else $ac_year = Carbon::createFromDate(intval(date('Y'))-1, 9, 1);
+        if ($month > 5) $ac_year = Carbon::createFromDate(intval(date('Y')), 9, 1)->startOfDay();
+        else $ac_year = Carbon::createFromDate(intval(date('Y'))-1, 9, 1)->startOfDay();
         return self::whereStatus('1')
             ->where('ac_year', '>=', $ac_year->toDateString())
             ->whereNotNull('department')
