@@ -127,6 +127,7 @@ class CourseController extends Controller
         } else { # Admin
             $query->leftJoin('users', 'users.id', '=', 'courses.user_id');
             $query->selectRaw("CONCAT(SUBSTR(fname, 1, 1), '. ', lname) AS instructor_name");
+            $query->addSelect(['courses.id', 'user_id', 'title', 'status', 'code', 'courses.department', 'ac_year']);
         }
 
         if (!Auth::user()->isStudent()) {

@@ -64,7 +64,7 @@
                 <div class="form-group">
                     <label class="control-label" for="studentid">Student</label>
 
-                    @if (!empty($students))
+                    @if (!$students->isEmpty())
                         <select id="studentid" class="{{ $errors->has('studentid') ? 'is-invalid' : '' }}"
                                 name="studentid" required>
                             @foreach($students as $student)
