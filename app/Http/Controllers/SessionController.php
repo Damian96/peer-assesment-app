@@ -153,6 +153,7 @@ class SessionController extends Controller
         if ($session->save()) {
             if ($request->get('status', false) == '1') {
 //                $session->
+                // @TODO
             }
 
         }
@@ -162,6 +163,17 @@ class SessionController extends Controller
         } else {
             return redirect()->back(302);
         }
+    }
+
+    /**
+     * @param $request \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response
+     */
+    public function addForm(Request $request)
+    {
+        $title = 'Add Form Template';
+        $sessions = Session::all();
+        return \response(view('session.addForm', compact('title', 'sessions')), 200);
     }
 
 }
