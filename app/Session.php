@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  * @property-read \App\Course $course
+ * @property string title
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session query()
@@ -48,8 +49,10 @@ class Session extends Model
         switch ($name) {
             case 'deadline_full':
                 return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
-            case 'ac_year':
-                return Carbon::createFromTimestamp($this->ac_year, config('app.timezone'))->format('Y');
+//            case 'title_full':
+//                return $this->title . ' - ' . $this->ac_year;
+            case 'title_full':
+                return $this->title . ' - ' . Carbon::createFromTimestamp(strtotime($this->course()->first()->ac_year), config('app.timezone'))->format('Y');
             default:
                 return parent::__get($name);
         }

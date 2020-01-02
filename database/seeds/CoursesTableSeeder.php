@@ -25,16 +25,17 @@ class CoursesTableSeeder extends Seeder
         $departments = ['CCP', 'CBE', 'CES', 'CPY'];
         $lipsum = Lipsum::short()->text(3);
         $years = range(config('constants.date.start'), intval(date('Y')));
-        for($i=1; $i<=self::MAX; $i++) {
-            $code = $departments[rand(0, count($departments)-1)] . random_int((1000), (1000+$i+self::MAX));
+        $range = range(1000, 1000 + self::MAX);
+        for ($i = 1; $i <= self::MAX; $i++) {
+            $code = $departments[array_rand($departments)] . array_pop($range);
             DB::table($this->table)->insert([
                 'user_id' => $instructors[array_rand($instructors, 1)],
-                'title' => substr($lipsum, rand(1, 15), (50-$i)),
+                'title' => substr($lipsum, rand(1, 15), (50 - $i)),
                 'code' => $code,
                 'status' => '1',
                 'ac_year' => Carbon::createFromDate($years[array_rand($years, 1)], $months[array_rand($months, 1)], 1, config('app.timezone'))->format(config('constants.date.stamp')),
                 'department' => $departments[array_rand($departments, 1)],
-                'description' => substr($lipsum, 0, (100-$i)),
+                'description' => substr($lipsum, 0, (100 - $i)),
             ]);
         }
     }

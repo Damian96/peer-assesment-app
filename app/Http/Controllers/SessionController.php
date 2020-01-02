@@ -137,7 +137,7 @@ class SessionController extends Controller
     /**
      * @method POST
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
