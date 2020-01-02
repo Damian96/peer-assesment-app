@@ -2,6 +2,7 @@
   <dictionary name="damian">
     <words>
       <w>authenticatable</w>
+      <w>autocompleteselect</w>
       <w>bcrypt</w>
       <w>biscolab</w>
       <w>cachebusting</w>

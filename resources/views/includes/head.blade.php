@@ -9,7 +9,9 @@
 
     <title>{{ isset($title) ? $title : (isset($error_number) ? 'Error ' . $error_number : '') . ' | ' . config('app.name') }}</title>
 
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <link rel="stylesheet" href="{{ url('/css/app.css') }}">
+    <script type="text/javascript">$.noConflict();</script>
     <script charset="utf-8" src="{{ url('/js/app.js') }}"></script>
 
     <!-- Fonts -->

@@ -1,6 +1,7 @@
 require('./bootstrap');
 
 // Bootstrap 4.0
+// jQuery 3.3
 import $ from 'jquery';
 // jQuery-UI
 import 'jquery-ui/ui/widgets/datepicker.js';
