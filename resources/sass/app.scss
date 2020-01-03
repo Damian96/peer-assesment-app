@@ -211,3 +211,22 @@ table {
     }
   }
 }
+
+.card {
+  .card-title {
+    max-height: 35px;
+
+    .input-group-append {
+      position: relative;
+      left: 100%;
+      top: 50%;
+      transform: translate(-115%, -115%);
+
+      .btn {
+        border-radius: 0.5rem !important;
+        margin-left: 5px;
+        cursor: pointer;
+      }
+    }
+  }
+}

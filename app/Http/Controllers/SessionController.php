@@ -176,4 +176,21 @@ class SessionController extends Controller
         return \response(view('session.addForm', compact('title', 'sessions')), 200);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function storeForm(Request $request)
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+
+        if ($validator->fails()) {
+            return redirect()->back(302)
+                ->withErrors($validator->errors())
+                ->with('errors', $validator->errors());
+        }
+
+        return dd($request->all());
+    }
+
 }
