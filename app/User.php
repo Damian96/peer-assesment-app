@@ -547,6 +547,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.store':
             case 'session.store':
             case 'session.active':
+            case 'form.add':
+            case 'form.store':
             case 'session.create':
                 return $this->isInstructor();
 //            case 'session.update':
@@ -579,8 +581,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 //                    return false;
 //                }
 //                return $this->isInstructor() || ($this->isStudent() && $this->isRegistered($cid));
-            case 'form.add': // @FIXME change it
-                return true;
             default:
                 return false;
         }

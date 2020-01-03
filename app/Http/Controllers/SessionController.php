@@ -43,6 +43,14 @@ class SessionController extends Controller
                     'instructions' => 'required|string|max:1000',
                     'deadline' => 'required|date_format:m-d-Y',
                 ];
+            case 'storeForm':
+                return [
+                    '_method' => 'required|in:POST',
+                    'session_id' => 'required|int|exists:sessions,id',
+                    'question-type' => 'required|array|filled',
+                    'question-mark' => 'nullable|array',
+                    'question-mark-type' => 'nullable|array',
+                ];
             default:
                 return [];
         }
@@ -185,12 +193,26 @@ class SessionController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
+            return dd($validator->errors(), $request->all());
             return redirect()->back(302)
                 ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
 
-        return dd($request->all());
+        $data = array();
+        // Map request's data to final input data
+        foreach ($request->get('question-type') as $i => $type) {
+            array_push($data, array(
+                'title' => $request->get('question-title')[$i],
+                'type' => $type,
+            ));
+            if ($type === 'mark') {
+                $data[count($data) - 1]['mark'] = array_slice($request->get('question-mark'), 0, 1)[0];
+                $data[count($data) - 1]['mark-type'] = array_slice($request->get('question-mark-type'), 0, 1)[0];
+            }
+        }
+
+        return dd($request->all(), $data);
     }
 
 }

@@ -8,6 +8,7 @@ import 'jquery-ui/ui/widgets/datepicker.js';
 import 'webpack-jquery-ui/autocomplete.js';
 import 'webpack-jquery-ui/tooltip.js';
 import 'webpack-jquery-ui/selectmenu.js';
+import 'webpack-jquery-ui/effects.js';
 
 window.$ = window.jQuery = $;
 window.Papa = require('papaparse/papaparse');

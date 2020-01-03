@@ -19,6 +19,8 @@
         @method('POST')
         @csrf
 
+        <input type="hidden" name="session_id" value="" class="hidden">
+
         <div class="col-sm-12 col-md-12">
             <label class="form-control-sm">Add New Question:</label>
             <button id="yes-no" disabled type="button" class="btn btn-large btn-dark question-type">Yes/No Answer
@@ -41,7 +43,11 @@
                     </button>
                     <div class="input-group-append float-right">
                         <i class="btn btn-sm btn-outline-danger material-icons delete-question" onclick="(function() {
-                            $(this).closest('.card').slideUp('slow', function() {
+                            if ($('.card').length == 2) {
+                                $('#session_id').combobox('enable');
+                                $('button.question-type').removeAttr('disabled');
+                            }
+                            $(this).closest('.card').slideUp('fast', function() {
                               this.remove();
                             }); }.bind(this, event))();">
                             delete
@@ -87,21 +93,9 @@
             </div>
         </div>
         <div class="col-sm-12 col-md-12">
-            <button type="submit" class="btn btn-block btn-primary">Submit</button>
+            <button type="submit" class="btn btn-block btn-primary" disabled>Submit</button>
         </div>
     </form>
-    {{--    <form method="POST" action="{{ url('/sessions/form/store') }}">--}}
-    {{--        @method('POST')--}}
-    {{--        @csrf--}}
-
-    {{--        <input type="hidden" value="" name="questions"/>--}}
-    {{--        <input type="hidden" value="" name="session_id"/>--}}
-    {{--        <input type="hidden" value="" name="questions"/>--}}
-
-    {{--        --}}{{--    <div class="form-group">--}}
-    {{--        --}}{{--        <label class="form-control"></label>--}}
-    {{--        --}}{{--    </div>--}}
-    {{--    </form>--}}
 @endsection
 
 @section('end_footer')
@@ -114,12 +108,14 @@
                 .addClass('is-invalid');
             @endif
             $('#session_id').next().on('autocompleteselect', function (e, ui) {
-                $('input[name=session_id]').val(this.value);
+                $('input[name=session_id]').val(ui.item.option.getAttribute('value'));
                 $('button.question-type').removeAttr('disabled');
+                $('form').find('.col-md-12').first().effect('highlight', {}, 2000);
                 return true;
             });
             $('button.question-type').attr('disabled', true); // reset value for caching
             $('button.question-type').on('click', function (e) {
+                $('#session_id').combobox('disable');
                 let template = $('.card.d-none');
                 let clone = template.clone();
                 let title = `${this.innerText} #${$('.card').length}`;
@@ -149,16 +145,18 @@
                     default:
                         return false;
                 }
-                debugger;
-                $('.card').last().after(clone);
-                $('.card-body').on('shown.bs.collapse', function (e) {
+                clone.find('.card-body').on('shown.bs.collapse', function (e) {
                     $(this).closest('.card').find('.close-question').text('keyboard_arrow_up');
                     return true;
                 });
-                $('.card-body').on('hidden.bs.collapse', function (e) {
+                clone.find('.card-body').on('hidden.bs.collapse', function (e) {
                     $(this).closest('.card').find('.close-question').text('keyboard_arrow_down');
                     return true;
                 });
+                $('form').find('button[type=submit]').attr('disabled', false);
+                $('.card').last().after(clone);
+                clone.effect('highlight', {}, 1000);
+                clone.find('.material-icons').last()[0].click();
                 return true;
             });
             $('button[type=submit]').on('click', function (e) {

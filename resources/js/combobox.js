@@ -70,7 +70,13 @@ $(function () {
                 .on("mousedown", function () {
                     wasOpen = input.autocomplete("widget").is(":visible");
                 })
-                .on("click", function () {
+                .on("click", function (e) {
+                    if ($(this).parent().hasClass('disabled')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+
                     input.trigger("focus");
 
                     // Close if already visible
@@ -134,6 +140,18 @@ $(function () {
         _destroy: function () {
             this.wrapper.remove();
             this.element.show();
+        },
+
+        disable: function () {
+            this.input.attr('disabled', true);
+            this.wrapper.addClass('disabled');
+            this.wrapper.fadeTo("slow", 0.5);
+        },
+
+        enable: function () {
+            this.input.removeAttr('disabled');
+            this.wrapper.removeClass('disabled');
+            this.wrapper.fadeTo('slow', 1);
         }
     });
 });

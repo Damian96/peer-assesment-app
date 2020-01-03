@@ -67,6 +67,12 @@ form {
   display: inline-block;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
+  &.disabled {
+    opacity: 0.5;
+    user-select: none;
+    cursor: not-allowed;
+  }
+
   &.is-invalid {
     border: 1px solid #dc3545;
     border-radius: 0.25rem;
