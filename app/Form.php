@@ -21,4 +21,12 @@ class Form extends Model
         'name' => 'string',
         'mark' => 'int'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function session()
+    {
+        return $this->hasOne('\App\Session', 'id', 'session_id');
+    }
 }

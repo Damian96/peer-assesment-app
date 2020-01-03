@@ -21,7 +21,7 @@ class Version0620191203Reviews extends Migration
             $table->bigInteger('question_id')->unsigned();
             $table->char('mark', 1)->nullable()->default('0')->comment('0-5');
             $table->text('comment')->nullable();
-            $table->char('answer')->nullable()->default('n')->comment('[Y]es/[N]o');
+            $table->char('answer', 1)->nullable()->default('0')->comment('boolean');
         });
     }
 

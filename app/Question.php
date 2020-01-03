@@ -21,4 +21,12 @@ class Question extends Model
         'description' => 'string',
         'type' => 'string'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function form()
+    {
+        return $this->hasOne('\App\Form', 'id', 'form_id');
+    }
 }

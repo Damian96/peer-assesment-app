@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
+    /**
+     * @deprecated see \App\User::can()
+     * @var array
+     */
     protected $allowed = [
         'user.login',
         'user.verify',
@@ -16,6 +20,8 @@ class CheckRole
         'user.verify',
         'user.forgot',
         'user.forgotSend',
+
+        'form.add', // @FIXME remove it
     ];
 
     /**

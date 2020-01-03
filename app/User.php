@@ -256,6 +256,22 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     */
+    public function group()
+    {
+        return $this->hasOne('\App\StudentGroup', 'user_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function teammates()
+    {
+        return $this->group()->first()->students();
+    }
+
+    /**
      * Get the course record associated with the instructor.
      * @return \Illuminate\Database\Eloquent\Relations\HasMany|false The relation or false on failure
      */
@@ -563,6 +579,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 //                    return false;
 //                }
 //                return $this->isInstructor() || ($this->isStudent() && $this->isRegistered($cid));
+            case 'form.add': // @FIXME change it
+                return true;
             default:
                 return false;
         }
