@@ -10,9 +10,9 @@
     <title>{{ isset($title) ? $title : (isset($error_number) ? 'Error ' . $error_number : '') . ' | ' . config('app.name') }}</title>
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <link rel="stylesheet" href="{{ url('/css/app.css') }}">
+    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
     <script type="text/javascript">$.noConflict();</script>
-    <script charset="utf-8" src="{{ url('/js/app.js') }}"></script>
+    <script charset="utf-8" src="{{ mix('/js/app.js') }}"></script>
 
     <!-- Fonts -->
     <!-- @TODO find a caligraphic font for footer and login -->
@@ -63,7 +63,7 @@
         });
         $.widget("ui.tooltip", $.ui.tooltip, {
             _open: function () {
-                console.log(this.element.siblings('[class*=toggle]').tooltip('show'));
+                // console.log(this.element.siblings('[class*=toggle]').tooltip('show'));
                 return false;
                 // throw Error('tooltip:open');
             },

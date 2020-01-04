@@ -81,6 +81,10 @@ const webpack = require('webpack');
  */
 
 mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+    .sourceMaps()
+    .version()
+mix.sass('resources/sass/app.scss', 'public/css')
+    .sourceMaps()
+    .version();
 
-    // .jsplugins();
+// .jsplugins();
