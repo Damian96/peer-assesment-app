@@ -13,12 +13,14 @@ class Version0620191203Forms extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('forms');
         Schema::create('forms', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('session_id')->unsigned()->unsigned();
-            $table->string('name', 255);
-            $table->char('mark', 1)->nullable()->default('0')->comment('0-5');
+            $table->string('title', 255);
+            $table->string('subtitle', 255)->nullable();
+            $table->string('footnote', 255)->nullable();
+            $table->char('mark', 1)->nullable()->default('0')->comment('0-100');
+            $table->timestamps();
         });
     }
 
@@ -29,8 +31,6 @@ class Version0620191203Forms extends Migration
      */
     public function down()
     {
-        Schema::table('forms', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('forms');
     }
 }

@@ -13,12 +13,13 @@ class Version0620191203Questions extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('questions');
         Schema::create('questions', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('form_id')->unsigned();
-            $table->text('description')->nullable();
-            $table->char('type', 1)->nullable()->default('0');
+            $table->string('title');
+            $table->string('subtitle')->nullable();
+            $table->text('data');
+            $table->timestamps();
         });
     }
 
@@ -29,8 +30,6 @@ class Version0620191203Questions extends Migration
      */
     public function down()
     {
-        Schema::table('questions', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('questions');
     }
 }

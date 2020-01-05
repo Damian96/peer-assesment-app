@@ -14,7 +14,6 @@ class Version0620191203Groups extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('groups');
         Schema::create('groups', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('session_id')->unsigned();
@@ -30,8 +29,6 @@ class Version0620191203Groups extends Migration
      */
     public function down()
     {
-        Schema::table('groups', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('groups');
     }
 }

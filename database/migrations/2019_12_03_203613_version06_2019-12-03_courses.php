@@ -14,7 +14,6 @@ class Version0620191203Courses extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('courses');
         Schema::create('courses', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
@@ -36,8 +35,6 @@ class Version0620191203Courses extends Migration
      */
     public function down()
     {
-        Schema::table('courses', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('courses');
     }
 }

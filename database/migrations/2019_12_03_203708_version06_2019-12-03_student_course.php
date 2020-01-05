@@ -14,7 +14,6 @@ class Version0620191203StudentCourse extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('student_course');
         Schema::create('student_course', function (Blueprint $table) {
             $table->bigInteger('user_id')->unsigned()->unique();
             $table->bigInteger('course_id')->unsigned()->unique();
@@ -30,8 +29,6 @@ class Version0620191203StudentCourse extends Migration
      */
     public function down()
     {
-        Schema::table('student_course', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('student_course');
     }
 }

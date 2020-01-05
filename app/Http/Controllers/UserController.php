@@ -247,7 +247,7 @@ class UserController extends Controller
      * Show the form for creating a new resource.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function create(Request $request)
     {
@@ -405,13 +405,13 @@ class UserController extends Controller
      *
      * @method POST
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-            return redirect()->action('UserController@create', 302)
+            return redirect()->action('UserController@create')
                 ->withInput($request->input())
                 ->with('title', 'Register')
                 ->with('errors', $validator->getMessageBag());
@@ -429,10 +429,10 @@ class UserController extends Controller
                 'heading' => 'You have successfully registered!',
                 'body' => 'Please check you email at ' . $user->email . ' to complete the registration.'
             ]);
-            return redirect('/login', 302, $request->headers->all(), $request->secure());
+            return redirect()->route('user.login');
         }
 
-        return redirect()->back(302, $request->headers->all())
+        return redirect()->back(302)
             ->withInput($request->input())
             ->with('title', 'Register')
             ->with('messages', $this->messages('register'))

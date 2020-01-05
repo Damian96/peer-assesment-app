@@ -54,8 +54,8 @@
                        class="form-control">
             </div>
         </div>
+        <!-- Card -->
         <div class="card col-sm-12 col-md-12 p-0 my-2 d-none">
-            <input type="hidden" value="" name="question-type[]" class="hidden">
             <!-- Card Title -->
             <div class="card-title">
                 <div class="input-group">
@@ -115,7 +115,7 @@
             <div class="card-body collapse pt-0">
                 <div class="form-group question-title">
                     <label class="form-control-sm">Title</label>
-                    <input type="text" name="question-title[]" class="form-control" oninput="(function(e) {
+                    <input type="text" name="question[#][title]" class="form-control" oninput="(function(e) {
                       let button = $(this).closest('.card').find('.btn-block');
                       let title = button.data('title') + ' - ' + this.value;
                       button.text(title);
@@ -124,12 +124,12 @@
                 <div class="form-group question-title">
                     <label class="form-control-sm">Subtitle <span
                             class="text-muted">(leave blank for none)</span></label>
-                    <input type="text" name="question-subtitle[]" class="form-control">
+                    <input type="text" name="question[#][subtitle]" class="form-control">
                 </div>
-                <div class="form-group question-scale d-none">
+                <div class="form-group scale d-none">
                     <label for="linear-scale_max[]" class="form-control-sm">Maximum</label>
                     <input type="number"
-                           name="linear-scale_max[]"
+                           name="question[#][max]"
                            value="5"
                            min="2" max="10"
                            required
@@ -137,13 +137,70 @@
                            class="form-control-sm"
                            onchange="(function(e) { $(this).closest('.form-group').next().find('.max-num').text(this.value)}.bind(this, event))();">
                 </div>
-                <div class="form-group question-scale my-3 d-none">
+                <div class="form-group scale my-3 d-none">
                     <label for="linear-scale_minlbl" class="form-control-sm">1:
-                        <input type="text" name="linear-scale_minlbl[]" placeholder="Highly Agree" required
+                        <input type="text" name="question[#][minlbl]" placeholder="Highly Disagree" required
                                aria-readonly="true" class="form-text d-inline"></label>
                     <label for="linear-scale_maxlbl" class="form-control-sm"><span class="max-num d-inline">5</span>
-                        <input type="text" name="linear-scale_maxlbl[]" placeholder="Highly Disagree" required
+                        <input type="text" name="question[#][maxlbl]" placeholder="Highly Agree" required
                                aria-required="true" class="form-text d-inline"></label>
+                </div>
+                <div class="form-group multiple my-3 d-none">
+                    <span class="row">
+                        <span class="col-md-6 text-center overflow-hidden">
+                            <i class="material-icons text-muted">radio_button_unchecked</i>
+                            <label for="question[#][choices][]" class="form-control-sm"
+                                   style="max-width: 90%; max-height: 20px; overflow: hidden;">
+                                Yes</label>
+                        </span>
+                        <span class="col-md-6 text-left">
+                            <input class="form-control-sm" name="question[#][choices][]" type="text"
+                                   placeholder="choice"
+                                   value="Yes"
+                                   maxlength="31"
+                                   aria-placeholder="choice" required aria-required="true"
+                                   oninput="(function(e) {
+                                        $(this).closest('.col-md-6').prev().find('label')[0].lastChild.textContent = this.value;
+                                   }.bind(this, event)());">
+                        </span>
+                    </span>
+                    <span class="row">
+                        <span class="col-sm-6 col-md-6 text-center overflow-hidden">
+                            <i class="material-icons text-muted">radio_button_unchecked</i>
+                            <label for="multiple-choice_choice_#[]"
+                                   class="form-control-sm" style="max-width: 90%; max-height: 20px; overflow: hidden;">No</label>
+                        </span>
+                        <span class="col-sm-6 col-md-6 text-left">
+                            <input class="form-control-sm" name="question[#][choices][]" type="text"
+                                   placeholder="choice"
+                                   value="No"
+                                   maxlength="31"
+                                   aria-placeholder="choice" required aria-required="true"
+                                   oninput="(function(e) {
+                                        $(this).closest('.col-md-6').prev().find('label')[0].lastChild.textContent = this.value;
+                                   }.bind(this, event)());">
+                        </span>
+                    </span>
+                    <div class="col-sm-6 offset-sm-3 offset-md-3 col-md-6">
+                        <div class="btn btn-block btn-secondary add-multiple-option" onclick="(function(e) {
+                            let clone = $(this).closest('.form-group').find('.row').first().clone();
+                            clone.find('label')[0].lastChild.textContent = 'OPTION';
+                            clone.find('input').val('');
+                            $(this).closest('.form-group').find('.row').last().after(clone);
+                        }.bind(this, event))();">
+                            <i class="material-icons">add_circle_outline</i>Add Option
+                        </div>
+                    </div>
+                    {{--                    <span class="row">--}}
+                    {{--                        <span class="col-sm-6 col-md-6 text-center">--}}
+                    {{--                            <label for="multiple-choice_choice_#[]" class="form-control-sm disabled">--}}
+                    {{--                                <i class="material-icons">radio_button_checked</i>Other</label>--}}
+                    {{--                        </span>--}}
+                    {{--                        <span class="col-sm-6 col-md-6 text-left">--}}
+                    {{--                            <input class="form-control-sm multiple-choice_choice_#[]" type="text" placeholder="choice"--}}
+                    {{--                               aria-placeholder="choice" required aria-required="true">--}}
+                    {{--                        </span>--}}
+                    {{--                    </span>--}}
                 </div>
             </div>
         </div>
@@ -171,31 +228,44 @@
             $('button.question-type').attr('disabled', true); // reset value for caching
             $('button.question-type').on('click', function (e) {
                 $('#session_id').combobox('disable');
+
+                // Initialise variables
+                let count = $('.card').length;
                 let template = $('.card.d-none');
                 let clone = template.clone();
-                let title = `${this.lastChild.textContent} #${$('.card').length}`;
+                let title = `${this.lastChild.textContent} #${count}`;
                 let id = title.replace(/[\/#\s\(\)]/g, '-');
+
+                // Add card title
                 clone.find('.btn-block')
+                    .first()
                     .data('title', title)
                     .text(title);
+                // Add bs-collapse data
                 clone.find('.close-question')
                     .attr('data-target', '#' + id)
                     .attr('aria-controls', id);
                 clone.find('.collapse').attr('id', id);
+                // Show
                 clone.removeClass('d-none');
+                // Replace session_id
                 clone.find('input[type=hidden]').val(this.id);
+                // Replace #s
+                clone.find('input[name],label[name]').each(function () {
+                    $(this).attr('name', this.getAttribute('name').replace(/#/i, count));
+                });
                 switch (this.id) {
                     case 'linear-scale':
-                        clone.find('.d-none').each(function () {
-                            $(this).removeClass('d-none').addClass('d-block');
-                        });
+                        clone.find('.scale.d-none').removeClass('d-none').addClass('d-block');
+                        clone.find('.multiple').remove();
                         break;
                     case 'multiple-choice':
+                        clone.find('.multiple.d-none').removeClass('d-none').addClass('d-block');
+                        clone.find('.scale').remove();
+                        break;
                     case 'eval':
                     case 'paragraph':
-                        clone.find('.d-none').each(function () {
-                            $(this).remove();
-                        });
+                        clone.find('.d-none').remove();
                         break;
                     default:
                         return false;
@@ -208,16 +278,18 @@
                     $(this).closest('.card').find('.close-question').text('keyboard_arrow_down');
                     return true;
                 });
-                $('form').find('button[type=submit]').attr('disabled', false);
-                $('.card').last().after(clone); // append to end of cards
+                $('form').find('button[type=submit]')[0].removeAttribute('disabled');
+                // Append to end of cards
+                $('.card').last().after(clone);
+                // Blink Effect
                 clone.effect('highlight', {}, 1000);
-                clone.find('.close-question')[0].click();
+                // clone.find('.close-question')[0].click();
                 // console.debug(clone);
                 return true;
             });
             $('button[type=submit]').on('click', function () {
-                let template = $('.card.d-none');
-                template.remove();
+                // let template = $('.card.d-none');
+                $('.card.d-none').remove();
                 return true;
             });
         });

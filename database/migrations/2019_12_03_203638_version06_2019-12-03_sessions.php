@@ -14,7 +14,6 @@ class Version0620191203Sessions extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('sessions');
         Schema::create('sessions', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('course_id')->unsigned();
@@ -35,8 +34,6 @@ class Version0620191203Sessions extends Migration
      */
     public function down()
     {
-        Schema::table('sessions', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('sessions');
     }
 }

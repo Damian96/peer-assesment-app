@@ -13,7 +13,6 @@ class Version0620191203Reviews extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('reviews');
         Schema::create('reviews', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('sender_id')->unsigned();
@@ -32,8 +31,6 @@ class Version0620191203Reviews extends Migration
      */
     public function down()
     {
-        Schema::table('reviews', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('reviews');
     }
 }

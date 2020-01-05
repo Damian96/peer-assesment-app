@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Course;
+use App\Form;
+use App\Question;
 use App\Session;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -47,9 +49,10 @@ class SessionController extends Controller
                 return [
                     '_method' => 'required|in:POST',
                     'session_id' => 'required|int|exists:sessions,id',
-                    'question-type' => 'required|array|filled',
-                    'question-mark' => 'nullable|array',
-                    'question-mark-type' => 'nullable|array',
+                    'title' => 'required|string|max:255',
+                    'subtitle' => 'nullable|string|max:255',
+                    'footnote' => 'nullable|string|max:255',
+                    'question' => 'required|array',
                 ];
             default:
                 return [];
@@ -185,6 +188,7 @@ class SessionController extends Controller
     }
 
     /**
+     * @method _POST
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
@@ -194,25 +198,46 @@ class SessionController extends Controller
 
         if ($validator->fails()) {
             return dd($validator->errors(), $request->all());
-            return redirect()->back(302)
-                ->withErrors($validator->errors())
+//            return redirect()->back(302)
+//                ->withErrors($validator->errors())
+//                ->with('errors', $validator->errors());
+        }
+
+//        return dd($validator->errors(), $request->all());
+        $form = new Form($request->all());
+        if (!$form->save() && env('APP_DEBUG', false)) {
+            throw abort(500, sprintf("Could not insert Form in database"));
+        } elseif (!env('APP_DEBUG', false)) {
+            return redirect()->back(302) // fallback
+            ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
 
-        $data = array();
-        // Map request's data to final input data
-        foreach ($request->get('question-type') as $i => $type) {
-            array_push($data, array(
-                'title' => $request->get('question-title')[$i],
-                'type' => $type,
-            ));
-            if ($type === 'mark') {
-                $data[count($data) - 1]['mark'] = array_slice($request->get('question-mark'), 0, 1)[0];
-                $data[count($data) - 1]['mark-type'] = array_slice($request->get('question-mark-type'), 0, 1)[0];
+        foreach ($request->get('question', []) as $question) {
+//            return dd(array_merge($question, ['form_id' => $form->id]));
+            $question = new Question(array_merge($question, [
+                    'form_id' => $form->id,
+                    'data' => json_encode([
+                        'max' => isset($question['max']) ? $question['max'] : null,
+                        'minlbl' => isset($question['minlbl']) ? $question['minlbl'] : null,
+                        'maxlbl' => isset($question['maxlbl']) ? $question['maxlbl'] : null,
+                        'choices' => isset($question['choices']) ? $question['choices'] : null,
+                    ])])
+            );
+            if (!$question->save() && env('APP_DEBUG', false)) {
+                throw abort(500, sprintf("Could not insert Question in database"));
+            } else if (!env('APP_DEBUG', false)) {
+                return redirect()->back(302) // fallback
+                ->withErrors($validator->errors())
+                    ->with('errors', $validator->errors());
             }
         }
 
-        return dd($request->all(), $data);
+        $request->session()->flash('message', [
+            'heading' => 'Form saved successfully!',
+            'level' => 'success'
+        ]);
+        return redirect()->route('course.index');
     }
 
 }

@@ -13,13 +13,14 @@ class Question extends Model
     protected $guarded = ['id'];
 
     protected $fillable = [
-        'form_id', 'description', 'type'
+        'form_id', 'title', 'subtitle', 'data'
     ];
 
     protected $casts = [
         'form_id' => 'int',
-        'description' => 'string',
-        'type' => 'string'
+        'title' => 'string',
+        'subtitle' => 'string',
+        'data' => 'string'
     ];
 
     /**

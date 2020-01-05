@@ -13,7 +13,7 @@ class Form extends Model
     protected $guarded = ['id'];
 
     protected $fillable = [
-        'session_id', 'name', 'mark'
+        'session_id', 'title', 'subtitle', 'mark'
     ];
 
     protected $casts = [
