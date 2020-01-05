@@ -53,6 +53,7 @@ Route::match(['get'], '/courses/{cid}/sessions', 'SessionController@index')->whe
 Route::group(['prefix' => '/sessions'], function () {
     Route::match(['post'], 'form/store', 'SessionController@storeForm')->name('form.store');
     Route::match(['get'], 'form/add', 'SessionController@addForm')->name('form.add');
+//    Route::match(['get'], 'form/add/{course?}', 'SessionController@addForm')->name('form.add');
     Route::match(['get'], 'create/{course?}', 'SessionController@create')->name('session.create');
     Route::match(['post'], '/store  ', 'SessionController@store')->name('session.store');
     Route::match(['get'], '{id}/view', 'SessionController@show')->where('id', '[0-9]+')->name('session.view');

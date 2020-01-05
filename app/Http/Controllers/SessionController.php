@@ -178,13 +178,14 @@ class SessionController extends Controller
 
     /**
      * @param $request \Illuminate\Http\Request
+     * @param Course $course
      * @return \Illuminate\Http\Response
      */
-    public function addForm(Request $request)
+    public function addForm(Request $request, Course $course)
     {
         $title = 'Add Form Template';
         $sessions = Session::all();
-        return \response(view('session.addForm', compact('title', 'sessions')), 200);
+        return \response(view('session.addForm', compact('title', 'course', 'sessions')), 200);
     }
 
     /**
@@ -214,7 +215,6 @@ class SessionController extends Controller
         }
 
         foreach ($request->get('question', []) as $question) {
-//            return dd(array_merge($question, ['form_id' => $form->id]));
             $question = new Question(array_merge($question, [
                     'form_id' => $form->id,
                     'data' => json_encode([

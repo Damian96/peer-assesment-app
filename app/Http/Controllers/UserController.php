@@ -222,7 +222,7 @@ class UserController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function index(Request $request)
     {
@@ -268,7 +268,7 @@ class UserController extends Controller
      * @method GET
      * @param Request $request
      * @param Course $course
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function addStudent(Request $request, Course $course)
     {
@@ -291,7 +291,7 @@ class UserController extends Controller
      * @method POST
      * @param \Illuminate\Http\Request $request
      * @param Course $course
-     * @return void
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function storeStudent(Request $request, Course $course)
     {
@@ -496,7 +496,7 @@ class UserController extends Controller
     /**
      * Show the authenticated user's profile
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function profile(Request $request)
     {
@@ -509,7 +509,7 @@ class UserController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param \App\User $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
 //    public function edit(User $user)
 //    {
@@ -520,7 +520,7 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function update(Request $request)
     {
@@ -570,7 +570,7 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function logout(Request $request)
     {
@@ -582,7 +582,7 @@ class UserController extends Controller
     /**
      * Verify an email link, and redirect to /reset or verify user's email
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function verify(Request $request)
     {
@@ -639,7 +639,7 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function reset(Request $request)
     {
@@ -669,7 +669,7 @@ class UserController extends Controller
     /**
      * @param Request $request
      * @method GET
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function forgot(Request $request)
     {
@@ -681,7 +681,7 @@ class UserController extends Controller
     /**
      * @param Request $request
      * @method POST
-     * @return Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function forgotSend(Request $request)
     {
