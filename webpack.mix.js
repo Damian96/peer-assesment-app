@@ -82,7 +82,7 @@ const webpack = require('webpack');
 
 mix.js('resources/js/app.js', 'public/js')
     .sourceMaps()
-    .version()
+    .version();
 mix.sass('resources/sass/app.scss', 'public/css')
     .sourceMaps()
     .version();

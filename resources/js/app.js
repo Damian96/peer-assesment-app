@@ -20,4 +20,5 @@ require('jquery-validation/dist/jquery.validate');
 require('@curveballerpacks/tablesorter');
 require('jquery-confirm');
 
-require('./combobox.js');
+require('./combobox');
+require('./form');
