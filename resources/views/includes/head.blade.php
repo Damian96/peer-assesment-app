@@ -135,15 +135,17 @@
                                href="{{ url('/sessions/create') }}">Create</a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'form.') !== false) ? ' active' : '' }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">Forms</a>
-                        <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'form.add') !== false) ? ' active' : '' }}"
-                               href="{{ url('/sessions/form/add') }}">Create</a>
-                        </div>
-                    </li>
-                @endif
+                        <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'form.') !== false) ? ' active' : '' }}">
+                            <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">Forms</a>
+                            <div class="dropdown-menu" aria-labelledby="course-dropdown">
+                                <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}"
+                                   href="{{ url('/forms/') }}">My Forms</a>
+                                <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}"
+                                   href="{{ url('/forms/create') }}">Create</a>
+                            </div>
+                        </li>
+                    @endif
             </ul>
         </div>
         <div class="navbar-collapse collapse w-100 order-2 order-md-1 dual-collapse2" id="userMenu">

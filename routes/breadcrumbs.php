@@ -92,11 +92,11 @@ Breadcrumbs::for('session.active', function ($trail, $sessions) {
 });
 
 // ? > Add Form
-Breadcrumbs::for('form.add', function ($trail) {
+Breadcrumbs::for('form.create', function ($trail) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    $trail->push('Create Form', route('form.add'));
+    $trail->push('Create Form', route('form.create'));
 });
 
 //// Home > Blog > [Category]

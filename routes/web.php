@@ -51,13 +51,17 @@ Route::group(['prefix' => '/courses'], function () {
 Route::match(['get'], '/sessions', 'SessionController@active')->name('session.active');
 Route::match(['get'], '/courses/{cid}/sessions', 'SessionController@index')->where('cid', '[0-9]+')->name('session.index');
 Route::group(['prefix' => '/sessions'], function () {
-    Route::match(['post'], 'form/store', 'SessionController@storeForm')->name('form.store');
-    Route::match(['get'], 'form/add', 'SessionController@addForm')->name('form.add');
-//    Route::match(['get'], 'form/add/{course?}', 'SessionController@addForm')->name('form.add');
     Route::match(['get'], 'create/{course?}', 'SessionController@create')->name('session.create');
     Route::match(['post'], '/store  ', 'SessionController@store')->name('session.store');
     Route::match(['get'], '{id}/view', 'SessionController@show')->where('id', '[0-9]+')->name('session.view');
 //    Route::match(['get'], '{id}/edit', 'CourseController@edit')->where('id', '[0-9]+')->name('course.edit');
 //    Route::match(['put'], '{id}', 'CourseController@update')->where('id', '[0-9]+')->name('course.update');
 //    Route::match(['get'], '{id}', 'CourseController@course')->where('id', '[0-9]+')->name('course.edit');
+});
+
+Route::group(['prefix' => '/forms'], function () {
+    Route::match(['get'], '/', 'FormController@index')->name('form.index');
+    Route::match(['get'], '/create', 'FormController@create')->name('form.create');
+    Route::match(['post'], '/store', 'FormController@store')->name('form.store');
+    Route::match(['get'], '/{form}/edit', 'FormController@edit')->name('form.edit');
 });

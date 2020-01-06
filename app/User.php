@@ -547,9 +547,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.store':
             case 'session.store':
             case 'session.active':
-            case 'form.add':
+            case 'form.create':
             case 'form.store':
             case 'session.create':
+            case 'form.index':
                 return $this->isInstructor();
 //            case 'session.update':
             case 'session.create':
@@ -563,6 +564,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.add-student':
             case 'session.index':
             case 'course.students':
+            case 'form.view':
                 if (array_key_exists('id', $arguments)) {
                     $cid = $arguments['id'];
                 } elseif (array_key_exists('cid', $arguments)) {

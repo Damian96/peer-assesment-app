@@ -45,15 +45,6 @@ class SessionController extends Controller
                     'instructions' => 'required|string|max:1000',
                     'deadline' => 'required|date_format:m-d-Y',
                 ];
-            case 'storeForm':
-                return [
-                    '_method' => 'required|in:POST',
-                    'session_id' => 'required|int|exists:sessions,id',
-                    'title' => 'required|string|max:255',
-                    'subtitle' => 'nullable|string|max:255',
-                    'footnote' => 'nullable|string|max:255',
-                    'question' => 'required|array',
-                ];
             default:
                 return [];
         }
@@ -175,69 +166,4 @@ class SessionController extends Controller
             return redirect()->back(302);
         }
     }
-
-    /**
-     * @param $request \Illuminate\Http\Request
-     * @param Course $course
-     * @return \Illuminate\Http\Response
-     */
-    public function addForm(Request $request, Course $course)
-    {
-        $title = 'Add Form Template';
-        $sessions = Session::all();
-        return \response(view('session.addForm', compact('title', 'course', 'sessions')), 200);
-    }
-
-    /**
-     * @method _POST
-     * @param Request $request
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     */
-    public function storeForm(Request $request)
-    {
-        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
-
-        if ($validator->fails()) {
-            return dd($validator->errors(), $request->all());
-//            return redirect()->back(302)
-//                ->withErrors($validator->errors())
-//                ->with('errors', $validator->errors());
-        }
-
-//        return dd($validator->errors(), $request->all());
-        $form = new Form($request->all());
-        if (!$form->save() && env('APP_DEBUG', false)) {
-            throw abort(500, sprintf("Could not insert Form in database"));
-        } elseif (!env('APP_DEBUG', false)) {
-            return redirect()->back(302) // fallback
-            ->withErrors($validator->errors())
-                ->with('errors', $validator->errors());
-        }
-
-        foreach ($request->get('question', []) as $question) {
-            $question = new Question(array_merge($question, [
-                    'form_id' => $form->id,
-                    'data' => json_encode([
-                        'max' => isset($question['max']) ? $question['max'] : null,
-                        'minlbl' => isset($question['minlbl']) ? $question['minlbl'] : null,
-                        'maxlbl' => isset($question['maxlbl']) ? $question['maxlbl'] : null,
-                        'choices' => isset($question['choices']) ? $question['choices'] : null,
-                    ])])
-            );
-            if (!$question->save() && env('APP_DEBUG', false)) {
-                throw abort(500, sprintf("Could not insert Question in database"));
-            } else if (!env('APP_DEBUG', false)) {
-                return redirect()->back(302) // fallback
-                ->withErrors($validator->errors())
-                    ->with('errors', $validator->errors());
-            }
-        }
-
-        $request->session()->flash('message', [
-            'heading' => 'Form saved successfully!',
-            'level' => 'success'
-        ]);
-        return redirect()->route('course.index');
-    }
-
 }

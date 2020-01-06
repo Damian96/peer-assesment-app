@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    {{ Breadcrumbs::render('form.add') }}
+    {{ Breadcrumbs::render('form.create') }}
 @endsection
 
 <?php // @TODO add Javascript validation ?>
@@ -122,7 +122,7 @@
                 <div class="form-group question-title">
                     <label class="form-control-sm">Title</label>
                     <input type="text" name="question[#][title]" class="form-control" oninput="(function(e) {
-                      let button = $(this).closest('.card').find('.btn-block');
+                      let button = $(this).closest('.card').find('.btn-block[data-title]');
                       let title = button.data('title') + ' - ' + this.value;
                       button.text(title);
                     }.bind(this, event))();" required aria-required="true">
@@ -162,9 +162,10 @@
                         <span class="col-md-6 text-left">
                             <input class="form-control-sm" name="question[#][choices][]" type="text"
                                    placeholder="choice"
+                                   aria-placeholder="choice"
                                    value="Yes"
                                    maxlength="31"
-                                   aria-placeholder="choice" required aria-required="true"
+                                   required aria-required="true"
                                    oninput="(function(e) {
                                         $(this).closest('.col-md-6').prev().find('label')[0].lastChild.textContent = this.value;
                                    }.bind(this, event)());">
@@ -179,9 +180,10 @@
                         <span class="col-sm-6 col-md-6 text-left">
                             <input class="form-control-sm" name="question[#][choices][]" type="text"
                                    placeholder="choice"
+                                   aria-placeholder="choice"
                                    value="No"
                                    maxlength="31"
-                                   aria-placeholder="choice" required aria-required="true"
+                                   required aria-required="true"
                                    oninput="(function(e) {
                                         $(this).closest('.col-md-6').prev().find('label')[0].lastChild.textContent = this.value;
                                    }.bind(this, event)());">
@@ -241,10 +243,14 @@
                 let clone = template.clone();
                 let title = `${this.lastChild.textContent} #${count}`;
                 let id = title.replace(/[\/#\s\(\)]/g, '-');
+                let type = $(document.createElement('input'))
+                    .attr('type', 'hidden')
+                    .addClass('d-none')
+                    .attr('name', `question[${count}][type]`)
+                    .val(this.id);
 
                 // Add card title
-                clone.find('.btn-block')
-                    .first()
+                clone.find('.btn-block[data-title]')
                     .data('title', title)
                     .text(title);
                 // Add bs-collapse data
@@ -260,6 +266,7 @@
                 clone.find('input[name],label[name]').each(function () {
                     $(this).attr('name', this.getAttribute('name').replace(/#/i, count));
                 });
+                clone.append(type);
                 switch (this.id) {
                     case 'linear-scale':
                         clone.find('.scale.d-none').removeClass('d-none').addClass('d-block');
@@ -297,6 +304,47 @@
                 // let template = $('.card.d-none');
                 $('.card.d-none').remove();
                 return true;
+            });
+        });
+        $(document).on('submit', 'form', function (event) {
+            let form = $(event.target);
+            form.validate({
+                rules: {
+                    title: {
+                        required: true,
+                        minlength: 5,
+                        maxlength: 255,
+                    },
+                    subtitle: {
+                        required: false,
+                        minlength: 5,
+                        maxlength: 255,
+                    },
+                    footnote: {
+                        required: false,
+                        minlength: 5,
+                        maxlength: 255,
+                    },
+                },
+                {{--messages: {--}}
+                {{--    title: {--}}
+                {{--        required: "{!! $messages['title.required'] !!}",--}}
+                {{--        minlength: "{!! $messages['title.min'] !!}",--}}
+                {{--        maxlength: "{!! $messages['title.max'] !!}"--}}
+                {{--    },--}}
+                {{--    --}}{{--status: {--}}
+                {{--        --}}{{--    optional: true,--}}
+                {{--        --}}{{--    required: "{!! $messages['status.required'] !!}",--}}
+                {{--        --}}{{--},--}}
+                {{--    instructions: {--}}
+                {{--        required: "{!! $messages['instructions.required'] !!}",--}}
+                {{--        maxlength: "{!! $messages['instructions.max'] !!}"--}}
+                {{--    },--}}
+                {{--    deadline: {--}}
+                {{--        required: "{!! $messages['deadline.required'] !!}",--}}
+                {{--        pattern: "{!! $messages['deadline.date_format'] !!}",--}}
+                {{--    }--}}
+                {{--}--}}
             });
         });
     </script>

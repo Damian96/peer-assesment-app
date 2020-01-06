@@ -21,7 +21,8 @@ class CheckRole
         'user.forgot',
         'user.forgotSend',
 
-        'form.add', // @FIXME remove it
+        'form.create', // @FIXME remove it
+        'form.store', // @FIXME remove it
     ];
 
     /**
