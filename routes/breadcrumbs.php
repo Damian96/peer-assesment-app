@@ -99,6 +99,25 @@ Breadcrumbs::for('form.create', function ($trail) {
     $trail->push('Create Form', route('form.create'));
 });
 
+// ? <?MY_FORMS> > Edit Form <FORM>
+Breadcrumbs::for('form.edit', function ($trail, $form) {
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    if (last($crumbs) == 'form.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'form.index'))
+        $trail->push('My Forms', route('form.index'));
+
+    $trail->push('Edit Form ' . $form->id, route('form.edit', $form));
+});
+
+// ? > My Forms
+Breadcrumbs::for('form.index', function ($trail) {
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    $trail->push('My Forms', route('form.index'));
+});
+
 //// Home > Blog > [Category]
 //Breadcrumbs::for('category', function ($trail, $category) {
 //    $trail->parent('blog');

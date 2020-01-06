@@ -63,5 +63,6 @@ Route::group(['prefix' => '/forms'], function () {
     Route::match(['get'], '/', 'FormController@index')->name('form.index');
     Route::match(['get'], '/create', 'FormController@create')->name('form.create');
     Route::match(['post'], '/store', 'FormController@store')->name('form.store');
+    Route::match(['post'], '/update', 'FormController@update')->name('form.update');
     Route::match(['get'], '/{form}/edit', 'FormController@edit')->name('form.edit');
 });

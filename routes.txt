@@ -22,6 +22,10 @@
 |        | GET|HEAD | courses/{course}/students              | course.students    | App\Http\Controllers\CourseController@students                | web,guest,role |
 |        | GET|HEAD | courses/{course}/view                  | course.view        | App\Http\Controllers\CourseController@show                    | web,guest,role |
 |        | PUT      | courses/{id}                           | course.update      | App\Http\Controllers\CourseController@update                  | web,guest,role |
+|        | GET|HEAD | forms                                  | form.index         | App\Http\Controllers\FormController@index                     | web            |
+|        | GET|HEAD | forms/create                           | form.create        | App\Http\Controllers\FormController@create                    | web            |
+|        | POST     | forms/store                            | form.store         | App\Http\Controllers\FormController@store                     | web            |
+|        | GET|HEAD | forms/{form}/edit                      | form.edit          | App\Http\Controllers\FormController@edit                      | web            |
 |        | GET|HEAD | home                                   | user.home          | App\Http\Controllers\UserController@index                     | web,guest,role |
 |        | GET|HEAD | index                                  | user.home          | App\Http\Controllers\UserController@index                     | web,guest,role |
 |        | GET|HEAD | login                                  | user.login         | App\Http\Controllers\UserController@login                     | web,guest      |
@@ -33,8 +37,6 @@
 |        | GET|HEAD | register                               | user.register      | App\Http\Controllers\UserController@create                    | web            |
 |        | GET|HEAD | sessions                               | session.active     | App\Http\Controllers\SessionController@active                 | web,guest,role |
 |        | GET|HEAD | sessions/create/{course?}              | session.create     | App\Http\Controllers\SessionController@create                 | web,guest,role |
-|        | GET|HEAD | sessions/form/add/{course?}            | form.add           | App\Http\Controllers\SessionController@addForm                | web,guest,role |
-|        | POST     | sessions/form/store                    | form.store         | App\Http\Controllers\SessionController@storeForm              | web,guest,role |
 |        | POST     | sessions/store                         | session.store      | App\Http\Controllers\SessionController@store                  | web,guest,role |
 |        | GET|HEAD | sessions/{id}/view                     | session.view       | App\Http\Controllers\SessionController@show                   | web,guest,role |
 |        | POST     | store                                  | user.store         | App\Http\Controllers\UserController@store                     | web            |

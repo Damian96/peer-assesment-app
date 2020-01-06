@@ -29,4 +29,12 @@ class Form extends Model
     {
         return $this->hasOne('\App\Session', 'id', 'session_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function questions()
+    {
+        return $this->hasMany('\App\Question', 'form_id', 'id');
+    }
 }

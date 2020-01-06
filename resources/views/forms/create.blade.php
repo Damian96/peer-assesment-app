@@ -19,7 +19,7 @@
             </select>
         </div>
     </div>
-    <form class="row question-editor mt-3" action="{{ url('/sessions/form/store') }}" method="POST">
+    <form class="row question-editor mt-3" action="{{ url('/forms/store') }}" method="POST">
         @method('POST')
         @csrf
 

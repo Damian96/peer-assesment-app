@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Form;
+use App\Question;
 use App\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,13 +17,15 @@ class FormController extends Controller
 
     /**
      * @param string $action
+     * @param Request $request
      * @return array
      */
-    public function rules(string $action)
+    public function rules(string $action, Request $request)
     {
         switch ($action) {
-            case 'store':
-                return [
+            case 'update':
+                $rules = [
+                    'form_id' => 'required|int|exists:forms,id',
                     '_method' => 'required|in:POST',
                     'session_id' => 'required|int|exists:sessions,id',
                     'title' => 'required|string|max:255',
@@ -30,8 +33,37 @@ class FormController extends Controller
                     'footnote' => 'nullable|string|max:255',
                     'question' => 'required|array',
                 ];
+                foreach ($request->get('question', []) as $i => $q) {
+                    $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph';
+                    $rules['question.' . $i . '.title'] = 'required|string|max:255';
+                    $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
+                    $rules['question.' . $i . '.max'] = 'nullable|int|min:1|max:100';
+                    $rules['question.' . $i . '.minlbl'] = 'nullable|string|max:255';
+                    $rules['question.' . $i . '.maxlbl'] = 'nullable|string|max:255';
+                    $rules['question.' . $i . '.choices'] = 'nullable|array';
+                }
+                return $rules;
+            case 'store':
+                $rules = [
+                    '_method' => 'required|in:POST',
+                    'session_id' => 'required|int|exists:sessions,id',
+                    'title' => 'required|string|max:255',
+                    'subtitle' => 'nullable|string|max:255',
+                    'footnote' => 'nullable|string|max:255',
+                    'question' => 'required|array',
+                ];
+                foreach ($request->get('question', []) as $i => $q) {
+                    $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph';
+                    $rules['question.' . $i . '.title'] = 'required|string|max:255';
+                    $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
+                    $rules['question.' . $i . '.max'] = 'nullable|int|min:1|max:100';
+                    $rules['question.' . $i . '.minlbl'] = 'nullable|string|max:255';
+                    $rules['question.' . $i . '.maxlbl'] = 'nullable|string|max:255';
+                    $rules['question.' . $i . '.choices'] = 'nullable|array';
+                }
+                return $rules;
             default:
-                break;
+                return [];
         }
     }
 
@@ -104,7 +136,7 @@ class FormController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
             return redirect()->back(302)
@@ -144,7 +176,7 @@ class FormController extends Controller
             'heading' => 'Form saved successfully!',
             'level' => 'success'
         ]);
-        return redirect()->route('course.index');
+        return redirect()->route('form.index');
     }
 
     /**
@@ -155,18 +187,18 @@ class FormController extends Controller
      */
     public function edit(Request $request, Form $form)
     {
-        $title = `Edit Form ${$form->id}`;
+        $title = 'Edit Form ' . $form->id;
         return response(view('forms.edit', compact('title', 'form')), 200, $request->headers->all());
     }
 
     /**
-     * @method _PUT
+     * @method _POST
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function update(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
             return redirect()->back(302)
