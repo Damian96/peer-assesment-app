@@ -56,10 +56,13 @@ class FormController extends Controller
                     $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph';
                     $rules['question.' . $i . '.title'] = 'required|string|max:255';
                     $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
-                    $rules['question.' . $i . '.max'] = 'nullable|int|min:1|max:100';
-                    $rules['question.' . $i . '.minlbl'] = 'nullable|string|max:255';
-                    $rules['question.' . $i . '.maxlbl'] = 'nullable|string|max:255';
-                    $rules['question.' . $i . '.choices'] = 'nullable|array';
+                    if ($q['type'] === 'multiple-choice') {
+                        $rules['question.' . $i . '.choices'] = 'required|array';
+                    } elseif ($q['type'] === 'linear-scale') {
+                        $rules['question.' . $i . '.max'] = 'required|int|min:1|max:100';
+                        $rules['question.' . $i . '.minlbl'] = 'required|string|max:255';
+                        $rules['question.' . $i . '.maxlbl'] = 'required|string|max:255';
+                    }
                 }
                 return $rules;
             default:
@@ -76,6 +79,7 @@ class FormController extends Controller
         switch ($action) {
             case 'create':
             case 'store':
+            case 'update':
                 return [
                     'session_id' => '',
 
@@ -154,15 +158,16 @@ class FormController extends Controller
         }
 
         foreach ($request->get('question', []) as $question) {
-            $question = new Question(array_merge($question, [
-                    'form_id' => $form->id,
-                    'data' => json_encode([
-                        'max' => isset($question['max']) ? $question['max'] : null,
-                        'minlbl' => isset($question['minlbl']) ? $question['minlbl'] : null,
-                        'maxlbl' => isset($question['maxlbl']) ? $question['maxlbl'] : null,
-                        'choices' => isset($question['choices']) ? $question['choices'] : null,
-                    ])])
-            );
+            $data = array_merge($question, [
+                'form_id' => $form->id,
+                'data' => [
+                    'max' => isset($question['max']) ? $question['max'] : null,
+                    'minlbl' => isset($question['minlbl']) ? $question['minlbl'] : null,
+                    'maxlbl' => isset($question['maxlbl']) ? $question['maxlbl'] : null,
+                    'choices' => isset($question['choices']) ? $question['choices'] : null,
+                ],
+            ]);
+            $question = new Question($data);
             if (!$question->save() && env('APP_DEBUG', false)) {
                 throw abort(500, sprintf("Could not insert Question in database"));
             } else if (!env('APP_DEBUG', false)) {

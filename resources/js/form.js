@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // @TODO: extend jQuery add highlight effect
     // $.fn.highlight = function()
 
+    let card_template = $('.card.template').remove();
+    window.card_template = card_template;
+    let choice_template = card_template.find('.choice').first().clone();
+    window.choice_template = choice_template;
 
     /**
      * @param card jQuery Object of .card
@@ -26,10 +30,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
     window.addCardListeners = addCardListeners;
 
     let addChoice = function (e) {
-        let choice = $(this).closest('.form-group').find('.choice').first().clone();
+        let choice = choice_template.clone();
         choice.find('label').first()[0].lastChild.textContent = 'OPTION';
         choice.find('input').val('OPTION');
-        $(this).closest('.form-group').find('.choice').last().after(choice);
+        $('#choice-container').append(choice);
 
         choice.find('.add-choice').on('click', addChoice);
         choice.find('.delete-choice').on('click', deleteChoice);
@@ -65,15 +69,16 @@ document.addEventListener('DOMContentLoaded', function (e) {
         $('#session_id').combobox('disable');
 
         // Initialise variables
-        let card = $('.card.template').clone();
+        let card = card_template.clone();
         let title = `${this.lastChild.textContent} #${count}`;
-        let id = title.replace(/[\/#\s\(\)]/g, '-');
+        let id = title.replace(/[#]/g, '-').replace(/[\s()]/g, '');
 
         // Add Question type
         card.find("input[type=hidden][name*=type]").val(this.id);
         card.attr('data-type', this.id)
             .removeAttr('id')
-            .removeClass('template');
+            .removeClass('template')
+            .removeClass('d-none');
 
         // Add card title
         card.find('.btn-block[data-title]')
@@ -94,10 +99,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
         card.find('input[name=session_id]').val(this.id);
         // Replace [#/counts]
         card.find('input[name],label[for]').each(function () {
-            if (this.tagName == 'input') {
+            if (this.tagName.toLocaleLowerCase() === 'input') {
                 $(this).attr('name', this.getAttribute('name').replace(/#/i, count));
-            } else if (this.tagName == 'label') {
-                $(this).attr('for', this.getAttribute('ofr').replace(/#/i, count));
+            } else if (this.tagName.toLocaleLowerCase() === 'label') {
+                $(this).attr('for', this.getAttribute('for').replace(/#/i, count));
             }
         });
 
@@ -123,11 +128,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
         addCardListeners(card);
 
         // Append to end of cards
-        cards.last().after(card);
+        $('#card-container').append(card);
         // Blink Effect
         card.effect('highlight', {}, 1000);
         // Expand Card
-        card.find('.close-question')[0].click();
+        if (!card.find('.card-body').hasClass('show'))
+            card.find('.close-question')[0].click();
 
         $('form').find('button[type=submit]')[0].removeAttribute('disabled');
         // console.debug(card);
@@ -140,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
 
     cards.each(function () {
-        console.debug($(this));
+        // console.debug($(this));
         addCardListeners($(this));
     });
 });
