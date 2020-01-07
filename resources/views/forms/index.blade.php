@@ -16,6 +16,7 @@
                         <th>#</th>
                         <th>Title</th>
                         <th>Session</th>
+                        <th>Course</th>
                         <th>Mark</th>
                         <th></th>
                     </tr>
@@ -28,6 +29,11 @@
                             <td>
                                 <a href="{{ url('/sessions/' . $form->session_id . '/view' ) }}" target="_self">
                                     {{ $form->session_title }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url('/courses/' . $form->course_id . '/view' ) }}" target="_self">
+                                    {{ $form->code }}
                                 </a>
                             </td>
                             <td class="{{ $form->mark == 0 ? 'text-warning' : '' }}">{{ $form->mark == 0 ? 'Not Filled' : $form->mark }}</td>

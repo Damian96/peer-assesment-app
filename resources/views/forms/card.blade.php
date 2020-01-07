@@ -7,44 +7,14 @@
             <button class="btn btn-primary btn-block" type="button"
                     data-title=""></button>
             <div class="input-group-append float-right">
-                <i class="btn btn-sm btn-outline-danger material-icons delete-question" onclick="(function() {
-                            if ($('.card').length == 2) {
-                                $('#session_id').combobox('enable');
-                                $('button.question-type').removeAttr('disabled');
-                                $('button[type=submit]').attr('disabled', true);
-                            }
-                            $(this).closest('.card').slideUp('fast', function() {
-                              this.remove();
-                            }); }.bind(this, event))();">delete</i>
+                <i class="btn btn-sm btn-outline-danger material-icons delete-question">delete</i>
                 <i class="btn btn-sm btn-outline-light material-icons close-question"
                    data-toggle="collapse"
                    data-target=""
                    aria-expanded="true"
                    aria-controls="">keyboard_arrow_down</i>
-                <i class="btn btn-sm btn-outline-light material-icons moveup-question"
-                   onclick="(function(e) {
-                           let el = $(this).closest('.card');
-                           let prev = el.prev();
-                           if (!prev.hasClass('d-none')) {
-                               prev.before(el.remove());
-                               $(this).closest('.card').effect('highlight', {}, 1000);
-                               return true;
-                           }
-                           $(this).closest('.card').effect('highlight', {}, 1000);
-                           return false;
-                        }.bind(this, event))();">arrow_upward</i>
-                <i class="btn btn-sm btn-outline-light material-icons movedown-question"
-                   onclick="(function(e) {
-                           let el = $(this).closest('.card');
-                           let next = el.next();
-                           if (next.hasClass('card')) {
-                               next.after(el.remove());
-                               $(this).closest('.card').effect('highlight', {}, 1000);
-                               return true;
-                           }
-                           $(this).closest('.card').effect('highlight', {}, 1000);
-                           return false;
-                        }.bind(this, event))();">arrow_downward</i>
+                <i class="btn btn-sm btn-outline-light material-icons moveup-question">arrow_upward</i>
+                <i class="btn btn-sm btn-outline-light material-icons movedown-question">arrow_downward</i>
             </div>
         </div>
     </div>
@@ -82,16 +52,16 @@
                        placeholder="Highly Disagree"
                        required
                        aria-readonly="true" class="form-text d-inline"
-                       value="2"></label>
+                       value="Highly Disagree"></label>
             <label for="question[#][maxlbl]" class="form-control-sm"><span
                     class="max-num d-inline">5</span>
                 <input type="text" name="question[#][maxlbl]" placeholder="Highly Agree"
                        required
                        aria-required="true" class="form-text d-inline"
-                       value="5"></label>
+                       value="Highly Agree"></label>
         </div>
-        <div class="form-group multiple my-3">
-            <div id="choice-container" class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group multiple my-3 d-none">
+            <div class="col-xs-12 col-sm-12 col-md-12 choice-container">
                 <div class="row choice">
                     <div class="col-xs-5 col-sm-5 col-md-5 text-center overflow-hidden">
                         <i class="material-icons text-muted">radio_button_unchecked</i>

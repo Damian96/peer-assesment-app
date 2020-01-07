@@ -37,10 +37,13 @@ class FormController extends Controller
                     $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph';
                     $rules['question.' . $i . '.title'] = 'required|string|max:255';
                     $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
-                    $rules['question.' . $i . '.max'] = 'nullable|int|min:1|max:100';
-                    $rules['question.' . $i . '.minlbl'] = 'nullable|string|max:255';
-                    $rules['question.' . $i . '.maxlbl'] = 'nullable|string|max:255';
-                    $rules['question.' . $i . '.choices'] = 'nullable|array';
+                    if ($q['type'] === 'multiple-choice') {
+                        $rules['question.' . $i . '.choices'] = 'required|array';
+                    } elseif ($q['type'] === 'linear-scale') {
+                        $rules['question.' . $i . '.max'] = 'required|int|min:1|max:100';
+                        $rules['question.' . $i . '.minlbl'] = 'required|string|max:255';
+                        $rules['question.' . $i . '.maxlbl'] = 'required|string|max:255';
+                    }
                 }
                 return $rules;
             case 'store':
@@ -127,7 +130,13 @@ class FormController extends Controller
             ->join('courses', 'courses.id', '=', 'sessions.course_id')
             ->where('courses.user_id', '=', Auth::user()->id)
             ->whereNotNull('sessions.id')
-            ->select(['forms.*', 'courses.code', 'sessions.title AS session_title'])
+            ->select([
+                'forms.*',
+                'courses.code',
+                'courses.id AS course_id',
+                'courses.title AS course_title',
+                'sessions.title AS session_title',
+            ])
             ->paginate(self::PER_PAGE);
 //        return dd($forms);
         return response(view('forms.index', compact('title', 'forms')), 200, $request->headers->all());
@@ -206,7 +215,9 @@ class FormController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
+            $request->request->add(['cards' => $request->get('question', [])]);
             return redirect()->back(302)
+                ->withInput($request->request->all())
                 ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }

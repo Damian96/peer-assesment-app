@@ -67,13 +67,16 @@
                 value="admin"{{ old('department', isset($course) ? $course->department : '') == 'admin' ? 'selected' : '' }}>
                 ---
             </option>
-            <option value="CS"{{ old('department', isset($course) ? $course->department : '') == 'CCP' ? 'selected' : '' }}>
+            <option
+                value="CS"{{ old('department', isset($course) ? $course->department : '') == 'CCP' ? 'selected' : '' }}>
                 Computer Science
             </option>
-            <option value="ES"{{ old('department', isset($course) ? $course->department : '') == 'CES' ? 'selected' : '' }}>
+            <option
+                value="ES"{{ old('department', isset($course) ? $course->department : '') == 'CES' ? 'selected' : '' }}>
                 English Studies
             </option>
-            <option value="BS"{{ old('department', isset($course) ? $course->department : '') == 'CBE' ? 'selected' : '' }}>
+            <option
+                value="BS"{{ old('department', isset($course) ? $course->department : '') == 'CBE' ? 'selected' : '' }}>
                 Business Administration & Economics
             </option>
             <option
