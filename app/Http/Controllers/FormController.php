@@ -221,5 +221,26 @@ class FormController extends Controller
                 ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
+
+        try {
+            $form = Form::findOrFail($request->form_id);
+        } catch (\Exception $e) {
+            throw abort(401, 'You are not authorized');
+        }
+
+        foreach ($request->get('question') as $question) {
+            $data = array_merge($question, [
+                'form_id' => $form->id,
+                'data' => [
+                    'max' => isset($question['max']) ? $question['max'] : null,
+                    'minlbl' => isset($question['minlbl']) ? $question['minlbl'] : null,
+                    'maxlbl' => isset($question['maxlbl']) ? $question['maxlbl'] : null,
+                    'choices' => isset($question['choices']) ? $question['choices'] : null,
+                ],
+            ]);
+            $question = new Question($data);
+        }
+
+        return dd($request->all());
     }
 }

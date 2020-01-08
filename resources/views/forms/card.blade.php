@@ -81,8 +81,8 @@
                                         $(this).closest('div').prev().find('label')[0].lastChild.textContent = this.value;
                                    }.bind(this, event)());">
                     </div>
-                    <div class="delete-choice col-xs-12 col-sm-1 col-md-1">
-                        <i class="material-icons">close</i>
+                    <div class="col-xs-12 col-sm-1 col-md-1">
+                        <i class="btn btn-sm btn-danger delete-choice material-icons">close</i>
                     </div>
                 </div>
                 <div class="row choice">
@@ -104,8 +104,8 @@
                                         $(this).closest('div').prev().find('label')[0].lastChild.textContent = this.value;
                                    }.bind(this, event)());">
                     </div>
-                    <div class="delete-choice col-xs-12 col-sm-1 col-md-1">
-                        <i class="material-icons">close</i>
+                    <div class="col-xs-12 col-sm-1 col-md-1">
+                        <i class="btn btn-sm btn-danger delete-choice material-icons">close</i>
                     </div>
                 </div>
             </div>

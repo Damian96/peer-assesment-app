@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
      * @returns {boolean}
      */
     window.createCard = function (type, id, title = null, data = null) {
-        console.debug(arguments);
+        // console.debug(arguments);
 
         // Initialise variables
         window.count++;
@@ -99,6 +99,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 card.find('.scale').remove();
                 card.find('.add-choice').on('click', addChoice); // @TODO: add addChoice args
                 card.find('.delete-choice').on('click', deleteChoice);
+                if (data.hasOwnProperty('choices') && data.choices.length > 0) {
+                    card.find('.choice').remove();
+                    data.choices.forEach((choice, i) => {
+                        // console.debug(choice, card.find('.add-choice')[0]);
+                        addChoice.call(card.find('.add-choice')[0], choice);
+                    });
+                }
                 break;
             case 'eval':
             case 'paragraph':
@@ -162,26 +169,32 @@ document.addEventListener('DOMContentLoaded', function (e) {
         return true;
     };
 
-    let addChoice = function (e) {
+    let addChoice = function (label = null) {
+        // console.debug(this, label, $(this).closest('.form-group').prev().find('.choice-container'));
+        label = (typeof label !== 'string') ? 'OPTION' : label;
         let choice = choice_template.clone();
         let name = choice.find('label').first()[0].getAttribute('for').replace(/#/i, count);
         choice.find('label').attr('for', name);
         choice.find('input').attr('name', name);
-        choice.find('label').first()[0].lastChild.textContent = 'OPTION';
-        choice.find('input').val('OPTION');
-        $('.choice-container').append(choice);
+        choice.find('label').first()[0].lastChild.textContent = label;
+        choice.find('input').val(label);
+        $(this).closest('.card').find('.choice-container').append(choice);
 
         choice.find('.add-choice').on('click', addChoice);
         choice.find('.delete-choice').on('click', deleteChoice);
     };
     window.addChoice = addChoice;
-    let deleteChoice = function (e) {
-        $(this).closest('.choice').slideUp('fast', function () {
-            $(this).remove();
-        });
+    window.deleteChoice = function (e) {
+        let choice = $(this).closest('.choice');
+        if (choice.siblings().length > 0) {
+            choice.slideUp('fast', function () {
+                $(this).remove();
+            });
+        } else {
+            choice.effect('highlight', {}, 1000);
+        }
         return true;
     };
-    window.deleteChoice = deleteChoice;
 
     // course autocomplete
     $('#session_id').combobox();
@@ -200,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
     $('button.question-type').on('click', function () {
         $('#session_id').combobox('disable');
+        $('button.question-type').removeAttr('disabled');
         createCard(this.id, `${this.id}-${window.count}`, `${this.id} - #${window.count}`);
         return true;
     });
@@ -237,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     }
     // add old cards from 'array_data'
     array_data['question'].forEach((val, i) => {
-        console.debug(val, i);
+        // console.debug(val, i);
         val = new Object(val);
         createCard(val.type, val.type + '-' + window.count, val.title, val);
         return true;

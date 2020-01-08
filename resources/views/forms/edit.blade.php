@@ -168,8 +168,8 @@
                                         $(this).closest('div').prev().find('label')[0].lastChild.textContent = this.value;
                                    }.bind(this, event)());">
                                                     </div>
-                                                    <div class="delete-choice col-xs-12 col-sm-1 col-md-1">
-                                                        <i class="material-icons">close</i>
+                                                    <div class="col-xs-12 col-sm-1 col-md-1">
+                                                        <i class="btn btn-sm btn-danger delete-choice material-icons">close</i>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -188,7 +188,9 @@
                 @foreach($form->questions()->getEager() as $q => $question)
                 <!-- Card -->
                     <div class="card col-sm-12 col-md-12 p-0 my-2" data-type="{{ $question->type }}">
-                        <input name="question[{{ $q }}][type]" type="hidden" class="d-none">
+                        <input name="question[{{ $q }}][type]" type="hidden" class="d-none"
+                               value="{{ $question->type }}">
+                        <input name="question[{{ $q }}][id]" type="hidden" class="d-none" value="{{ $question->id }}">
                         <!-- Card Title -->
                         <div class="card-title">
                             <div class="input-group">
@@ -294,7 +296,7 @@
                                    }.bind(this, event)());">
                                                 </div>
                                                 <div class="delete-choice col-xs-12 col-sm-1 col-md-1">
-                                                    <i class="material-icons">close</i>
+                                                    <i class="btn btn-sm btn-danger delete-choice material-icons">close</i>
                                                 </div>
                                             </div>
                                         @endforeach
