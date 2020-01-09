@@ -6,15 +6,14 @@
 
 @section('content')
     @include('session.form', [
-        'action' => url('/sessions/store'),
+        'action' => url('/sessions/update'),
         'method' => 'POST',
-        'course' => $course,
         'courses' => isset($courses) ? $courses : null,
         'forms' => isset($forms) ? $forms : null,
         'messages' => $messages,
         'button' => [
-            'title' => 'Create Session' . (isset($course) ? 'for ' . $course->code : ''),
-            'label' => 'Create',
+            'title' => sprintf("Edit Session %s",$session->title),
+            'label' => 'Edit',
         ],
     ])
 @endsection

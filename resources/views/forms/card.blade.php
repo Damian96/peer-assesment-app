@@ -25,7 +25,7 @@
             <input type="text" name="question[#][title]" class="form-control" oninput="(function(e) {
                       let button = $(this).closest('.card').find('.btn-block[data-title]');
                       // let title = button.data('title') + ' - ' + this.value;
-                      let title = this.value;
+                      let title = this.value ? this.value : button.data('title');
                       button.text(title);
                     }.bind(this, event))();" required aria-required="true"
                    value="">

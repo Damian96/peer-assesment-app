@@ -7,7 +7,7 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
-{{--            <legend>There are {{ count($sessions) }} sessions active.</legend>--}}
+            {{--            <legend>There are {{ count($sessions) }} sessions active.</legend>--}}
             <table class="table table-striped">
                 <caption
                     class="">{{ sprintf("Showing results %s-%s of total %s Sessions", $sessions->firstItem(), $sessions->lastItem(), $sessions->total()) }}</caption>
@@ -17,6 +17,7 @@
                     <th>#</th>
                     <th>Course</th>
                     <th>Deadline</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -34,6 +35,14 @@
                             <td class="text-muted">N/A</td>
                         @endif
                         <td>{{ $s->deadline_full }}</td>
+                        <td>
+                            @if(Auth::user()->can('session.edit', ['id'=>$s->course_id]))
+                                <a href="{{ url('/sessions/' . $s->id . '/edit') }}"
+                                   class="material-icons"
+                                   title="Update Course {{ $s->title }}"
+                                   aria-label="Update Course {{ $s->title }}">edit</a>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>

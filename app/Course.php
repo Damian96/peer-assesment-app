@@ -51,6 +51,9 @@ use Laravel\Scout\Searchable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereUserId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $students
+ * @property-read int|null $students_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereDepartment($value)
  */
 class Course extends Model
 {

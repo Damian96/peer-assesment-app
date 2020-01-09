@@ -17,6 +17,7 @@ class Version0620191203Sessions extends Migration
         Schema::create('sessions', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('course_id')->unsigned();
+            $table->bigInteger('session_id')->unsigned();
             $table->string('title', 255);
             $table->timestamp('deadline')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->text('instructions');

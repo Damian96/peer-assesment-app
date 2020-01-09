@@ -33,6 +33,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $session_id
+ * @property string $title
+ * @property string $open_data
+ * @property-read \App\Form $form
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereSessionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereTitle($value)
  */
 class Session extends Model
 {
@@ -84,6 +91,7 @@ class Session extends Model
         'ac_year' => 'datetime',
         'status' => 'boolean',
         'course_id' => 'int',
+        'form_id' => 'int',
         'instructions' => 'string',
     ];
 
@@ -94,6 +102,15 @@ class Session extends Model
     public function course()
     {
         return $this->hasOne('App\Course', 'id', 'course_id');
+    }
+
+    /**
+     * Get the associated \App\Form
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function form()
+    {
+        return $this->hasOne('\App\Form', 'id', 'form_id');
     }
 
     /**

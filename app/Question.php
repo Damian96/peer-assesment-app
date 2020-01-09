@@ -4,6 +4,29 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Question
+ *
+ * @property int $id
+ * @property int $form_id
+ * @property string $title
+ * @property string|null $subtitle
+ * @property array $data
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Form $form
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereFormId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereSubtitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Question extends Model
 {
     protected $table = 'questions';

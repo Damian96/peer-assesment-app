@@ -77,7 +77,8 @@
                         return true;
                     }.bind($('.delete-form'))
                 },
-                // close: function () {}
+                close: function () {
+                }
             },
             theme: 'material',
             type: 'red',

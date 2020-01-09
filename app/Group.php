@@ -4,6 +4,23 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Group
+ *
+ * @property int $id
+ * @property int $session_id
+ * @property string $name
+ * @property int|null $mark
+ * @property-read \App\Session $session
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Group newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Group newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Group query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereMark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereSessionId($value)
+ * @mixin \Eloquent
+ */
 class Group extends Model
 {
     protected $table = 'groups';

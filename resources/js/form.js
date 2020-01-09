@@ -14,6 +14,25 @@ document.addEventListener('DOMContentLoaded', function (e) {
     let choice_template = card_template.find('.choice').first().clone();
     window.choice_template = choice_template;
 
+    /**
+     * @param card jQuery object of .card
+     * @param count int The card's data-count
+     * @return void
+     */
+    window.replaceCardNames = function (card, count = window.count) {
+        let replace = `[${(count).toString()}]`;
+        let patt = /\[[#\d]\]/i;
+        console.log('replace', count);
+        card.attr('data-count', count);
+        card.find('input[name]').each(function () {
+            console.debug($(this), count);
+            $(this).attr('name', this.getAttribute('name').replace(patt, replace));
+        });
+        card.find('label[for]').each(function () {
+            $(this).attr('for', this.getAttribute('for').replace(patt, replace));
+        });
+    };
+
     window.storeFormData = function () {
         let form = $('form');
         let key = form.attr('name');
@@ -34,20 +53,29 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return true;
         }.bind(null, card));
         card.find('.moveup-question').on('click', function (card, e) {
+            console.debug(card);
+            let cCount = parseInt(card[0].getAttribute('data-count'));
             let prev = card.prev();
+            replaceCardNames(card, cCount - 1);
+            replaceCardNames(prev, cCount);
             if (prev.hasClass('card')) {
                 prev.before(card);
                 card.effect('highlight', {}, 1000);
             }
+            storeFormData();
             return true;
         }.bind(null, card));
         card.find('.movedown-question').on('click', function (card, e) {
+            console.debug(card);
+            let cCount = parseInt(card[0].getAttribute('data-count'));
             let next = card.next();
-            console.debug(card, next);
+            replaceCardNames(card, cCount + 1);
+            replaceCardNames(next, cCount);
             if (next.hasClass('card')) {
                 next.after(card);
                 card.effect('highlight', {}, 1000);
             }
+            storeFormData();
             return true;
         }.bind(null, card));
         card.find('.delete-question').on('click', function (card, e) {
@@ -60,6 +88,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 this.remove();
                 window.count--;
             });
+            storeFormData();
+            return true;
         }.bind(null, card));
     };
 
@@ -120,12 +150,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             .attr('data-count', count);
 
         // Replace [#/counts]
-        card.find('input[name]').each(function () {
-            $(this).attr('name', this.getAttribute('name').replace(/#/i, (window.count).toString()));
-        });
-        card.find('label[for]').each(function () {
-            $(this).attr('for', this.getAttribute('for').replace(/#/i, (window.count).toString()));
-        });
+        replaceCardNames(card, count);
 
         // remove extras / show specifics
         switch (type) {
@@ -242,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // map old_data to array_data
     let c = 0;
     for (let item of old_data) {
-        // console.debug('old_data', item, c);
+        console.debug('old_data', item, c);
         if (item[0].includes('question')) { // questions
             let i = parseInt(item[0].split('[')[1][0]);
             let key = item[0].split('[')[2].split(']')[0];
@@ -268,14 +293,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
     if (count == 0) {
         // add old cards from 'array_data'
         array_data['question'].forEach((val, i) => {
-            console.debug('array_data', val, i);
+            // console.debug('array_data', val, i);
             if (val.hasOwnProperty('type') && val.hasOwnProperty('title')) {
                 createCard(val.type, val.type + '-' + window.count, val.title, val);
                 return true;
             }
         });
     } else { // cards already exists
-        console.debug('array_data', array_data);
+        // console.debug('array_data', array_data);
         $('.card').each(function () {
             addCardListeners($(this));
         });

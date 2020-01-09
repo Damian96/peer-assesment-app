@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Course;
+use App\Form;
 use App\Session;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -36,7 +37,10 @@ class SessionController extends Controller
         switch ($action) {
             case 'create':
             case 'store':
+            case 'edit':
+            case 'update':
                 return [
+                    'form' => 'required|numeric|exists:forms,id',
                     'course' => 'required|numeric|exists:courses,id',
                     'title' => 'required|string|min:3|max:50',
                     'status' => 'nullable|boolean',
@@ -57,7 +61,12 @@ class SessionController extends Controller
         switch ($action) {
             case 'create':
             case 'store':
+            case 'edit':
+            case 'update':
                 return [
+                    'form.required' => 'The target Form is required!',
+                    'form.numeric' => 'Invalid Form!',
+                    'form.exists' => 'Invalid Form!',
                     'course.required' => 'The target Course is required!',
                     'course.numeric' => 'Invalid Course!',
                     'course.exists' => 'Invalid Course!',
@@ -122,6 +131,7 @@ class SessionController extends Controller
      */
     public function create(Request $request, Course $course)
     {
+        $forms = Form::all();
         if ($course instanceof Course && $course->code) {
             $courses = null;
             $title = 'Create Session - ' . $course->code;
@@ -131,7 +141,22 @@ class SessionController extends Controller
             $title = 'Create Session';
         }
         $messages = $this->messages(__FUNCTION__);
-        return \response(view('session.create', compact('title', 'course', 'messages', 'courses')), 200, $request->headers->all());
+        return \response(view('session.create', compact('title', 'course', 'forms', 'messages', 'courses')), 200, $request->headers->all());
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|Response
+     */
+    public function edit(Request $request, Session $session)
+    {
+        $title = 'Edit Session ' . $session->title;
+        $forms = Form::all();
+        $messages = $this->messages(__FUNCTION__);
+        $courses = Course::getCurrentYears();
+
+        return response(view('session.edit', compact('courses', 'title', 'session', 'messages', 'forms')));
     }
 
     /**

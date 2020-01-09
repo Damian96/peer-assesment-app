@@ -4,6 +4,31 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Review
+ *
+ * @property int $id
+ * @property int $sender_id
+ * @property int $recipient_id
+ * @property int $question_id
+ * @property int|null $mark 0-5
+ * @property string|null $comment
+ * @property bool|null $answer boolean
+ * @property-read \App\Question $question
+ * @property-read \App\User $recipient
+ * @property-read \App\User $sender
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereAnswer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereMark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereQuestionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereRecipientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereSenderId($value)
+ * @mixin \Eloquent
+ */
 class Review extends Model
 {
     protected $table = 'reviews';

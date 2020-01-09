@@ -264,11 +264,12 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * Get the student's teammates from the database
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough|false
      */
     public function teammates()
     {
-        return $this->group()->first()->students();
+        return $this->group()->exists() ? $this->group()->first()->students() : false;
     }
 
     /**
@@ -553,7 +554,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.index':
                 return $this->isInstructor();
 //            case 'session.update':
-            case 'session.create':
             case 'course.update':
             case 'course.edit':
             case 'course.destroy':
@@ -564,6 +564,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.add-student':
             case 'session.index':
             case 'session.view':
+            case 'session.edit':
             case 'session.delete':
             case 'course.students':
             case 'form.view':

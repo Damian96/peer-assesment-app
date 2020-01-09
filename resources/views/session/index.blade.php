@@ -22,7 +22,7 @@
                         <tr>
                             <td>{{ $session->status }}</td>
                             <td>{{ $session->instructions }}</td>
-                                <td>{{ $session->deadline }}</td>
+                            <td>{{ $session->deadline }}</td>
                             <td class="action-cell">
                                 <a href="{{ url('/sessions/' . $session->id . '/view') }}"
                                    class="material-icons">link</a>
@@ -36,11 +36,12 @@
                 </table>
             @else
                 @if (Auth::user()->can('session.create', ['id' => $course->id]))
-                <h2>You do not have any Sessions yet!</h2>
-                <p>
-                    <a class="btn btn-primary" href="{{ url('/sessions/create/' . $course->id) }}" title="Add Session"
-                             aria-roledescription="Add Session">Add Session</a>
-                </p>
+                    <h2>You do not have any Sessions yet!</h2>
+                    <p>
+                        <a class="btn btn-primary" href="{{ url('/sessions/create/' . $course->id) }}"
+                           title="Add Session"
+                           aria-roledescription="Add Session">Add Session</a>
+                    </p>
                 @endif
             @endif
         </div>

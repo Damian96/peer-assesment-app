@@ -4,6 +4,23 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\StudentGroup
+ *
+ * @property int $user_id
+ * @property int $group_id
+ * @property-read \App\Group $group
+ * @property-read \App\User $student
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $students
+ * @property-read int|null $students_count
+ * @property-read \App\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup whereUserId($value)
+ * @mixin \Eloquent
+ */
 class StudentGroup extends Model
 {
     protected $table = 'user_group';

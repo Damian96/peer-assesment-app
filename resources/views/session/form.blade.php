@@ -6,6 +6,7 @@
     @if (isset($course))
         <input type="hidden" class="hidden" value="{{ $course->id }}" name="course" id="course">
     @else
+        @php $course = (isset($session) && $session->course()->exists()) ? $session->course()->first() : null; @endphp
         <div class="form-group">
             <label class="form-text" for="course">Course</label>
             @if (!empty($courses))
@@ -13,7 +14,8 @@
                         data-rule-required="true"
                         data-msg-required="{{ $messages['course.required'] }}">
                     @foreach($courses as $c)
-                        <option value="{{ $c->id }}">{{ sprintf("%s - %s",$c->code,$c->ac_year_pair) }}</option>
+                        <option
+                            value="{{ $c->id }}"{{ (isset($course) && $course->id == $c->id) ? ' selected' : null  }}>{{ sprintf("%s - %s",$c->code,$c->ac_year_pair) }}</option>
                     @endforeach
                 </select>
             @else
@@ -24,9 +26,47 @@
             </span>
         </div>
     @endif
+
+    @if (isset($session) && $session->form()->exists())
+        <input type="hidden" class="hidden" value="{{ $form->id }}" name="form" id="form">
+    @endif
+
+    @if (!empty($forms))
+        <div class="form-group">
+            <label class="form-text" for="course">Form</label>
+
+            <select name="form" id="form" class="{{ $errors->has('form') ? 'is-invalid' : '' }}"
+                    data-rule-required="true"
+                    data-msg-required="{{ $messages['form.required'] ?? '' }}">
+                @foreach($forms as $f)
+                    <option value="{{ $f->id }}">{{ sprintf("%s",$f->title) }}</option>
+                @endforeach
+            </select>
+            <span class="invalid-feedback">@if ($errors->has('title'))
+                    <strong>{{ $errors->first('title') }}</strong>@endif</span>
+        </div>
+    @else
+        <div class="form-group">
+            <label class="form-text" for="course">Form</label>
+
+            <div class="form-text text-warning">
+                <h4>There are no Form Templates available!</h4>
+                <a href="{{ url('/forms/create') }}" title="Create Form Template"
+                   class="btn btn-primary btn-secondary"
+                   aria-label="Create Form Template">
+                    Create Form Template
+                </a>
+            </div>
+        </div>
+        <span class="invalid-feedback">@if ($errors->has('title'))
+                <strong>{{ $errors->first('title') }}</strong>@endif</span>
+    @endif
+
     <div class="form-group">
         <label class="form-text" for="title">Title</label>
-        <input type="text" name="title" id="title" class="form-control{{ $errors->has('title') ? ' is-invalid' : '' }}"
+        <input type="text" name="title" id="title"
+               value="{{ old('title', $session->title) }}"
+               class="form-control{{ $errors->has('title') ? ' is-invalid' : '' }}"
                placeholder="Session's title"
                aria-placeholder="Session's title"
                data-rule-required="true"
@@ -42,7 +82,8 @@
 
     <div class="form-group">
         <label class="form-text" for="instructions">Instructions</label>
-        <textarea class="form-control{{ $errors->has('instructions') ? ' is-invalid' : '' }}" name="instructions"
+        <textarea class="form-control{{ $errors->has('instructions') ? ' is-invalid' : '' }}"
+                  name="instructions"
                   id="instructions" maxlength="500"
                   data-rule-required="true"
                   data-msg-required="{{ $messages['instructions.required'] }}"
@@ -59,10 +100,11 @@
     </div>
 
     <div class="form-group">
-        <label for="status" onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
+        <label for="status"
+               onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
             <input type="checkbox" name="status" id="status" tabindex="0"
                    class="form-control-feedback{{ $errors->has('status') ? ' is-invalid' : '' }}"
-                   {{ old('status', false) ? ' checked' : null }} value="{{ old('status', false) ? 'on' : 'off' }}">
+                   value="{{ old('status', $session->status) ? '0' : '1' }}">
             <span class="ml-4">Disabled<span class="ml-2 text-muted">(will not send any mail)</span></span>
         </label>
         <span class="invalid-feedback">
@@ -105,9 +147,16 @@
             // Course custom ComboBox jQueryUI
             $('#course').combobox();
             @if ($errors->has('studentid'))
-            $('.custom-combobox')
+            $('#course').next()
                 .addClass('is-invalid');
             @endif
+            // Forms custom ComboBox jQueryUI
+            $('#form').combobox();
+            @if ($errors->has('form'))
+            $('#form').next()
+                .addClass('is-invalid');
+            @endif
+
         });
         $(document).on('focusout change', 'input, select, textarea', function () {
             return $(this).valid();
