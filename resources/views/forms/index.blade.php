@@ -41,9 +41,10 @@
                                 <a href="{{ url('/forms/' . $form->id . '/edit') }}" class="material-icons"
                                    title="Update Form {{ $form->title }}"
                                    aria-label="Update Form {{ $form->title }}">edit</a>
-                                <a href="{{ url('/forms/' . $form->id . '/delete') }}" class="material-icons"
+                                <a href="{{ url('/forms/' . $form->id . '/delete') }}"
+                                   class="material-icons delete-form text-danger"
                                    title="Update Form {{ $form->title }}"
-                                   aria-label="Delete Form {{ $form->title }}">edit</a>
+                                   aria-label="Delete Form {{ $form->title }}">delete</a>
                             </td>
                         </tr>
                     @endforeach
@@ -53,9 +54,9 @@
             @else
                 <h2>You do not have own any Forms yet!</h2>
                 <p>
-                    <a class="btn btn-primary" href="{{ url('/forms/add/') }}"
+                    <a class="btn btn-primary" href="{{ url('/forms/create/') }}"
                        title="Add Form"
-                       aria-roledescription="Add Form">Add Form</a>
+                       aria-roledescription="Add Form">Create Form</a>
                 </p>
             @endif
         </div>
@@ -63,4 +64,24 @@
 @endsection
 
 @section('end_footer')
+    <script type="text/javascript">
+        $('.delete-form').confirm({
+            escapeKey: 'close',
+            buttons: {
+                delete: {
+                    text: 'Delete',
+                    btnClass: 'btn-red',
+                    action: function (e) {
+                        // console.debug(this, e);
+                        window.location.replace(this[0].getAttribute('href'));
+                        return true;
+                    }.bind($('.delete-form'))
+                },
+                // close: function () {}
+            },
+            theme: 'material',
+            type: 'red',
+            typeAnimated: true,
+        });
+    </script>
 @endsection

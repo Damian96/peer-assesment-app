@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // @TODO: extend jQuery add highlight effect
     // $.fn.highlight = function()
 
+    if (!document.querySelector('.btn.question-type')) {
+        return false;
+    }
+
     let old_data = sessionStorage.getItem(document.querySelector('form').getAttribute('name'));
     old_data = new URLSearchParams(old_data);
     window.old_data = old_data;
@@ -19,6 +23,45 @@ document.addEventListener('DOMContentLoaded', function (e) {
     };
 
     window.count = $('.card').length;
+
+    window.addCardListeners = function (card) {
+        card.find('.card-body').on('shown.bs.collapse', function (card, e) {
+            card.find('.close-question').text('keyboard_arrow_up');
+            return true;
+        }).bind(null, card);
+        card.find('.card-body').on('hidden.bs.collapse', function (card, e) {
+            card.find('.close-question').text('keyboard_arrow_down');
+            return true;
+        }.bind(null, card));
+        card.find('.moveup-question').on('click', function (card, e) {
+            let prev = card.prev();
+            if (prev.hasClass('card')) {
+                prev.before(card);
+                card.effect('highlight', {}, 1000);
+            }
+            return true;
+        }.bind(null, card));
+        card.find('.movedown-question').on('click', function (card, e) {
+            let next = card.next();
+            console.debug(card, next);
+            if (next.hasClass('card')) {
+                next.after(card);
+                card.effect('highlight', {}, 1000);
+            }
+            return true;
+        }.bind(null, card));
+        card.find('.delete-question').on('click', function (card, e) {
+            if (window.count == 1) {
+                $('#session_id').combobox('enable');
+                $('button.question-type').removeAttr('disabled');
+                $('button[type=submit]').attr('disabled', true);
+            }
+            card.slideUp('fast', function () {
+                this.remove();
+                window.count--;
+            });
+        }.bind(null, card));
+    };
 
     /**
      * @param type The card's type
@@ -47,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         }
 
         // Add Question type
-        card.find("input[type=hidden][name*=type]").val(type);
+        card.find("input[name*=type]").val(type);
         card.attr('data-type', type)
             .removeAttr('id')
             .removeClass('template')
@@ -109,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 break;
             case 'eval':
             case 'paragraph':
-                card.find('.d-none').remove();
                 card.find('.multiple').remove();
                 card.find('.scale').remove();
                 break;
@@ -118,41 +160,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         }
 
         // Add Event Listeners
-        card.find('.card-body').on('shown.bs.collapse', function (card, e) {
-            card.find('.close-question').text('keyboard_arrow_up');
-            return true;
-        }).bind(null, card);
-        card.find('.card-body').on('hidden.bs.collapse', function (card, e) {
-            card.find('.close-question').text('keyboard_arrow_down');
-            return true;
-        }.bind(null, card));
-        card.find('.moveup-question').on('click', function (card, e) {
-            let prev = card.prev();
-            if (prev.hasClass('card')) {
-                prev.before(card);
-                card.effect('highlight', {}, 1000);
-            }
-            return true;
-        }.bind(null, card));
-        card.find('.movedown-question').on('click', function (card, e) {
-            let next = card.next();
-            if (next.hasClass('card')) {
-                next.after(card);
-                card.effect('highlight', {}, 1000);
-            }
-            return true;
-        }.bind(null, card));
-        card.find('.delete-question').on('click', function (card, e) {
-            if (window.count == 1) {
-                $('#session_id').combobox('enable');
-                $('button.question-type').removeAttr('disabled');
-                $('button[type=submit]').attr('disabled', true);
-            }
-            card.slideUp('fast', function () {
-                this.remove();
-                window.count--;
-            });
-        }.bind(null, card));
+        addCardListeners(card);
 
         // Append & Blink & Expand
         $('#card-container').append(card);
@@ -239,7 +247,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
             let i = parseInt(item[0].split('[')[1][0]);
             let key = item[0].split('[')[2].split(']')[0];
             // console.debug(i, key);
-            // console.debug(i, key);
             if (!array_data['question'][i]) {
                 array_data['question'][i] = [];
             }
@@ -261,16 +268,31 @@ document.addEventListener('DOMContentLoaded', function (e) {
     if (count == 0) {
         // add old cards from 'array_data'
         array_data['question'].forEach((val, i) => {
-            // console.debug('array_data', val, i);
+            console.debug('array_data', val, i);
             if (val.hasOwnProperty('type') && val.hasOwnProperty('title')) {
                 createCard(val.type, val.type + '-' + window.count, val.title, val);
                 return true;
             }
         });
     } else { // cards already exists
-        // @TODO: make changes for keep with reload
+        console.debug('array_data', array_data);
+        $('.card').each(function () {
+            addCardListeners($(this));
+        });
         $('.add-choice').on('click', addChoice);
         $('.delete-choice').on('click', deleteChoice);
+
+        // new edited questions
+        if (array_data['question'].slice(count).length > 0) {
+            array_data['question'].slice(count).forEach(function (val, i) {
+                if (val.hasOwnProperty('type') && val.hasOwnProperty('title')) {
+                    createCard(val.type, val.type + '-' + window.count, val.title, val);
+                    return true;
+                }
+            });
+        }
+        // console.debug(array_data['question'].slice($('.card').length));
+        // console.debug(q.choices.slice(card.find('.choice').length));
         // array_data['question'].forEach((q, i) => {
         //     // console.debug(val, i);
         //     if (q.type === 'multiple-choice' && q.hasOwnProperty('choices')) {
