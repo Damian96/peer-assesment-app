@@ -10,6 +10,8 @@
     <title>{{ isset($title) ? $title : (isset($error_number) ? 'Error ' . $error_number : '') . ' | ' . config('app.name') }}</title>
 
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <script charset="utf-8" src="{{ mix('/js/manifest.js') }}"></script>
+    <script charset="utf-8" src="{{ mix('/js/vendor.js') }}"></script>
     <script charset="utf-8" src="{{ mix('/js/app.js') }}"></script>
 
     @if (env('APP_ENV') !== 'local')

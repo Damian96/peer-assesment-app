@@ -81,6 +81,7 @@ const webpack = require('webpack');
  */
 
 mix.js('resources/js/app.js', 'public/js')
+    .extract(['jquery', 'papaparse', 'popper.js'])
     .sourceMaps()
     .version();
 mix.sass('resources/sass/app.scss', 'public/css')
