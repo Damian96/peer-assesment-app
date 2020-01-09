@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Course;
-use App\Form;
-use App\Question;
 use App\Session;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -165,5 +163,16 @@ class SessionController extends Controller
         } else {
             return redirect()->back(302);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     * @return Response
+     */
+    public function show(Request $request, Session $session)
+    {
+        $title = 'View Session ' . $session->title;
+        return response(view('session.view', compact('title', 'session')));
     }
 }

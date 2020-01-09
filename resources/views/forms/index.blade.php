@@ -38,11 +38,12 @@
                             </td>
                             <td class="{{ $form->mark == 0 ? 'text-warning' : '' }}">{{ $form->mark == 0 ? 'Not Filled' : $form->mark }}</td>
                             <td>
-                                {{--                                @if(Auth::user()->can('course.edit', ['id'=>$course->id]))--}}
                                 <a href="{{ url('/forms/' . $form->id . '/edit') }}" class="material-icons"
                                    title="Update Form {{ $form->title }}"
                                    aria-label="Update Form {{ $form->title }}">edit</a>
-                                {{--                                @endif--}}
+                                <a href="{{ url('/forms/' . $form->id . '/delete') }}" class="material-icons"
+                                   title="Update Form {{ $form->title }}"
+                                   aria-label="Delete Form {{ $form->title }}">edit</a>
                             </td>
                         </tr>
                     @endforeach

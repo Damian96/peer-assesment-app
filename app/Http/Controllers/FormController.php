@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Form;
 use App\Question;
 use App\Session;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -170,6 +171,7 @@ class FormController extends Controller
             $data = array_merge($question, [
                 'form_id' => $form->id,
                 'data' => [
+                    'type' => isset($question['type']) ? $question['type'] : null,
                     'max' => isset($question['max']) ? $question['max'] : null,
                     'minlbl' => isset($question['minlbl']) ? $question['minlbl'] : null,
                     'maxlbl' => isset($question['maxlbl']) ? $question['maxlbl'] : null,
@@ -228,19 +230,64 @@ class FormController extends Controller
             throw abort(401, 'You are not authorized');
         }
 
-        foreach ($request->get('question') as $question) {
-            $data = array_merge($question, [
+        foreach ($request->get('question') as $data) {
+            $data = [
+                'id' => isset($data['id']) ? $data['id'] : null,
                 'form_id' => $form->id,
+                'title' => $data['title'],
+                'subtitle' => $data['subtitle'],
                 'data' => [
-                    'max' => isset($question['max']) ? $question['max'] : null,
-                    'minlbl' => isset($question['minlbl']) ? $question['minlbl'] : null,
-                    'maxlbl' => isset($question['maxlbl']) ? $question['maxlbl'] : null,
-                    'choices' => isset($question['choices']) ? $question['choices'] : null,
+                    'type' => isset($data['type']) ? $data['type'] : null,
+                    'max' => isset($data['max']) ? $data['max'] : null,
+                    'minlbl' => isset($data['minlbl']) ? $data['minlbl'] : null,
+                    'maxlbl' => isset($data['maxlbl']) ? $data['maxlbl'] : null,
+                    'choices' => isset($data['choices']) ? $data['choices'] : null,
                 ],
-            ]);
-            $question = new Question($data);
+            ];
+
+            try {
+                $question = Question::findOrFail($data['id']);
+            } catch (ModelNotFoundException $e) {
+                $question = new Question($data);
+            }
+            $question->setAttribute('data', $data['data']); // fix of Eloquent\Model casted 'array' / JSON data
+
+            if (!$question->save() && env('APP_DEBUG', false)) {
+                throw abort(500, sprintf("Could not save question: [%s]", $question->toJson()));
+            }
         }
 
-        return dd($request->all());
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => sprintf("Form %s saved successfully!", $form->id),
+        ]);
+        return redirect()->action('FormController@index', [], 302);
+    }
+
+    /**
+     * @param Request $request
+     * @param Form $form
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
+    public function delete(Request $request, Form $form)
+    {
+        if ($form->delete()) {
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => sprintf("Successfully delete Form: %s", $form->title),
+            ]);
+            return redirect()->back(302, $request->headers->all());
+        }
+
+        if (env('APP_DEBUG', false)) {
+            throw abort(500, sprintf("Could not delete form: %s", $form->title));
+        }
+
+        $request->session()->flash('message', [
+            'level' => 'danger',
+            'heading' => sprintf("Could not delete Form: %s", $form->title),
+        ]);
+        return redirect()->back(302, $request->headers->all());
     }
 }

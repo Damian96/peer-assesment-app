@@ -32,6 +32,7 @@ class Question extends Model
     public function __get($name)
     {
         $data = (object)$this->getAttribute('data');
+//        return dd($data);
         switch ($name) {
             case 'type':
                 return $data->type;

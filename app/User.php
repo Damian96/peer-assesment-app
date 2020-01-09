@@ -563,6 +563,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.trash':
             case 'course.add-student':
             case 'session.index':
+            case 'session.view':
+            case 'session.delete':
             case 'course.students':
             case 'form.view':
                 if (array_key_exists('id', $arguments)) {
@@ -571,6 +573,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                     $cid = $arguments['cid'];
                 } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
                     $cid = $arguments['course']->id;
+                } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
+                    $cid = $arguments['session']->course_id;
                 } else {
                     return false;
                 }

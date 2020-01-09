@@ -241,6 +241,11 @@ table {
       .close-question {
         cursor: ns-resize;
       }
+
+      .moveup-question,
+      .movedown-question {
+        cursor: move;
+      }
     }
   }
 

@@ -10,7 +10,6 @@
     <title>{{ isset($title) ? $title : (isset($error_number) ? 'Error ' . $error_number : '') . ' | ' . config('app.name') }}</title>
 
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
-    <script type="text/javascript">$.noConflict();</script>
     <script charset="utf-8" src="{{ mix('/js/app.js') }}"></script>
 
     @if (env('APP_ENV') !== 'local')
@@ -114,16 +113,16 @@
                         </li>
                     @endif
                 @else
-                    <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">Courses</a>
-                        <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}"
-                               href="{{ url('/courses') }}">My Courses</a>
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}"
-                               href="{{ url('/courses/create') }}">Create</a>
-                        </div>
-                    </li>
+                        <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
+                            <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">Courses</a>
+                            <div class="dropdown-menu" aria-labelledby="course-dropdown">
+                                <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}"
+                                   href="{{ url('/courses') }}">My Courses</a>
+                                <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}"
+                                   href="{{ url('/courses/create') }}">Create</a>
+                            </div>
+                        </li>
                         <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'session.') !== false) ? ' active' : '' }}">
                             <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">Sessions</a>

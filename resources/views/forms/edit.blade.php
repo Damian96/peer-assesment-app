@@ -70,7 +70,10 @@
                             $question = (object) $question;
                         @endphp
                         <div class="card col-sm-12 col-md-12 p-0 my-2" data-type="{{ $question->type }}">
-                            <input name="question[{{ $q }}][type]" type="hidden" class="d-none">
+                            <input name="question[{{ $q }}][type]" type="hidden" class="d-none"
+                                   value="{{ $question->type }}">
+                            <input name="question[{{ $q }}][id]" type="hidden" class="d-none"
+                                   value="{{ $question->id }}">
                             <!-- Card Title -->
                             <div class="card-title">
                                 <div class="input-group">
@@ -197,35 +200,14 @@
                                 <button class="btn btn-primary btn-block" type="button"
                                         data-title="">{{ $question->title }}</button>
                                 <div class="input-group-append float-right">
-                                    <i class="btn btn-sm btn-outline-danger material-icons delete-question" onclick="(function() {
-                            if ($('.card').length == 2) {
-                                $('#session_id').combobox('enable');
-                                $('button.question-type').removeAttr('disabled');
-                                $('button[type=submit]').attr('disabled', true);
-                            }
-                            $(this).closest('.card').slideUp('fast', function() {
-                              this.remove();
-                            }); }.bind(this, event))();">
-                                        delete
-                                    </i>
+                                    <i class="btn btn-sm btn-outline-danger material-icons delete-question">delete</i>
                                     <i class="btn btn-sm btn-outline-light material-icons close-question"
                                        data-toggle="collapse"
                                        data-target="#{{ 'question-' . $question->id }}"
                                        aria-expanded="false"
                                        aria-controls="{{ '$question-'.$question->id }}">keyboard_arrow_down</i>
                                     <i class="btn btn-sm btn-outline-light material-icons moveup-question">arrow_upward</i>
-                                    <i class="btn btn-sm btn-outline-light material-icons movedown-question"
-                                       onclick="(function(e) {
-                           let el = $(this).closest('.card');
-                           let next = el.next();
-                           if (next.hasClass('card')) {
-                               next.after(el.remove());
-                               $(this).closest('.card').effect('highlight', {}, 1000);
-                               return true;
-                           }
-                           $(this).closest('.card').effect('highlight', {}, 1000);
-                           return false;
-                        }.bind(this, event))();">arrow_downward</i>
+                                    <i class="btn btn-sm btn-outline-light material-icons movedown-question">arrow_downward</i>
                                 </div>
                             </div>
                         </div>

@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
         // console.debug(arguments);
 
         // Initialise variables
-        window.count++;
         let card = card_template.clone();
         let max = 5;
         let subtitle = '';
@@ -74,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
         // Show
         card.removeClass('d-none')
-            .attr('data-type', type);
+            .attr('data-type', type)
+            .attr('data-count', count);
 
         // Replace [#/counts]
         card.find('input[name]').each(function () {
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 card.find('.scale').remove();
                 card.find('.add-choice').on('click', addChoice); // @TODO: add addChoice args
                 card.find('.delete-choice').on('click', deleteChoice);
-                if (data.hasOwnProperty('choices') && data.choices.length > 0) {
+                if (data && data.hasOwnProperty('choices') && data.choices.length > 0) {
                     card.find('.choice').remove();
                     data.choices.forEach((choice, i) => {
                         // console.debug(choice, card.find('.add-choice')[0]);
@@ -166,22 +166,29 @@ document.addEventListener('DOMContentLoaded', function (e) {
         // Store data to sessionStorage
         storeFormData();
 
+        window.count++;
         return true;
     };
 
     let addChoice = function (label = null) {
-        // console.debug(this, label, $(this).closest('.form-group').prev().find('.choice-container'));
         label = (typeof label !== 'string') ? 'OPTION' : label;
+        let card = $(this).closest('.card');
         let choice = choice_template.clone();
-        let name = choice.find('label').first()[0].getAttribute('for').replace(/#/i, count);
+
+        // replace names
+        let name = choice.find('label').first()[0].getAttribute('for').replace(/#/i, card.attr('data-count'));
         choice.find('label').attr('for', name);
         choice.find('input').attr('name', name);
+
+        // add labels
         choice.find('label').first()[0].lastChild.textContent = label;
         choice.find('input').val(label);
-        $(this).closest('.card').find('.choice-container').append(choice);
 
+        // add event listeners
         choice.find('.add-choice').on('click', addChoice);
         choice.find('.delete-choice').on('click', deleteChoice);
+
+        card.find('.choice-container').append(choice);
     };
     window.addChoice = addChoice;
     window.deleteChoice = function (e) {
@@ -225,37 +232,65 @@ document.addEventListener('DOMContentLoaded', function (e) {
     let array_data = []; // @TODO: make array data to Object
     array_data['question'] = [];
     // map old_data to array_data
+    let c = 0;
     for (let item of old_data) {
-        // console.debug(item);
+        // console.debug('old_data', item, c);
         if (item[0].includes('question')) { // questions
-            let i = item[0].split('[')[1][0];
+            let i = parseInt(item[0].split('[')[1][0]);
             let key = item[0].split('[')[2].split(']')[0];
             // console.debug(i, key);
-            // console.debug(i, key, item);
-            if (array_data['question'][i] == null) {
+            // console.debug(i, key);
+            if (!array_data['question'][i]) {
                 array_data['question'][i] = [];
             }
             if (item[0].includes('max') || item[0].includes('min')) { // all other types
                 array_data['question'][i][key] = item[1];
-            } else if (array_data['question'][i]['choices'] != null) {
+            } else if (item[0].includes('choices') && array_data['question'][i]['choices'] != null) {
                 array_data['question'][i][key].push(item[1]); // push choices array
-            } else if (item[0].includes('choices')) {
+            } else if (item[0].includes('choices') && !array_data['question'][i]['choices']) {
                 array_data['question'][i][key] = [item[1]]; // initialize choices array
             } else { // title, subtitle, others...
                 array_data['question'][i][key] = item[1];
             }
+            c++;
         } else if (item[0].includes('title') || item[0].includes('footnote')) { // form title / subtitle / footnote
             array_data[item[0]] = item[1];
         }
-        // console.debug(array_data);
     }
-    // add old cards from 'array_data'
-    array_data['question'].forEach((val, i) => {
-        // console.debug(val, i);
-        val = new Object(val);
-        createCard(val.type, val.type + '-' + window.count, val.title, val);
-        return true;
-    });
+    // console.debug(array_data);
+    if (count == 0) {
+        // add old cards from 'array_data'
+        array_data['question'].forEach((val, i) => {
+            // console.debug('array_data', val, i);
+            if (val.hasOwnProperty('type') && val.hasOwnProperty('title')) {
+                createCard(val.type, val.type + '-' + window.count, val.title, val);
+                return true;
+            }
+        });
+    } else { // cards already exists
+        // @TODO: make changes for keep with reload
+        $('.add-choice').on('click', addChoice);
+        $('.delete-choice').on('click', deleteChoice);
+        // array_data['question'].forEach((q, i) => {
+        //     // console.debug(val, i);
+        //     if (q.type === 'multiple-choice' && q.hasOwnProperty('choices')) {
+        //         let card = $($('.card').get(i));
+        //         let add = card.find('.add-choice');
+        //         let cCount = card.find('.choice').length;
+        //         // console.debug(card.find('.choice').length, q.choices, q, i);
+        //         // if (q.choices.length < cCount) { // choice deleted
+        //         //
+        //         // } else if (q.choices.length > cCount) { // choice added
+        //         //
+        //         // }
+        //         // q.choices.slice().forEach(function (label) {
+        //         //     addChoice.call(add, label);
+        //         //     return true;
+        //         // });
+        //     }
+        //     return true;
+        // });
+    }
     window.array_data = array_data;
     window.addEventListener('unload', storeFormData);
 });
