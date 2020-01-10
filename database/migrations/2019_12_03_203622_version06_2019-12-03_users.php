@@ -22,10 +22,13 @@ class Version0620191203Users extends Migration
             $table->string('lname', 255)->nullable();
             $table->string('department')->nullable();
             $table->string('reg_num', 6)->nullable();
-            $table->char('instructor', 1)->default('0')->comment('0 -> student, 1 -> instructor');
+            $table->char('instructor', 1)->default('0')
+                ->comment('0 -> student, 1 -> instructor');
             $table->char('admin', 1)->default('0')->comment('boolean');
             $table->string('password', 255);
             $table->string('remember_token', 100)->nullable();
+            $table->string('api_token', 80)->after('password')->unique()->nullable()
+                ->default(null);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('last_login')->default(DB::raw('CURRENT_TIMESTAMP'));

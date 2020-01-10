@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 /**
  * Class User
@@ -58,12 +59,14 @@ use Illuminate\Support\Facades\URL;
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Course[] $studentCourses
  * @property-read int|null $student_courses_count
+ * @property string api_token
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereAdmin($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartment($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereFname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereInstructor($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRegNum($value)
+ * @method static whereApiToken(string $token)
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
 {
@@ -122,7 +125,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'verification_token'
+        'password', 'remember_token', 'verification_token', 'api_token'
     ];
 
     /**
@@ -661,5 +664,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 'action' => $action,
             ]
         );
+    }
+
+    /**
+     * @return String The generate API token
+     */
+    public function generateApiToken()
+    {
+        $this->api_token = hash('sha256', Str::random(80));
+        $this->save();
+        return $this->api_token;
     }
 }

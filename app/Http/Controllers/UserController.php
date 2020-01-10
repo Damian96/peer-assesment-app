@@ -502,7 +502,8 @@ class UserController extends Controller
     {
         $title = 'Profile';
         $user = Auth::user();
-        return response(view('user.profile', compact('title', 'user')), 200, $request->headers->all());
+        return response(view('user.profile', compact('title', 'user')),
+            200, $request->headers->all());
     }
 
     /**

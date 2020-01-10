@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,14 +14,24 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+/**
+ * auth:api Middleware -> expects always JSON !!
+ */
 
-Route::get('/sessions', function () {
-    return \App\Http\Resources\Session::collection(\App\Session::all());
+Route::post('/user/login', 'ApiController@login')->name('api.login');
+Route::middleware('api')->get('/user', function (Request $request) {
+    return json_encode(Auth::guard('api')->user());
 });
+//Route::group(['prefix' => '/user', 'middleware' => 'auth:api'], function () {
+//
+//});
 
-Route::get('/sessions/combobox', function () {
-    return \App\Http\Resources\Session::collection(\App\Session::all());
+//Route::middleware('auth:api')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
+
+Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {
+    Route::get('/all', function () {
+        return new \App\Http\Resources\SessionCollection(\App\Session::all());
+    })->name('sessions.all');
 });
