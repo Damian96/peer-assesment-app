@@ -34,7 +34,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property int $session_id
- * @property string $title
  * @property string $open_data
  * @property-read \App\Form $form
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenData($value)
@@ -54,12 +53,13 @@ class Session extends Model
     public function __get($name)
     {
         switch ($name) {
+            case 'course_title':
+                return $this->course()->exists() ? $this->course()->first()->title : 'N/A';
             case 'deadline_full':
                 return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
-//            case 'title_full':
-//                return $this->title . ' - ' . $this->ac_year;
             case 'title_full':
                 return $this->title . ' - ' . Carbon::createFromTimestamp(strtotime($this->course()->first()->ac_year), config('app.timezone'))->format('Y');
+//                return $this->title . ' - ' . $this->ac_year;
             default:
                 return parent::__get($name);
         }

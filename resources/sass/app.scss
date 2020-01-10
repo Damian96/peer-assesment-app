@@ -242,9 +242,12 @@ table {
         cursor: ns-resize;
       }
 
-      .moveup-question,
+      .moveup-question {
+        cursor: n-resize;
+      }
+
       .movedown-question {
-        cursor: move;
+        cursor: s-resize;
       }
     }
   }
@@ -255,6 +258,7 @@ table {
       cursor: pointer;
     }
 
+    g
     .add-choice {
       cursor: pointer;
     }

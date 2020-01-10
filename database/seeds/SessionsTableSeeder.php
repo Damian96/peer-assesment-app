@@ -27,10 +27,10 @@ class SessionsTableSeeder extends Seeder
             $c = array_rand($cids, 1);
             DB::table($this->table)->insert([
                 'course_id' => $cids[$c],
-                'title' => $courses[$c]->code . '-Session',
+                'title' => "{$courses[$c]->code}-Session-{$c->id}",
                 'status' => '1',
                 'instructions' => substr($lipsum, -(rand(0, 50))),
-                'deadline' => Carbon::now(config('app.timezone'))->addSeconds(5)->addMonths(rand(1,5)),
+                'deadline' => Carbon::now(config('app.timezone'))->addSeconds(5)->addMonths(rand(1, 5)),
             ]);
         }
     }

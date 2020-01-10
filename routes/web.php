@@ -68,4 +68,5 @@ Route::group(['prefix' => '/forms'], function () {
     Route::match(['post'], '/update', 'FormController@update')->name('form.update');
     Route::match(['get'], '/{form}/edit', 'FormController@edit')->name('form.edit');
     Route::match(['get'], '/{form}/delete', 'FormController@delete')->name('form.delete'); // @TODO: change method to POST
+    Route::match(['post'], '/{form}/duplicate', 'FormController@duplicate')->name('form.duplicate');
 });

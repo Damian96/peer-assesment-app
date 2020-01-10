@@ -82,10 +82,31 @@ const webpack = require('webpack');
 
 mix.js('resources/js/app.js', 'public/js')
     .extract(['jquery', 'papaparse', 'popper.js'])
-    .sourceMaps()
-    .version();
+    .sourceMaps();
+
 mix.sass('resources/sass/app.scss', 'public/css')
-    .sourceMaps()
-    .version();
+    .sourceMaps();
+
+if (mix.inProduction()) {
+    mix.version();
+} else {
+    mix.browserSync({
+        proxy: process.env.APP_URL,
+        files: [
+            "resources/views/**/*.php",
+            "public/css/*.css",
+            "public/js/*.js",
+            // "resources/sass/*.scss",
+            // "resources/js/*.js"
+        ],
+        watchEvents: [
+            'change', 'add', 'unlink'
+        ],
+        // logLevel: 'debug',
+        // httpModule: 'http2',
+        // https: false,
+        // online: true,
+    });
+}
 
 // .jsplugins();

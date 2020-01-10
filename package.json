@@ -11,27 +11,29 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "axios": "^0.19",
-        "cross-env": "^5.1",
-        "jquery": "^3.4.1",
-        "laravel-mix": "^4.1.4",
-        "lodash": "^4.17.13",
-        "resolve-url-loader": "^2.3.1",
-        "sass": "^1.15.2",
-        "sass-loader": "^7.1.0",
-        "vue-template-compiler": "^2.6.10",
-        "webpack": "^4.41.0",
-        "webpack-jquery-ui": "^2.0.1",
-        "bootstrap": "^4.0.0",
-        "material-design-icons": "^3.0.1",
-        "popper.js": "^1.16.0"
+      "axios": "^0.19",
+      "bootstrap": "^4.0.0",
+      "browser-sync-webpack-plugin": "^2.0.1",
+      "cross-env": "^5.1",
+      "jquery": "^3.4.1",
+      "laravel-mix": "^4.1.4",
+      "lodash": "^4.17.13",
+      "material-design-icons": "^3.0.1",
+      "popper.js": "^1.16.0",
+      "resolve-url-loader": "^2.3.1",
+      "sass": "^1.15.2",
+      "sass-loader": "^7.1.0",
+      "vue-template-compiler": "^2.6.10",
+      "webpack": "^4.41.0",
+      "webpack-jquery-ui": "^2.0.1"
     },
     "dependencies": {
-        "@curveballerpacks/tablesorter": "^1.0.0",
-        "@myspace-nu/jquery.fancytable": "^1.0.9",
-        "jquery-confirm": "^3.3.4",
-        "jquery-ui-bundle": "^1.12.1-migrate",
-        "jquery-validation": "^1.19.1",
-        "papaparse": "^5.1.0"
+      "@curveballerpacks/tablesorter": "^1.0.0",
+      "@myspace-nu/jquery.fancytable": "^1.0.9",
+      "browser-sync": "^2.26.7",
+      "jquery-confirm": "^3.3.4",
+      "jquery-ui-bundle": "^1.12.1-migrate",
+      "jquery-validation": "^1.19.1",
+      "papaparse": "^5.1.0"
     }
 }

@@ -568,25 +568,21 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'session.delete':
             case 'course.students':
             case 'form.view':
-                if (array_key_exists('id', $arguments)) {
-                    $cid = $arguments['id'];
-                } elseif (array_key_exists('cid', $arguments)) {
-                    $cid = $arguments['cid'];
+            case 'form.duplicate':
+                if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
+                    $cid = $arguments['form']->session()->first()->course_id;
                 } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
                     $cid = $arguments['course']->id;
                 } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
                     $cid = $arguments['session']->course_id;
+                } elseif (array_key_exists('id', $arguments)) {
+                    $cid = $arguments['id'];
+                } elseif (array_key_exists('cid', $arguments)) {
+                    $cid = $arguments['cid'];
                 } else {
                     return false;
                 }
                 return $this->isInstructor() && $this->ownsCourse($cid);
-//                if (array_key_exists('id', $arguments)) {
-//                    $cid = $arguments['id'];
-//                } elseif (array_key_exists('cid', $arguments)) {
-//                    $cid = $arguments['cid'];
-//                } else {
-//                    return false;
-//                }
 //                return $this->isInstructor() || ($this->isStudent() && $this->isRegistered($cid));
             default:
                 return false;

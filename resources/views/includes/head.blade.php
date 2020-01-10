@@ -80,6 +80,8 @@
             });
         })
     </script>
+
+    @yield('end_head')
 </head>
 <body>
 

@@ -6,15 +6,24 @@ namespace App\Http\Controllers;
 use App\Form;
 use App\Question;
 use App\Session;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 
 class FormController extends Controller
 {
     const PER_PAGE = 10;
+
+    public function __construct()
+    {
+        $this->middleware('web');
+        $this->middleware('guest');
+        $this->middleware('role');
+    }
 
     /**
      * @param string $action
@@ -24,6 +33,11 @@ class FormController extends Controller
     public function rules(string $action, Request $request)
     {
         switch ($action) {
+            case 'duplicate':
+                return [
+                    '_method' => 'required|in:POST',
+                    'session_id' => 'required|int|exists:sessions,id',
+                ];
             case 'update':
                 $rules = [
                     'form_id' => 'required|int|exists:forms,id',
@@ -138,9 +152,11 @@ class FormController extends Controller
                 'courses.title AS course_title',
                 'sessions.title AS session_title',
             ])
+            ->selectRaw("CONCAT(sessions.title, ' - ', YEAR(courses.ac_year)) AS title_full")
             ->paginate(self::PER_PAGE);
 //        return dd($forms);
-        return response(view('forms.index', compact('title', 'forms')), 200, $request->headers->all());
+        $sessions = Session::all();
+        return response(view('forms.index', compact('title', 'sessions', 'forms')), 200, $request->headers->all());
     }
 
     /**
@@ -289,5 +305,74 @@ class FormController extends Controller
             'heading' => sprintf("Could not delete Form: %s", $form->title),
         ]);
         return redirect()->back(302, $request->headers->all());
+    }
+
+    /**
+     * @method _POST
+     * @param Request $request
+     * @param Form $form
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     * @throws \Throwable
+     */
+    public function duplicate(Request $request, Form $form)
+    {
+        $validator = Validator::make($request->all(), [], $this->rules(__FUNCTION__, $request));
+
+        if ($validator->fails()) {
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Could not duplicate Form!',
+                'body' => 'Session does not exist!',
+            ]);
+            return redirect()->back(302);
+        }
+
+        // Duplicate form
+        $original = $form;
+        $form = $form->replicate();
+        $form->fill([
+            'id' => null,
+            'session_id' => $request->get('session_id'),
+            'mark' => 0
+        ]);
+        $form->touch();
+
+        if (!$form->save()) {
+            throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Could not duplicate Form!',
+            ]);
+            return redirect()->back(302);
+        }
+
+        $questions = $original->questions()->count() > 0 ? $original->questions()->getEager() : new Collection();
+        foreach ($questions as $q) {
+            /**
+             * @var \App\Question $q
+             */
+            $q = $q->replicate();
+            $q->fill([
+                'id' => null,
+                'form_id' => $form->id,
+            ]);
+            $q->touch();
+
+            if (!$q->save()) {
+                throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
+                $request->session()->flash('message', [
+                    'level' => 'danger',
+                    'heading' => 'Could not duplicate Form!',
+                ]);
+                return redirect()->back(302);
+            }
+        }
+
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'You successfully duplicated the Form!',
+            'body' => sprintf("The new form is : %s", $form->id)
+        ]);
+        return redirect()->action('FormController@index', [], 200);
     }
 }

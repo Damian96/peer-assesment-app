@@ -23,12 +23,12 @@
                     </thead>
                     <tbody>
                     @foreach($forms as $i => $form)
-                        <tr>
+                        <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id }}">
                             <th scope="row">{{ ($i+1) }}</th>
                             <td>{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
                             <td>
                                 <a href="{{ url('/sessions/' . $form->session_id . '/view' ) }}" target="_self">
-                                    {{ $form->session_title }}
+                                    {{ $form->title_full }}
                                 </a>
                             </td>
                             <td>
@@ -38,6 +38,9 @@
                             </td>
                             <td class="{{ $form->mark == 0 ? 'text-warning' : '' }}">{{ $form->mark == 0 ? 'Not Filled' : $form->mark }}</td>
                             <td>
+                                <a href="#" class="material-icons copy-form"
+                                   title="Duplicate Form {{ $form->title }}"
+                                   aria-label="Duplicate Form {{ $form->title }}">content_copy</a>
                                 <a href="{{ url('/forms/' . $form->id . '/edit') }}" class="material-icons"
                                    title="Update Form {{ $form->title }}"
                                    aria-label="Update Form {{ $form->title }}">edit</a>
@@ -63,10 +66,52 @@
     </div>
 @endsection
 
+@section('end_head')
+    <script type="text/javascript">
+        var form = $(document.createElement('form'));
+        $.getJSON("{{ url('/api/sessions') }}", function (data) {
+            let sessions = data.data;
+
+            // Create popup form
+            form.attr('action', "{{ url('forms/#/duplicate') }}")
+                .attr('method', 'POST');
+
+            form.append(document.createElement('div'));
+            form.find('div')
+                .addClass('form-group')
+                .append(document.createElement('label'));
+            form.find('label')
+                .addClass('form-control-sm')
+                .text('Session');
+
+            let select = $(document.createElement('select'));
+            select.attr('name', 'session_id');
+
+            // Populate Session select with data
+            sessions.forEach(function (select, ses, i) {
+                let opt = document.createElement('option');
+                opt.value = ses.id;
+                opt.textContent = ses.title;
+                select.append(opt);
+            }.bind(null, select));
+
+            form.find('.form-group')
+                .append(select)
+                .append('@method('POST')')
+                .append('@csrf');
+
+            // console.debug(form, sessions);
+        });
+    </script>
+@endsection
+
 @section('end_footer')
     <script type="text/javascript">
         $('.delete-form').confirm({
+            title: 'Are you sure you want to delete the form?',
+            content: 'This action is irreversible.',
             escapeKey: 'close',
+            closeIcon: true,
             buttons: {
                 delete: {
                     text: 'Delete',
@@ -83,6 +128,51 @@
             theme: 'material',
             type: 'red',
             typeAnimated: true,
+        });
+    </script>
+    <script type="text/javascript" defer>
+        // console.debug(form);
+        $('.copy-form').confirm({
+            title: 'Duplicate Form',
+            content: $(form[0]),
+            escapeKey: 'cancel',
+            buttons: {
+                formSubmit: {
+                    text: 'Duplicate',
+                    btnClass: 'btn-blue btn-dup',
+                    action: function () {
+                        var jc = this;
+                        if (parseInt(jc.$content.find('select').val()) > 0) {
+                            // jc.$$formSubmit.trigger('click');
+                            this.$form.submit();
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                cancel: function () {
+                },
+            },
+            onContentReady: function () {
+                let jc = this;
+                let form = this.$content.find('form');
+                let session_id = jc.$target.closest('tr').attr('data-session-id');
+                let form_id = jc.$target.closest('tr').attr('data-form-id');
+
+                this.$form = form;
+                this.$select = form.find('select');
+
+                // Remove current form's session
+                this.$select.find(`option[value=${session_id}]`).remove();
+
+                // Initialize combobox
+                this.$select.combobox();
+                $('.ui-autocomplete').css('z-index', '100000000');
+
+                // Replace appropriate form_id on form's action
+                form[0].setAttribute('action', form[0].getAttribute('action').replace(/#/i, form_id));
+                console.debug(jc, form);
+            }
         });
     </script>
 @endsection

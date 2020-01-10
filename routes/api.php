@@ -16,3 +16,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/sessions', function () {
+    return \App\Http\Resources\Session::collection(\App\Session::all());
+});
+
+Route::get('/sessions/combobox', function () {
+    return \App\Http\Resources\Session::collection(\App\Session::all());
+});
