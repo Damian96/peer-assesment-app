@@ -69,38 +69,45 @@
 @section('end_head')
     <script type="text/javascript">
         var form = $(document.createElement('form'));
-        $.getJSON("{{ url('/api/sessions') }}", function (data) {
-            let sessions = data.data;
+        $.ajax({
+            success: function (data) {
+                console.debug(data);
+                let sessions = data.data;
 
-            // Create popup form
-            form.attr('action', "{{ url('forms/#/duplicate') }}")
-                .attr('method', 'POST');
+                // Create popup form
+                form.attr('action', "{{ url('forms/#/duplicate') }}")
+                    .attr('method', 'POST');
 
-            form.append(document.createElement('div'));
-            form.find('div')
-                .addClass('form-group')
-                .append(document.createElement('label'));
-            form.find('label')
-                .addClass('form-control-sm')
-                .text('Session');
+                form.append(document.createElement('div'));
+                form.find('div')
+                    .addClass('form-group')
+                    .append(document.createElement('label'));
+                form.find('label')
+                    .addClass('form-control-sm')
+                    .text('Session');
 
-            let select = $(document.createElement('select'));
-            select.attr('name', 'session_id');
+                let select = $(document.createElement('select'));
+                select.attr('name', 'session_id');
 
-            // Populate Session select with data
-            sessions.forEach(function (select, ses, i) {
-                let opt = document.createElement('option');
-                opt.value = ses.id;
-                opt.textContent = ses.title;
-                select.append(opt);
-            }.bind(null, select));
+                // Populate Session select with data
+                sessions.forEach(function (select, ses, i) {
+                    let opt = document.createElement('option');
+                    opt.value = ses.id;
+                    opt.textContent = ses.title;
+                    select.append(opt);
+                }.bind(null, select));
 
-            form.find('.form-group')
-                .append(select)
-                .append('@method('POST')')
-                .append('@csrf');
+                form.find('.form-group')
+                    .append(select)
+                    .append('@method('POST')')
+                    .append('@csrf');
 
-            // console.debug(form, sessions);
+                // console.debug(form, sessions);
+            },
+            url: "{{ url('/api/sessions/all?api_token=' . Auth::user()->api_token) }}",
+            headers: {
+                accept: 'application/json',
+            },
         });
     </script>
 @endsection
@@ -171,7 +178,7 @@
 
                 // Replace appropriate form_id on form's action
                 form[0].setAttribute('action', form[0].getAttribute('action').replace(/#/i, form_id));
-                console.debug(jc, form);
+                // console.debug(jc, form);
             }
         });
     </script>

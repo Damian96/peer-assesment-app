@@ -568,6 +568,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'session.index':
             case 'session.view':
             case 'session.edit':
+            case 'form.edit':
             case 'session.delete':
             case 'course.students':
             case 'form.view':
