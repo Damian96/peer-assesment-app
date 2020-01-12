@@ -65,7 +65,7 @@
     <div class="form-group">
         <label class="form-text" for="title">Title</label>
         <input type="text" name="title" id="title"
-               value="{{ old('title', $session->title) }}"
+               value="{{ old('title', isset($session) ? $session->title: null ) }}"
                class="form-control{{ $errors->has('title') ? ' is-invalid' : '' }}"
                placeholder="Session's title"
                aria-placeholder="Session's title"
@@ -104,7 +104,7 @@
                onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
             <input type="checkbox" name="status" id="status" tabindex="0"
                    class="form-control-feedback{{ $errors->has('status') ? ' is-invalid' : '' }}"
-                   value="{{ old('status', $session->status) ? '0' : '1' }}">
+                   value="{{ old('status', isset($session) ? $session->status: null) ? '0' : '1' }}">
             <span class="ml-4">Disabled<span class="ml-2 text-muted">(will not send any mail)</span></span>
         </label>
         <span class="invalid-feedback">

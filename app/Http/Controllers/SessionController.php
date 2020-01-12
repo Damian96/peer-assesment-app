@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Course;
 use App\Form;
 use App\Session;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
@@ -89,18 +88,12 @@ class SessionController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @param int $cid
+     * @param Course $course
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, int $cid)
+    public function index(Request $request, Course $course)
     {
         $user = Auth::user();
-
-        try {
-            $course = Course::findOrFail($cid);
-        } catch (ModelNotFoundException $e) {
-            throw abort(404);
-        }
         $title = $course->code . ' - Sessions';
         $sessions = $course->sessions()->getResults();
 

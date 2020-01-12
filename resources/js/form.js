@@ -44,14 +44,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
     window.count = $('.card').length;
 
     window.addCardListeners = function (card) {
-        card.find('.card-body').on('shown.bs.collapse', function (card, e) {
-            card.find('.close-question').text('keyboard_arrow_up');
+        card.find('.card-body').on('shown.bs.collapse', function (e) {
+            $(this).closest('.card').find('.close-icon.material-icons').text('keyboard_arrow_up');
             return true;
-        }).bind(null, card);
-        card.find('.card-body').on('hidden.bs.collapse', function (card, e) {
-            card.find('.close-question').text('keyboard_arrow_down');
+        });
+        card.find('.card-body').on('hidden.bs.collapse', function (e) {
+            $(this).closest('.card').find('.close-icon.material-icons').text('keyboard_arrow_down');
             return true;
-        }.bind(null, card));
+        });
         card.find('.moveup-question').on('click', function (card, e) {
             console.debug(card);
             let cCount = parseInt(card[0].getAttribute('data-count'));
@@ -127,14 +127,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
             .removeClass('d-none');
 
         // Add card title
-        card.find('.btn-block[data-title]')
+        card.find('[data-title]')
             .data('title', title)
             .text(title)
             .end()
-            .find('input[name*="title"')
+            .find('input[name*="title"]')
             .val(title)
             .end()
-            .find('input[name*="subtitle"')
+            .find('input[name*="subtitle"]')
             .val(subtitle);
 
         // Add bs-collapse data

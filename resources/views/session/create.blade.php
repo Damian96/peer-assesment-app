@@ -8,6 +8,7 @@
     @include('session.form', [
         'action' => url('/sessions/store'),
         'method' => 'POST',
+        'session' => isset($session) ? $session : null,
         'course' => $course,
         'courses' => isset($courses) ? $courses : null,
         'forms' => isset($forms) ? $forms : null,

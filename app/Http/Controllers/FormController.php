@@ -43,9 +43,9 @@ class FormController extends Controller
                     'form_id' => 'required|int|exists:forms,id',
                     '_method' => 'required|in:POST',
                     'session_id' => 'required|int|exists:sessions,id',
-                    'title' => 'required|string|max:255',
-                    'subtitle' => 'nullable|string|max:255',
-                    'footnote' => 'nullable|string|max:255',
+                    'title' => 'required|string|min:15|max:255',
+                    'subtitle' => 'nullable|string|min:15|max:255',
+                    'footnote' => 'nullable|string|min:15|max:255',
                     'question' => 'required|array',
                 ];
                 foreach ($request->get('question', []) as $i => $q) {
@@ -103,14 +103,16 @@ class FormController extends Controller
 
                     'title.required' => 'The Form should have a title!',
                     'title.string' => 'The Form should have a title!',
+                    'title.min' => 'The title should be at least 15 characters long!',
                     'title.max' => 'The title should be at most 255 characters long!',
 
-                    'subtitle.required' => 'The Form should have a title!',
-                    'subtitle.string' => 'Invalid title!',
-                    'subtitle.max' => 'The title should be at most 255 characters long!',
+                    'subtitle.required' => 'The Form should have a subtitle!',
+                    'subtitle.string' => 'Invalid subtitle!',
+                    'subtitle.min' => 'The subtitle should be at least 15 characters long!',
+                    'subtitle.max' => 'The subtitle should be at most 255 characters long!',
 
-                    'footnote.string' => 'Invalid title!',
-                    'footnote.max' => 'The title should be at most 255 characters long!',
+                    'footnote.string' => 'Invalid footnote!',
+                    'footnote.max' => 'The footnote should be at most 255 characters long!',
 
                     'question.required' => 'The Form should have questions!',
                     'question.array' => 'The Form should have questions!',
@@ -129,7 +131,8 @@ class FormController extends Controller
     {
         $title = 'Add Form Template';
         $sessions = Session::all();
-        return \response(view('forms.create', compact('title', 'sessions')), 200);
+        $messages = $this->messages(__FUNCTION__);
+        return \response(view('forms.create', compact('messages', 'title', 'sessions')), 200);
     }
 
     /**

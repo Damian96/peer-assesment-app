@@ -93,7 +93,7 @@ if (mix.inProduction()) {
     mix.browserSync({
         proxy: process.env.APP_URL,
         files: [
-            "resources/views/**/*.php",
+            // "resources/views/**/*.php",
             "public/css/*.css",
             "public/js/*.js",
             // "resources/sass/*.scss",

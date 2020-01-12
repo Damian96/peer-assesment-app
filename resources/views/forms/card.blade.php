@@ -2,19 +2,29 @@
 <div id="template-card" class="card template d-none col-xs-12 col-sm-12 col-md-12 p-0 my-2">
     <input name="question[#][type]" type="hidden" class="d-none">
     <!-- Card Title -->
-    <div class="card-title">
-        <div class="input-group">
-            <button class="btn btn-primary btn-block" type="button"
-                    data-title=""></button>
-            <div class="input-group-append float-right">
-                <i class="btn btn-sm btn-outline-danger material-icons delete-question">delete</i>
-                <i class="btn btn-sm btn-outline-light material-icons close-question"
-                   data-toggle="collapse"
-                   data-target=""
-                   aria-expanded="true"
-                   aria-controls="">keyboard_arrow_down</i>
-                <i class="btn btn-sm btn-outline-light material-icons moveup-question">arrow_upward</i>
-                <i class="btn btn-sm btn-outline-light material-icons movedown-question">arrow_downward</i>
+    <div class="col-sm-12 col-md-12 bg-info py-2 px-3">
+        <h4 class="card-title d-inline" data-title=""></h4>
+        <div class="btn-toolbar d-inline float-right">
+            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Delete Question">
+                <button type="button"
+                        tabindex="0"
+                        class="btn btn-sm btn-outline-danger delete-question"><i class="material-icons">delete</i>
+                </button>
+            </div>
+            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Collapse Question">
+                <button tabindex="0" type="button" class="btn btn-sm btn-outline-dark close-question"
+                        data-toggle="collapse"
+                        data-target=""
+                        aria-expanded="true"
+                        aria-controls=""><i class="material-icons close-icon">keyboard_arrow_up</i></button>
+            </div>
+            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Up">
+                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question"><i
+                        class="material-icons">arrow_upward</i></button>
+            </div>
+            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Down">
+                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark movedown-question"><i
+                        class="material-icons">arrow_downward</i></button>
             </div>
         </div>
     </div>
@@ -83,7 +93,7 @@
                                    }.bind(this, event)());">
                     </div>
                     <div class="col-xs-12 col-sm-1 col-md-1">
-                        <i class="btn btn-sm btn-danger delete-choice material-icons">close</i>
+                        <i class="btn btn-sm btn-sm btn-danger delete-choice material-icons">close</i>
                     </div>
                 </div>
                 <div class="row choice">
@@ -106,12 +116,12 @@
                                    }.bind(this, event)());">
                     </div>
                     <div class="col-xs-12 col-sm-1 col-md-1">
-                        <i class="btn btn-sm btn-danger delete-choice material-icons">close</i>
+                        <i class="btn btn-sm btn-sm btn-danger delete-choice material-icons">close</i>
                     </div>
                 </div>
             </div>
             <div class="col-sm-6 offset-sm-3 offset-md-3 col-md-6">
-                <div class="btn btn-block btn-secondary add-choice">
+                <div class="btn btn-sm btn-block btn-secondary add-choice">
                     <i class="material-icons">add_circle_outline</i>Add Option
                 </div>
             </div>

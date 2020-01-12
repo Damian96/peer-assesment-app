@@ -70,30 +70,31 @@
                 <div class="card col-sm-12 col-md-12 p-0 my-2" data-type="{{ $question->type }}">
                     <input name="question[{{ $q }}][type]" type="hidden" class="d-none">
                     <!-- Card Title -->
-                    <div class="card-title">
-                        <div class="input-group">
-                            <button class="btn btn-primary btn-block" type="button"
-                                    data-title="">{{ $question->title }}</button>
-                            <div class="input-group-append float-right">
-                                <i class="btn btn-sm btn-outline-danger material-icons delete-question"
-                                   onclick="(function() {
-                            if ($('.card').length == 2) {
-                                $('#session_id').combobox('enable');
-                                $('button.question-type').removeAttr('disabled');
-                                $('button[type=submit]').attr('disabled', true);
-                            }
-                            $(this).closest('.card').slideUp('fast', function() {
-                              this.remove();
-                            }); }.bind(this, event))();">
-                                    delete
-                                </i>
-                                <i class="btn btn-sm btn-outline-light material-icons close-question"
-                                   data-toggle="collapse"
-                                   data-target="#{{ 'question-' . $q }}"
-                                   aria-expanded="false"
-                                   aria-controls="{{ '$question-'.$q }}">keyboard_arrow_down</i>
-                                <i class="btn btn-sm btn-outline-light material-icons moveup-question">arrow_upward</i>
-                                <i class="btn btn-sm btn-outline-light material-icons movedown-question">arrow_downward</i>
+                    <div class="col-sm-12 col-md-12 bg-info py-2 px-3">
+                        <h4 class="card-title d-inline" data-title="">{{ $question->title }}</h4>
+                        <div class="btn-toolbar d-inline float-right">
+                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Delete Question">
+                                <button type="button"
+                                        tabindex="0"
+                                        class="btn btn-sm btn-outline-danger delete-question"><i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Collapse Question">
+                                <button tabindex="0" type="button" class="btn btn-sm btn-outline-dark close-question"
+                                        data-toggle="collapse"
+                                        data-target="#{{ 'question-' . $q }}"
+                                        aria-expanded="true"
+                                        aria-controls="{{ '$question-'. $q }}"><i class="material-icons close-icon">keyboard_arrow_up</i>
+                                </button>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Up">
+                                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question">
+                                    <i class="material-icons">arrow_upward</i></button>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Down">
+                                <button type="button" tabindex="0"
+                                        class="btn btn-sm btn-outline-dark movedown-question"><i
+                                        class="material-icons">arrow_downward</i></button>
                             </div>
                         </div>
                     </div>
@@ -147,7 +148,7 @@
                                     @foreach($question->choices as $j => $choice)
                                         <div class="row choice">
                                             <div class="col-xs-5 col-sm-5 col-md-5 text-center overflow-hidden">
-                                                <i class="material-icons text-muted">radio_button_unchecked</i>
+                                                <i tabindex="0" class="text-muted">radio_button_unchecked</i>
                                                 <label for="question[{{ $q }}][choices][]"
                                                        class="form-control-sm"
                                                        style="max-width: 90%; max-height: 20px; overflow: hidden;">
@@ -167,7 +168,8 @@
                                    }.bind(this, event)());">
                                             </div>
                                             <div class="col-xs-12 col-sm-1 col-md-1">
-                                                <i class="btn btn-sm btn-danger delete-choice material-icons">close</i>
+                                                <i tabindex="0"
+                                                   class="btn btn-sm btn-danger delete-choice material-icons">close</i>
                                             </div>
                                         </div>
                                     @endforeach
@@ -211,25 +213,18 @@
                         maxlength: 255,
                     },
                 },
-                {{--messages: {--}}
-                {{--    title: {--}}
-                {{--        required: "{!! $messages['title.required'] !!}",--}}
-                {{--        minlength: "{!! $messages['title.min'] !!}",--}}
-                {{--        maxlength: "{!! $messages['title.max'] !!}"--}}
-                {{--    },--}}
-                {{--    --}}{{--status: {--}}
-                {{--        --}}{{--    optional: true,--}}
-                {{--        --}}{{--    required: "{!! $messages['status.required'] !!}",--}}
-                {{--        --}}{{--},--}}
-                {{--    instructions: {--}}
-                {{--        required: "{!! $messages['instructions.required'] !!}",--}}
-                {{--        maxlength: "{!! $messages['instructions.max'] !!}"--}}
-                {{--    },--}}
-                {{--    deadline: {--}}
-                {{--        required: "{!! $messages['deadline.required'] !!}",--}}
-                {{--        pattern: "{!! $messages['deadline.date_format'] !!}",--}}
-                {{--    }--}}
-                {{--}--}}
+                messages: {
+                    title: {
+                        required: "{!! $messages['title.required'] !!}",
+                        minlength: "{!! $messages['title.min'] !!}",
+                        maxlength: "{!! $messages['title.max'] !!}"
+                    },
+                    subtitle: {
+                        required: "{!! $messages['subtitle.required'] !!}",
+                        minlength: "{!! $messages['subtitle.min'] !!}",
+                        maxlength: "{!! $messages['subtitle.max'] !!}"
+                    },
+                }
             });
         });
     </script>
