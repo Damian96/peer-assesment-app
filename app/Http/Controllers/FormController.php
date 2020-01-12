@@ -242,6 +242,20 @@ class FormController extends Controller
 
         try {
             $form = Form::findOrFail($request->form_id);
+            $form->fill([
+                'title' => $request->get('title', $form->title),
+                'subtitle' => $request->get('subtitle', $form->subtitle),
+                'footnote' => $request->get('footnote', $form->footnote),
+            ]);
+
+            if (!$form->save()) {
+                abort_unless(env('APP_DEBUG', false), 500, 'Could not save form!');
+                $request->session()->flash('message', [
+                    'level' => 'danger',
+                    'heading' => 'Could not save form!',
+                ]);
+                return redirect()->back(302, []);
+            }
         } catch (\Exception $e) {
             throw abort(401, 'You are not authorized');
         }
@@ -263,6 +277,7 @@ class FormController extends Controller
 
             try {
                 $question = Question::findOrFail($data['id']);
+                $question->fill($data);
             } catch (ModelNotFoundException $e) {
                 $question = new Question($data);
             }

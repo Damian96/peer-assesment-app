@@ -41,10 +41,7 @@ class SessionCollection extends ResourceCollection
      * @param \Illuminate\Http\Request|null $request
      * @return array
      */
-//    public function resolve($request = null)
-//    {
-//        return parent::resolve();
-//    }
+//    public function resolve($request = null) {}
 
     /**
      * Add additional meta data to the resource response.
@@ -52,11 +49,5 @@ class SessionCollection extends ResourceCollection
      * @param array $data
      * @return $this
      */
-//    public function additional(array $data)
-//    {
-//        parent::additional($data);
-//
-//        array_push($this->additional, ['mymeta']);
-//        return $this;
-//    }
+//    public function additional(array $data) {}
 }
