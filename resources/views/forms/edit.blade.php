@@ -38,9 +38,7 @@
                         <input type="text" name="title" required aria-required="true" maxlength="255"
                                value="{{ old('title', false) ? old('title') : $form->title }}"
                                placeholder="The form's main title" class="form-control">
-                        <span class="invalid-feedback">
-                            <strong>{{ $errors->first('title') ?? '' }}</strong>
-                        </span>
+                        <span class="invalid-feedback"><strong>{{ $errors->first('title') ?? '' }}</strong></span>
                     </div>
                     <div class="form-group">
                         <label for="form-subtitle">Subtitle <span
@@ -48,9 +46,8 @@
                         <input type="text" name="subtitle" maxlength="255" placeholder="The form's main subtitle"
                                value="{{ old('subtitle', false) ? old('subtitle') : $form->subtitle }}"
                                class="form-control{{ $errors->first('subtitle') ?? 'is-invalid' }}">
-                        <span class="invalid-feedback {{ $errors->first('subtitle') ?? 'd-block' }}">
-                            <strong>{{ $errors->first('subtitle') ?? '' }}</strong>
-                        </span>
+                        <span
+                            class="invalid-feedback {{ $errors->first('subtitle') ?? 'd-block' }}"><strong>{{ $errors->first('subtitle') ?? '' }}</strong></span>
                     </div>
                     <div class="form-group">
                         <label for="footnote">Footer Note <span
@@ -58,13 +55,11 @@
                         <input type="text" name="footnote" maxlength="255" placeholder="The form's Foot Note"
                                value="{{ old('footnote', false) ? old('footnote') : $form->footnote }}"
                                class="form-control">
-                        <span class="invalid-feedback">
-                            <strong>{{ $errors->first('footnote') ?? '' }}</strong>
-                        </span>
+                        <span class="invalid-feedback"><strong>{{ $errors->first('footnote') ?? '' }}</strong></span>
                     </div>
                 </div>
                 <div id="card-container" class="container-fluid">
-{{--                    @TODO: add icons to cards respective to their type --}}
+                    {{--                    @TODO: add icons to cards respective to their type --}}
                     @include('forms.card')
                     @foreach(old('cards', []) as $q => $question)
                         @php
@@ -81,16 +76,7 @@
                                     <button class="btn btn-primary btn-block" type="button"
                                             data-title="">{{ $question->title }}</button>
                                     <div class="input-group-append float-right">
-                                        <i class="btn btn-sm btn-outline-danger material-icons delete-question"
-                                           onclick="(function() {
-                            if ($('.card').length == 2) {
-                                $('#session_id').combobox('enable');
-                                $('button.question-type').removeAttr('disabled');
-                                $('button[type=submit]').attr('disabled', true);
-                            }
-                            $(this).closest('.card').slideUp('fast', function() {
-                              this.remove();
-                            }); }.bind(this, event))();">
+                                        <i class="btn btn-sm btn-outline-danger material-icons delete-question">
                                             delete
                                         </i>
                                         <i class="btn btn-sm btn-outline-light material-icons close-question"
@@ -107,11 +93,8 @@
                             <div id="{{ 'question-'.$q }}" class="card-body collapse show pt-0">
                                 <div class="form-group question-title">
                                     <label class="form-control-sm">Title</label>
-                                    <input type="text" name="question[{{ $q }}][title]" class="form-control" oninput="(function(e) {
-                      let button = $(this).closest('.card').find('.btn-block[data-title]');
-                      let title = button.data('title') + ' - ' + this.value;
-                      button.text(title);
-                    }.bind(this, event))();" required aria-required="true"
+                                    <input type="text" name="question[{{ $q }}][title]" class="form-control" required
+                                           aria-required="true"
                                            value="{{ $question->title }}">
                                 </div>
                                 <div class="form-group question-title">
@@ -189,6 +172,9 @@
                         </div>
                     @endforeach
                     @foreach($form->questions()->getEager() as $q => $question)
+                        {{--                        @php--}}
+                        {{--                            $q_errors = isset($errors) ? $errors->get("*question*") : null;--}}
+                        {{--                        @endphp--}}
                     <!-- Card -->
                         <div class="card col-sm-12 col-md-12 p-0 my-2" data-type="{{ $question->type }}">
                             <input name="question[{{ $q }}][type]" type="hidden" class="d-none"
@@ -196,19 +182,43 @@
                             <input name="question[{{ $q }}][id]" type="hidden" class="d-none"
                                    value="{{ $question->id }}">
                             <!-- Card Title -->
-                            <div class="card-title">
-                                <div class="input-group">
-                                    <button class="btn btn-primary btn-block" type="button"
-                                            data-title="">{{ $question->title }}</button>
-                                    <div class="input-group-append float-right">
-                                        <i class="btn btn-sm btn-outline-danger material-icons delete-question">delete</i>
-                                        <i class="btn btn-sm btn-outline-light material-icons close-question"
-                                           data-toggle="collapse"
-                                           data-target="#{{ 'question-' . $question->id }}"
-                                           aria-expanded="false"
-                                           aria-controls="{{ '$question-'.$question->id }}">keyboard_arrow_down</i>
-                                        <i class="btn btn-sm btn-outline-light material-icons moveup-question">arrow_upward</i>
-                                        <i class="btn btn-sm btn-outline-light material-icons movedown-question">arrow_downward</i>
+                            <div class="col-sm-12 col-md-12 bg-info py-2 px-3">
+                                <h4 class="card-title d-inline" data-title="">{{ $question->title }}</h4>
+                                <div class="btn-toolbar d-inline float-right">
+                                    <div class="btn-group btn-group-sm" role="toolbar">
+                                        <button type="button"
+                                                tabindex="0"
+                                                width="40"
+                                                maxwidth="40"
+                                                aria-label="Delete Question"
+                                                class="btn btn-sm btn-outline-danger delete-question"><i
+                                                class="material-icons">delete</i>
+                                        </button>
+                                    </div>
+                                    <div class="btn-group btn-group-sm" role="toolbar">
+                                        <button tabindex="0" type="button"
+                                                class="btn btn-sm btn-outline-dark close-question"
+                                                data-toggle="collapse"
+                                                aria-label="Collapse Question"
+                                                width="40"
+                                                maxwidth="40"
+                                                data-target="#{{ 'question-' . $question->id }}"
+                                                aria-expanded="true"
+                                                aria-controls="{{ '$question-'. $question->id }}"><i
+                                                class="material-icons close-icon">keyboard_arrow_up</i>
+                                        </button>
+                                    </div>
+                                    <div class="btn-group btn-group-sm" role="toolbar">
+                                        <button type="button" tabindex="0"
+                                                class="btn btn-sm btn-outline-dark moveup-question"
+                                                aria-label="Move Question Up">
+                                            <i class="material-icons">arrow_upward</i></button>
+                                    </div>
+                                    <div class="btn-group btn-group-sm" role="toolbar">
+                                        <button type="button" tabindex="0"
+                                                aria-label="Move Question Down"
+                                                class="btn btn-sm btn-outline-dark movedown-question"><i
+                                                class="material-icons">arrow_downward</i></button>
                                     </div>
                                 </div>
                             </div>
@@ -216,11 +226,17 @@
                             <div id="{{ 'question-'.$question->id }}" class="card-body collapse show pt-0">
                                 <div class="form-group question-title">
                                     <label class="form-control-sm">Title</label>
-                                    <input type="text" name="question[{{ $q }}][title]" class="form-control" oninput="(function(e) {
-                      let button = $(this).closest('.card').find('.btn-block[data-title]');
-                      let title = button.data('title') + ' - ' + this.value;
-                      button.text(title);
-                    }.bind(this, event))();" required aria-required="true"
+                                    <input type="text" name="question[{{ $q }}][title]" class="form-control"
+                                           required
+                                           aria-required="true"
+                                           maxlength="100"
+                                           aria-errormessage=""
+                                           data-rule-required="true"
+                                           data-msg-required="The Question should have a title!"
+                                           data-rule-minlength="5"
+                                           data-msg-minlength="The Question's title should be at least 5 characters long!"
+                                           data-rule-maxlength="100"
+                                           data-msg-maxlength="The Question's title should be at most 255 characters long!"
                                            value="{{ $question->title }}">
                                 </div>
                                 <div class="form-group question-title">

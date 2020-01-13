@@ -1,3 +1,4 @@
+<!-- @TODO: transform template to DYNAMIC include -->
 <!-- Template Card -->
 <div id="template-card" class="card template d-none col-xs-12 col-sm-12 col-md-12 p-0 my-2">
     <input name="question[#][type]" type="hidden" class="d-none">
@@ -37,13 +38,14 @@
     <div class="card-body collapse show pt-0">
         <div class="form-group question-title">
             <label class="form-control-sm">Title</label>
-            <input type="text" name="question[#][title]" class="form-control" required aria-required="true"
-                   value=""
+            <input type="text" name="question[#][title]" class="form-control" value=""
+                   required aria-required="true"
+                   maxlength="100"
                    data-rule-required="true"
                    data-msg-required="The Question should have a title!"
                    data-rule-minlength="5"
                    data-msg-minlength="The Question's title should be at least 5 characters long!"
-                   data-rule-maxlength="true"
+                   data-rule-maxlength="100"
                    data-msg-maxlength="The Question's title should be at most 255 characters long!">
             <span class="invalid-feedback"><strong></strong></span>
         </div>
@@ -51,6 +53,12 @@
             <label class="form-control-sm">Subtitle <span
                     class="text-muted">(leave blank for none)</span></label>
             <input type="text" name="question[#][subtitle]" class="form-control"
+                   data-rule-required="true"
+                   data-msg-required="The Question should have a title!"
+                   data-rule-minlength="5"
+                   data-msg-minlength="The Question's title should be at least 5 characters long!"
+                   data-rule-maxlength="100"
+                   data-msg-maxlength="The Question's title should be at most 255 characters long!"
                    value="">
             <span class="invalid-feedback"><strong></strong></span>
         </div>
@@ -58,11 +66,17 @@
             <label for="question[#][max]" class="form-control-sm">Maximum</label>
             <input type="number"
                    name="question[#][max]"
+                   class="form-control-sm"
                    value="5"
                    min="2" max="10"
                    required
                    aria-required="true"
-                   class="form-control-sm"
+                   data-rule-required="true"
+                   data-msg-required="The Question should have a title!"
+                   data-rule-min="2"
+                   data-msg-min="AMESSAGHERE"
+                   data-rule-max="10"
+                   data-msg-max="AMESSAGHERE"
                    onchange="(function(e) { $(this).closest('.form-group').next().find('.max-num').text(this.value)}.bind(this, event))();">
         </div>
         <div class="form-group scale my-3 d-none">

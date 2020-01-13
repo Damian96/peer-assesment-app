@@ -277,12 +277,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the course record associated with the instructor.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany|false The relation or false on failure
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|\Illuminate\Database\Eloquent\Relations\HasManyThrough|false The relation or false on failure
      */
     public function courses()
     {
         if ($this->isAdmin() || $this->isInstructor()) {
             return $this->hasMany('\App\Course');
+        } else if ($this->isStudent()) {
+            return $this->hasMany('\App\StudentCourse');
+//            return $this->hasManyThrough('\App\Course', '\App\StudentCourse', 'user_id', 'user_id', 'id', 'user_id');
         }
         return false;
     }
@@ -386,6 +389,17 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         return $this->admin == 1;
     }
+
+    /**
+     * @return string
+     */
+    public function role()
+    {
+        if ($this->isAdmin()) return 'admin';
+        elseif ($this->isInstructor()) return 'instructor';
+        else return 'student';
+    }
+
 
     /**
      * Get the name of the unique identifier for the user.

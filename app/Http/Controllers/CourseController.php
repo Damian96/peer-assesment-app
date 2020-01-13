@@ -116,32 +116,46 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $title = 'Courses';
-        $query = DB::table('courses');
+        $query = DB::table('courses')
+            ->leftJoin('users', 'users.id', '=', 'courses.user_id')
+            ->leftJoin('student_course', 'course_id', '=', 'users.id')
+            ->addSelect(['courses.*', 'users.*']);
 
-        if (Auth::user()->isInstructor()) { # Instructor
-            $query->where('user_id', '=', Auth::user()->id, 'and');
-//            $query->whereIntegerInRaw('user_id', [Auth::user()->id]);
-        } elseif (!Auth::user()->isAdmin()) { # Student
-            $query->join('student_course', 'course_id', '=', 'id', 'inner', false);
-            $query->where('student_course.user_id', '=', Auth::user()->id, 'and');
-        } else { # Admin
-            $query->leftJoin('users', 'users.id', '=', 'courses.user_id');
-            $query->selectRaw("CONCAT(SUBSTR(fname, 1, 1), '. ', lname) AS instructor_name");
-            $query->addSelect(['courses.id', 'user_id', 'title', 'status', 'code', 'courses.department', 'ac_year']);
+        $query->addSelect([
+            'courses.user_id AS instructor_id',
+            'student_course.user_id AS student_id',
+            'courses.id AS course_id',
+        ]);
+        switch (Auth::user()->role()) {
+            case 'admin':
+                $query->selectRaw("CONCAT(SUBSTR(fname, 1, 1), '. ', lname) AS instructor_name");
+                break;
+            case 'instructor':
+                $query->where('courses.user_id', '=', Auth::user()->id, 'and');
+                break;
+            case 'student':
+                $query->whereIn('courses.id', array_column(Auth::user()->courses()->get('course_id')->toArray(), 'course_id'));
+                break;
+            default:
+                throw abort(404);
         }
 
         if (!Auth::user()->isStudent()) {
-            if (intval(date('m')) >= 8) {
-                $ac_year = Carbon::now(config('app.timezone'))->setMonth(9)->startOfMonth();
+            $ac_year = Carbon::now(config('app.timezone'));
+            $m = intval(date('m'));
+            if ($m >= 8) {
+                $ac_year->setMonth(9)->startOfMonth();
+            } elseif (intval(date('m')) <= 2) {
+                $ac_year->subYear()->setMonth(9)->startOfMonth();
             } else {
-                $ac_year = Carbon::now(config('app.timezone'))->setMonth(4)->startOfMonth();
+                $ac_year->setMonth(4)->startOfMonth();
             }
             if ($request->get('ac_year', false) == 'previous') {
                 $query->where('ac_year', '<=', $ac_year->toDateString());
             } else {
                 $query->where('ac_year', '>=', $ac_year->toDateString());
             }
-//            return dd($query->toSql(), $ac_year->toDateString());
+//            return dd($query->toSql(), $ac_year->toDateString(), $m);
         } else {
             $ac_year = intval(date('Y'));
         }

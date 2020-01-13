@@ -10,6 +10,7 @@
       <w>coreui</w>
       <w>csrf</w>
       <w>damianos</w>
+      <w>endforeach</w>
       <w>fillable</w>
       <w>fname</w>
       <w>fullname</w>

@@ -239,7 +239,7 @@ class FormController extends Controller
             $request->request->add(['cards' => $request->get('question', [])]);
             return redirect()->back(302)
                 ->withInput($request->request->all())
-                ->withErrors($validator->errors())
+//                ->withErrors($validator())
                 ->with('errors', $validator->errors());
         }
 

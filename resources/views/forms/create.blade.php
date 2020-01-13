@@ -87,7 +87,7 @@
             @foreach(old('cards', []) as $q => $question)
                 @php
                     $question = (object) $question;
-                    $q_errors = isset($errors) ? $errors->getMessagesForWildcardKey() : null;
+                    $q_errors = isset($errors) ? $errors->get("*question*") : null;
                 @endphp
                 <div class="card col-sm-12 col-md-12 p-0 my-2" data-type="{{ $question->type }}">
                     <input name="question[{{ $q }}][type]" type="hidden" class="d-none">
