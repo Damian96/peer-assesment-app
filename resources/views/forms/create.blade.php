@@ -4,8 +4,6 @@
     {{ Breadcrumbs::render('form.create') }}
 @endsection
 
-<?php // @TODO add Javascript validation ?>
-
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-12">
@@ -19,7 +17,7 @@
             </select>
         </div>
     </div>
-    <form name="{{ 'create-form' }}" id="create-form" class="row question-editor mt-3"
+    <form name="{{ 'create-form' }}" id="create-form" class="row question-editor mt-3" role="form"
           action="{{ url('/forms/store') }}" method="POST">
         @method('POST')
         @csrf
@@ -46,19 +44,42 @@
             <hr>
             <h4>Form Preview</h4>
             <div class="form-group">
-                <label for="form-title">Title</label>
-                <input type="text" name="title" required aria-required="true" maxlength="255"
-                       placeholder="The form's main title" class="form-control">
+                <!-- @TODO: GENERATE_RANDOM_UUID -->
+                <label id="GENERATE_RANDOM_UUID" for="form-title">Title</label>
+                <input type="text" name="title" placeholder="The form's main title" class="form-control"
+                       required aria-required="true" maxlength="255"
+                       aria-labelledby="GENERATE_RANDOM_UUID"
+                       aria-errormessage="{{ $errors->first('title') ?? '' }}"
+                       data-rule-required="true"
+                       data-msg-required="{{ $messages['title.required'] }}"
+                       data-rule-minlength="10"
+                       data-msg-minlength="{{ $messages['title.min'] }}"
+                       data-rule-maxlength-="255"
+                       data-msg-maxlength="{{ $messages['title.max'] }}">
+                <span
+                    class="invalid-feedback font-weight-bold"><strong>{{ $errors->first('title') ?? '' }}</strong></span>
             </div>
             <div class="form-group">
                 <label for="form-subtitle">Subtitle <span class="text-muted">(leave blank for none)</span></label>
-                <input type="text" name="subtitle" maxlength="255" placeholder="The form's main subtitle"
-                       class="form-control">
+                <input type="text" name="subtitle" placeholder="The form's main subtitle"
+                       class="form-control"
+                       maxlength="255"
+                       aria-errormessage="{{ $errors->first('subtitle') ?? '' }}"
+                       data-rule-minlength="10"
+                       data-msg-minlength="{{ $messages['subtitle.min'] }}"
+                       data-rule-maxlength-="255"
+                       data-msg-maxlength="{{ $messages['subtitle.max'] }}">
+                <span class="invalid-feedback font-weight-bold"><strong>{{ $errors->first('subtitle') ?? '' }}</strong></span>
             </div>
             <div class="form-group">
                 <label for="form-footnote">Footnote <span class="text-muted">(leave blank for none)</span></label>
-                <input type="text" name="footnote" maxlength="255" placeholder="The form's footnote"
-                       class="form-control">
+                <input type="text" name="footnote" placeholder="The form's footnote"
+                       class="form-control"
+                       maxlength="255"
+                       aria-errormessage="{{ $errors->first('footnote') ?? '' }}"
+                       data-rule-maxlength-="255"
+                       data-msg-maxlength="{{ $messages['footnote.max'] }}">
+                <span class="invalid-feedback font-weight-bold"><strong>{{ $errors->first('footnote') ?? '' }}</strong></span>
             </div>
         </div>
         <div id="card-container" class="container-fluid">
@@ -66,6 +87,7 @@
             @foreach(old('cards', []) as $q => $question)
                 @php
                     $question = (object) $question;
+                    $q_errors = isset($errors) ? $errors->getMessagesForWildcardKey() : null;
                 @endphp
                 <div class="card col-sm-12 col-md-12 p-0 my-2" data-type="{{ $question->type }}">
                     <input name="question[{{ $q }}][type]" type="hidden" class="d-none">
@@ -73,26 +95,34 @@
                     <div class="col-sm-12 col-md-12 bg-info py-2 px-3">
                         <h4 class="card-title d-inline" data-title="">{{ $question->title }}</h4>
                         <div class="btn-toolbar d-inline float-right">
-                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Delete Question">
+                            <div class="btn-group btn-group-sm" role="toolbar">
                                 <button type="button"
                                         tabindex="0"
+                                        width="40"
+                                        maxwidth="40"
+                                        aria-label="Delete Question"
                                         class="btn btn-sm btn-outline-danger delete-question"><i class="material-icons">delete</i>
                                 </button>
                             </div>
-                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Collapse Question">
+                            <div class="btn-group btn-group-sm" role="toolbar">
                                 <button tabindex="0" type="button" class="btn btn-sm btn-outline-dark close-question"
                                         data-toggle="collapse"
+                                        aria-label="Collapse Question"
+                                        width="40"
+                                        maxwidth="40"
                                         data-target="#{{ 'question-' . $q }}"
                                         aria-expanded="true"
                                         aria-controls="{{ '$question-'. $q }}"><i class="material-icons close-icon">keyboard_arrow_up</i>
                                 </button>
                             </div>
-                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Up">
-                                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question">
+                            <div class="btn-group btn-group-sm" role="toolbar">
+                                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question"
+                                        aria-label="Move Question Up">
                                     <i class="material-icons">arrow_upward</i></button>
                             </div>
-                            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Down">
+                            <div class="btn-group btn-group-sm" role="toolbar">
                                 <button type="button" tabindex="0"
+                                        aria-label="Move Question Down"
                                         class="btn btn-sm btn-outline-dark movedown-question"><i
                                         class="material-icons">arrow_downward</i></button>
                             </div>
@@ -102,18 +132,28 @@
                     <div id="{{ 'question-'.$q }}" class="card-body collapse show pt-0">
                         <div class="form-group question-title">
                             <label class="form-control-sm">Title</label>
-                            <input type="text" name="question[{{ $q }}][title]" class="form-control" oninput="(function(e) {
-                      let button = $(this).closest('.card').find('.btn-block[data-title]');
-                      let title = button.data('title') + ' - ' + this.value;
-                      button.text(title);
-                    }.bind(this, event))();" required aria-required="true"
-                                   value="{{ $question->title }}">
+                            <input type="text" name="question[{{ $q }}][title]" class="form-control"
+                                   value="{{ $question->title }}"
+                                   required
+                                   aria-required="true"
+                                   maxlength="255"
+                                   aria-errormessage="{{ $q_errors->get($q)->title }}"
+                                   data-rule-required="true"
+                                   data-msg-required="The Question should have a title!"
+                                   data-rule-minlength="5"
+                                   data-msg-minlength="The Question's title should be at least 5 characters long!"
+                                   data-rule-maxlength="255"
+                                   data-msg-maxlength="The Question's title should be at most 255 characters long!">
+                            <span
+                                class="invalid-feedback font-weight-bold"><strong>{{ $q_errors->get($q)->title }}</strong></span>
                         </div>
                         <div class="form-group question-title">
                             <label class="form-control-sm">Subtitle <span
                                     class="text-muted">(leave blank for none)</span></label>
                             <input type="text" name="question[{{ $q }}][subtitle]" class="form-control"
                                    value="{{ $question->subtitle }}">
+                            <span
+                                class="invalid-feedback font-weight-bold"><strong>{{ $q_errors->get($q)->subtitle }}</strong></span>
                         </div>
                         @if ($question->type == 'linear-scale')
                             <div class="form-group scale">
@@ -124,6 +164,10 @@
                                        min="2" max="10"
                                        required
                                        aria-required="true"
+                                       data-rule-required="true"
+                                       data-msg-required="The Question should have a maximum limit!"
+                                       data-rule-maxlength="10"
+                                       data-msg-maxlength="The Question's limit should be at most 10!"
                                        class="form-control-sm"
                                        onchange="(function(e) { $(this).closest('.form-group').next().find('.max-num').text(this.value)}.bind(this, event))();">
                             </div>
@@ -169,7 +213,8 @@
                                             </div>
                                             <div class="col-xs-12 col-sm-1 col-md-1">
                                                 <i tabindex="0"
-                                                   class="btn btn-sm btn-danger delete-choice material-icons">close</i>
+                                                   class="btn btn-sm btn-danger delete-choice material-icons"
+                                                   aria-label="Delete Choice">close</i>
                                             </div>
                                         </div>
                                     @endforeach
@@ -192,7 +237,14 @@
 @endsection
 
 @section('end_footer')
+    <?php // @TODO FINISH Javascript validation ?>
     <script type="text/javascript">
+        $(document).ready(function () {
+            $('.tip').tipr();
+        });
+        $(document).on('focusout change', 'input, select, textarea', function () {
+            return $(this).valid();
+        });
         $(document).on('submit', 'form', function (event) {
             let form = $(event.target);
             form.validate({
@@ -224,8 +276,13 @@
                         minlength: "{!! $messages['subtitle.min'] !!}",
                         maxlength: "{!! $messages['subtitle.max'] !!}"
                     },
+                    footnote: {
+                        required: "{!! $messages['footnote.string'] !!}",
+                        maxlength: "{!! $messages['footnote.max'] !!}"
+                    },
                 }
             });
+            return form.valid();
         });
     </script>
 @endsection

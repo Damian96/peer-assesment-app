@@ -22,10 +22,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
     window.replaceCardNames = function (card, count = window.count) {
         let replace = `[${(count).toString()}]`;
         let patt = /\[[#\d]\]/i;
-        console.log('replace', count);
+        // console.log('replace', count);
         card.attr('data-count', count);
         card.find('input[name]').each(function () {
-            console.debug($(this), count);
+            // console.debug($(this), count);
             $(this).attr('name', this.getAttribute('name').replace(patt, replace));
         });
         card.find('label[for]').each(function () {
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return true;
         });
         card.find('.moveup-question').on('click', function (card, e) {
-            console.debug(card);
+            // console.debug(card);
             let cCount = parseInt(card[0].getAttribute('data-count'));
             let prev = card.prev();
             replaceCardNames(card, cCount - 1);
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return true;
         }.bind(null, card));
         card.find('.movedown-question').on('click', function (card, e) {
-            console.debug(card);
+            // console.debug(card);
             let cCount = parseInt(card[0].getAttribute('data-count'));
             let next = card.next();
             replaceCardNames(card, cCount + 1);
@@ -79,6 +79,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return true;
         }.bind(null, card));
         card.find('.delete-question').on('click', function (card, e) {
+            let i = $(this).data('count');
+            array_data.question = array_data.question.splice(i, 1);
+            window.count--;
             if (window.count == 1) {
                 $('#session_id').combobox('enable');
                 $('button.question-type').removeAttr('disabled');
@@ -86,11 +89,15 @@ document.addEventListener('DOMContentLoaded', function (e) {
             }
             card.slideUp('fast', function () {
                 this.remove();
-                window.count--;
             });
             storeFormData();
             return true;
         }.bind(null, card));
+        card.find('input[name*="[title]"]').on('keyup', function () {
+            let el = $(this).closest('.card').find('.card-title');
+            let title = `${el.data('title')} - ${this.value}`;
+            el.text(title);
+        });
     };
 
     /**
@@ -133,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
             .end()
             .find('input[name*="title"]')
             .val(title)
-            .end()
             .find('input[name*="subtitle"]')
             .val(subtitle);
 
@@ -257,8 +263,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
         createCard(this.id, `${this.id}-${window.count}`, `${this.id} - #${window.count}`);
         return true;
     });
-    $('button[type=submit]').on('click', function (e) {
+    $(document).on('submit', 'form', function (e) {
         storeFormData();
+        // console.debug(this, e);
         return true;
     });
 
@@ -267,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // map old_data to array_data
     let c = 0;
     for (let item of old_data) {
-        console.debug('old_data', item, c);
+        // console.debug('old_data', item, c);
         if (item[0].includes('question')) { // questions
             let i = parseInt(item[0].split('[')[1][0]);
             let key = item[0].split('[')[2].split(']')[0];

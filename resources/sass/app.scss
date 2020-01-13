@@ -1,4 +1,6 @@
-//
+// Imports
+@import "~normalize.css/normalize.css";
+@import "./../../plugins/css/tipr.css";
 @import "~bootstrap/scss/bootstrap";
 @import 'variables';
 @import "~jquery-confirm/dist/jquery-confirm.min.css";
@@ -258,7 +260,6 @@ table {
       cursor: pointer;
     }
 
-    g
     .add-choice {
       cursor: pointer;
     }

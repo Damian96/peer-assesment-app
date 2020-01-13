@@ -5,25 +5,30 @@
     <div class="col-sm-12 col-md-12 bg-info py-2 px-3">
         <h4 class="card-title d-inline" data-title=""></h4>
         <div class="btn-toolbar d-inline float-right">
-            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Delete Question">
+            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Delete Question">
                 <button type="button"
                         tabindex="0"
+                        aria-label="Delete Question"
                         class="btn btn-sm btn-outline-danger delete-question"><i class="material-icons">delete</i>
                 </button>
             </div>
-            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Collapse Question">
+            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Collapse Question">
                 <button tabindex="0" type="button" class="btn btn-sm btn-outline-dark close-question"
+                        aria-label="Collapse Question"
                         data-toggle="collapse"
                         data-target=""
                         aria-expanded="true"
                         aria-controls=""><i class="material-icons close-icon">keyboard_arrow_up</i></button>
             </div>
-            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Up">
+            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Move Question Up">
                 <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question"><i
-                        class="material-icons">arrow_upward</i></button>
+                        class="material-icons"
+                        aria-label="Move Question Up"
+                    >arrow_upward</i></button>
             </div>
-            <div class="btn-group btn-group-sm" role="toolbar" aria-label="Move Question Down">
-                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark movedown-question"><i
+            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Move Question Down">
+                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark movedown-question"
+                        aria-label="Move Question Down"><i
                         class="material-icons">arrow_downward</i></button>
             </div>
         </div>
@@ -32,19 +37,22 @@
     <div class="card-body collapse show pt-0">
         <div class="form-group question-title">
             <label class="form-control-sm">Title</label>
-            <input type="text" name="question[#][title]" class="form-control" oninput="(function(e) {
-                      let button = $(this).closest('.card').find('.btn-block[data-title]');
-                      // let title = button.data('title') + ' - ' + this.value;
-                      let title = this.value ? this.value : button.data('title');
-                      button.text(title);
-                    }.bind(this, event))();" required aria-required="true"
-                   value="">
+            <input type="text" name="question[#][title]" class="form-control" required aria-required="true"
+                   value=""
+                   data-rule-required="true"
+                   data-msg-required="The Question should have a title!"
+                   data-rule-minlength="5"
+                   data-msg-minlength="The Question's title should be at least 5 characters long!"
+                   data-rule-maxlength="true"
+                   data-msg-maxlength="The Question's title should be at most 255 characters long!">
+            <span class="invalid-feedback"><strong></strong></span>
         </div>
         <div class="form-group question-title">
             <label class="form-control-sm">Subtitle <span
                     class="text-muted">(leave blank for none)</span></label>
             <input type="text" name="question[#][subtitle]" class="form-control"
                    value="">
+            <span class="invalid-feedback"><strong></strong></span>
         </div>
         <div class="form-group scale d-none">
             <label for="question[#][max]" class="form-control-sm">Maximum</label>
