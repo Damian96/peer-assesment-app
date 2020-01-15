@@ -37,7 +37,8 @@
                     @component('includes.checkbox')
                         @slot('label'){{ 'Remember Me' }}@endslot
                         @slot('name'){{ 'remember' }}@endslot
-                        @slot('checked'){{ old('remember') == '1' ? ' checked' : '' }}@endslot
+                        @slot('checked'){{ old('remember', '') }}@endslot
+                        @slot('value'){{ old('remember', 'off') }}@endslot
                     @endcomponent
                 </div>
 

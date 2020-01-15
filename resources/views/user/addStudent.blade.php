@@ -33,7 +33,8 @@
                     @component('includes.checkbox', [
                         'name' => 'register',
                         'label' => 'Register new students' . "<span class='ml-2 text-muted'>(will send mail)</span>",
-                        'checked' => old('register'),
+                        'checked' => old('register', false),
+                        'value' => old('register', 'off'),
                     ])@endcomponent
                 </div>
 

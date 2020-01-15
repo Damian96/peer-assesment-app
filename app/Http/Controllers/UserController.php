@@ -122,7 +122,7 @@ class UserController extends Controller
                 return [
                     'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|exists:users',
                     'password' => 'required|string|min:3|max:50',
-                    'remember' => 'nullable|accepted',
+                    'remember' => 'nullable|in:0,1',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             default:
@@ -453,7 +453,8 @@ class UserController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      *
-     * TODO: add verified check or Middleware?
+     * TODO: add verified Middleware?
+     * TODO: add last_login (event?) save?
      */
     public function auth(Request $request)
     {

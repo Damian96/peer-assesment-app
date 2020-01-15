@@ -188,6 +188,15 @@ class Course extends Model
     }
 
     /**
+     * @param $value
+     * @throws \Exception
+     */
+//    public function setAcYearAttribute($value)
+//    {
+//        $this->attributes['ac_year'] = (new Carbon($value))->format('Y');
+//    }
+
+    /**
      * Alias of self::user.
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -205,7 +214,7 @@ class Course extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'department' => 'string',
-        'ac_year' => 'datetime',
+        'ac_year' => 'date:Y',
         'user_id' => 'int',
         'status' => 'boolean',
     ];
@@ -285,7 +294,7 @@ class Course extends Model
     {
         $month = intval(date('m'));
         if ($month > 5) $ac_year = Carbon::createFromDate(intval(date('Y')), 9, 1)->startOfDay();
-        else $ac_year = Carbon::createFromDate(intval(date('Y'))-1, 9, 1)->startOfDay();
+        else $ac_year = Carbon::createFromDate(intval(date('Y')) - 1, 9, 1)->startOfDay();
         return self::whereStatus('1')
             ->where('ac_year', '>=', $ac_year->toDateString())
             ->whereNotNull('department')
