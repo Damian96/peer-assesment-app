@@ -41,7 +41,7 @@
                                 <a href="#" class="material-icons copy-form"
                                    title="Duplicate Form {{ $form->title }}"
                                    aria-label="Duplicate Form {{ $form->title }}">content_copy</a>
-                                <a href="{{ url('/forms/' . $form->id . '/edit') }}" class="material-icons"
+                                <a href="{{ url('/forms/' . $form->id . '/edit') }}" class="material-icons text-warning"
                                    title="Update Form {{ $form->title }}"
                                    aria-label="Update Form {{ $form->title }}">edit</a>
                                 <a href="{{ url('/forms/' . $form->id . '/delete') }}"

@@ -150,12 +150,10 @@ form {
   }
 
   form {
-    display: inline;
-    padding: 0;
-    margin: 0;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+    display: inline-block;
+    transform: translateY(-25%);
+    line-height: 20px;
+    font-size: 20px;
 
     .btn {
       padding: 0 !important;

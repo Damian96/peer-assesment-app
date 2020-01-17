@@ -32,8 +32,11 @@
                 <tr>
                     @if (Auth::user()->isAdmin())
                         <th scope="row">{{ $course->id }}</th>
-                        <td>{{ $course->instructor_name }}</td>
+                        <td><a href="{{ '/' . $course->user_id . '/show' }}" title="Course Instructor"
+                               aria-label="Course Instructor">{{ $course->instructor_name }}</a>
+                        </td>
                         <td>{{ $course->title }}</td>
+                        <td>{{ $course->department_title }}</td>
                         <td class="text-center">{{ $course->ac_year_pair }}</td>
                     @else
                         <td>{{ $course->title }}</td>
@@ -51,13 +54,12 @@
                             </select>
                         </td>
                     @endif
-                    {{--                            TODO: add user avatar to link --}}
                     @if (Auth::user()->ownsCourse($course->id))
                         <td class="action-cell text-right">
-                            <a href="{{ url($course->instructor()->id . '/show') }}"
-                               class="material-icons text-info"
-                               title="Show Students"
-                               aria-label="Show Students">person</a>
+                            {{--                            <a href="{{ url($course->instructor()->id . '/show') }}"--}}
+                            {{--                               class="material-icons text-info"--}}
+                            {{--                               title="Show Students"--}}
+                            {{--                               aria-label="Show Students">person</a>--}}
                             @if(Auth::user()->can('course.edit', ['id'=>$course->id]) && !$course->copied())
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
                                     @method('POST')
@@ -85,7 +87,8 @@
                                    aria-label="View Sessions of {{ $course->code }}">assignment</a>
                             @endif
                             @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
-                                <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}">
+                                <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
+                                      class="d-inline-block">
                                     @method('DELETE')
                                     @csrf
                                     <button type="submit"
@@ -138,8 +141,9 @@
         @if (Auth::user()->ownsCourse($course->id))
             <div class="col-sm-12 col-md-12">
                 @if ($course->students()->first())
+                    <h3 class="my-3">Enrolled Students</h3>
                     <table class="table table-striped">
-                        <caption></caption>
+                        <caption>Enrolled Students to {{ $course->code }}</caption>
                         <thead>
                         <th>#</th>
                         <th>Name</th>

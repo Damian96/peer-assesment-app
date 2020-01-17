@@ -62,9 +62,12 @@ Breadcrumbs::for('course.create', function ($trail) {
 });
 
 // Create Session
-Breadcrumbs::for('session.create', function ($trail) {
+Breadcrumbs::for('session.create', function ($trail, $course) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
+
+    if (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view'))
+        $trail->push('Course ' . $course->code, route('course.view', $course));
 
     $trail->push('Create Session', route('course.create'));
 });

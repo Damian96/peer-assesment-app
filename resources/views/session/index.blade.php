@@ -27,8 +27,9 @@
                                 <a href="{{ url('/sessions/' . $session->id . '/view') }}"
                                    class="material-icons">link</a>
                                 <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
-                                   class="material-icons">edit</a>
-                                <a href="{{ url('/sessions/' . $session->id . '/delete') }}" class="material-icons">delete_forever</a>
+                                   class="material-icons text-warning">edit</a>
+                                <a href="{{ url('/sessions/' . $session->id . '/delete') }}"
+                                   class="material-icons text-danger">delete_forever</a>
                             </td>
                         </tr>
                     @endforeach

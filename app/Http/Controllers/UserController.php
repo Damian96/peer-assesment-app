@@ -122,7 +122,7 @@ class UserController extends Controller
                 return [
                     'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|exists:users',
                     'password' => 'required|string|min:3|max:50',
-                    'remember' => 'nullable|in:0,1',
+                    'remember' => 'nullable|in:0,1,on,off',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             default:
@@ -256,7 +256,7 @@ class UserController extends Controller
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
-            return redirect('/home', 302, $request->headers->all(), $request->secure());
+            return redirect('/home', 302, $request->headers->all());
         }
 
         $title = 'Register';
@@ -460,7 +460,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-            return redirect()->back(302, $request->headers->all(), $request->secure())
+            return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
                 ->with('errors', $validator->errors()->getMessageBag());
         }
@@ -472,9 +472,9 @@ class UserController extends Controller
             });
             Auth::setUser($user);
             if ($user->isStudent()) {
-                return redirect('courses', 302, $request->headers->all(), $request->secure());
+                return redirect('courses', 302, $request->headers->all());
             } else {
-                return redirect('home', 302, $request->headers->all(), $request->secure());
+                return redirect('home', 302, $request->headers->all());
             }
         }
 
@@ -553,7 +553,7 @@ class UserController extends Controller
             ]);
             // TODO: add password copy email,
             // TODO: remove password_resets row
-            return redirect('/login', 302, $request->headers->all(), $request->secure());
+            return redirect('/login', 302, $request->headers->all());
         } else {
             throw abort(404);
         }
