@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Course;
 use App\Form;
 use App\Session;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SessionController extends Controller
@@ -84,16 +84,32 @@ class SessionController extends Controller
         }
     }
 
+//    /**
+//     * Display a listing of the resource.
+//     *
+//     * @param Request $request
+//     * @param Course $course
+//     * @return \Illuminate\Http\Response
+//     * @TODO: change index to all and vice-versa
+//     */
+//    public function all(Request $request)
+//    {
+//        $user = Auth::user();
+//        $sessions = Session::all()->get();
+//
+//        return response(view('session.all', compact('title', 'sessions')), 200, $request->headers->all());
+//    }
+
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource, filtered by the specified Course.
      *
      * @param Request $request
      * @param Course $course
      * @return \Illuminate\Http\Response
+     * @TODO: change index to all and vice-versa
      */
     public function index(Request $request, Course $course)
     {
-        $user = Auth::user();
         $title = $course->code . ' - Sessions';
         $sessions = $course->sessions()->getResults();
 
@@ -162,24 +178,33 @@ class SessionController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
-            return redirect()->back(302)
+            return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
                 ->with('errors', $validator->errors());
         }
 
+        $request->request->add([
+            'course_id' => $request->get('course', false),
+            'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', date('Y-m-d H:i:s'))))->format('Y-m-d H:i:s')
+        ]);
         $session = new Session($request->all());
         if ($session->save()) {
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => sprintf("Session %s has been saved successfully!", $session->id),
+            ]);
             if ($request->get('status', false) == '1') {
-//                $session->
-                // @TODO
+                $session->sendEmailNotification();
+            } else {
+                clock()->info('Session was disabled, so no Students have been notified!');
             }
-
+            return redirect()->back(302, $request->headers->all());
         }
 
         if (env('APP_DEBUG', false)) {
-            throw abort(500, 'Could not save Session!');
+            throw abort(500, sprintf("Could not save Session %s!", $session->id));
         } else {
-            return redirect()->back(302);
+            return redirect()->back(302, $request->headers->all());
         }
     }
 
@@ -192,5 +217,30 @@ class SessionController extends Controller
     {
         $title = 'View Session ' . $session->title;
         return response(view('session.view', compact('title', 'session')));
+    }
+
+    /**
+     * @method _DELETE
+     * @param Request $request
+     * @param Session $session
+     * @return Response|RedirectResponse
+     * @throws \Throwable
+     */
+    public function delete(Request $request, Session $session)
+    {
+        if ($session->delete()) {
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => sprintf("Successfully delete Session: %s", $session->title),
+            ]);
+            return redirect()->back(302, [], false);
+        }
+
+        throw_if(env('APP_DEBUG', false), 500, 'Could not delete Session ' . $session->id);
+        $request->session()->flash('message', [
+            'level' => 'danger',
+            'heading' => sprintf("Could not delete Session: %s", $session->title),
+        ]);
+        return redirect()->back(302, [], false);
     }
 }

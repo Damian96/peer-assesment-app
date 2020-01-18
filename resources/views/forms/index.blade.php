@@ -37,17 +37,25 @@
                                 </a>
                             </td>
                             <td class="{{ $form->mark == 0 ? 'text-warning' : '' }}">{{ $form->mark == 0 ? 'Not Filled' : $form->mark }}</td>
-                            <td>
+                            <td class="action-cell">
                                 <a href="#" class="material-icons copy-form"
                                    title="Duplicate Form {{ $form->title }}"
                                    aria-label="Duplicate Form {{ $form->title }}">content_copy</a>
                                 <a href="{{ url('/forms/' . $form->id . '/edit') }}" class="material-icons text-warning"
                                    title="Update Form {{ $form->title }}"
                                    aria-label="Update Form {{ $form->title }}">edit</a>
-                                <a href="{{ url('/forms/' . $form->id . '/delete') }}"
-                                   class="material-icons delete-form text-danger"
-                                   title="Update Form {{ $form->title }}"
-                                   aria-label="Delete Form {{ $form->title }}">delete</a>
+                                <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}"
+                                      class="d-inline-block">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit"
+                                            class="btn btn-lg btn-link material-icons text-danger delete-form"
+                                            data-title="Are you sure you want to delete this Form?"
+                                            data-content="This action is irreversible."
+                                            title="Delete {{ $form->title }}"
+                                            aria-label="Delete {{ $form->title }}">delete_forever
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
@@ -117,7 +125,7 @@
         $('.delete-form').confirm({
             title: 'Are you sure you want to delete the form?',
             content: 'This action is irreversible.',
-            escapeKey: 'close',
+            escapeKey: 'cancel',
             closeIcon: true,
             buttons: {
                 delete: {
@@ -125,11 +133,12 @@
                     btnClass: 'btn-red',
                     action: function (e) {
                         // console.debug(this, e);
-                        window.location.replace(this[0].getAttribute('href'));
+                        this.$target.closest('form').submit();
+                        // window.location.replace(this.$target.closest('form').attr('action'));
                         return true;
-                    }.bind($('.delete-form'))
+                    }
                 },
-                close: function () {
+                cancel: function () {
                 }
             },
             theme: 'material',

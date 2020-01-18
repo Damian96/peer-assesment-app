@@ -28,7 +28,7 @@ class SessionsTableSeeder extends Seeder
             DB::table($this->table)->insert([
                 'course_id' => $cids[$c],
                 'title' => "{$courses[$c]->code}-Session-{$c->id}",
-                'status' => '1',
+                'status' => '0',
                 'instructions' => substr($lipsum, -(rand(0, 50))),
                 'deadline' => Carbon::now(config('app.timezone'))->addSeconds(5)->addMonths(rand(1, 5)),
             ]);

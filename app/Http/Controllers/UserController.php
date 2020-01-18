@@ -149,8 +149,8 @@ class UserController extends Controller
             'terms.required' => 'Please accept the terms and conditions!',
 
             'password.required' => 'Your password is required!',
-            'password.min' => 'Your password should be at least 3 characters!',
-            'password.max' => 'Password is too long.',
+            'password.min' => 'Your Password is too short!',
+            'password.max' => 'Your Password is too long!',
         ];
 
         switch ($action) {
@@ -445,7 +445,9 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-        return response(view('user.login', ['title' => 'Login']), 200, $request->headers->all());
+        $title = sprintf("Login to %s", env('APP_NAME'));
+        $messages = $this->messages(__FUNCTION__);
+        return response(view('user.login', compact('title', 'messages')), 200, $request->headers->all());
     }
 
     /**

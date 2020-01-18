@@ -299,10 +299,11 @@ class FormController extends Controller
     }
 
     /**
+     * @method _DELETE
      * @param Request $request
      * @param Form $form
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     * @throws \Exception
+     * @throws \Throwable
      */
     public function delete(Request $request, Form $form)
     {
@@ -314,10 +315,7 @@ class FormController extends Controller
             return redirect()->back(302, $request->headers->all());
         }
 
-        if (env('APP_DEBUG', false)) {
-            throw abort(500, sprintf("Could not delete form: %s", $form->title));
-        }
-
+        throw_if(env('APP_DEBUG', false), 500, sprintf("Could not delete form: %s", $form->title));
         $request->session()->flash('message', [
             'level' => 'danger',
             'heading' => sprintf("Could not delete Form: %s", $form->title),

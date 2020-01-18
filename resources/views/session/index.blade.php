@@ -28,8 +28,18 @@
                                    class="material-icons">link</a>
                                 <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
                                    class="material-icons text-warning">edit</a>
-                                <a href="{{ url('/sessions/' . $session->id . '/delete') }}"
-                                   class="material-icons text-danger">delete_forever</a>
+                                <form method="POST" action="{{ url('/sessions/' . $session->id . '/delete') }}"
+                                      class="d-inline-block">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit"
+                                            class="btn btn-lg btn-link material-icons text-danger delete-session"
+                                            data-title="Are you sure you want to delete this Session?"
+                                            data-content="This action is irreversible."
+                                            title="Delete {{ $session->title }}"
+                                            aria-label="Delete {{ $session->title }}">delete_forever
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
@@ -47,4 +57,30 @@
             @endif
         </div>
     </div>
+@endsection
+
+@section('end_footer')
+    <script type="text/javascript">
+        $(function () {
+            $('.delete-session').confirm({
+                escapeKey: 'cancel',
+                buttons: {
+                    delete: {
+                        text: 'Delete',
+                        btnClass: 'btn-red',
+                        action: function (e) {
+                            this.$target.closest('form').submit();
+                            // window.location.replace(this.$target.closest('form').attr('action'));
+                            return true;
+                        }
+                    },
+                    cancel: function () {
+                    }
+                },
+                theme: 'material',
+                type: 'red',
+                typeAnimated: true,
+            });
+        });
+    </script>
 @endsection

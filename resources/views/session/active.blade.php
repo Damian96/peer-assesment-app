@@ -35,12 +35,24 @@
                             <td class="text-muted">N/A</td>
                         @endif
                         <td>{{ $s->deadline_full }}</td>
-                        <td>
+                        <td class="action-cell">
                             @if(Auth::user()->can('session.edit', ['id'=>$s->course_id]))
                                 <a href="{{ url('/sessions/' . $s->id . '/edit') }}"
-                                   class="material-icons"
-                                   title="Update Course {{ $s->title }}"
-                                   aria-label="Update Course {{ $s->title }}">edit</a>
+                                   class="material-icons text-warning"
+                                   title="Update Session {{ $s->title }}"
+                                   aria-label="Update Session {{ $s->title }}">edit</a>
+                                <form method="POST" action="{{ url('/sessions/' . $s->id . '/delete') }}"
+                                      class="d-inline-block">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit"
+                                            class="btn btn-lg btn-link material-icons text-danger delete-session"
+                                            data-title="Are you sure you want to delete this Session?"
+                                            data-content="This action is irreversible."
+                                            title="Delete {{ $s->title }}"
+                                            aria-label="Delete {{ $s->title }}">delete_forever
+                                    </button>
+                                </form>
                             @endif
                         </td>
                     </tr>
@@ -50,4 +62,31 @@
             {{ $sessions->links() }}
         </div>
     </div>
+@endsection
+
+
+@section('end_footer')
+    <script type="text/javascript">
+        $(function () {
+            $('.delete-session').confirm({
+                escapeKey: 'cancel',
+                buttons: {
+                    delete: {
+                        text: 'Delete',
+                        btnClass: 'btn-red',
+                        action: function (e) {
+                            this.$target.closest('form').submit();
+                            // window.location.replace(this.$target.closest('form').attr('action'));
+                            return true;
+                        }
+                    },
+                    cancel: function () {
+                    }
+                },
+                theme: 'material',
+                type: 'red',
+                typeAnimated: true,
+            });
+        });
+    </script>
 @endsection

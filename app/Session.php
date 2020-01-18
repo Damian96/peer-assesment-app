@@ -73,11 +73,19 @@ class Session extends Model
     protected $guarded = ['id'];
 
     /**
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'deadline', 'ac_year', 'status', 'course_id', 'form_id', 'instructions', 'title'
+    ];
+
+    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $hidden = ['created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
@@ -114,11 +122,14 @@ class Session extends Model
     }
 
     /**
+     * @TODO send session notifications
      * @method void
      * @return boolean
      */
     public function sendEmailNotification()
     {
-
+//        foreach ($this->course()->students()->get() as $student) {
+        clock()->info('Students have been notified of the opened Session!');
+//        }
     }
 }

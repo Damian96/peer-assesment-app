@@ -587,6 +587,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.students':
             case 'form.view':
             case 'form.duplicate':
+            case 'form.delete':
                 if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
                     $cid = $arguments['form']->session()->first()->course_id;
                 } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {

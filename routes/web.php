@@ -56,6 +56,7 @@ Route::group(['prefix' => '/sessions'], function () {
     Route::match(['get'], '{session}/view', 'SessionController@show')->name('session.view');
     Route::match(['get'], '{session}/delete', 'SessionController@delete')->name('session.delete');
     Route::match(['get'], '{session}/edit', 'SessionController@edit')->name('session.edit');
+    Route::match(['delete'], '{session}/delete', 'SessionController@delete')->name('session.delete');
 //    Route::match(['get'], '{id}/edit', 'CourseController@edit')->where('id', '[0-9]+')->name('course.edit');
 //    Route::match(['put'], '{id}', 'CourseController@update')->where('id', '[0-9]+')->name('course.update');
 //    Route::match(['get'], '{id}', 'CourseController@course')->where('id', '[0-9]+')->name('course.edit');
@@ -67,6 +68,6 @@ Route::group(['prefix' => '/forms'], function () {
     Route::match(['post'], '/store', 'FormController@store')->name('form.store');
     Route::match(['post'], '/update', 'FormController@update')->name('form.update');
     Route::match(['get'], '/{form}/edit', 'FormController@edit')->name('form.edit');
-    Route::match(['get'], '/{form}/delete', 'FormController@delete')->name('form.delete'); // @TODO: change method to POST
+    Route::match(['delete'], '/{form}/delete', 'FormController@delete')->name('form.delete');
     Route::match(['post'], '/{form}/duplicate', 'FormController@duplicate')->name('form.duplicate');
 });

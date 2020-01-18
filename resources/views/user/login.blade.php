@@ -8,29 +8,41 @@
                 @csrf
 
                 <div class="form-group">
-                    <label class="control-label" for="email">Email</label>
+                    <label id="email-lbl" class="control-label" for="email">Email</label>
 
                     <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
-                           name="email" value="{{ old('email') }}" id="email" autofocus tabindex="0">
+                           name="email" value="{{ old('email') }}" id="email" autofocus tabindex="0"
+                           required aria-labelledby="email-lbl"
+                           minlength="3" maxlength="255"
+                           aria-required="true"
+                           data-rule-required="true"
+                           data-msg-required="{!! $messages['email.required'] ?? '' !!}"
+                           data-rule-minlegth="3"
+                           data-msg-minlegth="{!! $messages['email.min'] ?? '' !!}"
+                           data-rule-maxlength="255"
+                           data-msg-maxlength="{!! $messages['email.max'] ?? '' !!}">
 
-                    @if ($errors->has('email'))
-                        <span class="invalid-feedback d-block">
-                            <strong>{{ $errors->first('email') }}</strong>
-                        </span>
-                    @endif
+                    <span class="invalid-feedback d-block">@if ($errors->has('email'))
+                            <strong>{{ $errors->first('email') }}</strong>@endif</span>
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label" for="password">Password</label>
+                    <label id="password-lbl" class="control-label" for="password">Password</label>
 
                     <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password"
-                           name="password" type="password" value="{{ old('password') }}" tabindex="0">
+                           name="password" type="password" value="{{ old('password') }}" tabindex="0"
+                           required aria-labelledby="password-lbl"
+                           minlength="3" maxlength="255"
+                           aria-required="true"
+                           data-rule-required="true"
+                           data-msg-required="{!! $messages['password.required'] ?? '' !!}"
+                           data-rule-minlegth="3"
+                           data-msg-minlegth="{!! $messages['password.min'] ?? '' !!}"
+                           data-rule-maxlength="255"
+                           data-msg-maxlength="{!! $messages['password.max'] ?? '' !!}">
 
-                    @if ($errors->has('password'))
-                        <span class="invalid-feedback d-block">
-                            <strong>{{ $errors->first('password') }}</strong>
-                        </span>
-                    @endif
+                    <span class="invalid-feedback d-block">@if ($errors->has('password'))
+                            <strong>{{ $errors->first('password') }}</strong>@endif</span>
                 </div>
 
                 <div class="form-group">
@@ -42,14 +54,14 @@
                     @endcomponent
                 </div>
 
-                @if(env('APP_ENV', false) != 'local' || ! env('APP_DEBUG', false))
+                @if(env('APP_ENV', false) !== 'local' || ! env('APP_DEBUG', false))
                     <div class="form-group">
                         {!! htmlFormSnippet() !!}
 
+                        <span class="invalid-feedback d-block">
                         @if ($errors->has('g-recaptcha-response'))
-                            <span
-                                class="invalid-feedback d-block"><strong>{{ $errors->first('g-recaptcha-response') }}</strong></span>
-                        @endif
+                                <strong>{{ $errors->first('g-recaptcha-response') }}</strong>@endif
+                        </span>
                     </div>
                 @else
                     <input type="hidden" class="hidden" width="0" height="0" name="localhost" value="1"/>
@@ -70,4 +82,48 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('end_footer')
+    <script type="text/javascript" defer>
+        $(function () {
+            $(document).on('focusout change', 'input, select, textarea', function () {
+                return $(this).valid();
+            });
+            $(document).on('submit', 'form', function (event) {
+                let form = $(event.target);
+                form.validate({
+                    rules: {
+                        email: {
+                            required: true,
+                            email: true,
+                            maxlength: 255
+                        },
+                        password: {
+                            required: true,
+                            minlength: 3,
+                            maxlength: 255
+                        }
+                    },
+                    messages: {
+                        email: {
+                            required: "{!! $messages['email.required'] !!}",
+                            email: "{!! $messages['email.regex'] !!}",
+                            maxlength: "{!! $messages['email.filter'] !!}"
+                        },
+                        password: {
+                            required: "{!! $messages['password.required'] !!}",
+                            minlength: "{!! $messages['password.min'] !!}",
+                            maxlength: "{!! $messages['password.max'] !!}"
+                        },
+                    }
+                });
+
+                // console.log(form, form.valid());
+                // event.preventDefault();
+                // return false;
+                return form.valid();
+            });
+        });
+    </script>
 @endsection

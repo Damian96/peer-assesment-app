@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    {{ Breadcrumbs::render('session.create') }}
+    {{ Breadcrumbs::render('session.edit', $session) }}
 @endsection
 
 @section('content')

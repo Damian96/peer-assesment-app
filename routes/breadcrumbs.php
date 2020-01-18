@@ -72,6 +72,17 @@ Breadcrumbs::for('session.create', function ($trail, $course) {
     $trail->push('Create Session', route('course.create'));
 });
 
+// Edit Session
+Breadcrumbs::for('session.edit', function ($trail, $session) {
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    if (last($crumbs) == 'session.active' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.active'))
+        $trail->push('Active Sessions', route('session.active'));
+
+    $trail->push('Edit Session', route('session.edit', $session));
+});
+
 // Courses > ? > Sessions of [CCPX]
 Breadcrumbs::for('session.index', function ($trail, $sessions, $course) {
     $crumbs = session()->get('crumbs', []);
