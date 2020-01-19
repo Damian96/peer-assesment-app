@@ -11,6 +11,8 @@
 
                 <input type="hidden" class="hidden" name="form" value="import-students" width="0" height="0">
 
+                <input type="hidden" class="hidden" name="course_id" value="{{ $course->id }}" width="0" height="0">
+
                 <input type="hidden" class="hidden" name="csv-data" id="csv-data" value="none" width="0" height="0">
 
                 <legend>Import from <i>.csv</i></legend>
@@ -22,7 +24,7 @@
                                accept="text/csv">
                     </label>
 
-                    <span class="invalid-feedback {{ $errors->has('csv') ? 'd-inline' : '' }}">
+                    <span class="invalid-feedback d-inline">
                     @if ($errors->has('csv'))
                             <strong>{{ $errors->first('csv') }}</strong>
                         @endif
@@ -79,7 +81,7 @@
                         </select>
                     @endif
 
-                    <span class="invalid-feedback{{ $errors->has('studentid') ? ' d-block' : '' }}">
+                    <span class="invalid-feedback d-inline">
                     @if ($errors->has('studentid'))<strong>{{ $errors->first('studentid') }}</strong>@endif
                     </span>
                 </div>
@@ -347,7 +349,8 @@
                     Papa.parse(text, {
                         delimiter: ',',
                         header: true,
-                        preview: 2,
+                        // @FIXME: remove me
+                        preview: 5,
                         skipEmptyLines: true,
                         transformHeader: function (head) {
                             head = head.toLowerCase().trim();
@@ -358,6 +361,7 @@
                                 case 'last name':
                                 case 'surname':
                                     return 'lname';
+                                case 'Registration Number':
                                 case 'reg num':
                                 case 'reg_num':
                                     return 'reg_num';

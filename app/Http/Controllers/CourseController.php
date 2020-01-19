@@ -78,7 +78,7 @@ class CourseController extends Controller
         $rules = [
             'title' => 'required|string|min:5|max:50',
             'code' => 'required|string|min:6|max:10',
-            'department' => 'required|string|in:CS,ES,BS,PSY,MBA|max:255',
+            'department' => 'required|string|in:CCP,CES,CBE,PSY,MBA|max:255',
             'description' => 'nullable|string|max:150'
         ];
         switch ($action) {

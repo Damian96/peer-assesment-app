@@ -22,6 +22,8 @@ use Laravel\Scout\Searchable;
  * @property int $ac_year_int
  * @property int $ac_year_month
  * @property string $department
+ * @property string $department_title
+ * @property string $department_full
  * @property array $ac_year_arr
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -288,7 +290,7 @@ class Course extends Model
 
     /**
      * Retrieve the courses of the current academic year.
-     * @return Model[]|\Illuminate\Database\Builder[]|array|false
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public static function getCurrentYears()
     {
@@ -297,7 +299,6 @@ class Course extends Model
         else $ac_year = Carbon::createFromDate(intval(date('Y')) - 1, 9, 1)->startOfDay();
         return self::whereStatus('1')
             ->where('ac_year', '>=', $ac_year->toDateString())
-            ->whereNotNull('department')
-            ->get();
+            ->whereNotNull('department');
     }
 }

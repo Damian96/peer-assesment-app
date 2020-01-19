@@ -16,3 +16,5 @@ require('./../../plugins/js/tipr.js');
 // Custom JavaScript
 require('./combobox');
 require('./form');
+
+window.Papa = require('papaparse/papaparse');

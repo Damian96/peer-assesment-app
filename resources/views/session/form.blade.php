@@ -3,27 +3,30 @@
     @method($method)
     @csrf
 
-    @if (isset($course))
+    @if (isset($course) && !isset($courses))
         <input type="hidden" class="hidden" value="{{ $course->id }}" name="course" id="course">
     @else
         @php $course = (isset($session) && $session->course()->exists()) ? $session->course()->first() : null; @endphp
         <div class="form-group">
             <label class="form-text" for="course">Course</label>
             @if (!empty($courses))
-                <select name="course" id="course" class="{{ $errors->has('course') ? 'is-invalid' : '' }}"
+                <select name="course" id="course" class="form-control{{ $errors->has('course') ? ' is-invalid' : '' }}"
+                        readonly="true"
                         data-rule-required="true"
-                        data-msg-required="{{ $messages['course.required'] }}">
+                        data-msg-required="{{ $messages['course.required'] }}"
+                        data-rule-min="1"
+                        data-msg-min="{{ $messages['course.numeric'] }}">
                     @foreach($courses as $c)
                         <option
                             value="{{ $c->id }}"{{ (isset($course) && $course->id == $c->id) ? ' selected' : null  }}>{{ sprintf("%s - %s",$c->code,$c->ac_year_pair) }}</option>
                     @endforeach
                 </select>
+                <span class="invalid-feedback d-inline-block">
+                <strong>@if ($errors->has('course')){{ $errors->first('course') }}@endif</strong>
+                </span>
             @else
                 <div class="form-text text-warning">There are no Courses for this academic year!</div>
             @endif
-            <span class="invalid-feedback">
-            @if ($errors->has('title'))<strong>{{ $errors->first('title') }}</strong>@endif
-            </span>
         </div>
     @endif
 
@@ -33,17 +36,18 @@
 
     @if (!empty($forms))
         <div class="form-group">
-            <label class="form-text" for="course">Form</label>
+            <label id="form-lbl" class="form-text" for="form">Form</label>
 
-            <select name="form" id="form" class="{{ $errors->has('form') ? 'is-invalid' : '' }}"
+            <select name="form" id="form" class="form-control{{ $errors->has('form') ? ' is-invalid' : '' }}"
                     data-rule-required="true"
-                    data-msg-required="{{ $messages['form.required'] ?? '' }}">
+                    data-msg-required="{{ $messages['form.required'] ?? '' }}"
+                    aria-labelledby="form-lbl">
                 @foreach($forms as $f)
                     <option value="{{ $f->id }}">{{ sprintf("%s",$f->title) }}</option>
                 @endforeach
             </select>
-            <span class="invalid-feedback">@if ($errors->has('title'))
-                    <strong>{{ $errors->first('title') }}</strong>@endif</span>
+            <span class="invalid-feedback d-inline-block">
+                    <strong>{{ $errors->first('form') ?? '' }}</strong></span>
         </div>
     @else
         <div class="form-group">
@@ -138,7 +142,7 @@
         $(document).ready(function () {
             // Deadline jQuery UI Datepicker
             $("#deadline").datepicker({
-                dateFormat: 'mm-dd-yy',
+                dateFormat: 'dd-mm-yy',
                 minDate: 1,
                 maxDate: 6 * 31,
                 defaultDate: '{{ old('deadline', 1) }}',
@@ -165,6 +169,16 @@
             let form = $(event.target);
             form.validate({
                 rules: {
+                    course: {
+                        required: true,
+                        digits: true,
+                        min: 1
+                    },
+                    form: {
+                        required: true,
+                        digits: true,
+                        min: 1
+                    },
                     title: {
                         required: true,
                         minlength: 3,
@@ -174,25 +188,25 @@
                         required: true,
                         maxlength: 1000
                     },
-                    // status: {
-                    //     required: true,
-                    //     checked: true,
-                    // },
                     deadline: {
                         required: true,
                         pattern: '[0-9]{2}-[0-9]{2}-[0-9]{4}'
                     },
                 },
                 messages: {
+                    course: {
+                        required: "{!! $messages['course.required'] !!}",
+                        min: "{!! $messages['course.numeric'] !!}",
+                    },
+                    form: {
+                        required: "{!! $messages['form.required'] !!}",
+                        min: "{!! $messages['form.numeric'] !!}",
+                    },
                     title: {
                         required: "{!! $messages['title.required'] !!}",
                         minlength: "{!! $messages['title.min'] !!}",
                         maxlength: "{!! $messages['title.max'] !!}"
                     },
-                    {{--status: {--}}
-                        {{--    optional: true,--}}
-                        {{--    required: "{!! $messages['status.required'] !!}",--}}
-                        {{--},--}}
                     instructions: {
                         required: "{!! $messages['instructions.required'] !!}",
                         maxlength: "{!! $messages['instructions.max'] !!}"

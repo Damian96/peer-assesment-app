@@ -20,7 +20,7 @@ class SessionsTableSeeder extends Seeder
     public function run()
     {
         DatabaseSeeder::refreshTable($this->table, true);
-        $courses = Course::getCurrentYears();
+        $courses = Course::getCurrentYears()->get();
         $cids = array_column($courses->toArray(), 'id');
         $lipsum = Lipsum::short()->text(3);
         for($i=1; $i<=self::MAX; $i++) {

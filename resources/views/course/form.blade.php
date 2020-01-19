@@ -1,3 +1,5 @@
+@php $departments = implode(',', config('constants.departments.short')); @endphp
+
 {{-- method, action, $errors --}}
 <form role="form" method="{{ $method == 'PUT' ? 'POST' : $method }}" action="{{ $action }}">
     @method($method)
@@ -15,7 +17,7 @@
                data-msg-required="{{ $messages['title.required'] }}"
                data-rule-minlength="5"
                data-msg-minlength="{{ $messages['title.min'] }}"
-               data-rule-maxlength="10"
+               data-rule-maxlength="50"
                data-msg-maxlength="{{ $messages['title.max'] }}">
 
         <span class="invalid-feedback">
@@ -62,21 +64,26 @@
     <div class="form-group">
         <label for="department">Department</label>
         <select name="department" id="department"
-                class="form-control{{ $errors->has('department') ? ' is-invalid' : '' }}">
+                class="form-control{{ $errors->has('department') ? ' is-invalid' : '' }}"
+                data-rule-required="true"
+                data-msg-required="{!! $messages['department.required'] !!}"
+                data-rule-in="{!! $departments !!}"
+                data-msg-in="{!! $messages['department.in'] !!}"
+        >
             <option
                 value="admin"{{ old('department', isset($course) ? $course->department : '') == 'admin' ? 'selected' : '' }}>
                 ---
             </option>
             <option
-                value="CS"{{ old('department', isset($course) ? $course->department : '') == 'CCP' ? 'selected' : '' }}>
+                value="CCP"{{ old('department', isset($course) ? $course->department : '') == 'CCP' ? 'selected' : '' }}>
                 Computer Science
             </option>
             <option
-                value="ES"{{ old('department', isset($course) ? $course->department : '') == 'CES' ? 'selected' : '' }}>
+                value="CES"{{ old('department', isset($course) ? $course->department : '') == 'CES' ? 'selected' : '' }}>
                 English Studies
             </option>
             <option
-                value="BS"{{ old('department', isset($course) ? $course->department : '') == 'CBE' ? 'selected' : '' }}>
+                value="CBE"{{ old('department', isset($course) ? $course->department : '') == 'CBE' ? 'selected' : '' }}>
                 Business Administration & Economics
             </option>
             <option
@@ -166,7 +173,7 @@
                     },
                     department: {
                         required: true,
-                        in: 'CS,ES,BS,PSY,MBA',
+                        in: "{!! $departments !!}",
                         maxlength: 10
                     },
                     description: {

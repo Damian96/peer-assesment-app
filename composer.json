@@ -9,6 +9,9 @@
   "license": "MIT",
   "require": {
     "php": "^7.2",
+    "ext-json": "*",
+    "ext-openssl": "^7.3",
+    "ext-xdebug": "*",
     "biscolab/laravel-recaptcha": "^4.0",
     "davejamesmiller/laravel-breadcrumbs": "5.3.0",
     "egulias/email-validator": "^2.1",
@@ -16,9 +19,7 @@
     "itsgoingd/clockwork": "^4.0",
     "laravel/framework": "^6.0",
     "laravel/tinker": "^1.0",
-    "magyarjeti/laravel-lipsum": "dev-master",
-    "ext-json": "*",
-    "ext-xdebug": "*"
+    "magyarjeti/laravel-lipsum": "dev-master"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.6",

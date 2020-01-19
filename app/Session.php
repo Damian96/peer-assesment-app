@@ -60,6 +60,8 @@ class Session extends Model
             case 'title_full':
                 return $this->title . ' - ' . Carbon::createFromTimestamp(strtotime($this->course()->first()->ac_year), config('app.timezone'))->format('Y');
 //                return $this->title . ' - ' . $this->ac_year;
+            case 'status_full':
+                return $this->status == 1 ? 'Enabled' : 'Disabled';
             default:
                 return parent::__get($name);
         }

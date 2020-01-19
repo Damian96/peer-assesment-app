@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class UserController
@@ -67,6 +68,7 @@ class UserController extends Controller
     public function rules(String $action, array $options = [])
     {
         switch ($action) {
+            case 'update':
             case 'reset':
                 return [
                     '_method' => 'required|string|in:PUT',
@@ -86,6 +88,7 @@ class UserController extends Controller
 
 //                    'csv' => 'required_if:form,import-students|file|mimes:csv|lt:5000',
                     'csv-data' => 'required_if:form,import-students|string|min:10|max:10000',
+                    'course_id' => 'required_if:form,import-students|numeric|min:1|exists:courses,id',
 
                     'studentid' => 'required_if:form,select-student|not_in:---,N/A|numeric|exists:users,id',
 
@@ -154,6 +157,13 @@ class UserController extends Controller
         ];
 
         switch ($action) {
+            case 'reset':
+                return array_merge($messages, [
+                    'password_confirmation.confirmed' => 'Your passwords should match!',
+                    'password_confirmation.required' => 'Please confirm your password!',
+                    'password_confirmation.min' => 'Your Password is too short!',
+                    'password_confirmation.max' => 'Your Password is too long!',
+                ]);
             case 'forgot':
             case 'forgotSend':
                 return [
@@ -292,6 +302,7 @@ class UserController extends Controller
      * @param \Illuminate\Http\Request $request
      * @param Course $course
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function storeStudent(Request $request, Course $course)
     {
@@ -309,6 +320,11 @@ class UserController extends Controller
                     ->withInput($request->input())
                     ->with('errors', new MessageBag(['csv' => 'Could not import the csv data!']));
             }
+            try {
+                $course = Course::findOrFail($request->get('course_id', false));
+            } catch (ModelNotFoundException $e) {
+                throw_if(env('APP_DEBUG', false), $e);
+            }
             $success = 0;
             $fail = 0;
             foreach ($data as $row) {
@@ -320,6 +336,7 @@ class UserController extends Controller
                     'lname' => $row->lname,
                     'email' => $row->email,
                     'reg_num' => $row->reg_num,
+                    'department' => $course->department,
                     'password' => '',
                 ];
                 $validator = Validator::make($attributes, $this->rules('storeCsv'));
@@ -327,8 +344,8 @@ class UserController extends Controller
                     $fail++;
                     continue;
                 } else {
-                    $student = new User();
-                    if ($student->fill($attributes)->save()) {
+                    $student = new User($attributes);
+                    if ($student->save()) {
                         $success++;
                         if ($request->get('register', false)) {
                             $student->sendStudentInvitationEmail($course);
@@ -473,6 +490,8 @@ class UserController extends Controller
                 return $user;
             });
             Auth::setUser($user);
+            $user->last_login = 'loggedin!';
+
             if ($user->isStudent()) {
                 return redirect('courses', 302, $request->headers->all());
             } else {
@@ -628,14 +647,14 @@ class UserController extends Controller
             if ($request->get('action', false) == 'invite') {
                 return redirect()->action('UserController@login', [], 302, $request->headers->all());
             } else {
-                return redirect()->action('UserController@login', [], 302);
+                return redirect()->action('UserController@login', [], 302, $request->headers->all());
             }
         } elseif ($request->get('action', false) == 'password') {
             $request->setUserResolver(function () use ($user) {
                 return $user;
             });
             $request->session()->flash('user', $user);
-            return redirect()->action('UserController@reset', [], 302, $request->headers->all());
+            return redirect()->action('UserController@reset', ['token' => $user->token], 302, $request->headers->all());
         } else { # unknown action / hacking attempt
             throw abort(401);
         }
@@ -644,30 +663,32 @@ class UserController extends Controller
     /**
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @throws \Throwable
+     * // @TODO: add strong password validation
      */
     public function reset(Request $request)
     {
         $title = 'Reset Password';
 
-        if (!$request->session()->has('user')) {
+        if (!$request->query->has('token')) {
             throw abort(404);
         }
-        $user = $request->session()->get('user');
-        if (!$user instanceof \App\User) {
-            throw abort(404);
-        }
-        $email = $user->email;
+        $token = $request->get('token');
+        $query = DB::table('password_resets')->where('token', $token);
 
-        $token = DB::table('password_resets')
-            ->where('email', $email)
-            ->get('token')->first();
-        if (!property_exists($token, 'token')) {
-            throw abort(404);
-        } else {
-            $token = $token->token;
-        }
+        throw_if(!$query->exists(), new NotFoundHttpException());
+        $user = User::whereEmail($query->first()->email);
+        throw_if(!$user->exists(), new NotFoundHttpException());
 
-        return \response(view('user.reset', compact('title', 'user', 'email', 'token')), 200, $request->headers->all());
+        $user = $user->first();
+        $messages = $this->messages(__FUNCTION__);
+        $expires = Carbon::createFromTimestamp(strtotime($query->first()->created_at))->addMinutes(config('auth.password_reset.expire'));
+        $hours = gmdate('H:i:s', $expires->diffInSeconds(Carbon::now()));
+        $request->session()->flash('message', [
+            'level' => 'warning',
+            'heading' => sprintf("This link is valid for the next : %s h/m/s", $hours),
+        ]);
+        return \response(view('user.reset', compact('title', 'user', 'messages', 'hours')), 200, $request->headers->all());
     }
 
     /**
@@ -686,6 +707,7 @@ class UserController extends Controller
      * @param Request $request
      * @method POST
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function forgotSend(Request $request)
     {
@@ -708,7 +730,7 @@ class UserController extends Controller
             return redirect()->action('UserController@login', [], 302);
         }
 
-        $user->sendPasswordResetNotification($user->getPasswordResetToken());
+        $user->sendPasswordResetNotification($user->generatePasswordResetToken());
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'Reset Email Sent Successfully!',

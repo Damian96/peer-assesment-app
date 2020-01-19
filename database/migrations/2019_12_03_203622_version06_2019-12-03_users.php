@@ -21,7 +21,7 @@ class Version0620191203Users extends Migration
             $table->string('fname', 255)->nullable();
             $table->string('lname', 255)->nullable();
             $table->string('department')->nullable();
-            $table->string('reg_num', 6)->nullable();
+            $table->string('reg_num', 7)->nullable();
             $table->char('instructor', 1)->default('0')
                 ->comment('0 -> student, 1 -> instructor');
             $table->char('admin', 1)->default('0')->comment('boolean');

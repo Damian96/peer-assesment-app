@@ -21,6 +21,8 @@ class AppResetPasswordEmail extends Mailable implements Renderable
      */
     public static $toMailCallback;
 
+    protected $markdown = 'emails.reset';
+
     protected $resettable;
     protected $token;
 
@@ -57,14 +59,15 @@ class AppResetPasswordEmail extends Mailable implements Renderable
      * Build the message.
      * @return MailMessage|mixed
      */
-    public function build() {
+    public function build()
+    {
         if (static::$toMailCallback) {
             return call_user_func(static::$toMailCallback, $this->resettable);
         }
         $resettingUrl = $this->resettingUrl($this->resettable);
         return $this->from(config('mail.from.address'), config('mail.from.name'))
             ->subject(config('auth.password_reset.strings.subject'))
-            ->markdown('emails.reset')
-            ->with([ 'url' => $resettingUrl ]);
+            ->markdown($this->markdown)
+            ->with(['url' => $resettingUrl]);
     }
 }

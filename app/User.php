@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
@@ -60,6 +61,7 @@ use Illuminate\Support\Str;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Course[] $studentCourses
  * @property-read int|null $student_courses_count
  * @property string api_token
+ * @property string last_login
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereAdmin($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartment($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereFname($value)
@@ -116,7 +118,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'fname', 'lname', 'reg_num', 'department', 'instructor', 'admin'
+        'email', 'password', 'fname', 'lname', 'reg_num', 'department', 'instructor', 'last_login'
     ];
 
     /**
@@ -134,6 +136,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @var array
      */
     protected $casts = [
+        'last_login' => 'datetime',
         'email_verified_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -145,12 +148,20 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @see https://www.php.net/manual/en/language.oop5.overloading.php#object.set
      * @param string $key
      * @param mixed $value
+     * @throws \Exception
      */
     public function __set($key, $value)
     {
         switch ($key) {
+            case 'token':
             case 'password_reset_token':
                 $this->password_reset_token = $value;
+                break;
+            case 'last_login':
+                // @TODO: create user.login event listener
+                // https://stackoverflow.com/a/22460203/6330843
+//                $this->last_login = new \DateTime;
+//                $this->save();
                 break;
             default:
                 parent::__set($key, $value);
@@ -165,6 +176,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function __get($key)
     {
         switch ($key) {
+            case 'token':
+            case 'password_reset_token':
+                return $this->getPasswordResetToken();
             case 'registration_date': # Alias of 'registered_at'
                 try {
                     $mutable = new Carbon($this->created_at, config('app.timezone'));
@@ -259,7 +273,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * Get the StudentGroup record associated with the student.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function group()
     {
@@ -285,9 +300,28 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             return $this->hasMany('\App\Course');
         } else if ($this->isStudent()) {
             return $this->hasMany('\App\StudentCourse');
-//            return $this->hasManyThrough('\App\Course', '\App\StudentCourse', 'user_id', 'user_id', 'id', 'user_id');
         }
         return false;
+    }
+
+    /**
+     * Get the Session records associated with the instructor / admin.
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function sessions()
+    {
+        return $this->hasManyThrough('\App\Session', '\App\Course', 'user_id', 'course_id', 'id', 'id');
+    }
+
+    /**
+     * Get the Form records associated with the instructor / admin.
+     * @return Form[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function forms()
+    {
+        return Form::query()
+            ->whereIn('session_id', array_column($this->sessions()->get(['sessions.id'])->toArray(), 'id'))
+            ->get();
     }
 
     /**
@@ -517,27 +551,24 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function getPasswordResetToken()
     {
-        try {
-            $token = $this->generatePasswordResetToken();
-//            $relation = $this->passwordReset()->get();
-            return $token;
-        } catch (QueryException $e) {
-            return false;
-        }
+        return DB::table('password_resets')
+            ->where('email', $this->email)
+            ->orderBy('created_at', 'DESC')
+            ->first()->token;
     }
 
     /**
      * Generates and stores a token in the password_resets table
-     * @return string
-     * @throws QueryException
+     * @return string|false
+     * @throws \Throwable If the environment is in DEBUG mode
      */
-    private function generatePasswordResetToken()
+    public function generatePasswordResetToken()
     {
         $token = Hash::make($this->email . ':' . $this->lname . ':' . time());
         if (!DB::table('password_resets')->insert(['email' => $this->getEmailForPasswordReset(), 'token' => $token])) {
-            throw new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token));
+            throw_if(env('APP_DEBUG', false), new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token)));
+            return false;
         }
-//        $this->password_reset_token = $token;
         return $token;
     }
 
@@ -613,12 +644,19 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      *
      * @param $token
      * @return void
+     * @throws \Throwable
      */
     public function sendPasswordResetNotification($token)
     {
-//        $mailer = new AppResetPasswordEmail($this);
-//        Mail::to($this->email)->send($mailer);
-        clock()->info("StudentInviteEmail sent to {$this->fullname}");
+        $mailer = new AppResetPasswordEmail($this);
+        try {
+            $this->password_reset_token = $token;
+            Mail::to($this->email)->send($mailer);
+            clock()->info("AppResetPasswordEmail sent to {$this->email}");
+        } catch (\Throwable $e) {
+            clock()->info("Failed to send AppResetPasswordEmail to {$this->email}", ['trace' => true]);
+            throw_if(env('APP_DEBUG', false), $e);
+        }
     }
 
     /**
@@ -629,9 +667,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function sendStudentInvitationEmail(Course $course)
     {
         $this->password = $this->generateStudentPassword();
+        clock()->info("Generated password for user {$this->email} : {$this->password_plain}");
+        $this->save();
 //        $mailer = new StudentInviteEmail($this, $course);
 //        Mail::to($this->email)->send($mailer);
-        clock()->info("StudentInviteEmail sent to {$this->fullname}");
+        clock()->info("StudentInviteEmail sent to {$this->email}");
     }
 
     /**
@@ -643,20 +683,21 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
 //        $mailer = new StudentEnrollEmail($this, $course);
 //        Mail::to($this->email)->send($mailer);
-        clock()->info("StudentEnrollEmail sent to {$this->fullname}");
+        clock()->info("StudentEnrollEmail sent to {$this->email}");
     }
 
     /**
      * Generates a new password for the student.
-     * Pattern: /[0-9]{3}[a-z]{3}[0-9a-z]{3}/i
+     * Pattern: /[a-z]{3}[0-9]{3}[a-z]{3}/i
      * @return string|false
      */
     public function generateStudentPassword()
     {
         try {
-            $this->password_plain = random_int(1000, 2000) .
-                substr($this->fname, 0, 3) .
-                substr($this->reg_num, -3);
+            $this->password_plain =
+                Str::random(3) .
+                random_int(100, 999) .
+                Str::random(3);
             return Hash::make($this->password_plain);
         } catch (\Exception $e) {
             return false;
@@ -673,7 +714,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         return URL::temporarySignedRoute(
             'user.verify',
-            Carbon::now()->addMinutes(config('auth.verification.expire', 60)),
+            Carbon::now()->addMinutes(config('auth.verification.expire', \config('auth.password_reset.expire'))),
             [
                 'id' => $this->getKey(),
                 'hash' => sha1($this->getEmailForVerification()),

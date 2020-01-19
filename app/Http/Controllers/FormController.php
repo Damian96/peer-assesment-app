@@ -130,7 +130,8 @@ class FormController extends Controller
     public function create(Request $request)
     {
         $title = 'Add Form Template';
-        $sessions = Session::all();
+
+        $sessions = Auth::user()->sessions()->get();
         $messages = $this->messages(__FUNCTION__);
         return \response(view('forms.create', compact('messages', 'title', 'sessions')), 200);
     }

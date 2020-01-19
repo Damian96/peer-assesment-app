@@ -168,19 +168,21 @@
             <div class="col-sm-12 col-md-12">
                 @if ($course->sessions()->first())
                     <table class="table table-striped">
-                        <caption></caption>
+                        <caption>This course has {{ $course->sessions()->count() }} Sessions</caption>
                         <thead>
                         <tr>
-                            <th>#</th>
+                            <th scope="row">ID</th>
                             <th class="text-center">Title</th>
+                            <th class="text-center">Status</th>
                             <th class="text-center">Deadline</th>
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($course->sessions()->getModels() as $i => $s)
+                        @foreach($course->sessions()->orderBy('deadline', 'ASC')->getModels() as $i => $s)
                             <tr>
-                                <td scope="row">{{ $i+1 }}</td>
+                                <th scope="row">{{ $s->id }}</th>
                                 <td class="text-center">{{ $s->title }}</td>
+                                <td class="text-center {{ $s->status == 1 ? 'text-success' : 'text-warning' }}">{{ $s->status_full }}</td>
                                 <td class="text-center">{{ $s->deadline }}</td>
                             </tr>
                         @endforeach

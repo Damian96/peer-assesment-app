@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24fd993b13ccdf9880e3cb3c77678c33",
+    "content-hash": "a6dedcb781843f0a497c068d3a6ed36a",
     "packages": [
         {
             "name": "biscolab/laravel-recaptcha",
@@ -5200,18 +5200,18 @@
             "authors": [
                 {
                     "name": "Geert Bergman",
-                    "homepage": "http://www.scrivo.org/",
-                    "role": "Project Author"
+                    "role": "Project Author",
+                    "homepage": "http://www.scrivo.org/"
                 },
                 {
                     "name": "Vladimir Jimenez",
-                    "homepage": "https://allejo.io",
-                    "role": "Contributor"
+                    "role": "Contributor",
+                    "homepage": "https://allejo.io"
                 },
                 {
                     "name": "Martin Folkers",
-                    "homepage": "https://twobrain.io",
-                    "role": "Contributor"
+                    "role": "Contributor",
+                    "homepage": "https://twobrain.io"
                 }
             ],
             "description": "Server side syntax highlighter that supports 185 languages. It's a PHP port of highlight.js",
@@ -6083,6 +6083,7 @@
     "platform": {
         "php": "^7.2",
         "ext-json": "*",
+        "ext-openssl": "^7.3",
         "ext-xdebug": "*"
     },
     "platform-dev": []

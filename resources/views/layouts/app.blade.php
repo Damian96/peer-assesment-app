@@ -10,7 +10,7 @@
             @endcomponent
         @endif
         @yield('breadcrumbs')
-        @if (isset($title))
+        @if (isset($title) && !Route::current()->named('user.login'))
             <h3 class="title">{{ $title ?? '' }}</h3>
         @endif
         @yield('content')

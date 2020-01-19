@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SessionController extends Controller
@@ -124,7 +125,8 @@ class SessionController extends Controller
     public function active(Request $request)
     {
         $title = 'Active Sessions';
-        $sessions = Session::whereStatus('1')
+        $sessions = Auth::user()->sessions()
+            ->where('sessions.status', '=', '1')
             ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
             ->orderBy('deadline', 'ASC')
             ->paginate(self::PER_PAGE);
@@ -140,13 +142,12 @@ class SessionController extends Controller
      */
     public function create(Request $request, Course $course)
     {
-        $forms = Form::all();
+        $forms = Auth::user()->forms();
+        $courses = Course::getCurrentYears()->where('user_id', '=', Auth::user()->id)->get();
         if ($course instanceof Course && $course->code) {
-            $courses = null;
             $title = 'Create Session - ' . $course->code;
         } else {
             $course = null;
-            $courses = Course::getCurrentYears();
             $title = 'Create Session';
         }
         $messages = $this->messages(__FUNCTION__);
@@ -163,7 +164,7 @@ class SessionController extends Controller
         $title = 'Edit Session ' . $session->title;
         $forms = Form::all();
         $messages = $this->messages(__FUNCTION__);
-        $courses = Course::getCurrentYears();
+        $courses = Course::getCurrentYears()->get();
 
         return response(view('session.edit', compact('courses', 'title', 'session', 'messages', 'forms')));
     }
@@ -184,6 +185,7 @@ class SessionController extends Controller
         }
 
         $request->request->add([
+            'status' => $request->get('status', '1'),
             'course_id' => $request->get('course', false),
             'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', date('Y-m-d H:i:s'))))->format('Y-m-d H:i:s')
         ]);
