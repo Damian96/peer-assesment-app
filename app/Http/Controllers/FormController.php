@@ -23,6 +23,7 @@ class FormController extends Controller
         $this->middleware('web');
         $this->middleware('guest');
         $this->middleware('role');
+        $this->middleware('verified');
     }
 
     /**

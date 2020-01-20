@@ -54,6 +54,12 @@ class UserController extends Controller
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
+        $this->middleware('verified')->except([
+            'logout', 'login', 'auth', # login-logout
+            'create', 'store', # user-register
+            'verify', # verify-email/password
+            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+        ]);
     }
 
     /**
@@ -372,8 +378,11 @@ class UserController extends Controller
             $request->merge(['instructor' => '0', 'admin' => '0']);
             $result = new User($request->all());
             $result->password = $result->generateStudentPassword();
-            $onAfterSave = function () use ($result, $course) {
-                $result->sendStudentInvitationEmail($course);
+            $student = $result;
+            $onAfterSave = function () use ($student, $course) {
+                $enrollment = new StudentCourse(['user_id' => $student->id, 'course_id' => $course->id]);
+                $enrollment->save();
+                $student->sendStudentInvitationEmail($course);
             };
             $message = [
                 'level' => 'success',

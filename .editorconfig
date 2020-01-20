@@ -4,12 +4,13 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 charset = utf-8
+max_line_length = 100
 
-[*.{json,yml,yaml,sublime-*,info,git*}]
+[*.{json, yml, yaml, sublime-*, info, git*}]
 indent_style = space
 indent_size = 2
 
-[*.{js,php}]
+[*.{js, php}]
 indent_style = space
 indent_size = 4
 

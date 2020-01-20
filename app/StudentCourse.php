@@ -41,7 +41,7 @@ class StudentCourse extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'course_id', 'updated_at'
+        'user_id', 'course_id'
     ];
 
     /**

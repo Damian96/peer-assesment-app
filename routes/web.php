@@ -12,6 +12,7 @@
 */
 
 # USER
+
 Route::match(['get'], '/', 'UserController@index')->name('user.home');
 Route::match(['get'], '/home', 'UserController@index')->name('user.home');
 Route::match(['get'], '/index', 'UserController@index')->name('user.home');

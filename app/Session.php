@@ -59,7 +59,6 @@ class Session extends Model
                 return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
             case 'title_full':
                 return $this->title . ' - ' . Carbon::createFromTimestamp(strtotime($this->course()->first()->ac_year), config('app.timezone'))->format('Y');
-//                return $this->title . ' - ' . $this->ac_year;
             case 'status_full':
                 return $this->status == 1 ? 'Enabled' : 'Disabled';
             default:
@@ -73,6 +72,15 @@ class Session extends Model
      * @var array
      */
     protected $guarded = ['id'];
+
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'status' => 0,
+    ];
 
     /**
      *

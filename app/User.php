@@ -4,6 +4,7 @@ namespace App;
 
 use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\AppVerifyEmail;
+use App\Notifications\StudentInviteEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
 use Illuminate\Contracts\Auth\Access\Authorizable;
@@ -531,8 +532,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEmailVerificationNotification()
     {
-        $mailer = new AppVerifyEmail($this);
-        Mail::to($this->email)->send($mailer);
+        if (env('APP_ENV', 'local') !== 'local') {
+            $mailer = new AppVerifyEmail($this);
+            Mail::to($this->email)->send($mailer);
+        }
+        clock()->info("Sent email verification to: {$this->email}");
     }
 
     /**
@@ -648,10 +652,12 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendPasswordResetNotification($token)
     {
-        $mailer = new AppResetPasswordEmail($this);
+        $this->password_reset_token = $token;
         try {
-            $this->password_reset_token = $token;
-            Mail::to($this->email)->send($mailer);
+            if (env('APP_ENV', 'local') !== 'local') {
+                $mailer = new AppResetPasswordEmail($this);
+                Mail::to($this->email)->send($mailer);
+            }
             clock()->info("AppResetPasswordEmail sent to {$this->email}");
         } catch (\Throwable $e) {
             clock()->info("Failed to send AppResetPasswordEmail to {$this->email}", ['trace' => true]);
@@ -667,10 +673,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function sendStudentInvitationEmail(Course $course)
     {
         $this->password = $this->generateStudentPassword();
-        clock()->info("Generated password for user {$this->email} : {$this->password_plain}");
         $this->save();
-//        $mailer = new StudentInviteEmail($this, $course);
-//        Mail::to($this->email)->send($mailer);
+        if (env('APP_ENV', 'local') !== 'local') {
+            $mailer = new StudentInviteEmail($this, $course);
+            Mail::to($this->email)->send($mailer);
+        }
         clock()->info("StudentInviteEmail sent to {$this->email}");
     }
 
@@ -681,8 +688,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-//        $mailer = new StudentEnrollEmail($this, $course);
-//        Mail::to($this->email)->send($mailer);
+        if (env('APP_ENV', 'local') !== 'local') {
+            $mailer = new StudentEnrollEmail($this, $course);
+            Mail::to($this->email)->send($mailer);
+        }
         clock()->info("StudentEnrollEmail sent to {$this->email}");
     }
 
@@ -691,13 +700,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * Pattern: /[a-z]{3}[0-9]{3}[a-z]{3}/i
      * @return string|false
      */
-    public function generateStudentPassword()
+    public
+    function generateStudentPassword()
     {
         try {
             $this->password_plain =
                 Str::random(3) .
                 random_int(100, 999) .
                 Str::random(3);
+            clock()->info("Generated password for user {$this->email} : {$this->password_plain}");
             return Hash::make($this->password_plain);
         } catch (\Exception $e) {
             return false;
@@ -710,7 +721,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @param string $action
      * @return string
      */
-    public function verificationUrl(String $action)
+    public
+    function verificationUrl(String $action)
     {
         return URL::temporarySignedRoute(
             'user.verify',
@@ -726,7 +738,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     /**
      * @return String The generate API token
      */
-    public function generateApiToken()
+    public
+    function generateApiToken()
     {
         $this->api_token = hash('sha256', Str::random(80));
         $this->save();
