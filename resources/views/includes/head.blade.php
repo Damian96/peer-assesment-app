@@ -121,9 +121,9 @@
                         <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">Courses</a>
                         <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}"
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'course.index') !== false) ? ' active' : '' }}"
                                href="{{ url('/courses') }}">My Courses</a>
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}"
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'course.create') !== false) ? ' active' : '' }}"
                                href="{{ url('/courses/create') }}">Create</a>
                         </div>
                     </li>
@@ -141,9 +141,9 @@
                         <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">Forms</a>
                         <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.index') !== false) ? ' active' : '' }}"
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'form.index') !== false) ? ' active' : '' }}"
                                href="{{ url('/forms/') }}">My Forms</a>
-                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), '.create') !== false) ? ' active' : '' }}"
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'form.create') !== false) ? ' active' : '' }}"
                                href="{{ url('/forms/create') }}">Create</a>
                         </div>
                     </li>
