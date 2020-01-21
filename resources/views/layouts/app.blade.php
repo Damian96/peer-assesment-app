@@ -1,7 +1,7 @@
 @include('includes.head')
 
-<main class="container" role="main">
-    <section class="container-fluid px-md-0">
+<main class="container card" role="main">
+    <section class="container-fluid px-md-0 pb-2 overflow-y-scroll">
         @if (session()->has('message'))
             @component('includes.alert')
                 @slot('level'){{ session()->get('message')['level'] }}@endslot

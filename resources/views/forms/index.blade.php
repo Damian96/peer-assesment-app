@@ -27,9 +27,9 @@
                             <th scope="row">{{ ($i+1) }}</th>
                             <td>{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
                             <td>
-                                <a href="{{ url('/sessions/' . $form->session_id . '/view' ) }}" target="_self">
+{{--                                <a href="{{ url('/sessions/' . $form->session_id . '/view' ) }}" target="_self">--}}
                                     {{ $form->title_full }}
-                                </a>
+                                {{--                                </a>--}}
                             </td>
                             <td>
                                 <a href="{{ url('/courses/' . $form->course_id . '/view' ) }}" target="_self">
