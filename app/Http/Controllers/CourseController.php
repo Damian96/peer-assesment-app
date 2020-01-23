@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Course;
 use App\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -244,7 +243,7 @@ class CourseController extends Controller
      *
      * @param Request $request
      * @param Course $course
-     * @return void
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|void
      */
     public function edit(Request $request, Course $course)
     {
@@ -258,22 +257,16 @@ class CourseController extends Controller
      *
      * @method PUT
      * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return void
+     * @param Course $course
+     * @return \Illuminate\Http\RedirectResponse|void
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, Course $course)
     {
         $title = 'Edit Course';
 
-        try {
-            $course = Course::findOrFail($id);
-        } catch (ModelNotFoundException $e) {
-            throw abort(404);
-        }
-
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
         if ($validator->fails()) {
-            return redirect()->action('CourseController@edit', [$id], 302)
+            return redirect()->action('CourseController@edit', [$course->id], 302)
                 ->withInput($request->input())
                 ->with('title', $title)
                 ->with('errors', $validator->errors());
