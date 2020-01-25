@@ -738,11 +738,23 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     /**
      * @return String The generate API token
      */
-    public
-    function generateApiToken()
+    public function generateApiToken()
     {
         $this->api_token = hash('sha256', Str::random(80));
         $this->save();
         return $this->api_token;
+    }
+
+    /**
+     * Retrieve the students of the instructor.
+     * @return mixed
+     */
+    public function enrolled()
+    {
+        $courses = array_column($this->courses()->get()->toArray(), 'id');
+        $query = DB::table('users')
+            ->join('student_course', 'users.id', '=', 'user_id')
+            ->whereIn('student_course.course_id', $courses);
+        return $query->get();
     }
 }

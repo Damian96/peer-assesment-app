@@ -245,6 +245,13 @@ class UserController extends Controller
         $user = Auth::user();
         $title = 'Homepage';
 
+        $students = User::getAllStudents()->count();
+        $instructors = User::getInstructors()->count();
+        $enrolled = $user->enrolled()->count();
+        $courses = $user->courses()->count();
+        $sessions = $user->sessions();
+        $forms = $user->forms()->count();
+
 //        if (!$user->hasVerifiedEmail()) {
 //            $request->session()->flash('emailVerifiedSent', true);
 //            $user->sendEmailVerificationNotification();
@@ -256,7 +263,7 @@ class UserController extends Controller
 //            ]);
 //        }
 
-        return response(view('user.home', compact('title', 'user')), 200, $request->headers->all());
+        return response(view('user.home', compact('title', 'user', 'students', 'instructors', 'enrolled', 'courses', 'sessions', 'forms')), 200, $request->headers->all());
     }
 
     /**
