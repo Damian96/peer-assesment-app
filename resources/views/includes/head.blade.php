@@ -106,16 +106,12 @@
                     @endif
                 @endif
                 @if (Auth::user()->isStudent())
-                    @if (strpos(Route::current()->getName(), 'course.index') !== false)
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url('/courses') }}">Courses<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/courses') }}">Courses</a>
-                        </li>
-                    @endif
+                    <li class="nav-item{{ strpos(Route::current()->getName(), 'course.index') !== false ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ url('/courses') }}">Courses</a>
+                    </li>
+                    <li class="nav-item{{ strpos(Route::current()->getName(), 'session.active') !== false ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ url('/sessions') }}">Sessions</a>
+                    </li>
                 @else
                     <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
                         <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"

@@ -86,21 +86,21 @@ class SessionController extends Controller
         }
     }
 
-//    /**
-//     * Display a listing of the resource.
-//     *
-//     * @param Request $request
-//     * @param Course $course
-//     * @return \Illuminate\Http\Response
-//     * @TODO: change index to all and vice-versa
-//     */
-//    public function all(Request $request)
-//    {
-//        $user = Auth::user();
-//        $sessions = Session::all()->get();
-//
-//        return response(view('session.all', compact('title', 'sessions')), 200, $request->headers->all());
-//    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @param Course $course
+     * @return \Illuminate\Http\Response
+     * @TODO: change index to all and vice-versa
+     */
+    public function all(Request $request)
+    {
+        $user = Auth::user();
+        $sessions = Session::all()->get();
+
+        return response(view('session.all', compact('title', 'sessions')), 200, $request->headers->all());
+    }
 
     /**
      * Display a listing of the resource, filtered by the specified Course.
@@ -126,11 +126,23 @@ class SessionController extends Controller
     public function active(Request $request)
     {
         $title = 'Active Sessions';
-        $sessions = Auth::user()->sessions()
-            ->where('sessions.status', '=', '1')
-            ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
-            ->orderBy('deadline', 'ASC')
-            ->paginate(self::PER_PAGE);
+        if (Auth::user()->isStudent()) {
+            $courses = array_column(Auth::user()->studentCourses()->get(['id'])->toArray(), 'id');
+            $sessions = Session::query()
+                ->join('courses', 'courses.id', 'sessions.course_id')
+                ->where('sessions.status', '=', '1')
+                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
+                ->whereIn('courses.id', $courses)
+                ->orderBy('deadline', 'ASC')
+                ->paginate(self::PER_PAGE);
+
+        } else {
+            $sessions = Auth::user()->sessions()
+                ->where('sessions.status', '=', '1')
+                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
+                ->orderBy('deadline', 'ASC')
+                ->paginate(self::PER_PAGE);
+        }
 
         return response(view('session.active', compact('sessions', 'title')), 200, $request->headers->all());
     }

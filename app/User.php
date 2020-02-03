@@ -588,11 +588,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         if ($this->isAdmin()) return true;
 
         switch ($ability) {
-            case 'course.index':
-            case 'user.profile':
-//            case 'user.create':
-//            case 'user.store':
             case 'user.show':
+            case 'user.profile':
+            case 'course.index':
+            case 'session.active':
                 return true;
             case 'user.home':
             case 'course.view':
@@ -614,7 +613,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.delete':
             case 'course.trash':
             case 'course.add-student':
-            case 'session.index':
             case 'session.view':
             case 'session.edit':
             case 'form.edit':

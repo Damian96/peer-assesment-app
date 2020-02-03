@@ -5,21 +5,24 @@
 @endsection
 
 @section('content')
-    <div class="row my-2">
-        <div class="col-md-12">
-            <form method="GET" class="form-inline" onchange="this.submit()">
-                <input type="hidden" value="{{ request('page', 1) }}" class="hidden" name="page" id="page">
-                <label for="ac_year">Academic Year
-                    <select id="ac_year" name="ac_year" class="ml-2 form-control-sm">
-                        <option
-                            value="current"{{ request('ac_year') == 'current' ? 'selected' : '' }}>{{ date('Y') . '-' . substr(date('Y', strtotime('+1 year')), -2) }}</option>
-                        <option value="previous"{{ request('ac_year') == 'previous' ? 'selected' : '' }}>Previous
-                        </option>
-                    </select>
-                </label>
-            </form>
+    @if(!Auth::user()->isStudent())
+
+        <div class="row my-2">
+            <div class="col-md-12">
+                <form method="GET" class="form-inline" onchange="this.submit()">
+                    <input type="hidden" value="{{ request('page', 1) }}" class="hidden" name="page" id="page">
+                    <label for="ac_year">Academic Year
+                        <select id="ac_year" name="ac_year" class="ml-2 form-control-sm">
+                            <option
+                                value="current"{{ request('ac_year') == 'current' ? 'selected' : '' }}>{{ date('Y') . '-' . substr(date('Y', strtotime('+1 year')), -2) }}</option>
+                            <option value="previous"{{ request('ac_year') == 'previous' ? 'selected' : '' }}>Previous
+                            </option>
+                        </select>
+                    </label>
+                </form>
+            </div>
         </div>
-    </div>
+    @endif
     <div class="row py-2">
         <div class="col-md-12">
             @if ($courses->total() || ! Auth::user()->isStudent())
