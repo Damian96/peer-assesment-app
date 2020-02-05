@@ -213,8 +213,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'full_name':
                 return substr($this->fname, 0, 1) . '. ' . $this->lname;
             case 'role':
-                if ($this->isInstructor()) return 'Instructor';
-                elseif ($this->admin == 1) return 'Admin';
+                if ($this->admin == 1) return 'Admin';
+                elseif ($this->isInstructor()) return 'Instructor';
                 else return 'Student';
             case 'crumbs':
                 return empty($this->crumbs) ? [] : $this->crumbs;
@@ -588,6 +588,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         if ($this->isAdmin()) return true;
 
         switch ($ability) {
+            case 'user.home':
             case 'user.show':
             case 'user.profile':
             case 'course.index':

@@ -87,7 +87,7 @@
                 Business Administration & Economics
             </option>
             <option
-                value="PSY"{{ old('department', isset($course) ? $course->department : '') == 'CPY' ? 'selected' : '' }}>
+                value="CPY"{{ old('department', isset($course) ? $course->department : '') == 'CPY' ? 'selected' : '' }}>
                 Psychology Studies
             </option>
             <option
@@ -107,7 +107,7 @@
             <select id="ac_year" name="ac_year" class="form-control{{ $errors->has('ac_year') ? ' is-invalid' : '' }}">
                 @foreach(range(intval(date('Y')), config('constants.date.start'), -1) as $year)
                     <option
-                        value="{{ $year . '-' . ($year+1) }}"{{ $year == old('ac_year', isset($course) ? $course->ac_year_int : intval(date('Y'))) ? ' selected' : null }}>{{ $year }}</option>
+                        value="{{ date(config('constants.date.stamp'), strtotime(sprintf("%s-09-01",$year))) }}"{{ $year == old('ac_year', isset($course) ? $course->ac_year_int : intval(date('Y'))) ? ' selected' : null }}>{{ $year . '-' . ($year+1) }}</option>
                 @endforeach
             </select>
 

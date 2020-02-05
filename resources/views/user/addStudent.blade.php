@@ -216,7 +216,7 @@
                             Business Administration & Economics
                         </option>
                         <option
-                            value="PSY"{{ old('department') == 'PSY' ? 'selected' : '' }}>
+                            value="CPY"{{ old('department') == 'CPY' ? 'selected' : '' }}>
                             Psychology Studies
                         </option>
                         <option

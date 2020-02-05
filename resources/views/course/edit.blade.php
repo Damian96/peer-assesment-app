@@ -10,6 +10,7 @@
             @include('course.form', [
                 'method' => 'PUT',
                 'action' => url('/courses/' . $course->id),
+                'departments' => $departments,
                 'errors' => $errors,
                 'course' => $course,
                 'button' => [

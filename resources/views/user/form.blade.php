@@ -91,7 +91,7 @@
                 Business Administration & Economics
             </option>
             <option
-                value="PSY"{{ old('department', isset($user) ? $user->department : '') == 'PSY' ? 'selected' : '' }}>
+                value="CPY"{{ old('department', isset($user) ? $user->department : '') == 'CPY' ? 'selected' : '' }}>
                 Psychology Studies
             </option>
             <option
