@@ -7,7 +7,6 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
-            {{--            <legend>There are {{ count($sessions) }} sessions active.</legend>--}}
             <table class="table table-striped">
                 <caption
                     class="">{{ sprintf("Showing results %s-%s of total %s Sessions", $sessions->firstItem(), $sessions->lastItem(), $sessions->total()) }}</caption>
@@ -53,6 +52,12 @@
                                             aria-label="Delete {{ $s->title }}">delete_forever
                                     </button>
                                 </form>
+                            @endif
+                            @if (Auth::user()->isStudent())
+                                <a href="{{ url('/sessions/' . $s->id . '/fill') }}"
+                                   class="material-icons text-info"
+                                   title="Fill Session {{ $s->title }}"
+                                   aria-label="Fill Session {{ $s->title }}">assignment_late</a>
                             @endif
                         </td>
                     </tr>

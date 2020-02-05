@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Group
@@ -53,15 +54,17 @@ class Group extends Model
      */
     public function students()
     {
-        return $this->hasOneThrough('\App\User', '\App\StudentGroup', 'user_id', 'group_id', 'id', 'id');
+        return $this->hasManyThrough('\App\User', '\App\StudentGroup', 'user_id', 'group_id', 'id', 'id');
     }
 
     /**
-     * alias of self::students()
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @return \Illuminate\Support\Collection
      */
     public function users()
     {
-        return $this->students();
+        return DB::table('users')
+            ->join('student_course', 'student_course.user_id', 'users.id')
+            ->whereIn('users.id', $this->students()->get())
+            ->get(['users.*']);
     }
 }

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -288,7 +289,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function teammates()
     {
-        return $this->group()->exists() ? $this->group()->first()->students() : false;
+        return DB::table('users')
+            ->join('student_course', 'user_id', '=', 'users.id')
+            ->where('user_id', '!=', Auth::user()->id)
+            ->get(['users.*']);
     }
 
     /**
@@ -587,19 +591,31 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         if ($this->isAdmin()) return true;
 
+        if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
+            $cid = $arguments['form']->session()->first()->course_id;
+        } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
+            $cid = $arguments['course']->id;
+        } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
+            $cid = $arguments['session']->course_id;
+        } elseif (array_key_exists('id', $arguments)) {
+            $cid = $arguments['id'];
+        } elseif (array_key_exists('cid', $arguments)) {
+            $cid = $arguments['cid'];
+        }
+
         switch ($ability) {
+            case 'session.fill':
+                return isset($cid) && $this->isStudent() && $this->studentCourses()->where('courses.id', '=', $cid);
             case 'user.home':
             case 'user.show':
             case 'user.profile':
             case 'course.index':
             case 'session.active':
                 return true;
-            case 'user.home':
             case 'course.view':
             case 'course.create':
             case 'course.store':
             case 'session.store':
-            case 'session.active':
             case 'form.create':
             case 'form.store':
             case 'session.create':
@@ -622,21 +638,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.view':
             case 'form.duplicate':
             case 'form.delete':
-                if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
-                    $cid = $arguments['form']->session()->first()->course_id;
-                } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
-                    $cid = $arguments['course']->id;
-                } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
-                    $cid = $arguments['session']->course_id;
-                } elseif (array_key_exists('id', $arguments)) {
-                    $cid = $arguments['id'];
-                } elseif (array_key_exists('cid', $arguments)) {
-                    $cid = $arguments['cid'];
-                } else {
-                    return false;
-                }
-                return $this->isInstructor() && $this->ownsCourse($cid);
-//                return $this->isInstructor() || ($this->isStudent() && $this->isRegistered($cid));
+            return isset($cid) && $this->isInstructor() && $this->ownsCourse($cid);
             default:
                 return false;
         }

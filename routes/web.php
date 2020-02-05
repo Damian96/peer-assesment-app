@@ -55,6 +55,7 @@ Route::group(['prefix' => '/sessions'], function () {
     Route::match(['get'], 'create/{course?}', 'SessionController@create')->name('session.create');
     Route::match(['post'], '/store  ', 'SessionController@store')->name('session.store');
     Route::match(['get'], '{session}/view', 'SessionController@show')->name('session.view');
+    Route::match(['get'], '{session}/fill', 'SessionController@fill')->name('session.fill');
     Route::match(['get'], '{session}/delete', 'SessionController@delete')->name('session.delete');
     Route::match(['get'], '{session}/edit', 'SessionController@edit')->name('session.edit');
     Route::match(['delete'], '{session}/delete', 'SessionController@delete')->name('session.delete');

@@ -128,7 +128,7 @@ class Session extends Model
      */
     public function form()
     {
-        return $this->hasOne('\App\Form', 'id', 'form_id');
+        return $this->hasOne('\App\Form', 'session_id', 'id');
     }
 
     /**

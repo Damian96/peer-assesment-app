@@ -106,10 +106,10 @@
                     @endif
                 @endif
                 @if (Auth::user()->isStudent())
-                    <li class="nav-item{{ strpos(Route::current()->getName(), 'course.index') !== false ? 'active' : '' }}">
+                    <li class="nav-item{{ strpos(Route::current()->getName(), 'course.index') !== false ? ' active' : '' }}">
                         <a class="nav-link" href="{{ url('/courses') }}">Courses</a>
                     </li>
-                    <li class="nav-item{{ strpos(Route::current()->getName(), 'session.active') !== false ? 'active' : '' }}">
+                    <li class="nav-item{{ strpos(Route::current()->getName(), 'session.active') !== false ? ' active' : '' }}">
                         <a class="nav-link" href="{{ url('/sessions') }}">Sessions</a>
                     </li>
                 @else

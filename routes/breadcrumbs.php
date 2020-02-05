@@ -132,6 +132,15 @@ Breadcrumbs::for('form.index', function ($trail) {
     $trail->push('My Forms', route('form.index'));
 });
 
+// ? > My Sessions > Fill Session
+Breadcrumbs::for('session.fill', function ($trail, $session) {
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    $trail->push('Sessions', route('session.active'));
+    $trail->push('Fill ' . $session->title, route('session.fill', $session));
+});
+
 //// Home > Blog > [Category]
 //Breadcrumbs::for('category', function ($trail, $category) {
 //    $trail->parent('blog');

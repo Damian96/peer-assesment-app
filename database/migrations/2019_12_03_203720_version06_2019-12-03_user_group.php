@@ -14,8 +14,8 @@ class Version0620191203UserGroup extends Migration
     public function up()
     {
         Schema::create('user_group', function (Blueprint $table) {
-            $table->bigInteger('user_id')->unsigned()->unique();
-            $table->bigInteger('group_id')->unsigned()->unique();
+            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('group_id')->unsigned();
         });
     }
 

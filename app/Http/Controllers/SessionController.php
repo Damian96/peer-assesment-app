@@ -125,7 +125,11 @@ class SessionController extends Controller
      */
     public function active(Request $request)
     {
-        $title = 'Active Sessions';
+        if (Auth::user()->isStudent()) {
+            $title = 'Sessions';
+        } else {
+            $title = 'Active Sessions';
+        }
         if (Auth::user()->isStudent()) {
             $courses = array_column(Auth::user()->studentCourses()->get(['id'])->toArray(), 'id');
             $sessions = Session::query()
@@ -257,5 +261,18 @@ class SessionController extends Controller
             'heading' => sprintf("Could not delete Session: %s", $session->title),
         ]);
         return redirect()->back(302, [], false);
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     * @return Response|RedirectResponse
+     * @throws \Throwable
+     */
+    public function fill(Request $request, Session $session)
+    {
+        $title = sprintf("Fill Session %s", $session->title);
+        $form = $session->form()->first();
+        return response(view('session.fill', compact('title', 'form', 'session')), 200, $request->headers->all());
     }
 }
