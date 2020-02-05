@@ -134,18 +134,19 @@
         @endif
     </div>
     <div class="row mt-3">
-        @if (Auth::user()->ownsCourse($course->id))
-            <div class="col-sm-12 col-md-12">
-                @if ($course->students()->first())
-                    <h3 class="my-3">Enrolled Students</h3>
-                    <table class="table table-striped">
-                        <caption>Enrolled Students to {{ $course->code }}</caption>
-                        <thead>
-                        <th scope="row">#</th>
-                        <th>Name</th>
-                        </thead>
-                        <tbody>
-                        @foreach($course->students()->getModels() as $i => $s)
+        @if (Auth::user()->ownsCourse($course->id))2
+        2309
+        <div class="col-sm-12 col-md-12">
+            @if ($course->students()->first())
+                <h3 class="my-3">Enrolled Students</h3>
+                <table class="table table-striped">
+                    <caption>Enrolled Students to {{ $course->code }}</caption>
+                    <thead>
+                    <th scope="row">#</th>
+                    <th>Name</th>
+                    </thead>
+                    <tbody>
+                    @foreach($course->students()->getModels() as $i => $s)
                             <tr>
                                 <th scope="row">{{ $i }}</th>
                                 <td class="text-left">{{ $s->name }}</td>
