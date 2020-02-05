@@ -56,10 +56,6 @@
                     @endif
                     @if (Auth::user()->ownsCourse($course->id))
                         <td class="action-cell text-right">
-                            {{--                            <a href="{{ url($course->instructor()->id . '/show') }}"--}}
-                            {{--                               class="material-icons text-info"--}}
-                            {{--                               title="Show Students"--}}
-                            {{--                               aria-label="Show Students">person</a>--}}
                             @if(Auth::user()->can('course.edit', ['id'=>$course->id]) && !$course->copied())
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
                                     @method('POST')
@@ -145,13 +141,13 @@
                     <table class="table table-striped">
                         <caption>Enrolled Students to {{ $course->code }}</caption>
                         <thead>
-                        <th>#</th>
+                        <th scope="row">#</th>
                         <th>Name</th>
                         </thead>
                         <tbody>
-                        @foreach($course->students()->getModels() as $s)
+                        @foreach($course->students()->getModels() as $i => $s)
                             <tr>
-                                <td scope="row"></td>
+                                <th scope="row">{{ $i }}</th>
                                 <td class="text-left">{{ $s->name }}</td>
                             </tr>
                         @endforeach

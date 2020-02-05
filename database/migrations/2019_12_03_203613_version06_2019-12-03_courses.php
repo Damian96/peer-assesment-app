@@ -20,14 +20,12 @@ class Version0620191203Courses extends Migration
             $table->string('title', 50)->nullable();
             $table->char('status', 1)->default('0');
             $table->string('code', 10)->nullable();
-            $table->string('description', 150);
+            $table->string('description', 150)->nullable();
             $table->string('department', 50);
             $table->string('ac_year', 4)->default(DB::raw('YEAR(CURRENT_TIMESTAMP)'));
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->primary('id');
-//            $table->unique('code');
             $table->index('user_id');
             $table->index('ac_year');
         });

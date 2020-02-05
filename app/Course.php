@@ -145,7 +145,8 @@ class Course extends Model
             case 'ac_year_month':
                 return intval(Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format('m'));
             case 'ac_year_pair':
-                $carbon = Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'));
+                // @FIXME: ac_year changed to created_at
+                $carbon = Carbon::createFromTimestamp(strtotime($this->created_at), config('app.timezone'));
                 if ($carbon->month <= 5) {
                     return ($carbon->year - 1) . '-' . substr($carbon->year, -2);
                 } else {
@@ -216,7 +217,7 @@ class Course extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'department' => 'string',
-        'ac_year' => 'date:Y',
+        'ac_year' => 'datetime',
         'user_id' => 'int',
         'status' => 'boolean',
     ];

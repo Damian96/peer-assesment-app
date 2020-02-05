@@ -198,7 +198,7 @@ class CourseController extends Controller
         }
 
         $request->merge(['user_id' => intval($request->get('instructor', Auth::user()->id))]);
-        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year', date('Y'))), 1, 1, config('app.timezone'))->format(config('constants.date.stamp'))]);
+        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year', date('Y'))), 1, 1, config('app.timezone'))->format('Y')]);
         $course = new Course($request->all());
         if ($course->save()) {
             $request->session()->flash('message', [

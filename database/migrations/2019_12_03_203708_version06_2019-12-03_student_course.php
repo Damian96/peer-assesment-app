@@ -15,10 +15,12 @@ class Version0620191203StudentCourse extends Migration
     public function up()
     {
         Schema::create('student_course', function (Blueprint $table) {
-            $table->bigInteger('user_id')->unsigned()->unique();
-            $table->bigInteger('course_id')->unsigned()->unique();
+            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('course_id')->unsigned();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+
+            $table->unique(['user_id', 'course_id'], 'student_course_unique');
         });
     }
 

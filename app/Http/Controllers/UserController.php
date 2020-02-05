@@ -54,12 +54,13 @@ class UserController extends Controller
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
-        $this->middleware('verified')->except([
-            'logout', 'login', 'auth', # login-logout
-            'create', 'store', # user-register
-            'verify', # verify-email/password
-            'forgot', 'forgotSend', 'reset', 'update', # reset-password
-        ]);
+        // @FIXME:  Route [verification.notice] not defined.
+//        $this->middleware('verified')->except([
+//            'logout', 'login', 'auth', # login-logout
+//            'create', 'store', # user-register
+//            'verify', # verify-email/password
+//            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+//        ]);
     }
 
     /**
@@ -360,6 +361,8 @@ class UserController extends Controller
                     $student = new User($attributes);
                     if ($student->save()) {
                         $success++;
+                        $enrollment = new StudentCourse(['user_id' => $student->id, 'course_id' => $course->id]);
+                        $enrollment->save();
                         if ($request->get('register', false)) {
                             $student->sendStudentInvitationEmail($course);
                         }
