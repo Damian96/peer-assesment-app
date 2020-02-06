@@ -15,7 +15,7 @@ class Version0620191203Forms extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
-            $table->bigInteger('session_id')->unsigned()->unsigned();
+            $table->bigInteger('session_id')->unsigned()->default(0);
             $table->string('title', 255);
             $table->string('subtitle', 255)->nullable();
             $table->string('footnote', 255)->nullable();

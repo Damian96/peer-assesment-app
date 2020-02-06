@@ -159,7 +159,7 @@ class SessionController extends Controller
      */
     public function create(Request $request, Course $course)
     {
-        $forms = Auth::user()->forms();
+        $forms = Auth::user()->forms()->concat(Form::whereSessionId(0)->get());
         $courses = Course::getCurrentYears()->where('user_id', '=', Auth::user()->id)->get();
         if ($course instanceof Course && $course->code) {
             $title = 'Create Session - ' . $course->code;

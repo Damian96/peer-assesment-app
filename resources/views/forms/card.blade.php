@@ -53,12 +53,6 @@
             <label class="form-control-sm">Subtitle <span
                     class="text-muted">(leave blank for none)</span></label>
             <input type="text" name="question[#][subtitle]" class="form-control"
-                   data-rule-required="true"
-                   data-msg-required="The Question should have a title!"
-                   data-rule-minlength="5"
-                   data-msg-minlength="The Question's title should be at least 5 characters long!"
-                   data-rule-maxlength="100"
-                   data-msg-maxlength="The Question's title should be at most 255 characters long!"
                    value="">
             <span class="invalid-feedback"><strong></strong></span>
         </div>

@@ -83,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
             array_data.question = array_data.question.splice(i, 1);
             window.count--;
             if (window.count == 1) {
-                $('#session_id').combobox('enable');
-                $('button.question-type').removeAttr('disabled');
-                $('button[type=submit]').attr('disabled', true);
+                // $('#session_id').combobox('enable');
+                // $('button.question-type').removeAttr('disabled');
+                // $('button[type=submit]').attr('disabled', true);
             }
             card.slideUp('fast', function () {
                 this.remove();
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
      * @returns {boolean}
      */
     window.createCard = function (type, id, title = null, data = null) {
-        // console.debug(arguments);
+        console.debug(arguments);
 
         // Initialise variables
         let card = card_template.clone();
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             .data('title', title)
             .text(title)
             .end()
-            .find('input[name*="title"]')
+            .find('input[name*="[title]"]')
             .val(title)
             .find('input[name*="subtitle"]')
             .val(subtitle);
@@ -242,24 +242,25 @@ document.addEventListener('DOMContentLoaded', function (e) {
         return true;
     };
 
-    // course autocomplete
-    $('#session_id').combobox();
-    $('#session_id').next().on('autocompleteselect', function (e, ui) {
-        $('input[name=session_id]').val(ui.item.option.getAttribute('value'));
-        $('button.question-type').removeAttr('disabled');
-        $('form').find('.col-md-12').first().effect('highlight', {}, 2000);
-        return true;
-    });
+    // session autocomplete
+    // $('#session_id').combobox();
+    // $('#session_id').next().on('autocompleteselect', function (e, ui) {
+    //     $('input[name=session_id]').val(ui.item.option.getAttribute('value'));
+    //     $('button.question-type').removeAttr('disabled');
+    //     $('form').find('.col-md-12').first().effect('highlight', {}, 2000);
+    //     return true;
+    // });
+
     // reset value for caching
-    if (document.getElementById('update-form') != null) {
-        $('button.question-type').removeAttr('disabled');
-    } else { // create
-        $('button.question-type').attr('disabled', true);
-    }
+    // if (document.getElementById('update-form') != null) {
+    //     $('button.question-type').removeAttr('disabled');
+    // } else { // create
+    //     $('button.question-type').attr('disabled', true);
+    // }
 
     $('button.question-type').on('click', function () {
-        $('#session_id').combobox('disable');
-        $('button.question-type').removeAttr('disabled');
+        // $('#session_id').combobox('disable');
+        // $('button.question-type').removeAttr('disabled');
         createCard(this.id, `${this.id}-${window.count}`, `${this.id} - #${window.count}`);
         return true;
     });

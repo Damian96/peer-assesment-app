@@ -5,37 +5,37 @@
 @endsection
 
 @section('content')
-    <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12">
-            <label class="form-control-sm">Select Session:</label>
+    {{--    <div class="row">--}}
+    {{--        <div class="col-sm-12 col-md-12 col-lg-12">--}}
+    {{--            <label class="form-control-sm">Select Session:</label>--}}
 
-            <select id="session_id"
-                    class="custom-combobox">
-                @foreach($sessions as $s)
-                    <option value="{{ $s->id }}">{{ $s->title_full }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
+    {{--            <select id="session_id"--}}
+    {{--                    class="custom-combobox">--}}
+    {{--                @foreach($sessions as $s)--}}
+    {{--                    <option value="{{ $s->id }}">{{ $s->title_full }}</option>--}}
+    {{--                @endforeach--}}
+    {{--            </select>--}}
+    {{--        </div>--}}
+    {{--    </div>--}}
     <form name="{{ 'create-form' }}" id="create-form" class="row question-editor mt-3" role="form"
           action="{{ url('/forms/store') }}" method="POST">
         @method('POST')
         @csrf
 
-        <input type="hidden" name="session_id" value="" class="hidden">
+        {{--        <input type="hidden" name="session_id" value="" class="hidden">--}}
 
         <div class="col-sm-12 col-md-12">
             <label class="form-control-sm">Add New Question:</label>
-            <button id="multiple-choice" disabled type="button" class="btn btn-large btn-info question-type">
+            <button id="multiple-choice" type="button" class="btn btn-large btn-info question-type">
                 <i class="material-icons">radio_button_checked</i>Multiple Choice
             </button>
-            <button id="linear-scale" disabled type="button" class="btn btn-large btn-info question-type">
+            <button id="linear-scale" type="button" class="btn btn-large btn-info question-type">
                 <i class="material-icons">linear_scale</i>Linear Scale
             </button>
-            <button id="paragraph" disabled type="button" class="btn btn-large btn-info question-type"><i
+            <button id="paragraph" type="button" class="btn btn-large btn-info question-type"><i
                     class="material-icons">format_align_justify</i>Paragraph
             </button>
-            <button id="eval" disabled type="button" class="btn btn-large btn-info question-type">
+            <button id="eval" type="button" class="btn btn-large btn-info question-type">
                 <i class="material-icons">account_circle</i>Peer Evaluation
             </button>
         </div>
@@ -60,7 +60,7 @@
                     class="invalid-feedback font-weight-bold"><strong>{{ $errors->first('title') ?? '' }}</strong></span>
             </div>
             <div class="form-group">
-                <label for="form-subtitle">Subtitle <span class="text-muted">(leave blank for none)</span></label>
+                <label for="subtitle">Subtitle <span class="text-muted">(leave blank for none)</span></label>
                 <input type="text" name="subtitle" placeholder="The form's main subtitle"
                        class="form-control"
                        maxlength="255"
@@ -231,7 +231,7 @@
             @endforeach
         </div>
         <div class="col-sm-12 col-md-12">
-            <button type="submit" class="btn btn-block btn-primary" disabled>Create</button>
+            <button type="submit" class="btn btn-block btn-primary">Create</button>
         </div>
     </form>
 @endsection

@@ -43,7 +43,7 @@ class FormController extends Controller
                 $rules = [
                     'form_id' => 'required|int|exists:forms,id',
                     '_method' => 'required|in:POST',
-                    'session_id' => 'required|int|exists:sessions,id',
+//                    'session_id' => 'required|int|exists:sessions,id',
                     'title' => 'required|string|min:15|max:255',
                     'subtitle' => 'nullable|string|min:15|max:255',
                     'footnote' => 'nullable|string|min:15|max:255',
@@ -65,7 +65,7 @@ class FormController extends Controller
             case 'store':
                 $rules = [
                     '_method' => 'required|in:POST',
-                    'session_id' => 'required|int|exists:sessions,id',
+//                    'session_id' => 'required|int|exists:sessions,id',
                     'title' => 'required|string|max:255',
                     'subtitle' => 'nullable|string|max:255',
                     'footnote' => 'nullable|string|max:255',
@@ -146,10 +146,10 @@ class FormController extends Controller
     {
         $title = 'My Form Templates';
         $forms = DB::table('forms')
-            ->join('sessions', 'sessions.id', '=', 'forms.session_id')
-            ->join('courses', 'courses.id', '=', 'sessions.course_id')
+            ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
+            ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
             ->where('courses.user_id', '=', Auth::user()->id)
-            ->whereNotNull('sessions.id')
+            ->orWhereNull('sessions.id')
             ->select([
                 'forms.*',
                 'courses.code',
@@ -159,7 +159,6 @@ class FormController extends Controller
             ])
             ->selectRaw("CONCAT(sessions.title, ' - ', YEAR(courses.ac_year)) AS title_full")
             ->paginate(self::PER_PAGE);
-//        return dd($forms);
         $sessions = Session::all();
         return response(view('forms.index', compact('title', 'sessions', 'forms')), 200, $request->headers->all());
     }
@@ -174,6 +173,7 @@ class FormController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
+            return dd($validator->errors());
             return redirect()->back(302)
                 ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());

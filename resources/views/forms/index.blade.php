@@ -23,39 +23,41 @@
                     </thead>
                     <tbody>
                     @foreach($forms as $i => $form)
-                        <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id }}">
+                        <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id ?? '0' }}">
                             <th scope="row">{{ ($i+1) }}</th>
                             <td>{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
+                            <td>{{ $form->title_full ?? 'N/A' }}</td>
                             <td>
-{{--                                <a href="{{ url('/sessions/' . $form->session_id . '/view' ) }}" target="_self">--}}
-                                    {{ $form->title_full }}
-                                {{--                                </a>--}}
-                            </td>
-                            <td>
-                                <a href="{{ url('/courses/' . $form->course_id . '/view' ) }}" target="_self">
-                                    {{ $form->code }}
-                                </a>
+                                @if ($form->code)
+                                    <a href="{{ url('/courses/' . $form->course_id . '/view' ) }}" target="_self">
+                                        {{ $form->code }}
+                                    </a>
+                                @else
+                                    {{ 'N/A' }}@endif
                             </td>
                             <td class="{{ $form->mark == 0 ? 'text-warning' : '' }}">{{ $form->mark == 0 ? 'Not Filled' : $form->mark }}</td>
                             <td class="action-cell">
                                 <a href="#" class="material-icons copy-form"
                                    title="Duplicate Form {{ $form->title }}"
                                    aria-label="Duplicate Form {{ $form->title }}">content_copy</a>
-                                <a href="{{ url('/forms/' . $form->id . '/edit') }}" class="material-icons text-warning"
-                                   title="Update Form {{ $form->title }}"
-                                   aria-label="Update Form {{ $form->title }}">edit</a>
-                                <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}"
-                                      class="d-inline-block">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit"
-                                            class="btn btn-lg btn-link material-icons text-danger delete-form"
-                                            data-title="Are you sure you want to delete this Form?"
-                                            data-content="This action is irreversible."
-                                            title="Delete {{ $form->title }}"
-                                            aria-label="Delete {{ $form->title }}">delete_forever
-                                    </button>
-                                </form>
+                                @if ($form->session_id)
+                                    <a href="{{ url('/forms/' . $form->id . '/edit') }}"
+                                       class="material-icons text-warning"
+                                       title="Update Form {{ $form->title }}"
+                                       aria-label="Update Form {{ $form->title }}">edit</a>
+                                    <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}"
+                                          class="d-inline-block">
+                                        @method('DELETE')
+                                        @csrf
+                                        <button type="submit"
+                                                class="btn btn-lg btn-link material-icons text-danger delete-form"
+                                                data-title="Are you sure you want to delete this Form?"
+                                                data-content="This action is irreversible."
+                                                title="Delete {{ $form->title }}"
+                                                aria-label="Delete {{ $form->title }}">delete_forever
+                                        </button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -80,6 +82,11 @@
         $.ajax({
             success: function (data) {
                 console.debug(data);
+
+                // if (data.length == 0) {
+                //     return false;
+                // }
+
                 let sessions = data.data;
 
                 // Create popup form

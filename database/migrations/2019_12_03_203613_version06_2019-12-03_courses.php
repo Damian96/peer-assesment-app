@@ -18,7 +18,7 @@ class Version0620191203Courses extends Migration
             $table->bigIncrements('id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
             $table->string('title', 50)->nullable();
-            $table->char('status', 1)->default('0');
+            $table->char('status', 1)->default('1');
             $table->string('code', 10)->nullable();
             $table->string('description', 150)->nullable();
             $table->string('department', 50);
