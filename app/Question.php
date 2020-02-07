@@ -25,7 +25,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereSubtitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static \App\Question findOrFail($id)
+ * @method void fill(array $array)
+ * @mixin \Illuminate\Database\Eloquent
  */
 class Question extends Model
 {

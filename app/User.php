@@ -591,7 +591,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         if ($this->isAdmin()) return true;
 
-        if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
+        if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form && $arguments['form']->session_id) {
             $cid = $arguments['form']->session()->first()->course_id;
         } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
             $cid = $arguments['course']->id;
@@ -621,7 +621,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'session.create':
             case 'form.index':
                 return $this->isInstructor();
-//            case 'session.update':
             case 'course.update':
             case 'course.edit':
             case 'course.destroy':
@@ -631,14 +630,16 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.trash':
             case 'course.add-student':
             case 'session.view':
+            case 'session.update':
             case 'session.edit':
+            case 'form.update':
             case 'form.edit':
             case 'session.delete':
             case 'course.students':
             case 'form.view':
             case 'form.duplicate':
             case 'form.delete':
-            return isset($cid) && $this->isInstructor() && $this->ownsCourse($cid);
+                return isset($cid) && $this->isInstructor() && $this->ownsCourse($cid);
             default:
                 return false;
         }

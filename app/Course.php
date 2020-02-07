@@ -217,7 +217,7 @@ class Course extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'department' => 'string',
-        'ac_year' => 'datetime',
+        'ac_year' => 'string',
         'user_id' => 'int',
         'status' => 'boolean',
     ];
@@ -301,5 +301,63 @@ class Course extends Model
         return self::whereStatus('1')
             ->where('ac_year', '>=', $ac_year->toDateString())
             ->whereNotNull('department');
+    }
+
+    /**
+     * Format timestamp to a proper 'ac_year' [SE-YYYY]
+     * @see: https://www.auth.gr/en/academic_calendar
+     * @param int $time
+     * @return string
+     */
+    public static function toAcademicYear($time)
+    {
+        $carbon = Carbon::createFromTimestamp($time, config('app.timezone'));
+        if ($carbon->month <= 1 || $carbon->month >= 6) { // Fall Semester
+            $se = 'FA';
+            if ($carbon->month <= 2) {
+                $year = $carbon->subYear()->format('Y');
+            } else {
+                $year = $carbon->format('Y');
+            }
+        } else { // Spring Semester
+            $se = 'SP';
+            $year = $carbon->format('Y');
+        }
+        return "{$se}-{$year}";
+    }
+
+    /**
+     * Format the given ac_year [SE-YYYY] to a UNIX timestamp
+     * @param string $ac_year
+     * @param bool $end Whether to adjust the dates to the end of the semesters
+     * @return int a UNIX timestamp
+     * @throws \Exception
+     */
+    public static function acYearToTimestamp(string $ac_year, bool $end = false)
+    {
+        $year = substr($ac_year, -4);
+        $se = substr($ac_year, 0, 2);
+        if ($se === 'FA') { // Fall
+            $carbon = Carbon::create(intval($year), $end ? 2 : 9, $end ? 14 : 1, config('app.timezone'));
+        } else if ($se === 'SP') { // Spring
+            $carbon = Carbon::create(intval($year), $end ? 5 : 2, $end ? 30 : 15, config('app.timezone'));
+        } else {
+            throw new \Exception("Not a valid academic year: {$ac_year}");
+        }
+        return $carbon->timestamp;
+    }
+
+    /**
+     * Format the given UNIX timestamp to an academic year pair [YYYY-YY]
+     * @param int $time a UNIX timestamp
+     * @return string an academic year pair [YYYY-YY]
+     */
+    public static function toAcademicYearPair(int $time)
+    {
+        $ac_year = explode('-', self::toAcademicYear($time));
+        $year = $ac_year[1];
+        $se = $ac_year[0];
+        if ($se === 'SP') $year = intval($year) - 1;
+        return sprintf("%s-%s", $year, substr(intval($year) + 1, -2));
     }
 }

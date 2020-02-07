@@ -17,7 +17,6 @@
                         <th>Title</th>
                         <th>Session</th>
                         <th>Course</th>
-                        <th>Mark</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -25,17 +24,21 @@
                     @foreach($forms as $i => $form)
                         <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id ?? '0' }}">
                             <th scope="row">{{ ($i+1) }}</th>
-                            <td>{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
-                            <td>{{ $form->title_full ?? 'N/A' }}</td>
+                            <td>{{ strlen($form->form_title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
+                            <td>
+                                @if ($form->session_id)
+                                    <a href="{{ url('/sessions/' . $form->session_id . '/view') }}"
+                                       title="View Session {{ $form->session_title }}"
+                                       aria-label="View Session {{ $form->session_title }}">{{ $form->session_title ?? 'N/A' }}</a>
+                                @else<span class="text-muted">{{ 'N/A' }}</span>@endif
+                            </td>
                             <td>
                                 @if ($form->code)
                                     <a href="{{ url('/courses/' . $form->course_id . '/view' ) }}" target="_self">
                                         {{ $form->code }}
                                     </a>
-                                @else
-                                    {{ 'N/A' }}@endif
+                                @else<span class="text-muted">{{ 'N/A' }}</span>@endif
                             </td>
-                            <td class="{{ $form->mark == 0 ? 'text-warning' : '' }}">{{ $form->mark == 0 ? 'Not Filled' : $form->mark }}</td>
                             <td class="action-cell">
                                 <a href="#" class="material-icons copy-form"
                                    title="Duplicate Form {{ $form->title }}"
@@ -119,7 +122,7 @@
 
                 // console.debug(form, sessions);
             },
-            url: "{{ url('/api/sessions/all?api_token=' . Auth::user()->api_token) }}",
+            url: "{{ url('/api/sessions/all?api_token=' . Auth::user()->api_token) }}&except={{ implode(',', $except) }}",
             headers: {
                 accept: 'application/json',
             },

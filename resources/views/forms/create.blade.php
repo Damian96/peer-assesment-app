@@ -5,24 +5,10 @@
 @endsection
 
 @section('content')
-    {{--    <div class="row">--}}
-    {{--        <div class="col-sm-12 col-md-12 col-lg-12">--}}
-    {{--            <label class="form-control-sm">Select Session:</label>--}}
-
-    {{--            <select id="session_id"--}}
-    {{--                    class="custom-combobox">--}}
-    {{--                @foreach($sessions as $s)--}}
-    {{--                    <option value="{{ $s->id }}">{{ $s->title_full }}</option>--}}
-    {{--                @endforeach--}}
-    {{--            </select>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
     <form name="{{ 'create-form' }}" id="create-form" class="row question-editor mt-3" role="form"
           action="{{ url('/forms/store') }}" method="POST">
         @method('POST')
         @csrf
-
-        {{--        <input type="hidden" name="session_id" value="" class="hidden">--}}
 
         <div class="col-sm-12 col-md-12">
             <label class="form-control-sm">Add New Question:</label>
@@ -42,13 +28,14 @@
         <!-- Main Form Data -->
         <div class="col-sm-12 col-md-12">
             <hr>
-            <h4>Form Preview</h4>
+            {{--            <h4>Form Preview</h4>--}}
             <div class="form-group">
-                <!-- @TODO: GENERATE_RANDOM_UUID -->
-                <label id="GENERATE_RANDOM_UUID" for="form-title">Title</label>
-                <input type="text" name="title" placeholder="The form's main title" class="form-control"
+                <label id="form-title" for="form-title">Title</label>
+                <input type="text" name="title" placeholder="The form's main title"
+                       class="form-control{{ $errors->has('title') ? ' is-invalid' : '' }}"
                        required aria-required="true" maxlength="255"
-                       aria-labelledby="GENERATE_RANDOM_UUID"
+                       value="{{ old('title', false) }}"
+                       aria-labelledby="form-title"
                        aria-errormessage="{{ $errors->first('title') ?? '' }}"
                        data-rule-required="true"
                        data-msg-required="{{ $messages['title.required'] }}"
@@ -63,6 +50,7 @@
                 <label for="subtitle">Subtitle <span class="text-muted">(leave blank for none)</span></label>
                 <input type="text" name="subtitle" placeholder="The form's main subtitle"
                        class="form-control"
+                       value="{{ old('subtitle', false) }}"
                        maxlength="255"
                        aria-errormessage="{{ $errors->first('subtitle') ?? '' }}"
                        data-rule-minlength="10"
@@ -75,6 +63,7 @@
                 <label for="form-footnote">Footnote <span class="text-muted">(leave blank for none)</span></label>
                 <input type="text" name="footnote" placeholder="The form's footnote"
                        class="form-control"
+                       value="{{ old('footnote', false) }}"
                        maxlength="255"
                        aria-errormessage="{{ $errors->first('footnote') ?? '' }}"
                        data-rule-maxlength-="255"
@@ -83,6 +72,10 @@
             </div>
         </div>
         <div id="card-container" class="container-fluid">
+            @if ($errors->has('question'))
+                <h5 class="text-danger d-block"><strong>{{ $errors->first('question') ?? '' }}</strong></h5>
+                <hr>
+            @endif
             @include('forms.card')
             @foreach(old('cards', []) as $q => $question)
                 @php
@@ -147,14 +140,14 @@
                             <span
                                 class="invalid-feedback font-weight-bold"><strong>{{ $q_errors->get($q)->title }}</strong></span>
                         </div>
-                        <div class="form-group question-title">
-                            <label class="form-control-sm">Subtitle <span
-                                    class="text-muted">(leave blank for none)</span></label>
-                            <input type="text" name="question[{{ $q }}][subtitle]" class="form-control"
-                                   value="{{ $question->subtitle }}">
-                            <span
-                                class="invalid-feedback font-weight-bold"><strong>{{ $q_errors->get($q)->subtitle }}</strong></span>
-                        </div>
+                        {{--                        <div class="form-group question-title">--}}
+                        {{--                            <label class="form-control-sm">Subtitle <span--}}
+                        {{--                                    class="text-muted">(leave blank for none)</span></label>--}}
+                        {{--                            <input type="text" name="question[{{ $q }}][subtitle]" class="form-control"--}}
+                        {{--                                   value="{{ $question->subtitle }}">--}}
+                        {{--                            <span--}}
+                        {{--                                class="invalid-feedback font-weight-bold"><strong>{{ $q_errors->get($q)->subtitle }}</strong></span>--}}
+                        {{--                        </div>--}}
                         @if ($question->type == 'linear-scale')
                             <div class="form-group scale">
                                 <label for="question[{{ $q }}][max]" class="form-control-sm">Maximum</label>
@@ -231,6 +224,7 @@
             @endforeach
         </div>
         <div class="col-sm-12 col-md-12">
+            <hr>
             <button type="submit" class="btn btn-block btn-primary">Create</button>
         </div>
     </form>

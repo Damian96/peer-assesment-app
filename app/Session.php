@@ -39,6 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenData($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereTitle($value)
+ * @method static whereNotIn(string $string, array $except)
  */
 class Session extends Model
 {
@@ -58,7 +59,7 @@ class Session extends Model
             case 'deadline_full':
                 return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
             case 'title_full':
-                return $this->title . ' - ' . Carbon::createFromTimestamp(strtotime($this->course()->first()->ac_year), config('app.timezone'))->format('Y');
+                return $this->title . ' | ' . $this->course()->first()->ac_year;
             case 'status_full':
                 return $this->status == 1 ? 'Enabled' : 'Disabled';
             default:

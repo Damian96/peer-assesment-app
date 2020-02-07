@@ -152,15 +152,23 @@ class FormController extends Controller
             ->orWhereNull('sessions.id')
             ->select([
                 'forms.*',
+                'forms.title AS form_title',
                 'courses.code',
+                'sessions.title AS session_title',
                 'courses.id AS course_id',
                 'courses.title AS course_title',
                 'sessions.title AS session_title',
             ])
-            ->selectRaw("CONCAT(sessions.title, ' - ', YEAR(courses.ac_year)) AS title_full")
+            ->selectRaw("CONCAT(sessions.title, ' | ', courses.ac_year) AS title_full")
             ->paginate(self::PER_PAGE);
+        $except = DB::table('forms')
+            ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
+            ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
+            ->where('courses.user_id', '=', Auth::user()->id)
+            ->whereNotNull('sessions.id');
+        $except = array_column($except->get('sessions.id')->toArray(), 'id');
         $sessions = Session::all();
-        return response(view('forms.index', compact('title', 'sessions', 'forms')), 200, $request->headers->all());
+        return response(view('forms.index', compact('title', 'sessions', 'forms', 'except')), 200, $request->headers->all());
     }
 
     /**
@@ -173,8 +181,9 @@ class FormController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
-            return dd($validator->errors());
             return redirect()->back(302)
+                ->withHeaders($request->headers->all())
+                ->withInput($request->all())
                 ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
@@ -183,8 +192,11 @@ class FormController extends Controller
         if (!$form->save() && env('APP_DEBUG', false)) {
             throw abort(500, sprintf("Could not insert Form in database"));
         } elseif (!env('APP_DEBUG', false)) {
-            return redirect()->back(302) // fallback
-            ->withErrors($validator->errors())
+            // fallback
+            return redirect()->back(302)
+                ->withHeaders($request->headers->all())
+                ->withInput($request->all())
+                ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
 
@@ -203,8 +215,10 @@ class FormController extends Controller
             if (!$question->save() && env('APP_DEBUG', false)) {
                 throw abort(500, sprintf("Could not insert Question in database"));
             } else if (!env('APP_DEBUG', false)) {
-                return redirect()->back(302) // fallback
-                ->withErrors($validator->errors())
+                return redirect()->back(302)
+                    ->withHeaders($request->headers->all())
+                    ->withInput($request->all())
+                    ->withErrors($validator->errors())
                     ->with('errors', $validator->errors());
             }
         }
@@ -231,9 +245,10 @@ class FormController extends Controller
     /**
      * @method _POST
      * @param Request $request
+     * @param Form $form
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request)
+    public function update(Request $request, Form $form)
     {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
 
@@ -245,24 +260,19 @@ class FormController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        try {
-            $form = Form::findOrFail($request->form_id);
-            $form->fill([
-                'title' => $request->get('title', $form->title),
-                'subtitle' => $request->get('subtitle', $form->subtitle),
-                'footnote' => $request->get('footnote', $form->footnote),
-            ]);
+        $form->fill([
+            'title' => $request->get('title', $form->title),
+            'subtitle' => $request->get('subtitle', $form->subtitle),
+            'footnote' => $request->get('footnote', $form->footnote),
+        ]);
 
-            if (!$form->save()) {
-                abort_unless(env('APP_DEBUG', false), 500, 'Could not save form!');
-                $request->session()->flash('message', [
-                    'level' => 'danger',
-                    'heading' => 'Could not save form!',
-                ]);
-                return redirect()->back(302, []);
-            }
-        } catch (\Exception $e) {
-            throw abort(401, 'You are not authorized');
+        if (!$form->save()) {
+            abort_unless(env('APP_DEBUG', false), 500, 'Could not save form!');
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Could not save form!',
+            ]);
+            return redirect()->back(302, []);
         }
 
         foreach ($request->get('question') as $data) {
@@ -270,7 +280,6 @@ class FormController extends Controller
                 'id' => isset($data['id']) ? $data['id'] : null,
                 'form_id' => $form->id,
                 'title' => $data['title'],
-                'subtitle' => $data['subtitle'],
                 'data' => [
                     'type' => isset($data['type']) ? $data['type'] : null,
                     'max' => isset($data['max']) ? $data['max'] : null,
@@ -391,6 +400,6 @@ class FormController extends Controller
             'heading' => 'You successfully duplicated the Form!',
             'body' => sprintf("The new form is : %s", $form->id)
         ]);
-        return redirect()->action('FormController@index', [], 200);
+        return redirect()->action('FormController@index', [], 302);
     }
 }

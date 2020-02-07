@@ -7,6 +7,7 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
+            @if (!$sessions->isEmpty())
             <table class="table table-striped">
                 <caption
                     class="">{{ sprintf("Showing results %s-%s of total %s Sessions", $sessions->firstItem(), $sessions->lastItem(), $sessions->total()) }}</caption>
@@ -64,7 +65,10 @@
                 @endforeach
                 </tbody>
             </table>
-            {{ $sessions->links() }}
+                {{ $sessions->links() }}
+            @else
+                <h4 class="text-warning">No Active Sessions</h4>
+            @endif
         </div>
     </div>
 @endsection

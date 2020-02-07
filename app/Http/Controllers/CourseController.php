@@ -118,12 +118,10 @@ class CourseController extends Controller
         $title = 'Courses';
         $query = DB::table('courses')
             ->leftJoin('users', 'users.id', '=', 'courses.user_id')
-            ->leftJoin('student_course', 'course_id', '=', 'users.id')
             ->addSelect(['courses.*', 'users.*']);
 
         $query->addSelect([
             'courses.user_id AS instructor_id',
-            'student_course.user_id AS student_id',
             'courses.id AS course_id',
         ]);
         switch (Auth::user()->role()) {
@@ -134,6 +132,8 @@ class CourseController extends Controller
                 $query->where('courses.user_id', '=', Auth::user()->id, 'and');
                 break;
             case 'student':
+                $query->leftJoin('student_course', 'course_id', '=', 'users.id');
+                $query->addSelect(['student_course.user_id AS student_id']);
                 $query->whereIn('courses.id', array_column(Auth::user()->courses()->get('course_id')->toArray(), 'course_id'));
                 break;
             default:
@@ -141,21 +141,13 @@ class CourseController extends Controller
         }
 
         if (!Auth::user()->isStudent()) {
-            $ac_year = Carbon::now(config('app.timezone'));
-            $m = intval(date('m'));
-            if ($m >= 8) {
-                $ac_year->setMonth(9)->startOfMonth();
-            } elseif (intval(date('m')) <= 2) {
-                $ac_year->subYear()->setMonth(9)->startOfMonth();
-            } else {
-                $ac_year->setMonth(4)->startOfMonth();
-            }
             if ($request->get('ac_year', false) == 'previous') {
-                $query->where('ac_year', '<=', $ac_year->toDateString());
+                $ac_year = Course::toAcademicYear(strtotime('-1 year'));
+                $query->where('ac_year', 'LIKE', $ac_year);
             } else {
-                $query->where('ac_year', '>=', $ac_year->toDateString());
+                $ac_year = Course::toAcademicYear(time());
+                $query->where('ac_year', 'LIKE', $ac_year);
             }
-//            return dd($query->toSql(), $ac_year->toDateString(), $m);
         } else {
             $ac_year = intval(date('Y'));
         }
@@ -198,7 +190,8 @@ class CourseController extends Controller
         }
 
         $request->merge(['user_id' => intval($request->get('instructor', Auth::user()->id))]);
-        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year', date('Y'))), 1, 1, config('app.timezone'))->format('Y')]);
+        $request->merge(['ac_year' => Course::getCurrentAcYear()]);
+        $request->request->set('ac_year', Carbon::now(config('app.timezone'))->format(config('Y')));
         $course = new Course($request->all());
         if ($course->save()) {
             $request->session()->flash('message', [
@@ -220,7 +213,7 @@ class CourseController extends Controller
      *
      * @param Request $request
      * @param Course $course
-     * @return void
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function show(Request $request, Course $course)
     {

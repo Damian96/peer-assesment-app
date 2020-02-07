@@ -6,7 +6,6 @@
 
 @section('content')
     @if(!Auth::user()->isStudent())
-
         <div class="row my-2">
             <div class="col-md-12">
                 <form method="GET" class="form-inline" onchange="this.submit()">
@@ -14,7 +13,7 @@
                     <label for="ac_year">Academic Year
                         <select id="ac_year" name="ac_year" class="ml-2 form-control-sm">
                             <option
-                                value="current"{{ request('ac_year') == 'current' ? 'selected' : '' }}>{{ date('Y') . '-' . substr(date('Y', strtotime('+1 year')), -2) }}</option>
+                                value="current"{{ request('ac_year') == 'current' ? 'selected' : '' }}>{{ \App\Course::toAcademicYearPair(time()) }}</option>
                             <option value="previous"{{ request('ac_year') == 'previous' ? 'selected' : '' }}>Previous
                             </option>
                         </select>

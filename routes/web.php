@@ -19,6 +19,7 @@ Route::match(['get'], '/index', 'UserController@index')->name('user.home');
 
 // FIXME: make private
 Route::match(['get'], '/register', 'UserController@create')->name('user.register');
+Route::match(['get'], '/register', 'UserController@create')->name('register');
 
 Route::match(['post'], '/store', 'UserController@store')->name('user.store');
 Route::match(['put'], '/update', 'UserController@update')->name('user.update');
@@ -30,6 +31,7 @@ Route::match(['get'], '/password/reset', 'UserController@reset')->name('user.res
 
 Route::match(['get'], '/verify', 'UserController@verify')->name('user.verify');
 Route::match(['get'], '/login', 'UserController@login')->name('user.login');
+Route::match(['get'], '/login', 'UserController@login')->name('login');
 Route::match(['post'], '/auth', 'UserController@auth')->name('user.auth');
 Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 
@@ -65,7 +67,7 @@ Route::group(['prefix' => '/forms'], function () {
     Route::match(['get'], '/', 'FormController@index')->name('form.index');
     Route::match(['get'], '/create', 'FormController@create')->name('form.create');
     Route::match(['post'], '/store', 'FormController@store')->name('form.store');
-    Route::match(['post'], '/update', 'FormController@update')->name('form.update');
+    Route::match(['post'], '{form}/update', 'FormController@update')->name('form.update');
     Route::match(['get'], '/{form}/edit', 'FormController@edit')->name('form.edit');
     Route::match(['delete'], '/{form}/delete', 'FormController@delete')->name('form.delete');
     Route::match(['post'], '/{form}/duplicate', 'FormController@duplicate')->name('form.duplicate');

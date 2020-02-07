@@ -49,13 +49,13 @@
                    data-msg-maxlength="The Question's title should be at most 255 characters long!">
             <span class="invalid-feedback"><strong></strong></span>
         </div>
-        <div class="form-group question-title">
-            <label class="form-control-sm">Subtitle <span
-                    class="text-muted">(leave blank for none)</span></label>
-            <input type="text" name="question[#][subtitle]" class="form-control"
-                   value="">
-            <span class="invalid-feedback"><strong></strong></span>
-        </div>
+        {{--        <div class="form-group question-title">--}}
+        {{--            <label class="form-control-sm">Subtitle <span--}}
+        {{--                    class="text-muted">(leave blank for none)</span></label>--}}
+        {{--            <input type="text" name="question[#][subtitle]" class="form-control"--}}
+        {{--                   value="">--}}
+        {{--            <span class="invalid-feedback"><strong></strong></span>--}}
+        {{--        </div>--}}
         <div class="form-group scale d-none">
             <label for="question[#][max]" class="form-control-sm">Maximum</label>
             <input type="number"

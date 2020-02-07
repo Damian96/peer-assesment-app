@@ -22,7 +22,7 @@ class Version0620191203Courses extends Migration
             $table->string('code', 10)->nullable();
             $table->string('description', 150)->nullable();
             $table->string('department', 50);
-            $table->string('ac_year', 4)->default(DB::raw('YEAR(CURRENT_TIMESTAMP)'));
+            $table->string('ac_year', 7)->default(DB::raw('YEAR(CURRENT_TIMESTAMP)'))->comment('[SE]-[YYYY]');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 

@@ -31,7 +31,12 @@ Route::middleware('api')->get('/user', function (Request $request) {
 //});
 
 Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {
-    Route::get('/all', function () {
-        return new \App\Http\Resources\SessionCollection(\App\Session::all());
+    Route::get('/all', function (Request $request) {
+        $except = $request->get('except', '');
+        $except = explode(',', $except);
+        $except = array_map(function ($value) {
+            return intval($value);
+        }, $except);
+        return new \App\Http\Resources\SessionCollection(\App\Session::whereNotIn('sessions.id', $except)->get('sessions.*'));
     })->name('sessions.all');
 });

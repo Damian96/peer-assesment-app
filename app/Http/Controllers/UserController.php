@@ -42,7 +42,7 @@ class UserController extends Controller
     {
         $this->middleware('web');
         $this->middleware('guest')->except([
-            'logout', 'auth', # login-logout
+            'login', 'logout', 'auth', # login-logout
             'create', 'store', # user-register
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
@@ -477,10 +477,13 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\RedirectResponse|Response
      */
     public function login(Request $request)
     {
+        if (Auth::guard('web')->check()) {
+            return redirect()->action('UserController@index', [], 302);
+        }
         $title = sprintf("Login to %s", env('APP_NAME'));
         $messages = $this->messages(__FUNCTION__);
         return response(view('user.login', compact('title', 'messages')), 200, $request->headers->all());

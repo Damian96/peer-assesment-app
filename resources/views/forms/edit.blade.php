@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <form name="{{ 'update-form' . $form->id }}" id="update-form" class="row question-editor mt-3"
-                  action="{{ url('/forms/update') }}" method="POST">
+                  action="{{ url("/forms/{$form->id}/update") }}" method="POST">
                 @method('POST')
                 @csrf
 
@@ -97,12 +97,12 @@
                                            aria-required="true"
                                            value="{{ $question->title }}">
                                 </div>
-                                <div class="form-group question-title">
-                                    <label class="form-control-sm">Subtitle <span
-                                            class="text-muted">(leave blank for none)</span></label>
-                                    <input type="text" name="question[{{ $q }}][subtitle]" class="form-control"
-                                           value="{{ $question->subtitle }}">
-                                </div>
+                                {{--                                <div class="form-group question-title">--}}
+                                {{--                                    <label class="form-control-sm">Subtitle <span--}}
+                                {{--                                            class="text-muted">(leave blank for none)</span></label>--}}
+                                {{--                                    <input type="text" name="question[{{ $q }}][subtitle]" class="form-control"--}}
+                                {{--                                           value="{{ $question->subtitle }}">--}}
+                                {{--                                </div>--}}
                                 @if ($question->type == 'linear-scale')
                                     <div class="form-group scale">
                                         <label for="question[{{ $q }}][max]" class="form-control-sm">Maximum</label>
@@ -238,12 +238,6 @@
                                            data-rule-maxlength="100"
                                            data-msg-maxlength="The Question's title should be at most 255 characters long!"
                                            value="{{ $question->title }}">
-                                </div>
-                                <div class="form-group question-title">
-                                    <label class="form-control-sm">Subtitle <span
-                                            class="text-muted">(leave blank for none)</span></label>
-                                    <input type="text" name="question[{{ $q }}][subtitle]" class="form-control"
-                                           value="{{ $question->subtitle }}">
                                 </div>
                                 @if ($question->type == 'linear-scale')
                                     <div class="form-group scale">
