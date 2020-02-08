@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $table
  * @property string $primaryKey
  * @property string $connection
- * @property int $ac_year
  * @property int $id
  * @property int $course_id
  * @property string|null $instructions
@@ -59,11 +58,42 @@ class Session extends Model
                 return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
             case 'title_full':
                 return $this->title . ' | ' . $this->course()->first()->ac_year;
-//            case 'status_full':
-//                return $this->status == 1 ? 'Enabled' : 'Disabled';
+            case 'instructor_fullname':
+            case 'owner_name':
+            case 'owner_fullname':
+                return $this->course()->exists() ? $this->course()->first()->getModel()->instructor_fullname : 'N/A';
+            case 'owner':
+            case 'owner_id':
+            case 'instructor_id':
+                return $this->course()->exists() ? $this->course()->first()->getModel()->user_id : 'N/A';
+            case 'department':
+            case 'department_title':
+                return $this->course ? $this->course->department_title : 'N/A';
+            case 'ac_year_pair':
+                return $this->course ? $this->course->ac_year_pair : 'N/A';
+            case 'ac_year':
+                return $this->course ? $this->course->ac_year : 'N/A';
+            case 'ac_year_full':
+                return $this->course ? $this->course->ac_year_full : 'N/A';
             default:
                 return parent::__get($name);
         }
+    }
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::retrieved(function ($session) {
+            $course = $session->course()->exists() ? $session->course()->first()->getModel() : null;
+            $session->course = $course;
+            $session->instructor = $course->user()->exists() ? $course->user()->first()->getModel() : null;
+        });
     }
 
     /**
@@ -87,7 +117,7 @@ class Session extends Model
      * @var array
      */
     protected $fillable = [
-        'deadline', 'ac_year', 'course_id', 'form_id', 'instructions', 'title'
+        'deadline', 'course_id', 'form_id', 'instructions', 'title'
     ];
 
     /**
@@ -106,7 +136,7 @@ class Session extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deadline' => 'datetime',
-        'ac_year' => 'datetime',
+//        'ac_year' => 'datetime',
 //        'status' => 'boolean',
         'course_id' => 'int',
         'form_id' => 'int',

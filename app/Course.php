@@ -20,7 +20,11 @@ use Laravel\Scout\Searchable;
  * @property boolean $status
  * @property string $ac_year
  * @property int $ac_year_int
+ * @property int $ac_year_time
  * @property int $ac_year_month
+ * @property string ac_year_pair
+ * @property Carbon $ac_year_carbon
+ * @property string $ac_year_full
  * @property string $department
  * @property string $department_title
  * @property string $department_full
@@ -69,6 +73,9 @@ class Course extends Model
     const SPRING = 5;
     const FALL = 9;
 
+    protected $ac_year_time = 0;
+    protected $ac_year_int = 0;
+
     /**
      * The attributes that aren't mass assignable.
      *
@@ -108,6 +115,7 @@ class Course extends Model
     /**
      * @param string $key
      * @return mixed
+     * @throws \Exception
      */
     public function __get($key)
     {
@@ -137,34 +145,16 @@ class Course extends Model
                     return Carbon::createFromTimestamp(strtotime($this->updated_at), config('app.timezone'))->format(config('constants.date.full'));
                 }
             case 'ac_year_int':
-                return intval(Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format('Y'));
+            case 'ac_year_time':
+                return $this->ac_year_time;
             case 'ac_year_stamp':
-                return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format(config('constants.date.stamp'));
+                return $this->ac_year_carbon->format(config('constants.date.stamp'));
             case 'ac_year_full':
-                return Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format(config('constants.date.full'));
+                return $this->ac_year_carbon->format(config('constants.date.full'));
             case 'ac_year_month':
-                return intval(Carbon::createFromTimestamp(strtotime($this->ac_year), config('app.timezone'))->format('m'));
+                return $this->ac_year_carbon->month;
             case 'ac_year_pair':
-                // @FIXME: ac_year changed to created_at
-                $carbon = Carbon::createFromTimestamp(strtotime($this->created_at), config('app.timezone'));
-                if ($carbon->month <= 5) {
-                    return ($carbon->year - 1) . '-' . substr($carbon->year, -2);
-                } else {
-                    return $carbon->year . '-' . substr($carbon->year + 1, -2);
-                }
-            case 'ac_year_arr':
-                $carbon = Carbon::now(config('app.timezone'));
-                if ($carbon->month <= 5) { // Spring Semester
-                    return [
-                        Carbon::create($carbon->year - 1, 10)->format(config('constants.date.stamp')),
-                        Carbon::create($carbon->year, 5)->format(config('constants.date.stamp')),
-                    ];
-                } else { // Fall Semester
-                    return [
-                        Carbon::create($carbon->year, 10)->format(config('constants.date.stamp')),
-                        Carbon::create($carbon->year + 1, 5)->format(config('constants.date.stamp')),
-                    ];
-                }
+                return sprintf("%s-%s", $this->ac_year_carbon->year, substr($this->ac_year_carbon->year + 1, -2));
             case 'status_full':
                 return $this->status ? 'Enabled' : 'Disabled';
             case 'department_title':
@@ -178,6 +168,21 @@ class Course extends Model
             default:
                 return parent::__get($key);
         }
+    }
+
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::retrieved(function ($course) {
+            $course->ac_year_time = $course->ac_year_int = $course->acYearToTimestamp($course->ac_year);
+            $course->ac_year_carbon = Carbon::createFromTimestamp($course->ac_year_time, config('app.timezone'));
+        });
     }
 
     /**
@@ -338,9 +343,9 @@ class Course extends Model
         $year = substr($ac_year, -4);
         $se = substr($ac_year, 0, 2);
         if ($se === 'FA') { // Fall
-            $carbon = Carbon::create(intval($year), $end ? 2 : 9, $end ? 14 : 1, config('app.timezone'));
+            $carbon = Carbon::createFromDate(intval($year), $end ? 2 : 9, $end ? 14 : 1, config('app.timezone'));
         } else if ($se === 'SP') { // Spring
-            $carbon = Carbon::create(intval($year), $end ? 5 : 2, $end ? 30 : 15, config('app.timezone'));
+            $carbon = Carbon::createFromDate(intval($year), $end ? 5 : 2, $end ? 30 : 15, config('app.timezone'));
         } else {
             throw new \Exception("Not a valid academic year: {$ac_year}");
         }

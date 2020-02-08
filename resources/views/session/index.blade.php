@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    {{--    {{ Breadcrumbs::render('session.index', $sessions, $course) }}--}}
+    {{ Breadcrumbs::render('sessions') }}
 @endsection
 
 @section('content')
@@ -45,6 +45,7 @@
                     @endforeach
                     </tbody>
                 </table>
+                {{ $sessions->links() }}
             @else
                 @if (Auth::user()->can('session.create'))
                     <h2>You do not have any Sessions yet!</h2>
