@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $ac_year
  * @property int $id
  * @property int $course_id
- * @property bool $status
  * @property string|null $instructions
  * @property \Illuminate\Support\Carbon $deadline
  * @property \Illuminate\Support\Carbon $created_at
@@ -60,8 +59,8 @@ class Session extends Model
                 return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
             case 'title_full':
                 return $this->title . ' | ' . $this->course()->first()->ac_year;
-            case 'status_full':
-                return $this->status == 1 ? 'Enabled' : 'Disabled';
+//            case 'status_full':
+//                return $this->status == 1 ? 'Enabled' : 'Disabled';
             default:
                 return parent::__get($name);
         }
@@ -80,7 +79,7 @@ class Session extends Model
      * @var array
      */
     protected $attributes = [
-        'status' => 0,
+//        'status' => 0,
     ];
 
     /**
@@ -88,7 +87,7 @@ class Session extends Model
      * @var array
      */
     protected $fillable = [
-        'deadline', 'ac_year', 'status', 'course_id', 'form_id', 'instructions', 'title'
+        'deadline', 'ac_year', 'course_id', 'form_id', 'instructions', 'title'
     ];
 
     /**
@@ -108,7 +107,7 @@ class Session extends Model
         'updated_at' => 'datetime',
         'deadline' => 'datetime',
         'ac_year' => 'datetime',
-        'status' => 'boolean',
+//        'status' => 'boolean',
         'course_id' => 'int',
         'form_id' => 'int',
         'instructions' => 'string',
@@ -139,8 +138,7 @@ class Session extends Model
      */
     public function sendEmailNotification()
     {
-//        foreach ($this->course()->students()->get() as $student) {
+//        foreach ($this->course()->students()->get() as $student) { }
         clock()->info('Students have been notified of the opened Session!');
-//        }
     }
 }

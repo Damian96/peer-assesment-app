@@ -141,11 +141,10 @@ class CourseController extends Controller
         }
 
         if (!Auth::user()->isStudent()) {
+            $ac_year = Course::toAcademicYear(time());
             if ($request->get('ac_year', false) == 'previous') {
-                $ac_year = Course::toAcademicYear(strtotime('-1 year'));
-                $query->where('ac_year', 'LIKE', $ac_year);
+                $query->where('ac_year', 'NOT LIKE', $ac_year);
             } else {
-                $ac_year = Course::toAcademicYear(time());
                 $query->where('ac_year', 'LIKE', $ac_year);
             }
         } else {
@@ -271,7 +270,6 @@ class CourseController extends Controller
         } elseif (Auth::user()->can('course.edit', ['id' => $course->id])) { # instructor-owner
             $request->merge(['user_id' => $course->user_id]);
         }
-//        $request->merge(['ac_year' => Carbon::createFromDate(intval($request->get('ac_year', date('Y'))), 1, 1, config('app.timezone'))->format(config('constants.date.stamp'))]);
 
         if ($course->fill($request->all())->save()) {
             $request->session()->flash('message', [

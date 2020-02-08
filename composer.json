@@ -84,8 +84,7 @@
       "@php artisan route:cache"
     ],
     "laravel-init": [
-      "sudo /opt/lampp/xampp start",
-      "./logs.sh",
+      "./xampp.sh",
       "composer cache-clear"
     ],
     "pre-commit": [

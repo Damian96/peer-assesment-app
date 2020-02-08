@@ -391,6 +391,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         return DB::table('users')
             ->select('id', DB::raw('CONCAT(SUBSTR(fname, 1, 1), ". ", lname) AS name'))
             ->where('instructor', '=', '1')
+            ->where('admin', '=', '0')
             ->whereNotNull('email_verified_at')
             ->get();
     }
@@ -610,6 +611,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'user.show':
             case 'user.profile':
             case 'course.index':
+            case 'session.index':
             case 'session.active':
                 return true;
             case 'course.view':

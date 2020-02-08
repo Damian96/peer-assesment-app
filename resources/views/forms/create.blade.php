@@ -233,9 +233,6 @@
 @section('end_footer')
     <?php // @TODO FINISH Javascript validation ?>
     <script type="text/javascript">
-        $(document).ready(function () {
-            $('.tip').tipr();
-        });
         $(document).on('focusout change', 'input, select, textarea', function () {
             return $(this).valid();
         });

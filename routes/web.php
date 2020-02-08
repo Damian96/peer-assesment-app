@@ -51,8 +51,9 @@ Route::group(['prefix' => '/courses'], function () {
 });
 
 # Session
-Route::match(['get'], '/sessions', 'SessionController@active')->name('session.active');
-Route::match(['get'], '/courses/{course}/sessions', 'SessionController@index')->name('session.index');
+//Route::match(['get'], '/sessions', 'SessionController@active')->name('session.active');
+Route::match(['get'], '/sessions', 'SessionController@index')->name('session.index');
+//Route::match(['get'], '/courses/{course}/sessions', 'SessionController@index')->name('session.index');
 Route::group(['prefix' => '/sessions'], function () {
     Route::match(['get'], 'create/{course?}', 'SessionController@create')->name('session.create');
     Route::match(['post'], '/store  ', 'SessionController@store')->name('session.store');
@@ -60,6 +61,7 @@ Route::group(['prefix' => '/sessions'], function () {
     Route::match(['get'], '{session}/fill', 'SessionController@fill')->name('session.fill');
     Route::match(['get'], '{session}/delete', 'SessionController@delete')->name('session.delete');
     Route::match(['get'], '{session}/edit', 'SessionController@edit')->name('session.edit');
+    Route::match(['post'], '{session}/update', 'SessionController@update')->name('session.update');
     Route::match(['delete'], '{session}/delete', 'SessionController@delete')->name('session.delete');
 });
 

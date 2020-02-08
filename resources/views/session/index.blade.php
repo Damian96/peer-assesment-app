@@ -1,27 +1,27 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    {{ Breadcrumbs::render('session.index', $sessions, $course) }}
+    {{--    {{ Breadcrumbs::render('session.index', $sessions, $course) }}--}}
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12">
             @if ($sessions->isNotEmpty())
-                <table class="table table-striped">
+                <table id="my-sessions" class="table table-striped ts">
+                    <caption
+                        class="">{{ sprintf("Showing results %s-%s of total %s Sessions", $sessions->firstItem(), $sessions->lastItem(), $sessions->total()) }}</caption>
                     <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Instructions</th>
+                    <tr class="tsTitles">
+                        <th>Title</th>
                         <th>Deadline</th>
                         <th></th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="tsGroup">
                     @foreach($sessions as $session)
                         <tr>
-                            <td>{{ $session->status }}</td>
-                            <td>{{ $session->instructions }}</td>
+                            <td>{{ $session->title_full }}</td>
                             <td>{{ $session->deadline }}</td>
                             <td class="action-cell">
                                 <a href="{{ url('/sessions/' . $session->id . '/view') }}"
@@ -46,10 +46,10 @@
                     </tbody>
                 </table>
             @else
-                @if (Auth::user()->can('session.create', ['id' => $course->id]))
+                @if (Auth::user()->can('session.create'))
                     <h2>You do not have any Sessions yet!</h2>
                     <p>
-                        <a class="btn btn-primary" href="{{ url('/sessions/create/' . $course->id) }}"
+                        <a class="btn btn-primary" href="{{ url('/sessions/create/') }}"
                            title="Add Session"
                            aria-roledescription="Add Session">Add Session</a>
                     </p>
@@ -81,6 +81,11 @@
                 type: 'red',
                 typeAnimated: true,
             });
+        });
+        $(document).ready(function () {
+            // Initialize table
+            {!! "let cols = [{col: 0, order: 'asc'}, {col: 1, order: 'asc'}];" !!}
+            $('#my-sessions').tablesorter({tablesorterColumns: cols});
         });
     </script>
 @endsection

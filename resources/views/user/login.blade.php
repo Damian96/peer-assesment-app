@@ -3,7 +3,6 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
-            <h3 class="title">{{ $title ?? '' }}</h3>
             <form role="form" method="POST" action="{{ url('/auth') }}">
                 @method('POST')
                 @csrf

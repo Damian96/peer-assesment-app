@@ -22,7 +22,7 @@ class Session extends JsonResource
             'course_title' => $this->course_title,
             'instructions' => $this->instructions,
             'deadline_full' => $this->deadline_full,
-            'status' => $this->status == '1' ? 'Enabled' : 'Disabled',
+//            'status' => $this->status == '1' ? 'Enabled' : 'Disabled',
             'open_data' => Carbon::createFromTimestamp(strtotime($this->open_data))->format(config('constants.date.full')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

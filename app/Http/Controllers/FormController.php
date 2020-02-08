@@ -318,6 +318,8 @@ class FormController extends Controller
      */
     public function delete(Request $request, Form $form)
     {
+        throw_if(!$form->session_id, 403);
+
         if ($form->delete()) {
             $request->session()->flash('message', [
                 'level' => 'success',

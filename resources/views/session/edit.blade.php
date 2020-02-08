@@ -6,7 +6,7 @@
 
 @section('content')
     @include('session.form', [
-        'action' => url('/sessions/update'),
+        'action' => url("/sessions/{$session->id}/update"),
         'method' => 'POST',
         'courses' => isset($courses) ? $courses : null,
         'forms' => isset($forms) ? $forms : null,
