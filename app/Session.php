@@ -30,7 +30,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereInstructions($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereUpdatedAt($value)
- * @mixin \Eloquent
  * @property int $session_id
  * @property string $open_data
  * @property-read \App\Form $form
@@ -38,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereTitle($value)
  * @method static whereNotIn(string $string, array $except)
+ * @mixin \Eloquent
  */
 class Session extends Model
 {
@@ -61,11 +61,11 @@ class Session extends Model
             case 'instructor_fullname':
             case 'owner_name':
             case 'owner_fullname':
-                return $this->course()->exists() ? $this->course()->first()->getModel()->instructor_fullname : 'N/A';
+            return $this->course ? $this->course->instructor_fullname : 'N/A';
             case 'owner':
             case 'owner_id':
             case 'instructor_id':
-                return $this->course()->exists() ? $this->course()->first()->getModel()->user_id : 'N/A';
+            return $this->course ? $this->course->user_id : 'N/A';
             case 'department':
             case 'department_title':
                 return $this->course ? $this->course->department_title : 'N/A';
@@ -89,10 +89,15 @@ class Session extends Model
     {
         parent::boot();
 
+        // @TODO: add deadline_carbon, open_date_carbon
         static::retrieved(function ($session) {
             $course = $session->course()->exists() ? $session->course()->first()->getModel() : null;
             $session->course = $course;
-            $session->instructor = $course->user()->exists() ? $course->user()->first()->getModel() : null;
+
+            if ($course)
+                $session->instructor = $course->user()->exists() ? $course->user()->first()->getModel() : null;
+            else
+                $session->instructor = null;
         });
     }
 
@@ -101,7 +106,7 @@ class Session extends Model
      *
      * @var array
      */
-    protected $guarded = ['id'];
+    protected $guarded = ['id', 'course', 'instructor'];
 
     /**
      * The model's default values for attributes.
@@ -170,5 +175,17 @@ class Session extends Model
     {
 //        foreach ($this->course()->students()->get() as $student) { }
         clock()->info('Students have been notified of the opened Session!');
+    }
+
+    /**
+     * Get all of the current attributes on the model, except the guarded ones.
+     *
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return array_filter($this->attributes, function ($key) {
+            return !in_array($key, $this->guarded);
+        }, ARRAY_FILTER_USE_KEY);
     }
 }

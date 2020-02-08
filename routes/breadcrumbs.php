@@ -25,8 +25,8 @@ Breadcrumbs::for('course.show', function ($trail, $course) {
     $trail->parent('courses');
 
 //    TODO: convert to PHP's end($crumbs);
-    if (last($crumbs) == 'session.active' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.active'))
-        $trail->push('Active Sessions', route('session.active'));
+    if (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index'))
+        $trail->push('Active Sessions', route('session.index'));
 
     $trail->push('Course ' . $course->code, route('course.view', $course));
 });
@@ -77,8 +77,8 @@ Breadcrumbs::for('session.edit', function ($trail, $session) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'session.active' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.active'))
-        $trail->push('Active Sessions', route('session.active'));
+    if (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index'))
+        $trail->push('Active Sessions', route('session.index'));
 
     $trail->push('Edit Session', route('session.edit', $session));
 });
@@ -156,7 +156,7 @@ Breadcrumbs::for('session.fill', function ($trail, $session) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    $trail->push('Sessions', route('session.active'));
+    $trail->push('Sessions', route('session.index'));
     $trail->push('Fill ' . $session->title, route('session.fill', $session));
 });
 

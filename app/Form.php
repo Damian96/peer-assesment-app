@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Form whereSubtitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Form whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Form whereUpdatedAt($value)
+ * @method static find(int $int)
  * @mixin \Eloquent
  */
 class Form extends Model

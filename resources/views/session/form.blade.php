@@ -31,7 +31,7 @@
     @endif
 
     @if (isset($session) && $session->form()->exists())
-        <input type="hidden" class="hidden" value="{{ $form->id }}" name="form" id="form">
+        <input type="hidden" class="hidden" value="{{ $session->form()->first()->getModel()->id }}" name="form">
     @endif
     @if (!empty($forms))
         <div class="form-group">

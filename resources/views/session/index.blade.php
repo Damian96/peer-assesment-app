@@ -15,6 +15,7 @@
                     <tr class="tsTitles">
                         <th>Title</th>
                         <th>Deadline</th>
+                        {{--                        @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())@endif--}}
                         <th></th>
                     </tr>
                     </thead>
@@ -23,24 +24,31 @@
                         <tr>
                             <td>{{ $session->title_full }}</td>
                             <td>{{ $session->deadline }}</td>
-                            <td class="action-cell">
-                                <a href="{{ url('/sessions/' . $session->id . '/view') }}"
-                                   class="material-icons">link</a>
-                                <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
-                                   class="material-icons text-warning">edit</a>
-                                <form method="POST" action="{{ url('/sessions/' . $session->id . '/delete') }}"
-                                      class="d-inline-block">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit"
-                                            class="btn btn-lg btn-link material-icons text-danger delete-session"
-                                            data-title="Are you sure you want to delete this Session?"
-                                            data-content="This action is irreversible."
-                                            title="Delete {{ $session->title }}"
-                                            aria-label="Delete {{ $session->title }}">delete_forever
-                                    </button>
-                                </form>
-                            </td>
+                            @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())
+                                <td class="action-cell">
+                                    <a href="{{ url('/sessions/' . $session->id . '/view') }}"
+                                       class="material-icons">link</a>
+                                    <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
+                                       class="material-icons text-warning">edit</a>
+                                    <form method="POST" action="{{ url('/sessions/' . $session->id . '/delete') }}"
+                                          class="d-inline-block">
+                                        @method('DELETE')
+                                        @csrf
+                                        <button type="submit"
+                                                class="btn btn-lg btn-link material-icons text-danger delete-session"
+                                                data-title="Are you sure you want to delete this Session?"
+                                                data-content="This action is irreversible."
+                                                title="Delete {{ $session->title }}"
+                                                aria-label="Delete {{ $session->title }}">delete_forever
+                                        </button>
+                                    </form>
+                                </td>
+                            @else
+                                <td class="action-cell">
+                                    <a href="{{ url('/sessions/' . $session->id . '/fill') }}"
+                                       class="material-icons">assignment</a>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                     </tbody>

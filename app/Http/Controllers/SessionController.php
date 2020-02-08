@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SessionController extends Controller
 {
@@ -178,9 +179,9 @@ class SessionController extends Controller
     public function edit(Request $request, Session $session)
     {
         $title = 'Edit Session ' . $session->title;
-        $owned = $session->form()->exists() ? $session->form()->first()->toArray() : [];
+        $owned = $session->form()->exists() ? $session->form()->first() : null;
         $temps = Form::whereSessionId(0)->get('forms.*')->all();
-        $forms = array_merge($owned, $temps);
+        $forms = array_merge([$owned], $temps);
         $messages = $this->messages(__FUNCTION__);
         $courses = Course::getCurrentYears()->get();
 
@@ -251,13 +252,18 @@ class SessionController extends Controller
             'course_id' => $request->get('course', false),
             'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', Carbon::now(config('app.timezone'))->format(config('constants.date.stamp')))), config('app.timezone'))->format(config('constants.date.stamp')),
         ]);
-        if (!$request->get('form', 0)) {
-            return dd($request->all());
-        } else {
-            return dd($request->all());
+        if ($request->get('form', 0) == 1) {
+            $form = Form::find(1)->replicate()->fill([
+                'session_id' => $session->id,
+                'mark' => '0',
+            ]);
+
+            if (!$form->save()) {
+                throw_if(env('APP_DEBUG', false), 500, sprintf("Could not update Session %s!", $session->id));
+                return redirect()->back(302, $request->headers->all());
+            }
         }
-        $session->fill($request->all());
-        if ($session->update()) {
+        if ($session->update($request->except(['course', 'token', '_method']))) {
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => sprintf("Session %s has been saved successfully!", $session->id),
@@ -320,6 +326,8 @@ class SessionController extends Controller
     {
         $title = sprintf("Fill Session %s", $session->title);
         $form = $session->form()->first();
+
+        throw_if(!$form, new NotFoundHttpException('This Session does not have an associated form!'));
         return response(view('session.fill', compact('title', 'form', 'session')), 200, $request->headers->all());
     }
 }

@@ -14,7 +14,7 @@
         @php
             $default_error_message = "Please <a href='javascript:history.back()''>go back</a> or return to <a href='".url('')."'>our homepage</a>.";
         @endphp
-        {{ $exception->getMessage() }}
+        {{ $exception->getMessage() }}<br>
         {!! $default_error_message !!}
     </p>
 @endsection
