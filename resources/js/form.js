@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         return true;
     };
 
-    window.count = $('.card').length;
+    window.count = $(".card[class*='col-sm-']").length;
 
     window.addCardListeners = function (card) {
         card.find('.card-body').on('shown.bs.collapse', function (e) {
@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return true;
         }.bind(null, card));
         card.find('.delete-question').on('click', function (card, e) {
+            console.debug(card, e);
             let i = $(this).data('count');
             array_data.question = array_data.question.splice(i, 1);
             window.count--;
@@ -309,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         });
     } else { // cards already exists
         // console.debug('array_data', array_data);
-        $('.card').each(function () {
+        $(".card[class*='col-sm-']").each(function () {
             addCardListeners($(this));
         });
         $('.add-choice').on('click', addChoice);

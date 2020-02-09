@@ -4,36 +4,38 @@
     {{ Breadcrumbs::render('session.fill', $session) }}
 @endsection
 
-@php
-    $scale = [
-        'Disagree',
-        'Neither Agree neither Disagree',
-        'Agree',
-    ];
-@endphp
-
 @section('content')
-    <div class="row px-3">
+    <form class="row px-3" action="{{ url("/sessions/{$session->id}/fillin") }}" method="POST">
+        @method('POST')
+        @csrf
+
         <h3 class="">{{ $form->title }}</h3>
-        @foreach($form->questions()->get() as $q)
-            <div class="col-sm-12 col-md-12 border-dark border py-2">
+        @foreach($form->questions()->getResults() as $i => $q)
+            <div class="offset-1 col-sm-10 col-md-10 border-dark border py-2 my-2">
                 <label>{{ $q->title }}</label>
                 @if ($q->type === 'linear-scale')
-                    <div class="form-group">
-                        <span class="mx-2">{{ $q->minlbl }}</span><input type="radio" name="{{ $q->id }}">
-                        @for($i=1;$i<($q->max-1);$i++)<span class="mx-2"></span><input type="radio"
-                                                                                       name="{{ $q->id }}">@endfor
-                        <span class="mx-2">{{ $q->maxlbl }}</span><input type="radio" name="{{ $q->id }}">
+                    <div class="form-group uselect-none">
+                        <span class="mx-2">{{ $q->minlbl }}<input class="ml-2" type="radio"
+                                                                  name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                                                  value="1"></span>
+                        @for($i=2;$i<$q->max;$i++)
+                            <span class="mx-2"><input type="radio"
+                                                      name="questions[{{ $q->id }}][{{ $q->type }}][]" value="{{ $i }}"></span>
+                        @endfor
+                        <span class="mx-2"><input class="mr-2" type="radio"
+                                                  name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                                  value="{{ $q->max }}">{{ $q->maxlbl }}</span>
                     </div>
                 @elseif ($q->type === 'multiple-choice')
                     <div class="form-group">
-                        @foreach($q->choices as $c)<span class="mx-2">{{ $c }}</span><input type="radio"
-                                                                                            name="{{ $q->id }}">@endforeach
+                        @foreach($q->choices as $j => $c)
+                            <span class="mx-2"><input type="radio"
+                                                      name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                                      value="{{ $j }}"
+                                                      class="mr-2">{{ $c }}</span><br>
+                        @endforeach
                     </div>
                 @elseif ($q->type === 'eval')
-                    @php
-                        $teammates = Auth::user()->teammates();
-                    @endphp
                     <div class="form-group">
                         <table class="table table-bordered table-striped">
                             <thead>
@@ -47,20 +49,40 @@
                             <tbody>
                             <tr>
                                 <td>Yourself</td>
-                                <td><input type="radio" name="{{ $q->id . Auth::user()->id }}"></td>
-                                <td><input type="radio" name="{{ $q->id . Auth::user()->id }}"></td>
-                                <td><input type="radio" name="{{ $q->id . Auth::user()->id }}"></td>
-                                <td><input type="radio" name="{{ $q->id . Auth::user()->id }}"></td>
-                                <td><input type="radio" name="{{ $q->id . Auth::user()->id }}"></td>
+                                <td><input type="radio"
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
+                                           value="1"></td>
+                                <td><input type="radio"
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
+                                           value="2"></td>
+                                <td><input type="radio"
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
+                                           value="3"></td>
+                                <td><input type="radio"
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
+                                           value="4"></td>
+                                <td><input type="radio"
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
+                                           value="5"></td>
                             </tr>
-                            @foreach($teammates as $t)
+                            @foreach(Auth::user()->teammates()->collect() as $t)
                                 <tr>
-                                    <td>{{ $t->lname }}</td>
-                                    <td><input type="radio" name="{{ $q->id . $t->id }}"></td>
-                                    <td><input type="radio" name="{{ $q->id . $t->id }}"></td>
-                                    <td><input type="radio" name="{{ $q->id . $t->id }}"></td>
-                                    <td><input type="radio" name="{{ $q->id . $t->id }}"></td>
-                                    <td><input type="radio" name="{{ $q->id . $t->id }}"></td>
+                                    <td>{{ $t->full_name }}</td>
+                                    <td><input type="radio"
+                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="1">
+                                    </td>
+                                    <td><input type="radio"
+                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="2">
+                                    </td>
+                                    <td><input type="radio"
+                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="3">
+                                    </td>
+                                    <td><input type="radio"
+                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="4">
+                                    </td>
+                                    <td><input type="radio"
+                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="5">
+                                    </td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -68,12 +90,19 @@
                     </div>
                 @elseif ($q->type === 'paragraph')
                     <div class="form-group">
-                        <textarea type="text" name="{{ $q->id }}" class="form-control"
+                        <textarea type="text" name="questions[{{ $q->id }}][{{ $q->type }}][]" class="form-control"
+                                  placeholder="Write anything here..."
+                                  aria-placeholder="Write anything here..."
                                   style="min-height: 50px; max-height: 150px;"></textarea>
                     </div>
                 @endif
             </div>
         @endforeach
-    </div>
-@endsection
 
+        <div class="col-sm-12 col-md-12 mt-5 mb-2">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            </div>
+        </div>
+    </form>
+@endsection

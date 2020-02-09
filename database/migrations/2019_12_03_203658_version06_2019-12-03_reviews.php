@@ -16,11 +16,15 @@ class Version0620191203Reviews extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('sender_id')->unsigned();
-            $table->bigInteger('recipient_id')->unsigned();
+            $table->bigInteger('recipient_id')->unsigned()->nullable()->default(0);
             $table->bigInteger('question_id')->unsigned();
-            $table->char('mark', 1)->nullable()->default('0')->comment('0-5');
+            $table->tinyInteger('mark')->nullable()->default('0')->comment('0-100');
             $table->text('comment')->nullable();
-            $table->char('answer', 1)->nullable()->default('0')->comment('boolean');
+            $table->string('answer', 255)->nullable()->default(null)->comment('multiple-choice');
+            $table->timestamps();
+
+            $table->index('sender_id');
+            $table->index('question_id');
         });
     }
 

@@ -47,7 +47,14 @@ class Review extends Model
         'question_id' => 'int',
         'mark' => 'int',
         'comment' => 'string',
-        'answer' => 'boolean'
+        'answer' => 'string'
+    ];
+
+    protected $attributes = [
+        'recipient_id' => 0,
+        'mark' => 0,
+        'comment' => null,
+        'answer' => null,
     ];
 
     /**

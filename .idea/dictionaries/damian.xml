@@ -14,6 +14,7 @@
       <w>damianos</w>
       <w>endforeach</w>
       <w>fillable</w>
+      <w>fillin</w>
       <w>fname</w>
       <w>fullname</w>
       <w>giankakis</w>
@@ -35,6 +36,7 @@
       <w>tipr</w>
       <w>toggler</w>
       <w>unpkg</w>
+      <w>uselect</w>
     </words>
   </dictionary>
 </component>

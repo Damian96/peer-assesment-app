@@ -78,6 +78,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     use Resettable;
     use SendsPasswordResetEmails;
 
+    const RAW_FULL_NAME = 'CONCAT(SUBSTR(fname, 1, 1), ". ", lname) AS full_name';
+
     protected $table = 'users';
     protected $primaryKey = 'id';
     protected $keyType = 'int';
@@ -285,14 +287,19 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the student's teammates from the database
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough|false
+     * @return false|\Illuminate\Database\Eloquent\Relations\HasManyThrough|\Illuminate\Support\Collection
      */
     public function teammates()
     {
         return DB::table('users')
-            ->join('student_course', 'user_id', '=', 'users.id')
-            ->where('user_id', '!=', Auth::user()->id)
-            ->get(['users.*']);
+            ->join('student_course', 'student_course.user_id', '=', 'users.id')
+            ->join('user_group', 'user_group.user_id', '=', 'users.id')
+            ->whereNotNull('users.email_verified_at')
+            ->where('users.id', '!=', Auth::user()->id)
+            ->where('user_group.group_id', '=', $this->group()->first()->group_id)
+            ->selectRaw(self::RAW_FULL_NAME)
+            ->addSelect('users.*')
+            ->get(['users .*']);
     }
 
     /**
@@ -336,7 +343,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function ownsCourse(int $id)
     {
-        return $this->courses()->get()->toBase()->contains('id', '=', $id);
+        return $this->courses()->get()->toBase()->contains('id', ' = ', $id);
     }
 
     /**
@@ -389,11 +396,12 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public static function getInstructors()
     {
         return DB::table('users')
-            ->select('id', DB::raw('CONCAT(SUBSTR(fname, 1, 1), ". ", lname) AS name'))
+            ->selectRaw(self::RAW_FULL_NAME)
+            ->addSelect('users.*')
             ->where('instructor', '=', '1')
             ->where('admin', '=', '0')
             ->whereNotNull('email_verified_at')
-            ->get();
+            ->get(['users.*']);
     }
 
     /**
@@ -605,6 +613,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         }
 
         switch ($ability) {
+            case 'session.fillin':
             case 'session.fill':
                 return isset($cid) && $this->isStudent() && $this->studentCourses()->where('courses.id', '=', $cid);
             case 'user.home':

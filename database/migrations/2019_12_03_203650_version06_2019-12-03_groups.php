@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class Version0620191203Groups extends Migration
@@ -19,6 +18,7 @@ class Version0620191203Groups extends Migration
             $table->bigInteger('session_id')->unsigned();
             $table->string('name', 255);
             $table->char('mark', 1)->nullable()->default('0');
+            $table->timestamps();
         });
     }
 

@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Question whereUpdatedAt($value)
  * @method static \App\Question findOrFail($id)
  * @method void fill(array $array)
+ * @method static find(int|string $i)
  * @mixin \Illuminate\Database\Eloquent
  */
 class Question extends Model

@@ -180,6 +180,10 @@ class Course extends Model
         parent::boot();
 
         static::retrieved(function ($course) {
+            /**
+             * @var Course $course
+             */
+            if (empty($course->ac_year)) return;
             $course->ac_year_time = $course->ac_year_int = $course->acYearToTimestamp($course->ac_year);
             $course->ac_year_carbon = Carbon::createFromTimestamp($course->ac_year_time, config('app.timezone'));
         });
@@ -338,7 +342,7 @@ class Course extends Model
      * @return int a UNIX timestamp
      * @throws \Exception
      */
-    public static function acYearToTimestamp(string $ac_year, bool $end = false)
+    public static function acYearToTimestamp($ac_year, bool $end = false)
     {
         $year = substr($ac_year, -4);
         $se = substr($ac_year, 0, 2);

@@ -114,7 +114,6 @@ class Session extends Model
      * @var array
      */
     protected $attributes = [
-//        'status' => 0,
     ];
 
     /**
@@ -141,8 +140,6 @@ class Session extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deadline' => 'datetime',
-//        'ac_year' => 'datetime',
-//        'status' => 'boolean',
         'course_id' => 'int',
         'form_id' => 'int',
         'instructions' => 'string',

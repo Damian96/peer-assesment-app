@@ -26,9 +26,9 @@
                 @if (Auth::user()->isAdmin())
                     <tfoot>
                     <tr>
-                        <td colspan="2">Created: {{ $session->create_date }}</td>
-                        <td colspan="2">Updated: {{ $session->update_date }}</td>
-                        <td colspan="1">Status: {{ $session->status_full }}</td>
+                        <td scope="row"></td>
+                        <td colspan="2">Created: {{ $session->created_at }}</td>
+                        <td colspan="2">Updated: {{ $session->updated_at }}</td>
                     </tr>
                     </tfoot>
                 @endif

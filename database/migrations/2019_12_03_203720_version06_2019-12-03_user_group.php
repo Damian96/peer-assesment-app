@@ -16,9 +16,9 @@ class Version0620191203UserGroup extends Migration
         Schema::create('user_group', function (Blueprint $table) {
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('group_id')->unsigned();
-
-            $table->unique(['user_id', 'group_id'], 'user_group_unique');
+            $table->timestamps();
         });
+        DB::statement('ALTER TABLE `user_group` ADD INDEX `user_group_unique` (`user_id`, `group_id`) using BTREE;');
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use App\Form;
+use App\Question;
 use App\Session;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -114,7 +115,15 @@ class SessionController extends Controller
     public function index(Request $request)
     {
         $title = 'My Sessions';
-        $sessions = Session::query()->select('*')->paginate(self::PER_PAGE);
+        $sessions = Session::query()->select('*');
+        if (!Auth::user()->isStudent()) {
+            if ($request->query('status', false) === 'disabled') {
+                $sessions = $sessions->where('status', '=', '0');
+            } else {
+                $sessions = $sessions->where('status', '=', '1');
+            }
+        }
+        $sessions = $sessions->paginate(self::PER_PAGE);
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
 
@@ -329,5 +338,41 @@ class SessionController extends Controller
 
         throw_if(!$form, new NotFoundHttpException('This Session does not have an associated form!'));
         return response(view('session.fill', compact('title', 'form', 'session')), 200, $request->headers->all());
+    }
+
+    /**
+     * @method _POST
+     * @param Request $request
+     * @param Session $session
+     * @return Response|RedirectResponse
+     * @throws \Throwable
+     */
+    public function fillin(Request $request, Session $session)
+    {
+//        dd($request->get('questions'));
+//        foreach (array_values($request->get('questions')) as $i => $q) {
+        foreach ($request->get('questions') as $id => $q) {
+            var_dump(key($q), current($q), $q[0]);
+            $question = Question::find($id);
+            continue;
+//            switch (key($q)) {
+//                case 'linear-scale': // mark
+//                    $value = $q[0];
+//                    $review = new Review([
+//                        'sender_id' => Auth::user()->id,
+//                        'recipient_id' =>
+//                    ]);
+//                    break;
+//                case 'multiple-choice': // answer
+//                    break;
+//                case 'paragraph': // comment
+//                    break;
+//                case 'peer-evaluation': // mark
+//                    break;
+//                default:
+//                    break;
+//            }
+        }
+//        return dd($request->all());
     }
 }
