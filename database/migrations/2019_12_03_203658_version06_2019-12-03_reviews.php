@@ -23,6 +23,9 @@ class Version0620191203Reviews extends Migration
             $table->string('answer', 255)->nullable()->default(null)->comment('multiple-choice');
             $table->timestamps();
 
+            $table->foreign('sender_id')->references('id')->on('users');
+            $table->foreign('recipient_id')->references('id')->on('users');
+            $table->foreign('question_id')->references('id')->on('questions');
             $table->index('sender_id');
             $table->index('question_id');
         });

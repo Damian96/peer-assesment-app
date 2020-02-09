@@ -227,9 +227,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
     ],
 
-    /**
-     * TODO: add admin email and address to env
-     */
     'admin' => [
         'address' => 'support@peerassess.test',
         'from' => 'PeerAssess Support',

@@ -23,8 +23,8 @@ class CoursesTableSeeder extends Seeder
         if (empty($instructors)) {
             throw new Exception("No Instructors in `users` table." . "\n" . "aborting...");
         }
-        DatabaseSeeder::refreshTable($this->table, true);
 
+        DatabaseSeeder::refreshTable($this->table, true);
 
         $months = [1, 2, 3, 4, 10, 11, 12];
         $departments = ['CCP', 'CBE', 'CES', 'CPY'];
@@ -44,5 +44,13 @@ class CoursesTableSeeder extends Seeder
                 'description' => substr($lipsum, 0, (100 - $i)),
             ]);
         }
+
+        DB::table($this->table)->insert([
+            'id' => 1111,
+            'user_id' => 1,
+            'code' => 'N/A',
+            'status' => '0',
+            'department' => 'N/A',
+        ]);
     }
 }

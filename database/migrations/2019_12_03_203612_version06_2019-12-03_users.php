@@ -15,7 +15,7 @@ class Version0620191203Users extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->bigIncrements('id')->unsigned()->autoIncrement();
+            $table->unsignedBigInteger('id')->autoIncrement();
             $table->string('email', 255)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('fname', 255)->nullable();

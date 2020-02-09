@@ -602,6 +602,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
         if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form && $arguments['form']->session_id) {
             $cid = $arguments['form']->session()->first()->course_id;
+        } elseif (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form && !$arguments['form']->session_id) {
+            return $this->isInstructor();
         } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
             $cid = $arguments['course']->id;
         } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {

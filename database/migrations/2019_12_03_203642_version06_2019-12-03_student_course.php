@@ -17,11 +17,12 @@ class Version0620191203StudentCourse extends Migration
         Schema::create('student_course', function (Blueprint $table) {
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('course_id')->unsigned();
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
-            $table->unique(['user_id', 'course_id'], 'student_course_unique');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('course_id')->references('id')->on('courses');
         });
+        DB::statement('ALTER TABLE `student_course` ADD UNIQUE `student_course_unique` (`user_id`, `course_id`) using BTREE;');
     }
 
     /**

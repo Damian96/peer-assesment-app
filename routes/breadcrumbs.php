@@ -24,7 +24,6 @@ Breadcrumbs::for('course.show', function ($trail, $course) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-//    TODO: convert to PHP's end($crumbs);
     if (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index'))
         $trail->push('Active Sessions', route('session.index'));
 

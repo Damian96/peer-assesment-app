@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $form_id
  * @property string $title
  * @property string|null $subtitle
- * @property array $data
+ * @property string $data
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Form $form
@@ -57,8 +57,8 @@ class Question extends Model
      */
     public function __get($name)
     {
+//        $data = $this->getAttribute('data');
         $data = (object)$this->getAttribute('data');
-//        return dd($data);
         switch ($name) {
             case 'type':
                 return $data->type;
@@ -77,17 +77,20 @@ class Question extends Model
         }
     }
 
-//    /**
-//     * @return void
-//     */
-//    public static function boot()
-//    {
-////        self::retrieved(function ($model) {
-////            $model->data = json_decode($model->data);
-////        });
-//        parent::boot();
-//    }
-
+    /**
+     * @return void
+     */
+    public static function boot()
+    {
+        self::retrieved(function ($model) {
+            /**
+             * @var Question $model
+             */
+            if (!is_array($model->data))
+                $model->setAttribute('data', json_decode($model->data));
+        });
+        parent::boot();
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

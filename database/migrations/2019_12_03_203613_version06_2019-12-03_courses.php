@@ -16,7 +16,7 @@ class Version0620191203Courses extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned();
-            $table->bigInteger('user_id')->unsigned();
+            $table->unsignedBigInteger('user_id');
             $table->string('title', 50)->nullable();
             $table->char('status', 1)->default('1');
             $table->string('code', 10)->nullable();
@@ -26,6 +26,7 @@ class Version0620191203Courses extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->index('user_id');
             $table->index('ac_year');
         });

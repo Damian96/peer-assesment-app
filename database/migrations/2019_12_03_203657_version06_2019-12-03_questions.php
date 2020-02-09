@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Version0620191203Forms extends Migration
+class Version0620191203Questions extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class Version0620191203Forms extends Migration
      */
     public function up()
     {
-        Schema::create('forms', function (Blueprint $table) {
+        Schema::create('questions', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
-            $table->bigInteger('session_id')->unsigned()->default(0);
-            $table->string('title', 255);
-            $table->string('subtitle', 255)->nullable();
-            $table->string('footnote', 255)->nullable();
-            $table->char('mark', 1)->nullable()->default('0')->comment('0-100');
+            $table->bigInteger('form_id')->unsigned();
+            $table->string('title');
+            $table->string('subtitle')->nullable();
+            $table->text('data');
             $table->timestamps();
+
+            $table->foreign('form_id')->references('id')->on('forms');
         });
     }
 
@@ -31,6 +32,6 @@ class Version0620191203Forms extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('forms');
+        Schema::dropIfExists('questions');
     }
 }

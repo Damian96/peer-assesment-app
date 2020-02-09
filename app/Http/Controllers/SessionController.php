@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Course;
 use App\Form;
 use App\Question;
+use App\Review;
 use App\Session;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -99,7 +100,7 @@ class SessionController extends Controller
     public function all(Request $request)
     {
         $user = Auth::user();
-        $sessions = Session::all()->get();
+        $sessions = Session::all()->collect();
 
         return response(view('session.all', compact('title', 'sessions')), 200, $request->headers->all());
     }
@@ -334,7 +335,7 @@ class SessionController extends Controller
     public function fill(Request $request, Session $session)
     {
         $title = sprintf("Fill Session %s", $session->title);
-        $form = $session->form()->first();
+        $form = $session->form()->getModel();
 
         throw_if(!$form, new NotFoundHttpException('This Session does not have an associated form!'));
         return response(view('session.fill', compact('title', 'form', 'session')), 200, $request->headers->all());
@@ -349,30 +350,79 @@ class SessionController extends Controller
      */
     public function fillin(Request $request, Session $session)
     {
-//        dd($request->get('questions'));
-//        foreach (array_values($request->get('questions')) as $i => $q) {
         foreach ($request->get('questions') as $id => $q) {
-            var_dump(key($q), current($q), $q[0]);
             $question = Question::find($id);
-            continue;
-//            switch (key($q)) {
-//                case 'linear-scale': // mark
-//                    $value = $q[0];
-//                    $review = new Review([
-//                        'sender_id' => Auth::user()->id,
-//                        'recipient_id' =>
-//                    ]);
-//                    break;
-//                case 'multiple-choice': // answer
-//                    break;
-//                case 'paragraph': // comment
-//                    break;
-//                case 'peer-evaluation': // mark
-//                    break;
-//                default:
-//                    break;
-//            }
+//            var_dump($id, $q);
+            $review = new Review([
+                'question_id' => $question->id,
+                'sender_id' => Auth::user()->id
+            ]);
+            switch (key($q)) {
+                case 'linear-scale': // mark
+                    $review->fill([
+                        'recipient_id' => 0,
+                        'mark' => current($q)[0],
+                    ]);
+                    break;
+                case 'multiple-choice': // answer
+                    $review->fill([
+                        'recipient_id' => 0,
+                        'answer' => current($q)[0],
+                    ]);
+                    break;
+                case 'paragraph': // comment
+                    $review->fill([
+                        'recipient_id' => 0,
+                        'comment' => current($q)[0],
+                    ]);
+                    break;
+                case 'eval': // mark
+                    foreach ($q[key($q)] as $uid => $m) {
+//                        var_dump($uid, $m);
+                        $r = new Review([
+                            'question_id' => $question->id,
+                            'sender_id' => Auth::user()->id,
+                            'recipient_id' => $uid,
+                            'mark' => $m,
+                        ]);
+                        try {
+                            $r->saveOrFail();
+                        } catch (\Throwable $e) {
+                            throw_if(env('APP_DEBUG', false), $e);
+                            $request->session()->flash('message', array(
+                                'level' => 'danger',
+                                'heading' => 'Could not save review!',
+                                'body' => sprintf("Please contact the system's administrator: %s", config('app.admin.address')),
+                            ));
+                            return redirect()
+                                ->back(302)
+                                ->withInput($request->all());
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            try {
+                $review->saveOrFail();
+            } catch (\Throwable $e) {
+                throw_if(env('APP_DEBUG', false), $e);
+                $request->session()->flash('message', array(
+                    'level' => 'danger',
+                    'heading' => 'Could not save review!',
+                    'body' => sprintf("Please contact the system's administrator: %s", config('app.admin.address')),
+                ));
+                return redirect()
+                    ->back(302)
+                    ->withInput($request->all());
+            }
         }
-//        return dd($request->all());
+
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'You have successfully submitted the Form!',
+        ]);
+        return redirect()->action('SessionController@index');
     }
 }

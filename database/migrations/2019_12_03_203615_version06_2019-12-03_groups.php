@@ -19,6 +19,8 @@ class Version0620191203Groups extends Migration
             $table->string('name', 255);
             $table->char('mark', 1)->nullable()->default('0');
             $table->timestamps();
+
+            $table->foreign('session_id')->references('id')->on('sessions');
         });
     }
 

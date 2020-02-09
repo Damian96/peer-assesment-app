@@ -5,6 +5,8 @@ use Illuminate\Database\Seeder;
 
 class StudentCourseTableSeeder extends Seeder
 {
+    private $table = 'student_course';
+
     /**
      * Run the database seeds.
      *
@@ -13,11 +15,12 @@ class StudentCourseTableSeeder extends Seeder
      */
     public function run()
     {
+        DatabaseSeeder::refreshTable($this->table, true);
+
         /* `peerassessDB`.`student_course` */
         $student_course = array(
             array('user_id' => '4', 'course_id' => '2'),
-            array('user_id' => '5', 'course_id' => '2'),
-            array('user_id' => '6', 'course_id' => '2')
+            array('user_id' => '5', 'course_id' => '2')
         );
 
         foreach ($student_course as $sc) {
