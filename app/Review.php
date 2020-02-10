@@ -29,6 +29,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereRecipientId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereSenderId($value)
  * @mixin \Eloquent
+ * @property string $type [e]valuation/[p]aragraph/[s]cale/[c]hoice
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereUpdatedAt($value)
  */
 class Review extends Model
 {

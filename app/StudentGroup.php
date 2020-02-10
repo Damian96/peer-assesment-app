@@ -21,6 +21,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup whereGroupId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup whereUserId($value)
  * @mixin \Eloquent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentGroup whereUpdatedAt($value)
  */
 class StudentGroup extends Model
 {

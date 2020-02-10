@@ -21,15 +21,15 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($forms as $i => $form)
-                        <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id ?? '0' }}">
+                    @foreach($forms->items() as $i => $form)
+                        <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id > 0 ?? '0' }}">
                             <th scope="row">{{ ($i+1) }}</th>
-                            <td>{{ strlen($form->form_title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
+                            <td>{{ strlen($form->form_title) > 50 ? substr($form->form_title, 0, 50) . '...' : $form->form_title }}</td>
                             <td>
-                                @if ($form->session_id)
+                                @if ($form->session_id > 0)
                                     <a href="{{ url('/sessions/' . $form->session_id . '/view') }}"
-                                       title="View Session {{ $form->session_title }}"
-                                       aria-label="View Session {{ $form->session_title }}">{{ $form->session_title ?? 'N/A' }}</a>
+                                       title="View Session {{ $form->session_id }}"
+                                       aria-label="View Session {{ $form->session_id }}">{{ $form->session_title ?? 'N/A' }}</a>
                                 @else<span class="text-muted">{{ 'N/A' }}</span>@endif
                             </td>
                             <td>
@@ -41,13 +41,13 @@
                             </td>
                             <td class="action-cell">
                                 <a href="#" class="material-icons copy-form"
-                                   title="Duplicate Form {{ $form->title }}"
-                                   aria-label="Duplicate Form {{ $form->title }}">content_copy</a>
-                                @if ($form->session_id != \App\Course::DUMMY_ID)
+                                   title="Duplicate Form {{ $form->form_title }}"
+                                   aria-label="Duplicate Form {{ $form->form_title }}">content_copy</a>
+                                @if ($form->session_id > 0)
                                     <a href="{{ url('/forms/' . $form->id . '/edit') }}"
                                        class="material-icons text-warning"
-                                       title="Update Form {{ $form->title }}"
-                                       aria-label="Update Form {{ $form->title }}">edit</a>
+                                       title="Update Form {{ $form->form_title }}"
+                                       aria-label="Update Form {{ $form->form_title }}">edit</a>
                                     <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}"
                                           class="d-inline-block">
                                         @method('DELETE')
@@ -56,8 +56,8 @@
                                                 class="btn btn-lg btn-link material-icons text-danger delete-form"
                                                 data-title="Are you sure you want to delete this Form?"
                                                 data-content="This action is irreversible."
-                                                title="Delete {{ $form->title }}"
-                                                aria-label="Delete {{ $form->title }}">delete_forever
+                                                title="Delete {{ $form->form_title }}"
+                                                aria-label="Delete {{ $form->form_title }}">delete_forever
                                         </button>
                                     </form>
                                 @endif
@@ -184,20 +184,20 @@
                 let form = this.$content.find('form');
                 let session_id = jc.$target.closest('tr').attr('data-session-id');
                 let form_id = jc.$target.closest('tr').attr('data-form-id');
-
                 this.$form = form;
                 this.$select = form.find('select');
 
-                // Remove current form's session
-                this.$select.find(`option[value=${session_id}]`).remove();
-
-                // Initialize combobox
-                this.$select.combobox();
-                $('.ui-autocomplete').css('z-index', '100000000');
+                if (parseInt(session_id) > 0) {
+                    // Remove current form's session
+                    this.$select.find(`option[value=${session_id}]`).remove();
+                }
 
                 // Replace appropriate form_id on form's action
                 form[0].setAttribute('action', form[0].getAttribute('action').replace(/#/i, form_id));
-                // console.debug(jc, form);
+
+                // Initialize combobox
+                jc.$select.combobox();
+                $('.ui-autocomplete').css('z-index', '100000000');
             }
         });
     </script>

@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquentform
  * @property string $open_date
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
+ * @property string $title
  */
 class Session extends Model
 {

@@ -385,11 +385,9 @@ class SessionController extends Controller
                                 ->withInput($request->all());
                         }
                     }
-                    continue;
-                    break;
+                    continue 2;
                 default:
-                    continue;
-                    break;
+                    continue 2;
             }
 
             try {

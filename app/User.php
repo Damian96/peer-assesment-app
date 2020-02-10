@@ -71,6 +71,13 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRegNum($value)
  * @method static whereApiToken(string $token)
+ * @property string|null $api_token
+ * @property \Illuminate\Support\Carbon $last_login
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\StudentCourse[] $courses
+ * @property-read int|null $courses_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Session[] $sessions
+ * @property-read int|null $sessions_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
 {

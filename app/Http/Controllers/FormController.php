@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use App\Form;
+use App\FormTemplate;
 use App\Question;
 use App\Session;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -148,18 +149,16 @@ class FormController extends Controller
         $forms = DB::table('forms')
             ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
             ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
+            ->unionAll(DB::table('form_templates')->select('form_templates.*'))
             ->where('courses.user_id', '=', Auth::user()->id)
-            ->orwhere('forms.session_id', '=', Course::DUMMY_ID)
             ->select([
-                'forms.*',
+                'forms.id',
                 'forms.title AS form_title',
+                'sessions.id AS session_id',
                 'courses.code',
                 'sessions.title AS session_title',
                 'courses.id AS course_id',
-                'courses.title AS course_title',
-                'sessions.title AS session_title',
             ])
-            ->selectRaw("CONCAT(sessions.title, ' | ', courses.ac_year) AS title_full")
             ->paginate(self::PER_PAGE);
         $except = DB::table('forms')
             ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
@@ -351,7 +350,7 @@ class FormController extends Controller
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      * @throws \Throwable
      */
-    public function duplicate(Request $request, Form $form)
+    public function duplicate(Request $request, FormTemplate $form)
     {
         $validator = Validator::make($request->all(), [], $this->rules(__FUNCTION__, $request));
 
