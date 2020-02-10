@@ -93,7 +93,6 @@ class SessionController extends Controller
      * @param Request $request
      * @param Course $course
      * @return \Illuminate\Http\Response
-     * @TODO: change index to all and vice-versa
      */
     public function all(Request $request)
     {

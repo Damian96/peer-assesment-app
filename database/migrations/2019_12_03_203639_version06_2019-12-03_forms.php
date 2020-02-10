@@ -19,7 +19,7 @@ class Version0620191203Forms extends Migration
             $table->string('title', 255);
             $table->string('subtitle', 255)->nullable();
             $table->string('footnote', 255)->nullable();
-            $table->char('mark', 1)->nullable()->default('0')->comment('0-100');
+            $table->char('mark', 1)->nullable()->default('0')->comment('class mark');
             $table->timestamps();
 
             $table->foreign('session_id')->references('id')->on('sessions');

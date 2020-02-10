@@ -5,6 +5,10 @@
 @endsection
 
 @section('content')
+    <p class="text-info text-justify">
+        Note: Form Templates are not associated to any Session they are only used as
+        pre-defined templates that <strong>are associated to each Instructor Account</strong>.
+        <strong>They can be duplicated into other Sessions.</strong></p>
     <form name="{{ 'create-form' }}" id="create-form" class="row question-editor mt-3" role="form"
           action="{{ url('/forms/store') }}" method="POST">
         @method('POST')

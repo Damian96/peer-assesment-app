@@ -175,6 +175,7 @@ class FormController extends Controller
      * @method _POST
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @TODO: change form templates to their own table
      */
     public function store(Request $request)
     {
@@ -189,6 +190,7 @@ class FormController extends Controller
         }
 
         $form = new Form($request->all());
+        $form->setAttribute('session_id', Course::DUMMY_ID);
         if (!$form->save() && env('APP_DEBUG', false)) {
             throw abort(500, sprintf("Could not insert Form in database"));
         } elseif (!env('APP_DEBUG', false)) {

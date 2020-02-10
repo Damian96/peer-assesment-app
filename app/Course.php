@@ -184,7 +184,7 @@ class Course extends Model
             /**
              * @var Course $course
              */
-            if ($course->id == self::DUMMY_ID || ($course->ac_year)) return;
+            if ($course->id == self::DUMMY_ID) return;
             $course->ac_year_time = $course->ac_year_int = $course->acYearToTimestamp($course->ac_year);
             $course->ac_year_carbon = Carbon::createFromTimestamp($course->ac_year_time, config('app.timezone'));
         });

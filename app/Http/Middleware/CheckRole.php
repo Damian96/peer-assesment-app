@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 class CheckRole
 {
     /**
-     * @deprecated see \App\User::can()
+     * Global allowed for everyone routes
      * @var array
      */
     protected $allowed = [
@@ -16,13 +16,8 @@ class CheckRole
         'user.verify',
         'user.auth',
         'user.logout',
-        'user.profile',
-        'user.verify',
         'user.forgot',
         'user.forgotSend',
-
-        'form.create', // @FIXME remove it
-        'form.store', // @FIXME remove it
     ];
 
     /**
@@ -35,7 +30,7 @@ class CheckRole
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::check() && !Auth::user()->can($request->route()->getName(), $request->route()->parameters)) {
+        if (in_array($request->route()->getName(), $this->allowed) || (Auth::check() && !Auth::user()->can($request->route()->getName(), $request->route()->parameters))) {
             throw abort(403);
         }
 
