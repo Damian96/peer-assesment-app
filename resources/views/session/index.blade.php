@@ -34,7 +34,6 @@
                     <tr class="tsTitles">
                         <th>Title</th>
                         <th>Deadline</th>
-                        {{--                        @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())@endif--}}
                         <th></th>
                     </tr>
                     </thead>

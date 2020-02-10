@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Question $question
  * @property-read \App\User $recipient
  * @property-read \App\User $sender
+ * @property string type
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review query()
@@ -38,7 +39,7 @@ class Review extends Model
     protected $guarded = ['id'];
 
     protected $fillable = [
-        'sender_id', 'recipient_id', 'question_id', 'mark', 'comment', 'answer'
+        'sender_id', 'recipient_id', 'question_id', 'mark', 'comment', 'answer', 'type'
     ];
 
     protected $casts = [
@@ -46,6 +47,7 @@ class Review extends Model
         'recipient_id' => 'int',
         'question_id' => 'int',
         'mark' => 'int',
+        'type' => 'string',
         'comment' => 'string',
         'answer' => 'string'
     ];
@@ -53,6 +55,7 @@ class Review extends Model
     protected $attributes = [
         'recipient_id' => 0,
         'mark' => 0,
+        'type' => null,
         'comment' => null,
         'answer' => null,
     ];

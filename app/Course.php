@@ -72,6 +72,7 @@ class Course extends Model
     const PER_PAGE = 15;
     const SPRING = 5;
     const FALL = 9;
+    const DUMMY_ID = 1111;
 
     protected $ac_year_time = 0;
     protected $ac_year_int = 0;
@@ -183,7 +184,7 @@ class Course extends Model
             /**
              * @var Course $course
              */
-            if (empty($course->ac_year)) return;
+            if ($course->id == self::DUMMY_ID || ($course->ac_year)) return;
             $course->ac_year_time = $course->ac_year_int = $course->acYearToTimestamp($course->ac_year);
             $course->ac_year_carbon = Carbon::createFromTimestamp($course->ac_year_time, config('app.timezone'));
         });

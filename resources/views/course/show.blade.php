@@ -169,7 +169,6 @@
                         <tr>
                             <th scope="row">ID</th>
                             <th class="text-center">Title</th>
-                            <th class="text-center">Status</th>
                             <th class="text-center">Deadline</th>
                         </tr>
                         </thead>
@@ -178,7 +177,6 @@
                             <tr>
                                 <th scope="row">{{ $s->id }}</th>
                                 <td class="text-center">{{ $s->title }}</td>
-                                <td class="text-center {{ $s->status == 1 ? 'text-success' : 'text-warning' }}">{{ $s->status_full }}</td>
                                 <td class="text-center">{{ $s->deadline }}</td>
                             </tr>
                         @endforeach

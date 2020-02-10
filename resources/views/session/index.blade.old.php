@@ -20,7 +20,6 @@
             <tbody>
             @foreach($sessions as $session)
             <tr>
-                <td>{{ $session->status }}</td>
                 <td>{{ $session->instructions }}</td>
                 <td>{{ $session->deadline }}</td>
                 <td class="action-cell">

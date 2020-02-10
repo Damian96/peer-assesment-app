@@ -173,6 +173,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * @TODO: convert to Mutators - https://laravel.com/docs/master/eloquent-mutators#introduction
      * @see https://www.php.net/manual/en/language.oop5.overloading.php#object.get
      * @param string $key
      * @return mixed
@@ -278,11 +279,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the StudentGroup record associated with the student.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return Group|Group[]|\Illuminate\Database\Eloquent\Collection|Model
      */
     public function group()
     {
-        return $this->hasOne('\App\StudentGroup', 'user_id', 'id');
+        return Group::findOrFail(StudentGroup::whereUserId($this->id)->first()->group_id);
     }
 
     /**
@@ -296,7 +297,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
             ->whereNotNull('users.email_verified_at')
             ->where('users.id', '!=', Auth::user()->id)
-            ->where('user_group.group_id', '=', $this->group()->first()->group_id)
+            ->where('user_group.group_id', '=', $this->group()->first()->id)
             ->selectRaw(self::RAW_FULL_NAME)
             ->addSelect('users.*')
             ->get(['users .*']);
@@ -600,10 +601,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         if ($this->isAdmin()) return true;
 
-        if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form && $arguments['form']->session_id) {
+        if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
             $cid = $arguments['form']->session()->first()->course_id;
-        } elseif (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form && !$arguments['form']->session_id) {
-            return $this->isInstructor();
         } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
             $cid = $arguments['course']->id;
         } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
@@ -653,7 +652,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.view':
             case 'form.duplicate':
             case 'form.delete':
-                return isset($cid) && $this->isInstructor() && $this->ownsCourse($cid);
+            return $cid == \App\Course::DUMMY_ID || (isset($cid) && $this->isInstructor() && $this->ownsCourse($cid));
             default:
                 return false;
         }

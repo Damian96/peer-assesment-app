@@ -37,7 +37,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereTitle($value)
  * @method static whereNotIn(string $string, array $except)
- * @mixin \Eloquent
+ * @mixin \Eloquentform
+ * @property string $open_date
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
  */
 class Session extends Model
 {

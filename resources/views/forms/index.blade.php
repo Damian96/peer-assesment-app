@@ -43,7 +43,7 @@
                                 <a href="#" class="material-icons copy-form"
                                    title="Duplicate Form {{ $form->title }}"
                                    aria-label="Duplicate Form {{ $form->title }}">content_copy</a>
-                                @if ($form->session_id)
+                                @if ($form->session_id != \App\Course::DUMMY_ID)
                                     <a href="{{ url('/forms/' . $form->id . '/edit') }}"
                                        class="material-icons text-warning"
                                        title="Update Form {{ $form->title }}"
@@ -68,7 +68,7 @@
                 </table>
                 {{ $forms->links() }}
             @else
-                <h2>You do not have own any Forms yet!</h2>
+                <h2>You do not have any Forms yet!</h2>
                 <p>
                     <a class="btn btn-primary" href="{{ url('/forms/create/') }}"
                        title="Add Form"

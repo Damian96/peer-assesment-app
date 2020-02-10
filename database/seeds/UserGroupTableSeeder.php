@@ -19,6 +19,7 @@ class UserGroupTableSeeder extends Seeder
 
         /* `peerassessDB`.`user_group` */
         $user_group = array(
+            array('user_id' => '3', 'group_id' => '1'),
             array('user_id' => '4', 'group_id' => '1'),
             array('user_id' => '5', 'group_id' => '1')
         );

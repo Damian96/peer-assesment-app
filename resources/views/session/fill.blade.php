@@ -10,7 +10,7 @@
         @csrf
 
         <h3 class="">{{ $form->title }}</h3>
-        @foreach($form->questions()->getResults() as $i => $q)
+        @foreach($questions as $i => $q)
             <div class="offset-1 col-sm-10 col-md-10 border-dark border py-2 my-2">
                 <label>{{ $q->title }}</label>
                 @if ($q->type === 'linear-scale')

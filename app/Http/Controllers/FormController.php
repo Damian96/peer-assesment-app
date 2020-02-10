@@ -3,10 +3,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Course;
 use App\Form;
 use App\Question;
 use App\Session;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -149,7 +149,7 @@ class FormController extends Controller
             ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
             ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
             ->where('courses.user_id', '=', Auth::user()->id)
-            ->orWhereNull('sessions.id')
+            ->orwhere('forms.session_id', '=', Course::DUMMY_ID)
             ->select([
                 'forms.*',
                 'forms.title AS form_title',
@@ -318,7 +318,13 @@ class FormController extends Controller
      */
     public function delete(Request $request, Form $form)
     {
-        throw_if(!$form->session_id, 403);
+        throw_if($form->session_id == Course::DUMMY_ID, 403);
+
+        if ($form->questions()->exists()) {
+            foreach ($form->questions()->getModels() as $q) {
+                $q->delete();
+            }
+        }
 
         if ($form->delete()) {
             $request->session()->flash('message', [
@@ -361,6 +367,7 @@ class FormController extends Controller
         $form = $form->replicate();
         $form->fill([
             'id' => null,
+            'title' => $form->title . ' - duplicate',
             'session_id' => $request->get('session_id'),
             'mark' => 0
         ]);
@@ -375,8 +382,7 @@ class FormController extends Controller
             return redirect()->back(302);
         }
 
-        $questions = $original->questions()->count() > 0 ? $original->questions()->getEager() : new Collection();
-        foreach ($questions as $q) {
+        foreach ($original->questions()->getModels() as $q) {
             /**
              * @var \App\Question $q
              */

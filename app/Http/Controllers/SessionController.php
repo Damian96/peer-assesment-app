@@ -7,6 +7,7 @@ use App\Form;
 use App\Question;
 use App\Review;
 use App\Session;
+use App\StudentSession;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -47,7 +48,6 @@ class SessionController extends Controller
                     'form' => 'required|numeric|exists:forms,id',
                     'course' => 'required|numeric|exists:courses,id',
                     'title' => 'required|string|min:3|max:50',
-//                    'status' => 'nullable|boolean',
                     'instructions' => 'required|string|max:1000',
                     'deadline' => 'required|date_format:m-d-Y',
                 ];
@@ -77,8 +77,6 @@ class SessionController extends Controller
                     'title.required' => 'The Session title is required!',
                     'title.min' => 'The title should be at least 3 characters!',
                     'title.max' => 'The title should not exceed 50 characters!',
-//                    'status.required' => 'The Session status is required!',
-//                    'status.boolean' => 'The Session status must be boolean!',
                     'instructions.required' => 'The Session should have instructions!',
                     'instructions.max' => 'The Session instructions should not exceed 1000 characters!',
                     'deadline.required' => 'The Session deadline is required!',
@@ -111,19 +109,14 @@ class SessionController extends Controller
      * @param Request $request
      * @param Course $course
      * @return \Illuminate\Http\Response
-     * @TODO: change index to all and vice-versa
      */
     public function index(Request $request)
     {
         $title = 'My Sessions';
-        $sessions = Session::query()->select('*');
-        if (!Auth::user()->isStudent()) {
-            if ($request->query('status', false) === 'disabled') {
-                $sessions = $sessions->where('status', '=', '0');
-            } else {
-                $sessions = $sessions->where('status', '=', '1');
-            }
-        }
+        $sessions = Session::query()
+            ->select('sessions.*')
+            ->leftJoin('student_session', 'student_session.session_id', 'sessions.id')
+            ->whereNull('student_session.session_id');
         $sessions = $sessions->paginate(self::PER_PAGE);
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
@@ -133,33 +126,33 @@ class SessionController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function active(Request $request)
-    {
-        if (Auth::user()->isStudent()) {
-            $title = 'Sessions';
-        } else {
-            $title = 'Active Sessions';
-        }
-        if (Auth::user()->isStudent()) {
-            $courses = array_column(Auth::user()->studentCourses()->get(['id'])->toArray(), 'id');
-            $sessions = Session::query()
-                ->join('courses', 'courses.id', 'sessions.course_id')
-//                ->where('sessions.status', '=', '1')
-                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
-                ->whereIn('courses.id', $courses)
-                ->orderBy('deadline', 'ASC')
-                ->paginate(self::PER_PAGE);
-
-        } else {
-            $sessions = Auth::user()->sessions()
-//                ->where('sessions.status', '=', '1')
-                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
-                ->orderBy('deadline', 'ASC')
-                ->paginate(self::PER_PAGE);
-        }
-
-        return response(view('session.active', compact('sessions', 'title')), 200, $request->headers->all());
-    }
+//    public function active(Request $request)
+//    {
+//        if (Auth::user()->isStudent()) {
+//            $title = 'Sessions';
+//        } else {
+//            $title = 'Active Sessions';
+//        }
+//        if (Auth::user()->isStudent()) {
+//            $courses = array_column(Auth::user()->studentCourses()->get(['id'])->toArray(), 'id');
+//            $sessions = Session::query()
+//                ->leftJoin('student_session', 'student_session.session_id', 'sessions.id')
+//                ->join('courses', 'courses.id', 'sessions.course_id')
+//                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
+//                ->whereIn('courses.id', $courses)
+//                ->whereNull('student_session.session_id')
+//                ->orderBy('deadline', 'ASC');
+////                ->paginate(self::PER_PAGE);
+//            dd($sessions->toSql());
+//        } else {
+//            $sessions = Auth::user()->sessions()
+//                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
+//                ->orderBy('deadline', 'ASC')
+//                ->paginate(self::PER_PAGE);
+//        }
+//
+//        return response(view('session.active', compact('sessions', 'title')), 200, $request->headers->all());
+//    }
 
     /**
      * @method GET
@@ -214,7 +207,6 @@ class SessionController extends Controller
         }
 
         $request->request->add([
-//            'status' => $request->get('status', '1'),
             'course_id' => $request->get('course', false),
             'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', date(config('constants.date.stamp')))))->format(config('constants.date.stamp'))
         ]);
@@ -225,10 +217,6 @@ class SessionController extends Controller
                 'heading' => sprintf("Session %s has been saved successfully!", $session->id),
             ]);
             $session->sendEmailNotification();
-//            if ($request->get('status', false) == '1') {
-//            } else {
-//                clock()->info('Session was disabled, so no Students have been notified!');
-//            }
             return redirect()->back(302, $request->headers->all());
         }
 
@@ -258,7 +246,6 @@ class SessionController extends Controller
         }
 
         $request->request->add([
-//            'status' => $request->get('status', '1'),
             'course_id' => $request->get('course', false),
             'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', Carbon::now(config('app.timezone'))->format(config('constants.date.stamp')))), config('app.timezone'))->format(config('constants.date.stamp')),
         ]);
@@ -279,10 +266,6 @@ class SessionController extends Controller
                 'heading' => sprintf("Session %s has been saved successfully!", $session->id),
             ]);
             $session->sendEmailNotification();
-//            if ($request->get('status', false) === '1') {
-//            } else {
-//                clock()->info('Session was disabled, so no Students have been notified!');
-//            }
             return redirect()->back(302, $request->headers->all());
         }
 
@@ -335,10 +318,12 @@ class SessionController extends Controller
     public function fill(Request $request, Session $session)
     {
         $title = sprintf("Fill Session %s", $session->title);
-        $form = $session->form()->getModel();
 
-        throw_if(!$form, new NotFoundHttpException('This Session does not have an associated form!'));
-        return response(view('session.fill', compact('title', 'form', 'session')), 200, $request->headers->all());
+        throw_if(!$session->form()->exists(), new NotFoundHttpException("This Session does not have an associated Form!"));
+        $form = $session->form()->first();
+        $questions = $form->questions()->getResults();
+
+        return response(view('session.fill', compact('title', 'questions', 'form', 'session')), 200, $request->headers->all());
     }
 
     /**
@@ -352,7 +337,6 @@ class SessionController extends Controller
     {
         foreach ($request->get('questions') as $id => $q) {
             $question = Question::find($id);
-//            var_dump($id, $q);
             $review = new Review([
                 'question_id' => $question->id,
                 'sender_id' => Auth::user()->id
@@ -360,29 +344,32 @@ class SessionController extends Controller
             switch (key($q)) {
                 case 'linear-scale': // mark
                     $review->fill([
-                        'recipient_id' => 0,
+                        'recipient_id' => Course::DUMMY_ID,
                         'mark' => current($q)[0],
+                        'type' => 's',
                     ]);
                     break;
                 case 'multiple-choice': // answer
                     $review->fill([
-                        'recipient_id' => 0,
-                        'answer' => current($q)[0],
+                        'recipient_id' => Course::DUMMY_ID,
+                        'answer' => $question->data['choices'][current($q)[0]],
+                        'type' => 'm',
                     ]);
                     break;
                 case 'paragraph': // comment
                     $review->fill([
-                        'recipient_id' => 0,
+                        'recipient_id' => Course::DUMMY_ID,
                         'comment' => current($q)[0],
+                        'type' => 'p',
                     ]);
                     break;
                 case 'eval': // mark
                     foreach ($q[key($q)] as $uid => $m) {
-//                        var_dump($uid, $m);
                         $r = new Review([
                             'question_id' => $question->id,
                             'sender_id' => Auth::user()->id,
                             'recipient_id' => $uid,
+                            'type' => 'e',
                             'mark' => $m,
                         ]);
                         try {
@@ -399,13 +386,16 @@ class SessionController extends Controller
                                 ->withInput($request->all());
                         }
                     }
+                    continue;
                     break;
                 default:
+                    continue;
                     break;
             }
 
             try {
-                $review->saveOrFail();
+                if ($review instanceof Review && $review->type)
+                    $review->saveOrFail();
             } catch (\Throwable $e) {
                 throw_if(env('APP_DEBUG', false), $e);
                 $request->session()->flash('message', array(
@@ -419,6 +409,8 @@ class SessionController extends Controller
             }
         }
 
+        $filled = new StudentSession(['user_id' => Auth::user()->id, 'session_id' => $session->id]);
+        $filled->save();
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'You have successfully submitted the Form!',

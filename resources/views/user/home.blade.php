@@ -21,10 +21,10 @@
                             <li>Total Sessions: <b>{{ $sessions->count() }}</b>
                                 <ul>
                                     <li>Active:
-                                        <b>{{ Auth::user()->sessions()->where('sessions.status', '=', '1')->count() }}</b>
+                                        <b>{{ Auth::user()->sessions()->count() }}</b>
                                     </li>
                                     <li>Inactive:
-                                        <b>{{ Auth::user()->sessions()->where('sessions.status', '=', '0')->count() }}</b>
+                                        <b>{{ Auth::user()->sessions()->count() }}</b>
                                     </li>
                                     <li>Opened:
                                         <b>{{ Auth::user()->sessions()->whereDate('sessions.deadline', '>=', date(config('constants.date.stamp')))->count() }}</b>

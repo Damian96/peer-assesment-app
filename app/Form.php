@@ -63,7 +63,6 @@ class Form extends Model
      */
     public function questions()
     {
-        dd($this->hasMany('\App\Question', 'form_id', 'id')->toBase());
-        return $this->hasMany('\App\Question', 'form_id', 'id')->toSql();
+        return $this->hasMany('\App\Question', 'form_id', 'id');
     }
 }
