@@ -71,8 +71,6 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLname($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRegNum($value)
  * @method static whereApiToken(string $token)
- * @property string|null $api_token
- * @property \Illuminate\Support\Carbon $last_login
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\StudentCourse[] $courses
  * @property-read int|null $courses_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Session[] $sessions
@@ -610,6 +608,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
         if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
             $cid = $arguments['form']->session()->first()->course_id;
+        } elseif (array_key_exists('form', $arguments) && $arguments['form'] instanceof FormTemplate) {
+            return $this->isInstructor();
         } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
             $cid = $arguments['course']->id;
         } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
@@ -659,7 +659,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.view':
             case 'form.duplicate':
             case 'form.delete':
-            return $cid == \App\Course::DUMMY_ID || (isset($cid) && $this->isInstructor() && $this->ownsCourse($cid));
+            return isset($cid) && ($cid == \App\Course::DUMMY_ID || $this->isInstructor() && $this->ownsCourse($cid));
             default:
                 return false;
         }

@@ -21,8 +21,7 @@ class Version0620191203Questions extends Migration
             $table->text('data');
             $table->timestamps();
 
-            $table->index('form_id');
-//            $table->foreign('form_id')->references('id')->on('forms');
+            $table->foreign('form_id')->references('id')->on('forms');
         });
     }
 

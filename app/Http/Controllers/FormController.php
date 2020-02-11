@@ -8,8 +8,8 @@ use App\Form;
 use App\FormTemplate;
 use App\Question;
 use App\Session;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -149,17 +149,24 @@ class FormController extends Controller
         $forms = DB::table('forms')
             ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
             ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
-            ->unionAll(DB::table('form_templates')->select('form_templates.*'))
             ->where('courses.user_id', '=', Auth::user()->id)
-            ->select([
+            ->get([
                 'forms.id',
-                'forms.title AS form_title',
+                'forms.title',
                 'sessions.id AS session_id',
                 'courses.code',
                 'sessions.title AS session_title',
                 'courses.id AS course_id',
-            ])
-            ->paginate(self::PER_PAGE);
+            ]);
+        $templates = FormTemplate::whereUserId(Course::DUMMY_ID)
+            ->orWhere('user_id', '=', Auth::user()->id)
+            ->get(['form_templates.*']);
+        $merged = new Collection(array_merge($templates->all(), $forms->all()));
+        $total = $merged->count();
+        $page = intval($request->get('page', 1));
+        $first = $page > 1 ? $page * self::PER_PAGE : 1;
+        $last = $first + $merged->count() - 1;
+        $merged = $merged->forPage($page, self::PER_PAGE);
         $except = DB::table('forms')
             ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
             ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
@@ -167,7 +174,7 @@ class FormController extends Controller
             ->whereNotNull('sessions.id');
         $except = array_column($except->get('sessions.id')->toArray(), 'id');
         $sessions = Session::all();
-        return response(view('forms.index', compact('title', 'sessions', 'forms', 'except')), 200, $request->headers->all());
+        return response(view('forms.index', compact('title', 'sessions', 'merged', 'first', 'last', 'total', 'except')), 200, $request->headers->all());
     }
 
     /**
@@ -248,6 +255,7 @@ class FormController extends Controller
      * @param Request $request
      * @param Form $form
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function update(Request $request, Form $form)
     {
@@ -257,7 +265,7 @@ class FormController extends Controller
             $request->request->add(['cards' => $request->get('question', [])]);
             return redirect()->back(302)
                 ->withInput($request->request->all())
-//                ->withErrors($validator())
+                ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
 
@@ -276,30 +284,48 @@ class FormController extends Controller
             return redirect()->back(302, []);
         }
 
-        foreach ($request->get('question') as $data) {
-            $data = [
-                'id' => isset($data['id']) ? $data['id'] : null,
-                'form_id' => $form->id,
-                'title' => $data['title'],
-                'data' => [
-                    'type' => isset($data['type']) ? $data['type'] : null,
-                    'max' => isset($data['max']) ? $data['max'] : null,
-                    'minlbl' => isset($data['minlbl']) ? $data['minlbl'] : null,
-                    'maxlbl' => isset($data['maxlbl']) ? $data['maxlbl'] : null,
-                    'choices' => isset($data['choices']) ? $data['choices'] : null,
-                ],
-            ];
-
+//        dd($request->get('question'), $form->questions()->getModels());
+        foreach ($form->questions()->getModels() as $i => $question) {
             try {
-                $question = Question::findOrFail($data['id']);
-                $question->fill($data);
-            } catch (ModelNotFoundException $e) {
-                $question = new Question($data);
+                /**
+                 * @var Question $question
+                 */
+                if (!isset($request->get('question')[$i]))
+                    $question->delete();
+                else {
+                    $data = $request->get('question', [])[$i];
+                    if (isset($data['id'])) {
+                        $question->update([
+                            'title' => $data['title'],
+                            'data' => Question::extractData($data),
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                abort_unless(env('APP_DEBUG', false), 500, "Could not delete Question {$question->id}!");
+                $request->session()->flash('message', [
+                    'level' => 'danger',
+                    'heading' => "Could not delete Question {$question->id}!",
+                ]);
+                return redirect()->back(302, []);
             }
-            $question->setAttribute('data', $data['data']); // fix of Eloquent\Model casted 'array' / JSON data
+        }
 
-            if (!$question->save() && env('APP_DEBUG', false)) {
-                throw abort(500, sprintf("Could not save question: [%s]", $question->toJson()));
+        foreach (array_slice($request->get('question'), $form->questions()->count() - 1) as $q) {
+            $question = new Question([
+                'form_id' => $form->id,
+                'data' => Question::extractData($q),
+                'title' => $q['title']
+            ]);
+            try {
+                $question->saveOrFail();
+            } catch (\Throwable $e) {
+                throw_if(env('APP_DEBUG', false), $e);
+                $request->session()->flash('message', [
+                    'level' => 'danger',
+                    'heading' => "Could not delete Question {$question->id}!",
+                ]);
+                return redirect()->back(302, []);
             }
         }
 
@@ -365,14 +391,13 @@ class FormController extends Controller
 
         // Duplicate form
         $original = $form;
-        $form = $form->replicate();
+        $form = new Form($original->getAttributes());
         $form->fill([
             'id' => null,
             'title' => $form->title . ' - duplicate',
             'session_id' => $request->get('session_id'),
             'mark' => 0
         ]);
-        $form->touch();
 
         if (!$form->save()) {
             throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
@@ -380,27 +405,23 @@ class FormController extends Controller
                 'level' => 'danger',
                 'heading' => 'Could not duplicate Form!',
             ]);
-            return redirect()->back(302);
+            return redirect()->action('FormController@index', 302);
         }
 
-        foreach ($original->questions()->getModels() as $q) {
-            /**
-             * @var \App\Question $q
-             */
-            $q = $q->replicate();
-            $q->fill([
-                'id' => null,
+        foreach ($original->questions() as $q) {
+            $model = new Question($q);
+            $model->fill([
                 'form_id' => $form->id,
+                'data' => json_encode($model->getAttribute('data'))
             ]);
-            $q->touch();
 
-            if (!$q->save()) {
+            if (!$model->save()) {
                 throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
                 $request->session()->flash('message', [
                     'level' => 'danger',
                     'heading' => 'Could not duplicate Form!',
                 ]);
-                return redirect()->back(302);
+                return redirect()->action('FormController@index', 302);
             }
         }
 

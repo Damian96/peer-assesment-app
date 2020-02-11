@@ -301,3 +301,11 @@ footer {
 .uselect-none {
   user-select: none;
 }
+
+.form-group {
+  input[type="radio"] {
+    &:hover {
+
+    }
+  }
+}

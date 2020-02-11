@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         return true;
     };
 
-    window.count = $(".card[class*='col-sm-']").length;
+    window.count = $(".card.col-sm-12").length;
 
     window.addCardListeners = function (card) {
         card.find('.card-body').on('shown.bs.collapse', function (e) {
@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 prev.before(card);
                 card.effect('highlight', {}, 1000);
             }
-            storeFormData();
+            if (!window.location.href.includes('edit'))
+                storeFormData();
             return true;
         }.bind(null, card));
         card.find('.movedown-question').on('click', function (card, e) {
@@ -75,12 +76,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 next.after(card);
                 card.effect('highlight', {}, 1000);
             }
-            storeFormData();
+            if (!window.location.href.includes('edit'))
+                storeFormData();
             return true;
         }.bind(null, card));
         card.find('.delete-question').on('click', function (card, e) {
-            console.debug(card, e);
             let i = $(this).data('count');
+            console.debug(card, e, i);
             array_data.question = array_data.question.splice(i, 1);
             window.count--;
             if (window.count == 1) {
@@ -91,7 +93,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
             card.slideUp('fast', function () {
                 this.remove();
             });
-            storeFormData();
+            if (!window.location.href.includes('edit'))
+                storeFormData();
             return true;
         }.bind(null, card));
         card.find('input[name*="[title]"]').on('keyup', function () {
@@ -203,8 +206,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
         // Re-enable submit
         $('form').find('button[type=submit]')[0].removeAttribute('disabled');
 
-        // Store data to sessionStorage
-        storeFormData();
+        if (!window.location.href.includes('edit')) {
+            // Store data to sessionStorage
+            storeFormData();
+        }
 
         window.count++;
         return true;
@@ -262,11 +267,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
     $('button.question-type').on('click', function () {
         // $('#session_id').combobox('disable');
         // $('button.question-type').removeAttr('disabled');
-        createCard(this.id, `${this.id}-${window.count}`, `${this.id} - #${window.count}`);
+        createCard(this.id, `${this.id}-${window.count + 1}`, `${this.id} - #${window.count + 1}`);
         return true;
     });
     $(document).on('submit', 'form', function (e) {
-        storeFormData();
+        if (!window.location.href.includes('edit')) storeFormData();
         // console.debug(this, e);
         return true;
     });
@@ -348,5 +353,5 @@ document.addEventListener('DOMContentLoaded', function (e) {
         // });
     }
     window.array_data = array_data;
-    window.addEventListener('unload', storeFormData);
+    // window.addEventListener('unload', storeFormData);
 });

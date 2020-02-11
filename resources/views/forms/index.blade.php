@@ -7,10 +7,10 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
-            @if ($forms->isNotEmpty())
+            @if ($merged->isNotEmpty())
                 <table class="table table-striped">
                     <caption
-                        class="">{{ sprintf("Showing results %s-%s of total %s Forms", $forms->firstItem(), $forms->lastItem(), $forms->total()) }}</caption>
+                        class="">{{ sprintf("Showing results %s-%s of total %s Forms", $first, $last, $total) }}</caption>
                     <thead>
                     <tr>
                         <th>#</th>
@@ -21,10 +21,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($forms->items() as $i => $form)
+                    {{--                    {{ dd($merged->all()) }}--}}
+                    @foreach($merged->all() as $i => $form)
                         <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id > 0 ?? '0' }}">
                             <th scope="row">{{ ($i+1) }}</th>
-                            <td>{{ strlen($form->form_title) > 50 ? substr($form->form_title, 0, 50) . '...' : $form->form_title }}</td>
+                            <td>{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
                             <td>
                                 @if ($form->session_id > 0)
                                     <a href="{{ url('/sessions/' . $form->session_id . '/view') }}"
@@ -41,13 +42,13 @@
                             </td>
                             <td class="action-cell">
                                 <a href="#" class="material-icons copy-form"
-                                   title="Duplicate Form {{ $form->form_title }}"
-                                   aria-label="Duplicate Form {{ $form->form_title }}">content_copy</a>
+                                   title="Duplicate Form {{ $form->id }}"
+                                   aria-label="Duplicate Form {{ $form->id }}">content_copy</a>
                                 @if ($form->session_id > 0)
                                     <a href="{{ url('/forms/' . $form->id . '/edit') }}"
                                        class="material-icons text-warning"
-                                       title="Update Form {{ $form->form_title }}"
-                                       aria-label="Update Form {{ $form->form_title }}">edit</a>
+                                       title="Update Form {{ $form->id }}"
+                                       aria-label="Update Form {{ $form->id }}">edit</a>
                                     <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}"
                                           class="d-inline-block">
                                         @method('DELETE')
@@ -56,8 +57,8 @@
                                                 class="btn btn-lg btn-link material-icons text-danger delete-form"
                                                 data-title="Are you sure you want to delete this Form?"
                                                 data-content="This action is irreversible."
-                                                title="Delete {{ $form->form_title }}"
-                                                aria-label="Delete {{ $form->form_title }}">delete_forever
+                                                title="Delete {{ $form->id }}"
+                                                aria-label="Delete {{ $form->id }}">delete_forever
                                         </button>
                                     </form>
                                 @endif
@@ -66,7 +67,7 @@
                     @endforeach
                     </tbody>
                 </table>
-                {{ $forms->links() }}
+                {{--                {{ $merged->links() }}--}}
             @else
                 <h2>You do not have any Forms yet!</h2>
                 <p>
