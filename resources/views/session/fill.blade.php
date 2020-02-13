@@ -122,6 +122,8 @@
                             <tr>
                                 <td>Yourself</td>
                                 <td><input type="number"
+                                           required
+                                           aria-required="true"
                                            min="0"
                                            max="100"
                                            step="1"
@@ -129,8 +131,7 @@
                                            aria-valuemax="100"
                                            class="form-control"
                                            aria-invalid="false"
-                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
-                                           value="0"></td>
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"></td>
                             </tr>
                             @foreach($teammates as $t)
                                 <tr>
@@ -165,34 +166,47 @@
 
 @section('end_footer')
     <script type="text/javascript">
+        var criteriaOnChangeHandler = function () {
+            // console.debug(this);
+            let group = $(this).closest('.form-group');
+            let points = calculateGroupPoints(group);
+            if (points > 100) {
+                group.find('.invalid-feedback').text('Total points exceed 100 limit');
+                $(this).removeClass('is-valid')
+                    .addClass('is-invalid')
+                    .attr('aria-invalid', 'true');
+                this.setCustomValidity('Total points exceed 100 limit');
+                return true;
+            } else if (points > 0 && points < 100) {
+                group.find('.invalid-feedback').text('Total points should be 100');
+            }
+            $(this).removeClass('is-invalid')
+                .attr('aria-invalid', 'false')
+                .addClass('is-valid');
+            this.setCustomValidity('');
+            group.find('.invalid-feedback').text('');
+        };
         var calculateGroupPoints = function (group) {
             let sum = 0;
             group.find('input').each(function () {
                 sum += parseInt(this.value);
             });
+            group.data('sum', sum);
             return sum;
         };
         $(function () {
-            $('.form-group.criteria').find('input').on('focusout click', function () {
-                // console.debug(this);
-                let group = $(this).closest('.form-group');
-                let points = calculateGroupPoints(group);
-                if (points > 100) {
-                    group.find('.invalid-feedback').text('Total points exceed 100 limit');
-                    $(this).removeClass('is-valid')
-                        .addClass('is-invalid')
-                        .attr('aria-invalid', 'true');
-                    this.setCustomValidity('Total points exceed 100 limit');
-                    return true;
-                } else if (points > 0 && points < 100) {
-                    group.find('.invalid-feedback').text('Total points should be 100');
-                }
-                $(this).removeClass('is-invalid')
-                    .attr('aria-invalid', 'false')
-                    .addClass('is-valid');
-                this.setCustomValidity('');
-                group.find('.invalid-feedback').text('');
+            $(document).on('submit', 'form', function (e) {
+                $(this).find('.criteria').each(function () {
+                    let sum = parseInt($(this).data('sum'));
+                    if (sum < 100) {
+                        $(this).find('.invalid-feedback').text('Total points should be 100');
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                });
             });
+            $('.form-group.criteria').find('input').on('focusout click', criteriaOnChangeHandler);
         });
     </script>
 @endsection

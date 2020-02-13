@@ -42,7 +42,7 @@ class SessionController extends Controller
         switch ($action) {
             case 'fillin':
                 return [
-                    '_method' => '_POST',
+                    '_method' => 'required,in:_POST',
                 ];
             case 'create':
             case 'store':

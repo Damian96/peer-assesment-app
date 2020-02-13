@@ -93,19 +93,13 @@ if (mix.inProduction()) {
     mix.browserSync({
         proxy: process.env.APP_URL,
         files: [
-            // "resources/views/**/*.php",
             "public/css/*.css",
             "public/js/*.js",
-            // "resources/sass/*.scss",
-            // "resources/js/*.js"
         ],
-        watchEvents: [
-            'change', 'add', 'unlink'
-        ],
-        // logLevel: 'debug',
-        // httpModule: 'http2',
-        // https: false,
-        // online: true,
+        logLevel: 'debug',
+        httpModule: 'http2',
+        online: true,
+        https: false,
     });
 }
 
