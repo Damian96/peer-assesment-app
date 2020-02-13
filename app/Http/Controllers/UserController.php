@@ -79,14 +79,14 @@ class UserController extends Controller
             case 'reset':
                 return [
                     '_method' => 'required|string|in:PUT',
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users|not_in:dummy@citycollege.sheffield.eu',
                     'token' => 'required|string|min:60|max:60|exists:password_resets',
                     'password' => 'required|confirmed|min:3|max:50',
                 ];
             case 'forgot':
             case 'forgotSend':
                 return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users|not_in:dummy@citycollege.sheffield.eu',
                 ];
             case 'storeStudent':
             case 'register.student':
@@ -99,7 +99,7 @@ class UserController extends Controller
 
                     'studentid' => 'required_if:form,select-student|not_in:---,N/A|numeric|exists:users,id',
 
-                    'email' => 'required_if:form,add-student|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email',
+                    'email' => 'required_if:form,add-student|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email|not_in:dummy@citycollege.sheffield.eu',
                     'fname' => 'required_if:form,add-student|string|min:3|max:25',
                     'lname' => 'required_if:form,add-student|string|min:3|max:25',
                     'department' => 'required_if:form,add-student|string|max:5|not_in:admin',
@@ -107,7 +107,7 @@ class UserController extends Controller
                 ];
             case 'storeCsv':
                 return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email',
+                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email|not_in:dummy@citycollege.sheffield.eu',
                     'fname' => 'required|string|min:3|max:25',
                     'lname' => 'required|string|min:3|max:25',
                     'reg_num' => 'required|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
@@ -119,7 +119,7 @@ class UserController extends Controller
                 return [
                     '_method' => 'required|string|in:POST',
 
-                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users',
+                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users|not_in:dummy@citycollege.sheffield.eu',
                     'password' => 'required|string|min:3|max:50',
                     'fname' => 'required|string|min:3|max:25',
                     'lname' => 'required|string|min:3|max:25',
@@ -130,7 +130,7 @@ class UserController extends Controller
             case 'auth':
             case 'login':
                 return [
-                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|exists:users',
+                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|exists:users|not_in:dummy@citycollege.sheffield.eu',
                     'password' => 'required|string|min:3|max:50',
                     'remember' => 'nullable|in:0,1,on,off',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'

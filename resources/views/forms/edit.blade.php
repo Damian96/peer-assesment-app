@@ -192,7 +192,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {{--                                @elseif ($question->type == 'criteria')--}}
                                 @endif
                             </div>
                         </div>

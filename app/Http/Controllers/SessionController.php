@@ -8,6 +8,7 @@ use App\Question;
 use App\Review;
 use App\Session;
 use App\StudentSession;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -315,7 +316,12 @@ class SessionController extends Controller
         }
 
         foreach ($request->get('questions') as $id => $q) {
-            $question = Question::find($id);
+            try {
+                $question = Question::findOrFail($id);
+            } catch (ModelNotFoundException $e) {
+                throw_if(env('APP_DEBUG', false), $e);
+                continue;
+            }
             $review = new Review([
                 'question_id' => $question->id,
                 'sender_id' => Auth::user()->id

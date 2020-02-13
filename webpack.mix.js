@@ -96,10 +96,10 @@ if (mix.inProduction()) {
             "public/css/*.css",
             "public/js/*.js",
         ],
-        logLevel: 'debug',
-        httpModule: 'http2',
-        online: true,
-        https: false,
+        // logLevel: 'debug',
+        // httpModule: 'http2',
+        // online: true,
+        // https: false,
     });
 }
 

@@ -137,6 +137,7 @@ class FormController extends Controller
             ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
             ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
             ->where('courses.user_id', '=', Auth::user()->id)
+            ->orWhere('forms.session_id', '=', Course::DUMMY_ID)
             ->get([
                 'forms.id',
                 'forms.title',
@@ -337,8 +338,6 @@ class FormController extends Controller
      */
     public function delete(Request $request, Form $form)
     {
-        throw_if($form->session_id == Course::DUMMY_ID, 403);
-
         if ($form->questions()->exists()) {
             foreach ($form->questions()->getModels() as $q) {
                 $q->delete();
@@ -401,10 +400,11 @@ class FormController extends Controller
         }
 
         foreach ($original->questions() as $q) {
-            $model = new Question($q);
+            $model = new Question();
             $model->fill([
+                'title' => $q['title'],
                 'form_id' => $form->id,
-                'data' => json_encode($model->getAttribute('data'))
+                'data' => json_encode($q['data'])
             ]);
 
             if (!$model->save()) {

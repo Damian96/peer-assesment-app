@@ -48,6 +48,12 @@ class FormTemplate extends Model
         'questions' => 'array',
     ];
 
+    protected $hidden = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
+
     /**
      * @return void
      */
@@ -57,8 +63,8 @@ class FormTemplate extends Model
             /**
              * @var FormTemplate $model
              */
-            if (!is_array($model->questions))
-                $model->setAttribute('questions', json_decode($model->questions, true));
+            if (is_string($model->questions))
+                $model->setAttribute('questions', json_decode($model->questions));
         });
         parent::boot();
     }

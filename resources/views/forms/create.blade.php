@@ -26,7 +26,10 @@
                     class="material-icons">format_align_justify</i>Paragraph
             </button>
             <button id="eval" type="button" class="btn btn-large btn-info question-type">
-                <i class="material-icons">account_circle</i>Peer Evaluation
+                <i class="material-icons">account_circle</i>Peer Evaluation<br><i>(on a scale of 5)</i>
+            </button>
+            <button id="criteria" type="button" class="btn btn-large btn-info question-type">
+                <i class="material-icons">account_circle</i>Peer Evaluation<br><i>(distribute 100)</i>
             </button>
         </div>
         <!-- Main Form Data -->

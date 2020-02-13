@@ -50,6 +50,12 @@ class Form extends Model
         'mark' => 'int'
     ];
 
+    protected $hidden = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */

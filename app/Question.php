@@ -49,6 +49,12 @@ class Question extends Model
         'data' => 'array'
     ];
 
+    protected $hidden = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
+
     /**
      * @param array $data
      * @return array
@@ -65,8 +71,6 @@ class Question extends Model
     }
 
     /**
-     * @FIXME getEager() refreshes records from database in contrast to get()
-     * @FIXME getAttribute() retrieves casted 'data' instead of $this->attribute['data'] or $this->data
      * @param string $name
      * @return mixed|void
      */
@@ -83,6 +87,8 @@ class Question extends Model
                 return $this->data->maxlbl;
             case 'choices':
                 return $this->data->choices;
+            case 'data':
+                return $this->attributes['data'];
             default:
                 return parent::__get($name);
         }
@@ -97,26 +103,20 @@ class Question extends Model
             /**
              * @var Question $model
              */
-            if (!is_array($model->data))
-                $model->data = $model->getDataAttribute();
+            if (is_string($model->data))
+                $model->attributes['data'] = $model->getDataAttribute();
         });
         parent::boot();
     }
 
     /**
-     * Fixes JSON decoding errors
      * @return object
      */
     public function getDataAttribute()
     {
-        while (!is_array($this->attributes['data'])) {
-            $this->attributes['data'] = json_decode($this->attributes['data'], true);
-        }
-        $data = count($this->attributes['data']) == 1 ? current($this->attributes['data']) : $this->attributes['data'];
-        $r = [];
-        foreach ($data as $key => $value)
-            $r[trim($key)] = $value;
-        return (object)$r;
+        while (is_string($this->attributes['data']))
+            $this->attributes['data'] = json_decode($this->attributes['data']);
+        return $this->attributes['data'];
     }
 
     /**
@@ -133,7 +133,7 @@ class Question extends Model
      */
     public function save(array $options = [])
     {
-        if (is_array($this->attributes['data']))
+        if (!is_string($this->attributes['data']))
             $this->attributes['data'] = json_encode($this->attributes['data']);
 
         return parent::save($options);

@@ -140,9 +140,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
             .text(title)
             .end()
             .find('input[name*="[title]"]')
-            .val(title)
-            .find('input[name*="subtitle"]')
-            .val(subtitle);
+            .val(title);
+        // .find('input[name*="subtitle"]');
+        // .val(subtitle);
 
         // Add bs-collapse data
         let target = id.replace(/[\s#]/, '');
@@ -172,12 +172,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
             case 'multiple-choice':
                 card.find('.multiple.d-none').removeClass('d-none').addClass('d-block');
                 card.find('.scale').remove();
-                card.find('.add-choice').on('click', addChoice); // @TODO: add addChoice args
+                card.find('.add-choice').on('click', addChoice);
                 card.find('.delete-choice').on('click', deleteChoice);
                 if (data && data.hasOwnProperty('choices') && data.choices.length > 0) {
                     card.find('.choice').remove();
-                    data.choices.forEach((choice, i) => {
-                        // console.debug(choice, card.find('.add-choice')[0]);
+                    data.choices.forEach((choice) => {
                         addChoice.call(card.find('.add-choice')[0], choice);
                     });
                 }
@@ -261,60 +260,63 @@ document.addEventListener('DOMContentLoaded', function (e) {
         return true;
     });
 
-    let array_data = []; // @TODO: make array data to Object
-    array_data['question'] = [];
-    // map old_data to array_data
-    let c = 0;
-    for (let item of old_data) {
-        // console.debug('old_data', item, c);
-        if (item[0].includes('question')) { // questions
-            let i = parseInt(item[0].split('[')[1][0]);
-            let key = item[0].split('[')[2].split(']')[0];
-            // console.debug(i, key);
-            if (!array_data['question'][i]) {
-                array_data['question'][i] = [];
+    // @TODO: make array data to Object
+    window.retrieveFormData = function () {
+        let array_data = [];
+        array_data['question'] = [];
+        // map old_data to array_data
+        let c = 0;
+        for (let item of old_data) {
+            // console.debug('old_data', item, c);
+            if (item[0].includes('question')) { // questions
+                let i = parseInt(item[0].split('[')[1][0]);
+                let key = item[0].split('[')[2].split(']')[0];
+                if (!array_data['question'][i]) {
+                    array_data['question'][i] = [];
+                }
+                if (item[0].includes('max') || item[0].includes('min')) { // all other types
+                    array_data['question'][i][key] = item[1];
+                } else if (item[0].includes('choices') && array_data['question'][i]['choices'] != null) {
+                    array_data['question'][i][key].push(item[1]); // push choices array
+                } else if (item[0].includes('choices') && !array_data['question'][i]['choices']) {
+                    array_data['question'][i][key] = [item[1]]; // initialize choices array
+                } else { // title, subtitle, others...
+                    array_data['question'][i][key] = item[1];
+                }
+                c++;
+            } else if (item[0].includes('title') || item[0].includes('footnote')) { // form title / subtitle / footnote
+                array_data[item[0]] = item[1];
             }
-            if (item[0].includes('max') || item[0].includes('min')) { // all other types
-                array_data['question'][i][key] = item[1];
-            } else if (item[0].includes('choices') && array_data['question'][i]['choices'] != null) {
-                array_data['question'][i][key].push(item[1]); // push choices array
-            } else if (item[0].includes('choices') && !array_data['question'][i]['choices']) {
-                array_data['question'][i][key] = [item[1]]; // initialize choices array
-            } else { // title, subtitle, others...
-                array_data['question'][i][key] = item[1];
-            }
-            c++;
-        } else if (item[0].includes('title') || item[0].includes('footnote')) { // form title / subtitle / footnote
-            array_data[item[0]] = item[1];
         }
-    }
-    // console.debug(array_data);
-    if (count == 0) {
-        // add old cards from 'array_data'
-        array_data['question'].forEach((val, i) => {
-            // console.debug('array_data', val, i);
-            if (val.hasOwnProperty('type') && val.hasOwnProperty('title')) {
-                createCard(val.type, val.type + '-' + window.count, val.title, val);
-                return true;
-            }
+        console.debug('array_data', array_data);
+        window.array_data = array_data;
+    };
+
+    retrieveFormData();
+    window.array_data = array_data;
+    // console.debug('array_data', array_data);
+    if (count == 0 && !window.location.href.includes('edit')) { // add old cards from 'array_data'
+        if (array_data.hasOwnProperty('title') && array_data['title'])
+            $("input[name='title']").val(array_data['title']);
+        if (array_data.hasOwnProperty('subtitle') && array_data['subtitle'])
+            $("input[name='subtitle']").val(array_data['subtitle']);
+        if (array_data.hasOwnProperty('footnote') && array_data['footnote'])
+            $("input[name='footnote']").val(array_data['footnote']);
+        array_data['question'].forEach((data) => {
+            createCard(data.type, data.type + '-' + window.count, data.title, data);
+            return true;
         });
     } else { // cards already exists
-        // console.debug('array_data', array_data);
-        $(".card[class*='col-sm-']").each(function () {
+        $(".card.col-sm-12").each(() => {
             addCardListeners($(this));
         });
         $('.add-choice').on('click', addChoice);
         $('.delete-choice').on('click', deleteChoice);
 
         // new edited questions
-        if (array_data['question'].slice(count).length > 0) {
-            array_data['question'].slice(count).forEach(function (val, i) {
-                if (val.hasOwnProperty('type') && val.hasOwnProperty('title')) {
-                    createCard(val.type, val.type + '-' + window.count, val.title, val);
-                    return true;
-                }
-            });
-        }
+        array_data['question'].slice(count).forEach((data) => {
+            createCard(data.type, data.type + '-' + window.count, data.title, data);
+            return true;
+        });
     }
-    window.array_data = array_data;
 });

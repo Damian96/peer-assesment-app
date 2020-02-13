@@ -22,7 +22,7 @@ class CreateFormTemplatesTable extends Migration
             $table->text('questions');
             $table->timestamps();
 
-            $table->index('user_id', 'form_template_user_id_index');
+            $table->foreign('user_id', 'form_template_user_id_foreign')->references('id')->on('users');
         });
 
     }
