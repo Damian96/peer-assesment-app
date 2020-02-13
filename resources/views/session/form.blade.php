@@ -1,5 +1,5 @@
 {{-- method, action, $errors --}}
-<form role="form" method="{{ $method == 'PUT' ? 'POST' : $method }}" action="{{ $action }}">
+<form role="form" method="{{ $method }}" action="{{ $action }}">
     @method($method)
     @csrf
 
@@ -52,7 +52,23 @@
     @endif
     <div class="form-group">
         <label for="deadline">
-            <span class="mr-2">Deadline</span>
+            <span class="mr-2">Opens At</span><br>
+            <span class="text-muted">Date always at midnight. When will the Session open?</span>
+            <input type="text" id="open_date" name="open_date" readonly aria-readonly="true"
+                   data-rule-required="true"
+                   data-msg-required="{{ $messages['open_date.required'] }}"
+                   data-rule-pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}"
+                   data-msg-pattern="{{ $messages['open_date.date_format'] }}"
+                   class="form-control{{ $errors->has('open_date') ? ' is-invalid' : '' }}">
+        </label>
+        <span class="invalid-feedback d-block">
+        @if ($errors->has('open_date'))<strong>{{ $errors->first('open_date') }}</strong>@endif
+        </span>
+    </div>
+    <div class="form-group">
+        <label for="deadline">
+            <span class="mr-2">Deadline</span><br>
+            <span class="text-muted">Date always at midnight. When will the Session close?</span>
             <input type="text" id="deadline" name="deadline" readonly aria-readonly="true"
                    data-rule-required="true"
                    data-msg-required="{{ $messages['deadline.required'] }}"
@@ -99,18 +115,6 @@
         @if ($errors->has('instructions'))<strong>{{ $errors->first('instructions') }}</strong>@endif
         </span>
     </div>
-    {{--    <div class="form-group">--}}
-    {{--        <label for="status"--}}
-    {{--               onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">--}}
-    {{--            <input type="checkbox" name="status" id="status" tabindex="0"--}}
-    {{--                   class="form-control-feedback{{ $errors->has('status') ? ' is-invalid' : '' }}"--}}
-    {{--                   value="{{ old('status', isset($session) ? $session->status: null) ? '0' : '1' }}">--}}
-    {{--            <span class="ml-4">Disabled<span class="ml-2 text-muted">(will not send any mail)</span></span>--}}
-    {{--        </label>--}}
-    {{--        <span class="invalid-feedback d-block">--}}
-    {{--        @if ($errors->has('status'))<strong>{{ $errors->first('status') }}</strong>@endif--}}
-    {{--        </span>--}}
-    {{--    </div>--}}
     <div class="form-group">
         <button type="submit" class="btn btn-block btn-primary" role="button" title="{{ $button['title'] }}"
                 aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
@@ -128,6 +132,13 @@
                 defaultDate: '{{ old('deadline', 1) }}',
             });
             $('#deadline').datepicker('setDate', '{{ old('deadline', null) }}');
+            $("#open_date").datepicker({
+                dateFormat: 'dd-mm-yy',
+                minDate: 1,
+                maxDate: 6 * 31,
+                defaultDate: '{{ old('open_date', 1) }}',
+            });
+            $('#open_date').datepicker('setDate', '{{ old('open_date', null) }}');
             // Course custom ComboBox jQueryUI
             $('#course').combobox();
             @if ($errors->has('studentid'))
@@ -135,20 +146,20 @@
                 .addClass('is-invalid');
             @endif
             // Forms custom ComboBox jQueryUI
-            $('#form').combobox({
-                select: function (event, option) {
-                    option = option.item;
-                    console.debug(event, option);
-                    // if (option.hasAttribute('data-template')) {
-                    //     $('#form').closest('.form-group')
-                    //         .attr('title', 'The Form you selected is a template, so it will be duplicated!')
-                    //         .tooltip();
-                    // } else {
-                    //     $('#form').closest('.form-group')
-                    //         .attr('title', '');
-                    // }
-                }
-            });
+            // $('#form').combobox({
+            //     select: function (event, option) {
+            //         option = option.item;
+            //         console.debug(event, option);
+            //         // if (option.hasAttribute('data-template')) {
+            //         //     $('#form').closest('.form-group')
+            //         //         .attr('title', 'The Form you selected is a template, so it will be duplicated!')
+            //         //         .tooltip();
+            //         // } else {
+            //         //     $('#form').closest('.form-group')
+            //         //         .attr('title', '');
+            //         // }
+            //     }
+            // });
             @if ($errors->has('form'))
             $('#form').next()
                 .addClass('is-invalid');

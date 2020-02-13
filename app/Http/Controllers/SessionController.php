@@ -6,6 +6,7 @@ use App\Course;
 use App\Form;
 use App\Question;
 use App\Review;
+use App\Rules\DateCompare;
 use App\Session;
 use App\StudentSession;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -40,6 +41,13 @@ class SessionController extends Controller
      */
     public function rules(string $action)
     {
+        $rules = [
+            'instructions' => 'required|string|max:1000',
+            'open_date' => 'required|different:deadline|date_format:d-m-Y',
+            'deadline' => [
+                'required', 'date_format:d-m-Y', new DateCompare(request(), 'open_date', '>')
+            ]
+        ];
         switch ($action) {
             case 'fillin':
                 return [
@@ -47,15 +55,22 @@ class SessionController extends Controller
                 ];
             case 'create':
             case 'store':
+                return array_merge($rules, [
+                    'course' => 'required|numeric|exists:courses,id',
+                    'title' => 'required|string|min:3|max:50',
+                ]);
             case 'edit':
             case 'update':
-                return [
+                return array_merge($rules, [
                     'form' => 'required|numeric|exists:forms,id',
                     'course' => 'required|numeric|exists:courses,id',
                     'title' => 'required|string|min:3|max:50',
                     'instructions' => 'required|string|max:1000',
-                    'deadline' => 'required|date_format:m-d-Y',
-                ];
+                    'open_date' => 'required|different:deadline|date_format:d-m-Y',
+                    'deadline' => [
+                        'required', 'date_format:d-m-Y', new DateCompare(request(), 'open_date', '>')
+                    ]
+                ]);
             default:
                 return [];
         }
@@ -86,6 +101,8 @@ class SessionController extends Controller
                     'instructions.max' => 'The Session instructions should not exceed 1000 characters!',
                     'deadline.required' => 'The Session deadline is required!',
                     'deadline.date_format' => 'The Session deadline should have a valid format!',
+                    'open_date.required' => 'The Session open_date is required!',
+                    'open_date.date_format' => 'The Session open_date should have a valid format!',
                 ];
             default:
                 return [];
@@ -111,7 +128,6 @@ class SessionController extends Controller
      * Display a listing of the resource, filtered by the specified Course.
      *
      * @param Request $request
-     * @param Course $course
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -120,6 +136,7 @@ class SessionController extends Controller
         $sessions = Session::query()
             ->select('sessions.*')
             ->leftJoin('student_session', 'student_session.session_id', 'sessions.id')
+            ->where('sessions.id', '!=', Course::DUMMY_ID)
             ->whereNull('student_session.session_id');
         $sessions = $sessions->paginate(self::PER_PAGE);
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
@@ -174,12 +191,14 @@ class SessionController extends Controller
         if ($validator->fails()) {
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
+                ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
 
         $request->request->add([
             'course_id' => $request->get('course', false),
-            'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', date(config('constants.date.stamp')))))->format(config('constants.date.stamp'))
+            'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', date(config('constants.date.stamp')))))->format(config('constants.date.stamp')),
+            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', date(config('constants.date.stamp')))))->format(config('constants.date.stamp'))
         ]);
         $session = new Session($request->all());
         if ($session->save()) {
@@ -188,14 +207,12 @@ class SessionController extends Controller
                 'heading' => sprintf("Session %s has been saved successfully!", $session->id),
             ]);
             $session->sendEmailNotification();
-            return redirect()->back(302, $request->headers->all());
+            return redirect()->action('SessionController@show', ['session' => $session], 302);
         }
 
-        if (env('APP_DEBUG', false)) {
-            throw abort(500, sprintf("Could not save Session %s!", $session->id));
-        } else {
-            return redirect()->back(302, $request->headers->all());
-        }
+        abort_if(env('APP_DEBUG', false), 500, sprintf("Could not save Session %s!", $session->id));
+        return redirect()->back(302)
+            ->withInput($request->all());
     }
 
     /**

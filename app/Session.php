@@ -40,7 +40,6 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquentform
  * @property string $open_date
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
- * @property string $title
  */
 class Session extends Model
 {
@@ -124,7 +123,7 @@ class Session extends Model
      * @var array
      */
     protected $fillable = [
-        'deadline', 'course_id', 'form_id', 'instructions', 'title'
+        'deadline', 'course_id', 'form_id', 'instructions', 'title', 'open_date'
     ];
 
     /**
@@ -132,7 +131,7 @@ class Session extends Model
      *
      * @var array
      */
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['id', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
@@ -142,6 +141,7 @@ class Session extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'open_date' => 'datetime',
         'deadline' => 'datetime',
         'course_id' => 'int',
         'form_id' => 'int',

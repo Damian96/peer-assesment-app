@@ -5,25 +5,25 @@
 @endsection
 
 @section('content')
-    @if(!Auth::user()->isStudent())
-        <div class="row my-2">
-            <div class="col-md-12">
-                <form method="GET" class="form-inline" onchange="this.submit()">
-                    <input type="hidden" value="{{ request('page', 1) }}" class="hidden" name="page" id="page">
-                    <label for="status">Status
-                        <select id="status" name="status" class="ml-2 form-control-sm">
-                            <option value="enabled"{{ request('status', false) !== 'disabled' ? ' selected' : false }}>
-                                Enabled
-                            </option>
-                            <option value="disabled"{{ request('status', false) === 'disabled' ? ' selected' : false }}>
-                                Disabled
-                            </option>
-                        </select>
-                    </label>
-                </form>
-            </div>
-        </div>
-    @endif
+    {{--    @if(!Auth::user()->isStudent())--}}
+    {{--        <div class="row my-2">--}}
+    {{--            <div class="col-md-12">--}}
+    {{--                <form method="GET" class="form-inline" onchange="this.submit()">--}}
+    {{--                    <input type="hidden" value="{{ request('page', 1) }}" class="hidden" name="page" id="page">--}}
+    {{--                    <label for="status">Status--}}
+    {{--                        <select id="status" name="status" class="ml-2 form-control-sm">--}}
+    {{--                            <option value="enabled"{{ request('status', false) !== 'disabled' ? ' selected' : false }}>--}}
+    {{--                                Enabled--}}
+    {{--                            </option>--}}
+    {{--                            <option value="disabled"{{ request('status', false) === 'disabled' ? ' selected' : false }}>--}}
+    {{--                                Disabled--}}
+    {{--                            </option>--}}
+    {{--                        </select>--}}
+    {{--                    </label>--}}
+    {{--                </form>--}}
+    {{--            </div>--}}
+    {{--        </div>--}}
+    {{--    @endif--}}
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12">
             @if ($sessions->isNotEmpty())
