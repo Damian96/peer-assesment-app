@@ -9,7 +9,6 @@
   "license": "MIT",
   "require": {
     "php": "^7.2",
-    "ext-json": "*",
     "ext-openssl": "^7.3",
     "biscolab/laravel-recaptcha": "^4.0",
     "davejamesmiller/laravel-breadcrumbs": "5.3.0",
