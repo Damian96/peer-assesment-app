@@ -16,6 +16,7 @@ class CreateStudentSessionTable extends Migration
         Schema::create('student_session', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('session_id');
+            $table->tinyInteger('mark', false, true)->default(0);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

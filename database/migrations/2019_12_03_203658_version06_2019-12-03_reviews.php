@@ -19,7 +19,7 @@ class Version0620191203Reviews extends Migration
             $table->bigInteger('recipient_id')->unsigned()->comment('none:1111');
             $table->bigInteger('question_id')->unsigned();
             $table->tinyInteger('mark')->nullable()->default('0')->comment('eval/linear-scale[0-100]');
-            $table->char('type', 1)->comment('[e]valuation/[p]aragraph/[s]cale/[c]hoice');
+            $table->char('type', 1)->comment('[e]valuation/[p]aragraph/[s]cale/[c]hoice/crite[r]ia');
             $table->text('comment')->nullable()->comment('paragraph');
             $table->string('answer', 255)->nullable()->default(null)->comment('multiple-choice');
             $table->timestamps();

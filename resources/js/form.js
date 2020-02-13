@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', function (e) {
-    // @TODO: extend jQuery add highlight effect
-    // $.fn.highlight = function()
-
     if (!document.querySelector('.btn.question-type')) {
         return false;
     }
@@ -190,6 +187,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 card.find('.multiple').remove();
                 card.find('.scale').remove();
                 break;
+            case 'criteria':
+                card.find('.multiple').remove();
+                card.find('.scale').remove();
+                break;
             default:
                 throw Error('Invalid card type: ' + type);
         }
@@ -247,22 +248,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
         }
         return true;
     };
-
-    // session autocomplete
-    // $('#session_id').combobox();
-    // $('#session_id').next().on('autocompleteselect', function (e, ui) {
-    //     $('input[name=session_id]').val(ui.item.option.getAttribute('value'));
-    //     $('button.question-type').removeAttr('disabled');
-    //     $('form').find('.col-md-12').first().effect('highlight', {}, 2000);
-    //     return true;
-    // });
-
-    // reset value for caching
-    // if (document.getElementById('update-form') != null) {
-    //     $('button.question-type').removeAttr('disabled');
-    // } else { // create
-    //     $('button.question-type').attr('disabled', true);
-    // }
 
     $('button.question-type').on('click', function () {
         // $('#session_id').combobox('disable');
@@ -330,28 +315,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 }
             });
         }
-        // console.debug(array_data['question'].slice($('.card').length));
-        // console.debug(q.choices.slice(card.find('.choice').length));
-        // array_data['question'].forEach((q, i) => {
-        //     // console.debug(val, i);
-        //     if (q.type === 'multiple-choice' && q.hasOwnProperty('choices')) {
-        //         let card = $($('.card').get(i));
-        //         let add = card.find('.add-choice');
-        //         let cCount = card.find('.choice').length;
-        //         // console.debug(card.find('.choice').length, q.choices, q, i);
-        //         // if (q.choices.length < cCount) { // choice deleted
-        //         //
-        //         // } else if (q.choices.length > cCount) { // choice added
-        //         //
-        //         // }
-        //         // q.choices.slice().forEach(function (label) {
-        //         //     addChoice.call(add, label);
-        //         //     return true;
-        //         // });
-        //     }
-        //     return true;
-        // });
     }
     window.array_data = array_data;
-    // window.addEventListener('unload', storeFormData);
 });

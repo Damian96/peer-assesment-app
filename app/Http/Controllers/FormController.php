@@ -34,6 +34,21 @@ class FormController extends Controller
      */
     public function rules(string $action, Request $request)
     {
+        $rules = [];
+        if ($request->has('question')) {
+            foreach ($request->get('question', []) as $i => $q) {
+                $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph,criteria';
+                $rules['question.' . $i . '.title'] = 'required|string|max:255';
+                $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
+                if ($q['type'] === 'multiple-choice') {
+                    $rules['question.' . $i . '.choices'] = 'required|array';
+                } elseif ($q['type'] === 'linear-scale') {
+                    $rules['question.' . $i . '.max'] = 'required|int|min:1|max:100';
+                    $rules['question.' . $i . '.minlbl'] = 'required|string|max:255';
+                    $rules['question.' . $i . '.maxlbl'] = 'required|string|max:255';
+                }
+            }
+        }
         switch ($action) {
             case 'duplicate':
                 return [
@@ -41,50 +56,22 @@ class FormController extends Controller
                     'session_id' => 'required|int|exists:sessions,id',
                 ];
             case 'update':
-                $rules = [
+                return array_merge($rules, [
                     'form_id' => 'required|int|exists:forms,id',
                     '_method' => 'required|in:POST',
-//                    'session_id' => 'required|int|exists:sessions,id',
                     'title' => 'required|string|min:15|max:255',
                     'subtitle' => 'nullable|string|min:15|max:255',
                     'footnote' => 'nullable|string|min:15|max:255',
                     'question' => 'required|array',
-                ];
-                foreach ($request->get('question', []) as $i => $q) {
-                    $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph';
-                    $rules['question.' . $i . '.title'] = 'required|string|max:255';
-                    $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
-                    if ($q['type'] === 'multiple-choice') {
-                        $rules['question.' . $i . '.choices'] = 'required|array';
-                    } elseif ($q['type'] === 'linear-scale') {
-                        $rules['question.' . $i . '.max'] = 'required|int|min:1|max:100';
-                        $rules['question.' . $i . '.minlbl'] = 'required|string|max:255';
-                        $rules['question.' . $i . '.maxlbl'] = 'required|string|max:255';
-                    }
-                }
-                return $rules;
+                ]);
             case 'store':
-                $rules = [
+                return array_merge($rules, [
                     '_method' => 'required|in:POST',
-//                    'session_id' => 'required|int|exists:sessions,id',
                     'title' => 'required|string|max:255',
                     'subtitle' => 'nullable|string|max:255',
                     'footnote' => 'nullable|string|max:255',
                     'question' => 'required|array',
-                ];
-                foreach ($request->get('question', []) as $i => $q) {
-                    $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph';
-                    $rules['question.' . $i . '.title'] = 'required|string|max:255';
-                    $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
-                    if ($q['type'] === 'multiple-choice') {
-                        $rules['question.' . $i . '.choices'] = 'required|array';
-                    } elseif ($q['type'] === 'linear-scale') {
-                        $rules['question.' . $i . '.max'] = 'required|int|min:1|max:100';
-                        $rules['question.' . $i . '.minlbl'] = 'required|string|max:255';
-                        $rules['question.' . $i . '.maxlbl'] = 'required|string|max:255';
-                    }
-                }
-                return $rules;
+                ]);
             default:
                 return [];
         }
@@ -284,12 +271,11 @@ class FormController extends Controller
             return redirect()->back(302, []);
         }
 
-//        dd($request->get('question'), $form->questions()->getModels());
         foreach ($form->questions()->getModels() as $i => $question) {
+            /**
+             * @var Question $question
+             */
             try {
-                /**
-                 * @var Question $question
-                 */
                 if (!isset($request->get('question')[$i]))
                     $question->delete();
                 else {
@@ -299,19 +285,25 @@ class FormController extends Controller
                             'title' => $data['title'],
                             'data' => Question::extractData($data),
                         ]);
+                    } else {
+                        $question->fill([
+                            'title' => $data['title'],
+                            'data' => Question::extractData($data),
+                        ]);
+                        $question->save();
                     }
                 }
             } catch (\Exception $e) {
                 abort_unless(env('APP_DEBUG', false), 500, "Could not delete Question {$question->id}!");
                 $request->session()->flash('message', [
                     'level' => 'danger',
-                    'heading' => "Could not delete Question {$question->id}!",
+                    'heading' => "Could not save/update/delete Question {$question->id}!",
                 ]);
                 return redirect()->back(302, []);
             }
         }
 
-        foreach (array_slice($request->get('question'), $form->questions()->count() - 1) as $q) {
+        foreach (array_slice($request->get('question'), $form->questions()->count()) as $q) {
             $question = new Question([
                 'form_id' => $form->id,
                 'data' => Question::extractData($q),

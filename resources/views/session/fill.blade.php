@@ -11,18 +11,24 @@
 
         <h3 class="">{{ $form->title }}</h3>
         @foreach($questions as $i => $q)
+            @php
+                $teammates = Auth::user()->teammates()->collect()
+            @endphp
             <div class="offset-1 col-sm-10 col-md-10 border-dark border py-2 my-2">
-                <label>{{ $q->title }}</label>
+                <h5>{{ $q->title }}</h5>
                 @if ($q->type === 'linear-scale')
                     <div class="form-group uselect-none">
                         <span class="mx-2">{{ $q->minlbl }}<input class="ml-2" type="radio"
+                                                                  required
                                                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
                                                                   value="1"></span>
                         @for($i=2;$i<$q->max;$i++)
                             <span class="mx-2"><input type="radio"
+                                                      required
                                                       name="questions[{{ $q->id }}][{{ $q->type }}][]" value="{{ $i }}"></span>
                         @endfor
                         <span class="mx-2"><input class="mr-2" type="radio"
+                                                  required
                                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
                                                   value="{{ $q->max }}">{{ $q->maxlbl }}</span>
                     </div>
@@ -50,37 +56,47 @@
                             <tr>
                                 <td>Yourself</td>
                                 <td><input type="radio"
+                                           required
                                            name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
                                            value="1"></td>
                                 <td><input type="radio"
+                                           required
                                            name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
                                            value="2"></td>
                                 <td><input type="radio"
+                                           required
                                            name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
                                            value="3"></td>
                                 <td><input type="radio"
+                                           required
                                            name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
                                            value="4"></td>
                                 <td><input type="radio"
+                                           required
                                            name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
                                            value="5"></td>
                             </tr>
-                            @foreach(Auth::user()->teammates()->collect() as $t)
+                            @foreach($teammates as $t)
                                 <tr>
                                     <td>{{ $t->full_name }}</td>
                                     <td><input type="radio"
+                                               required
                                                name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="1">
                                     </td>
                                     <td><input type="radio"
+                                               required
                                                name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="2">
                                     </td>
                                     <td><input type="radio"
+                                               required
                                                name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="3">
                                     </td>
                                     <td><input type="radio"
+                                               required
                                                name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="4">
                                     </td>
                                     <td><input type="radio"
+                                               required
                                                name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="5">
                                     </td>
                                 </tr>
@@ -95,6 +111,46 @@
                                   aria-placeholder="Write anything here..."
                                   style="min-height: 50px; max-height: 150px;"></textarea>
                     </div>
+                @elseif ($q->type == 'criteria')
+                    <div class="form-group criteria" data-sum="0">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <th></th>
+                            <th>Distribute 100 points among your teammates including yourself</th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Yourself</td>
+                                <td><input type="number"
+                                           min="0"
+                                           max="100"
+                                           step="1"
+                                           aria-valuemin="0"
+                                           aria-valuemax="100"
+                                           class="form-control"
+                                           aria-invalid="false"
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"
+                                           value="0"></td>
+                            </tr>
+                            @foreach($teammates as $t)
+                                <tr>
+                                    <td>{{ $t->full_name }}</td>
+                                    <td><input type="number"
+                                               min="0"
+                                               max="100"
+                                               step="1"
+                                               aria-valuemin="0"
+                                               aria-valuemax="100"
+                                               class="form-control"
+                                               aria-invalid="false"
+                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="0">
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                        <span class="invalid-feedback d-block font-weight-bold"></span>
+                    </div>
                 @endif
             </div>
         @endforeach
@@ -105,4 +161,38 @@
             </div>
         </div>
     </form>
+@endsection
+
+@section('end_footer')
+    <script type="text/javascript">
+        var calculateGroupPoints = function (group) {
+            let sum = 0;
+            group.find('input').each(function () {
+                sum += parseInt(this.value);
+            });
+            return sum;
+        };
+        $(function () {
+            $('.form-group.criteria').find('input').on('focusout click', function () {
+                // console.debug(this);
+                let group = $(this).closest('.form-group');
+                let points = calculateGroupPoints(group);
+                if (points > 100) {
+                    group.find('.invalid-feedback').text('Total points exceed 100 limit');
+                    $(this).removeClass('is-valid')
+                        .addClass('is-invalid')
+                        .attr('aria-invalid', 'true');
+                    this.setCustomValidity('Total points exceed 100 limit');
+                    return true;
+                } else if (points > 0 && points < 100) {
+                    group.find('.invalid-feedback').text('Total points should be 100');
+                }
+                $(this).removeClass('is-invalid')
+                    .attr('aria-invalid', 'false')
+                    .addClass('is-valid');
+                this.setCustomValidity('');
+                group.find('.invalid-feedback').text('');
+            });
+        });
+    </script>
 @endsection

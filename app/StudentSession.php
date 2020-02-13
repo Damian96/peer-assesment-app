@@ -32,7 +32,7 @@ class StudentSession extends Model
     protected $guarded = ['id'];
 
     protected $fillable = [
-        'user_id', 'session_id',
+        'user_id', 'session_id', 'mark'
     ];
 
     protected $hidden = [
@@ -42,10 +42,12 @@ class StudentSession extends Model
     protected $casts = [
         'user_id' => 'int',
         'session_id' => 'int',
+        'mark' => 'int',
     ];
 
     protected $attributes = [
         'user_id' => null,
         'session_id' => null,
+        'mark' => null,
     ];
 }

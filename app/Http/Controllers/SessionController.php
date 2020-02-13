@@ -40,6 +40,10 @@ class SessionController extends Controller
     public function rules(string $action)
     {
         switch ($action) {
+            case 'fillin':
+                return [
+                    '_method' => '_POST',
+                ];
             case 'create':
             case 'store':
             case 'edit':
@@ -119,39 +123,6 @@ class SessionController extends Controller
         $sessions = $sessions->paginate(self::PER_PAGE);
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
-
-    /**
-     * @method GET
-     * @param Request $request
-     * @return Response
-     */
-//    public function active(Request $request)
-//    {
-//        if (Auth::user()->isStudent()) {
-//            $title = 'Sessions';
-//        } else {
-//            $title = 'Active Sessions';
-//        }
-//        if (Auth::user()->isStudent()) {
-//            $courses = array_column(Auth::user()->studentCourses()->get(['id'])->toArray(), 'id');
-//            $sessions = Session::query()
-//                ->leftJoin('student_session', 'student_session.session_id', 'sessions.id')
-//                ->join('courses', 'courses.id', 'sessions.course_id')
-//                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
-//                ->whereIn('courses.id', $courses)
-//                ->whereNull('student_session.session_id')
-//                ->orderBy('deadline', 'ASC');
-////                ->paginate(self::PER_PAGE);
-//            dd($sessions->toSql());
-//        } else {
-//            $sessions = Auth::user()->sessions()
-//                ->where('deadline', '>=', Carbon::now()->startOfDay()->format(config('constants.date.stamp')))
-//                ->orderBy('deadline', 'ASC')
-//                ->paginate(self::PER_PAGE);
-//        }
-//
-//        return response(view('session.active', compact('sessions', 'title')), 200, $request->headers->all());
-//    }
 
     /**
      * @method GET
@@ -334,6 +305,15 @@ class SessionController extends Controller
      */
     public function fillin(Request $request, Session $session)
     {
+        $validator = Validator::make($this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+
+        if (!$validator->valid()) {
+            return redirect()->back(302)
+                ->withInput($request->all())
+                ->withErrors($validator->errors())
+                ->with('errors', $validator->errors());
+        }
+
         foreach ($request->get('questions') as $id => $q) {
             $question = Question::find($id);
             $review = new Review([
