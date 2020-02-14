@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class CoursesTableSeeder extends Seeder
 {
-    const MAX = 30;
+    const MAX = 10;
     private $table = 'courses';
 
     /**
@@ -46,7 +46,7 @@ class CoursesTableSeeder extends Seeder
         }
 
         DB::table($this->table)->insert([
-            'id' => 1111,
+            'id' => Course::DUMMY_ID,
             'user_id' => 1,
             'code' => 'N/A',
             'status' => '0',

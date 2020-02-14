@@ -191,4 +191,12 @@ class Session extends Model
             return !in_array($key, $this->guarded);
         }, ARRAY_FILTER_USE_KEY);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function groups()
+    {
+        return $this->hasMany('\App\Group', 'session_id', 'id');
+    }
 }

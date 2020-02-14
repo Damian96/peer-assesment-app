@@ -136,14 +136,15 @@ class SessionController extends Controller
         $submitted = StudentSession::whereUserId(Auth::user()->id);
         $sessions = Session::query()
             ->select('sessions.*')
-            ->join('courses', 'courses.id', 'sessions.course_id')
-            ->join('student_course', 'student_course.course_id', 'courses.id')
-            ->where('sessions.id', '!=', Course::DUMMY_ID)
-            ->where('student_course.user_id', '=', Auth::user()->id)
-            ->whereNotIn('sessions.id', $submitted->exists() ? $submitted->get(['session_id'])->toArray() : []);
-//            ->leftJoin('student_session', 'student_session.session_id', 'sessions.id')
-//            ->whereNull('student_session.session_id');
-        $sessions = $sessions->paginate(self::PER_PAGE);
+            ->leftJoin('courses', 'courses.id', 'sessions.course_id');
+        if (Auth::user()->isStudent()) {
+            $sessions->join('student_course', 'student_course.course_id', 'courses.id')
+                ->whereNotIn('sessions.id', $submitted->exists() ? $submitted->get(['session_id'])->toArray() : [])
+                ->where('student_course.user_id', '=', Auth::user()->id);
+        } elseif (Auth::user()->isInstructor()) {
+            $sessions->where('courses.user_id', '=', Auth::user()->id);
+        }
+        $sessions = $sessions->where('sessions.id', '!=', Course::DUMMY_ID)->paginate(self::PER_PAGE);
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
 
@@ -175,9 +176,9 @@ class SessionController extends Controller
     public function edit(Request $request, Session $session)
     {
         $title = 'Edit Session ' . $session->title;
-        $owned = $session->form()->exists() ? $session->form()->first() : null;
+        $owned = $session->form()->exists() ? [$session->form()->getModel()] : [];
         $temps = Form::whereSessionId(0)->get('forms.*')->all();
-        $forms = array_merge([$owned], $temps);
+        $forms = array_merge($owned, $temps);
         $messages = $this->messages(__FUNCTION__);
         $courses = Course::getCurrentYears()->get();
 
@@ -291,6 +292,15 @@ class SessionController extends Controller
      */
     public function delete(Request $request, Session $session)
     {
+        if ($session->groups()->exists()) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'Cannot delete Session!',
+                'body' => 'This Session has other Group(s) associated, so it cannot be deleted.'
+            ]);
+            return redirect()->back(302);
+        }
+
         if ($session->delete()) {
             $request->session()->flash('message', [
                 'level' => 'success',

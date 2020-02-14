@@ -73,7 +73,7 @@ class Course extends Model
     const PER_PAGE = 15;
     const SPRING = 3;
     const FALL = 9;
-    const DUMMY_ID = 1111;
+    const DUMMY_ID = 11;
 
     protected $ac_year_time = 0;
     protected $ac_year_int = 0;

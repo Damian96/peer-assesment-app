@@ -33,8 +33,8 @@ class SessionsTableSeeder extends Seeder
         }
 
         DB::table($this->table)->insert([
-            'id' => 1111,
-            'course_id' => 1111,
+            'id' => Course::DUMMY_ID,
+            'course_id' => Course::DUMMY_ID,
             'title' => 'N/A',
             'instructions' => 'N/A',
         ]);
