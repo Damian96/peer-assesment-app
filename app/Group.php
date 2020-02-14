@@ -20,13 +20,14 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereMark($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereSessionId($value)
- * @mixin \Eloquent
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $students
  * @property-read int|null $students_count
+ * @property string title
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Group whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Group extends Model
 {
@@ -56,11 +57,11 @@ class Group extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function students()
     {
-        return $this->hasManyThrough('\App\User', '\App\StudentGroup', 'user_id', 'group_id', 'id', 'id');
+        return $this->hasManyThrough('\App\User', '\App\StudentGroup');
     }
 
     /**

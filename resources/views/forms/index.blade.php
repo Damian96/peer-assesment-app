@@ -29,9 +29,6 @@
                             <td>
                                 @if ($form->session_id > 0)
                                     {{ $form->session_title ?? 'N/A' }}
-                                    {{--                                    <a href="{{ url('/sessions/' . $form->session_id . '/view') }}"--}}
-                                    {{--                                       title="View Session {{ $form->session_id }}"--}}
-                                    {{--                                       aria-label="View Session {{ $form->session_id }}">{{ $form->session_title ?? 'N/A' }}</a>--}}
                                 @else<span class="text-muted">{{ 'N/A' }}</span>@endif
                             </td>
                             <td>

@@ -154,6 +154,21 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     ];
 
     /**
+     * @return void
+     */
+    public static function boot()
+    {
+        self::created(function ($model) {
+            /**
+             * @var User $model
+             */
+            if ($model->hasVerifiedEmail())
+                $model->generateApiToken();
+        });
+        parent::boot();
+    }
+
+    /**
      * @see https://www.php.net/manual/en/language.oop5.overloading.php#object.set
      * @param string $key
      * @param mixed $value
@@ -627,6 +642,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 return isset($cid) && $this->isStudent()
                     && $this->studentCourses()->where('courses.id', '=', $cid)
                     && !StudentSession::whereUserId(Auth::user()->id)->where('session_id', '=', $arguments['session']->id)->exists();
+            case 'session.addGroup':
+                return isset($cid) && $this->isStudent()
+                    && !StudentGroup::whereUserId(Auth::user()->id)
+                        ->whereIn('group_id', Group::whereSessionId($arguments['session']->id)->get(['id']))
+                        ->exists();
             case 'user.home':
             case 'verification.notice':
             case 'user.show':

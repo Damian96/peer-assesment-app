@@ -40,3 +40,9 @@ Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {
         return new \App\Http\Resources\SessionCollection(\App\Session::whereNotIn('sessions.id', $except)->get('sessions.*'));
     })->name('sessions.all');
 });
+
+Route::group(['prefix' => '/groups', 'middleware' => 'api'], function () {
+    Route::get('/all', function (Request $request) {
+        return new \App\Http\Resources\GroupCollection(\App\Group::all()->collect());
+    })->name('sessions.all');
+});

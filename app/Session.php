@@ -193,10 +193,33 @@ class Session extends Model
     }
 
     /**
+     * Retrieve the Session's groups
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function groups()
     {
         return $this->hasMany('\App\Group', 'session_id', 'id');
+    }
+
+    /**
+     * Return whether the current user has joined a group.
+     * @param User $user
+     * @return false
+     */
+    public function hasJoinedGroup(User $user)
+    {
+        return $this->groups()->exists() ? $this->groups()
+            ->join('user_group', 'user_group.group_id', 'groups.id')
+            ->join('users', 'users.id', 'user_group.user_id')
+            ->where('users.id', '=', $user->id)->exists() : false;
+    }
+
+    /**
+     * Return whether the Session has any groups
+     * @return bool
+     */
+    public function hasGroups()
+    {
+        return $this->groups()->exists();
     }
 }

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use App\Form;
+use App\Group;
 use App\Question;
 use App\Review;
 use App\Rules\DateCompare;
 use App\Session;
+use App\StudentGroup;
 use App\StudentSession;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
@@ -49,9 +51,14 @@ class SessionController extends Controller
             ]
         ];
         switch ($action) {
+            case 'addGroup':
+                return [
+                    '_method' => 'required|in:_POST',
+                    'title' => 'required|min:10|max:255',
+                ];
             case 'fillin':
                 return [
-                    '_method' => 'required,in:_POST',
+                    '_method' => 'required|in:_POST',
                 ];
             case 'create':
             case 'store':
@@ -439,5 +446,42 @@ class SessionController extends Controller
         ]);
         return redirect()->action('SessionController@index')
             ->withHeaders($request->headers->all());
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     * @return
+     * @throws \Throwable
+     */
+    public function addGroup(Request $request, Session $session)
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+
+        if (!$validator->valid()) {
+            return redirect()->back()
+                ->withErrors($validator->errors())
+                ->with('errors', $validator->errors());
+        }
+
+        $group = new Group(['name' => $request->get('title'), 'session_id' => $session->id]);
+        try {
+            $group->saveOrFail();
+            $joined = new StudentGroup(['user_id' => Auth::user()->id, 'group_id' => $group->id]);
+            $joined->saveOrFail();
+        } catch (\Throwable $e) {
+            throw_if(env('APP_DEBUG', false), $e);
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Error!',
+                'body' => "Could not create {$group->title}"
+            ]);
+        }
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'Success!',
+            'body' => "You have created & joined the Group {$group->title} successfully!"
+        ]);
+        return redirect()->back();
     }
 }

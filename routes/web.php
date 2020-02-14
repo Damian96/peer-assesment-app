@@ -59,7 +59,8 @@ Route::match(['get'], '/sessions', 'SessionController@index')->name('session.ind
 //Route::match(['get'], '/courses/{course}/sessions', 'SessionController@index')->name('session.index');
 Route::group(['prefix' => '/sessions'], function () {
     Route::match(['get'], 'create/{course?}', 'SessionController@create')->name('session.create');
-    Route::match(['post'], '/store  ', 'SessionController@store')->name('session.store');
+    Route::match(['post'], '/store', 'SessionController@store')->name('session.store');
+    Route::match(['post'], '{session}/add-group', 'SessionController@addGroup')->name('session.addGroup');
     Route::match(['get'], '{session}/view', 'SessionController@show')->name('session.view');
     Route::match(['get'], '{session}/fill', 'SessionController@fill')->name('session.fill');
     Route::match(['post'], '{session}/fillin', 'SessionController@fillin')->name('session.fillin');
