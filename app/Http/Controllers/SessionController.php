@@ -133,11 +133,16 @@ class SessionController extends Controller
     public function index(Request $request)
     {
         $title = 'My Sessions';
+        $submitted = StudentSession::whereUserId(Auth::user()->id);
         $sessions = Session::query()
             ->select('sessions.*')
-            ->leftJoin('student_session', 'student_session.session_id', 'sessions.id')
+            ->join('courses', 'courses.id', 'sessions.course_id')
+            ->join('student_course', 'student_course.course_id', 'courses.id')
             ->where('sessions.id', '!=', Course::DUMMY_ID)
-            ->whereNull('student_session.session_id');
+            ->where('student_course.user_id', '=', Auth::user()->id)
+            ->whereNotIn('sessions.id', $submitted->exists() ? $submitted->get(['session_id'])->toArray() : []);
+//            ->leftJoin('student_session', 'student_session.session_id', 'sessions.id')
+//            ->whereNull('student_session.session_id');
         $sessions = $sessions->paginate(self::PER_PAGE);
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
@@ -337,7 +342,6 @@ class SessionController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        dd($request->all());
         foreach ($request->get('questions') as $id => $q) {
             try {
                 $question = Question::findOrFail($id);
@@ -371,13 +375,14 @@ class SessionController extends Controller
                         'type' => 'p',
                     ]);
                     break;
+                case 'criteria': // mark
                 case 'eval': // mark
                     foreach ($q[key($q)] as $uid => $m) {
                         $r = new Review([
                             'question_id' => $question->id,
                             'sender_id' => Auth::user()->id,
                             'recipient_id' => $uid,
-                            'type' => 'e',
+                            'type' => key($q) == 'criteria' ? 'c' : 'e',
                             'mark' => $m,
                         ]);
                         try {
@@ -415,12 +420,14 @@ class SessionController extends Controller
             }
         }
 
-        $filled = new StudentSession(['user_id' => Auth::user()->id, 'session_id' => $session->id]);
+        // @TODO: calculate mark
+        $filled = new StudentSession(['user_id' => Auth::user()->id, 'session_id' => $session->id, 'mark' => 0]);
         $filled->save();
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'You have successfully submitted the Form!',
         ]);
-        return redirect()->action('SessionController@index');
+        return redirect()->action('SessionController@index')
+            ->withHeaders($request->headers->all());
     }
 }

@@ -624,7 +624,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         switch ($ability) {
             case 'session.fillin':
             case 'session.fill':
-                return isset($cid) && $this->isStudent() && $this->studentCourses()->where('courses.id', '=', $cid);
+                return isset($cid) && $this->isStudent()
+                    && $this->studentCourses()->where('courses.id', '=', $cid)
+                    && !StudentSession::whereUserId(Auth::user()->id)->where('session_id', '=', $arguments['session']->id)->exists();
             case 'user.home':
             case 'verification.notice':
             case 'user.show':

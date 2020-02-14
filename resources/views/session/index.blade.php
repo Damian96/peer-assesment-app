@@ -41,7 +41,7 @@
                     @foreach($sessions as $session)
                         <tr>
                             <td>{{ $session->title_full }}</td>
-                            <td>{{ $session->deadline }}</td>
+                            <td>{{ $session->deadline_full }}</td>
                             @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())
                                 <td class="action-cell">
                                     <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
@@ -72,11 +72,17 @@
                 {{ $sessions->links() }}
             @else
                 @if (Auth::user()->can('session.create'))
-                    <h2>You do not have any Sessions yet!</h2>
+                    <h4 class="text-warning">You do not have any Sessions yet!</h4>
                     <p>
                         <a class="btn btn-primary" href="{{ url('/sessions/create/') }}"
                            title="Add Session"
                            aria-roledescription="Add Session">Add Session</a>
+                    </p>
+                @elseif (Auth::user()->isStudent())
+                    <h4 class="text-success">Congratulations! You have submitted all registered Sessions.</h4>
+                    <p class="text-justify">
+                        We will notify you when there is a new Session, by sending you an email to:
+                        <strong>{{ Auth::user()->email }}</strong>
                     </p>
                 @endif
             @endif

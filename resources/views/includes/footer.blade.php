@@ -4,7 +4,7 @@
             Powered by <a title="Laravel" target="_blank" href="https://laravel.com">Laravel Framework</a>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-6 text-left">
-            Timezone: {{ config('app.timezone') }}
+            Timezone: <strong>{{ config('app.timezone') }}</strong>
         </div>
     </div>
     <div class="row">
