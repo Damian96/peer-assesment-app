@@ -44,8 +44,6 @@
                             <td>{{ $session->deadline }}</td>
                             @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())
                                 <td class="action-cell">
-                                    <a href="{{ url('/sessions/' . $session->id . '/view') }}"
-                                       class="material-icons">link</a>
                                     <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
                                        class="material-icons text-warning">edit</a>
                                     <form method="POST" action="{{ url('/sessions/' . $session->id . '/delete') }}"

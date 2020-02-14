@@ -28,9 +28,10 @@
                             <td>{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
                             <td>
                                 @if ($form->session_id > 0)
-                                    <a href="{{ url('/sessions/' . $form->session_id . '/view') }}"
-                                       title="View Session {{ $form->session_id }}"
-                                       aria-label="View Session {{ $form->session_id }}">{{ $form->session_title ?? 'N/A' }}</a>
+                                    {{ $form->session_title ?? 'N/A' }}
+                                    {{--                                    <a href="{{ url('/sessions/' . $form->session_id . '/view') }}"--}}
+                                    {{--                                       title="View Session {{ $form->session_id }}"--}}
+                                    {{--                                       aria-label="View Session {{ $form->session_id }}">{{ $form->session_title ?? 'N/A' }}</a>--}}
                                 @else<span class="text-muted">{{ 'N/A' }}</span>@endif
                             </td>
                             <td>

@@ -65,8 +65,10 @@ Breadcrumbs::for('session.create', function ($trail, $course = null) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view'))
+    if (isset($course) && (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view')))
         $trail->push('Course ' . $course->code, route('course.view', $course));
+    if (!isset($course) && (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index')))
+        $trail->push('My Sessions', route('session.index'));
 
     $trail->push('Create Session', route('session.create'));
 });
@@ -77,7 +79,7 @@ Breadcrumbs::for('session.edit', function ($trail, $session) {
     $trail->parent('courses');
 
     if (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index'))
-        $trail->push('Active Sessions', route('session.index'));
+        $trail->push('My Sessions', route('session.index'));
 
     $trail->push('Edit Session', route('session.edit', $session));
 });

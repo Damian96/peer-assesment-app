@@ -31,7 +31,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereUpdatedAt($value)
  * @property int $session_id
- * @property string $open_data
  * @property-read \App\Form $form
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenData($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereSessionId($value)
@@ -56,6 +55,10 @@ class Session extends Model
         switch ($name) {
             case 'course_title':
                 return $this->course()->exists() ? $this->course()->first()->title : 'N/A';
+            case 'open_date_int':
+                return Carbon::createFromFormat(config('constants.date.stamp'), $this->open_date, config('app.timezone'))->timestamp;
+            case 'deadline_int':
+                return Carbon::createFromFormat(config('constants.date.stamp'), $this->deadline, config('app.timezone'))->timestamp;
             case 'deadline_full':
                 return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
             case 'title_full':
@@ -63,11 +66,11 @@ class Session extends Model
             case 'instructor_fullname':
             case 'owner_name':
             case 'owner_fullname':
-            return $this->course ? $this->course->instructor_fullname : 'N/A';
+                return $this->course ? $this->course->instructor_fullname : 'N/A';
             case 'owner':
             case 'owner_id':
             case 'instructor_id':
-            return $this->course ? $this->course->user_id : 'N/A';
+                return $this->course ? $this->course->user_id : 'N/A';
             case 'department':
             case 'department_title':
                 return $this->course ? $this->course->department_title : 'N/A';

@@ -129,16 +129,16 @@
                 dateFormat: 'dd-mm-yy',
                 minDate: 1,
                 maxDate: 6 * 31,
-                defaultDate: '{{ old('deadline', 1) }}',
+                defaultDate: '{{ old('deadline', isset($session) ? date('d-m-Y', $session->deadline_int) : null) }}',
             });
-            $('#deadline').datepicker('setDate', '{{ old('deadline', null) }}');
+            $('#deadline').datepicker('setDate', '{{ old('deadline', isset($session) ? date('d-m-Y', $session->deadline_int) : null) }}');
             $("#open_date").datepicker({
                 dateFormat: 'dd-mm-yy',
                 minDate: 1,
                 maxDate: 6 * 31,
-                defaultDate: '{{ old('open_date', 1) }}',
+                defaultDate: '{{ old('deadline', isset($session) ? date('d-m-Y', $session->open_date_int) : null) }}',
             });
-            $('#open_date').datepicker('setDate', '{{ old('open_date', null) }}');
+            $('#open_date').datepicker('setDate', '{{ old('deadline', isset($session) ? date('d-m-Y', $session->open_date_int) : null) }}');
             // Course custom ComboBox jQueryUI
             $('#course').combobox();
             @if ($errors->has('studentid'))

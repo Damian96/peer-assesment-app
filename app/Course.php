@@ -59,6 +59,7 @@ use Laravel\Scout\Searchable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereUserId($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $students
  * @property-read int|null $students_count
+ * @property int ac_year_year
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereDepartment($value)
  */
 class Course extends Model
@@ -70,7 +71,7 @@ class Course extends Model
     public $incrementing = true;
     public $perPage = 15;
     const PER_PAGE = 15;
-    const SPRING = 5;
+    const SPRING = 3;
     const FALL = 9;
     const DUMMY_ID = 1111;
 
@@ -152,10 +153,12 @@ class Course extends Model
                 return $this->ac_year_carbon->format(config('constants.date.stamp'));
             case 'ac_year_full':
                 return $this->ac_year_carbon->format(config('constants.date.full'));
+            case 'ac_year_year':
+                return $this->ac_year_carbon->year;
             case 'ac_year_month':
                 return $this->ac_year_carbon->month;
             case 'ac_year_pair':
-                return sprintf("%s-%s", $this->ac_year_carbon->year, substr($this->ac_year_carbon->year + 1, -2));
+                return sprintf("%s-%s", $this->ac_year_carbon->year - 1, substr($this->ac_year_carbon->year, -2));
             case 'status_full':
                 return $this->status ? 'Enabled' : 'Disabled';
             case 'department_title':
@@ -285,17 +288,30 @@ class Course extends Model
     /**
      * Returns whether the course has been already copied to the current academic year
      * @return bool
+     * @throws \Throwable
      */
     public function copied()
     {
         $now = Carbon::now(config('app.timezone'));
-        if ($this->ac_year_month > self::FALL) $ac_year = $now->setMonth(9)->startOfMonth()->startOfDay();
-        else $ac_year = $now->subYear()->setMonth(9)->startOfMonth()->startOfDay();
+        $ac_year = Carbon::createFromDate($this->ac_year_year, $this->ac_year_month, 1, config('app.timezone'));
+
+        $date = null;
+        if ($now->year == $ac_year->year) return true;
+        elseif ($ac_year->year < $now->year) {
+            if ($now->month > self::FALL && $now->month <= self::SPRING + 4)
+                $date = $now->setMonth(self::FALL)->setDay(1)->startOfDay()->format(config('constants.date.stamp'));
+            else
+                $date = $now->setMonth(self::SPRING + 4)->setDay(1)->startOfDay()->format(config('constants.date.stamp'));
+        } else {
+            abort_if(env('APP_DEBUG', false), 500, "The academic year {$this->ac_year} is invalid.");
+            return false;
+        }
 
         return DB::table($this->table)
             ->where('code', '=', $this->code)
             ->where('status', '=', '1')
-            ->where('ac_year', '>=', $ac_year->toDateString())
+            ->where('ac_year', '>=', $date)
+            ->whereNotIn('id', [$this->id])
             ->exists();
     }
 

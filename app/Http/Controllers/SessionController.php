@@ -233,9 +233,14 @@ class SessionController extends Controller
                 ->with('errors', $validator->errors());
         }
 
+        $now = Carbon::now(config('app.timezone'))
+            ->format(config('constants.date.stamp'));
         $request->request->add([
             'course_id' => $request->get('course', false),
-            'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', Carbon::now(config('app.timezone'))->format(config('constants.date.stamp')))), config('app.timezone'))->format(config('constants.date.stamp')),
+            'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', $now)), config('app.timezone'))
+                ->format(config('constants.date.stamp')),
+            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', $now)), config('app.timezone'))
+                ->format(config('constants.date.stamp')),
         ]);
         if ($request->get('form', 0) == 1) {
             $form = Form::find(1)->replicate()->fill([
@@ -248,7 +253,7 @@ class SessionController extends Controller
                 return redirect()->back(302, $request->headers->all());
             }
         }
-        if ($session->update($request->except(['course', 'token', '_method']))) {
+        if ($session->update($request->except(['course', '_token', '_method', 'form']))) {
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => sprintf("Session %s has been saved successfully!", $session->id),

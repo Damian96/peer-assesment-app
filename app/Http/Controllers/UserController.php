@@ -304,7 +304,11 @@ class UserController extends Controller
             'user' => Auth::user(),
             'course' => $course,
             'students' => User::getAllStudents()->filter(function ($student) use ($course) {
-                return !$student->isRegistered($course->id);
+                /**
+                 * @var User $student
+                 * @var Course $course
+                 */
+                return !$student->isRegistered($course->id) && !$student->id == Course::DUMMY_ID;
             }),
         ]), 200, $request->headers->all());
     }

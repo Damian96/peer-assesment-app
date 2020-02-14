@@ -350,7 +350,7 @@
                         delimiter: ',',
                         header: true,
                         // @FIXME: remove me
-                        preview: 5,
+                        // preview: 5,
                         skipEmptyLines: true,
                         transformHeader: function (head) {
                             head = head.toLowerCase().trim();

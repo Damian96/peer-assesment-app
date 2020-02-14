@@ -390,6 +390,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         return self::whereInstructor('0')
             ->where('admin', '=', '0')
+            ->where('id', '!=', Course::DUMMY_ID)
             ->whereNotNull('email_verified_at')
             ->get();
     }

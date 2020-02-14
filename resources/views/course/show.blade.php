@@ -56,20 +56,20 @@
                     @endif
                     @if (Auth::user()->ownsCourse($course->id))
                         <td class="action-cell text-right">
-                            {{--                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]) && !$course->copied())--}}
-                            <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
-                                @method('POST')
-                                @csrf
-                                <button type="submit"
-                                        id="copy-course"
-                                        class="btn btn-lg btn-link material-icons text-warning"
-                                        title="Copy to current Academic Year"
-                                        data-title="Copy to current Academic Year?"
-                                        data-content="This will create a duplicate."
-                                        aria-label="Copy to current Academic Year">next_week
-                                </button>
-                            </form>
-                            {{--                            @endif--}}
+                            @if (!$course->copied())
+                                <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
+                                    @method('POST')
+                                    @csrf
+                                    <button type="submit"
+                                            id="copy-course"
+                                            class="btn btn-lg btn-link material-icons text-warning"
+                                            title="Copy to current Academic Year"
+                                            data-title="Copy to current Academic Year?"
+                                            data-content="This will create a duplicate."
+                                            aria-label="Copy to current Academic Year">next_week
+                                    </button>
+                                </form>
+                            @endif
                             @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
                                 <a href="{{ url('/courses/' . $course->id . '/edit') }}"
                                    class="material-icons text-warning"
@@ -163,6 +163,7 @@
         @if (Auth::user()->ownsCourse($course->id))
             <div class="col-sm-12 col-md-12">
                 @if ($course->sessions()->first())
+                    <h3>Linked Sessions</h3>
                     <table class="table table-striped">
                         <caption>This course has {{ $course->sessions()->count() }} Sessions</caption>
                         <thead>
@@ -170,6 +171,7 @@
                             <th scope="row">ID</th>
                             <th class="text-center">Title</th>
                             <th class="text-center">Deadline</th>
+                            <th class="text-center">Open Date</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -178,9 +180,15 @@
                                 <th scope="row">{{ $s->id }}</th>
                                 <td class="text-center">{{ $s->title }}</td>
                                 <td class="text-center">{{ $s->deadline }}</td>
+                                <td class="text-center">{{ $s->open_date }}</td>
                             </tr>
                         @endforeach
                         </tbody>
+                        <tfoot>
+                        <td class="text-center text-muted" colspan="4">Note: Sessions' deadline and open date are always
+                            at midnight
+                        </td>
+                        </tfoot>
                     </table>
                 @else
                     <h3 class="text-warning my-3">This course does not have any Sessions</h3>
