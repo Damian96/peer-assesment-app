@@ -9,7 +9,7 @@
         'action' => url('/sessions/store'),
         'method' => 'POST',
         'session' => isset($session) ? $session : null,
-        'course' => $course,
+        'course' => isset($course) ? $course : null,
         'courses' => isset($courses) ? $courses : null,
         'forms' => null,
         'messages' => $messages,

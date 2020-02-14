@@ -6,7 +6,7 @@
     @if (isset($course) && !isset($courses))
         <input type="hidden" class="hidden" value="{{ $course->id }}" name="course" id="course">
     @else
-        @php $course = (isset($session) && $session->course()->exists()) ? $session->course()->first() : null; @endphp
+        @php $course = isset($course) ? $course : ((isset($session) && $session->course()->exists()) ? $session->course()->first() : null); @endphp
         <div class="form-group">
             <label class="form-text" for="course">Course</label>
             @if (!empty($courses))
