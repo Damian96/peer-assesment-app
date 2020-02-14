@@ -152,7 +152,15 @@ class CourseController extends Controller
         }
 
         $query->orderBy('courses.created_at', 'desc');
-        $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $request->get('page', 1));
+        $page = intval($request->get('page', 1));
+        if ($query->count() <= Course::PER_PAGE * $page)
+            $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $page);
+        else {
+            while ($query->count() < Course::PER_PAGE * $page)
+                $page--;
+            $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $page);
+        }
+
         return response(view('course.index', compact('title', 'courses', 'ac_year')), 200, $request->headers->all());
     }
 

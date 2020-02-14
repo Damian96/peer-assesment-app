@@ -9,23 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class RedirectIfAuthenticated
 {
-
-    /**
-     * FIXME: remove create,store
-     * @var array The allowed routes of the user
-     */
-    protected $allowed = [
-        'user.login',
-        'user.verify',
-        'user.auth',
-        'user.create',
-        'user.store',
-        'user.forgot',
-        'user.forgotSend',
-        'user.reset',
-        'user.update',
-    ];
-
     /**
      * Handle an incoming request.
      *

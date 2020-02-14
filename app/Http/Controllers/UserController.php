@@ -31,7 +31,7 @@ class UserController extends Controller
      * @deprecated
      * @var string
      */
-    protected $redirectTo = '/index';
+//    protected $redirectTo = '/index';
 
     /**
      * Create a new controller instance.
@@ -47,20 +47,18 @@ class UserController extends Controller
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
+        $this->middleware('verified')->except([
+            'logout', 'login', 'auth', # login-logout
+            'create', 'store', # user-register
+            'verify', 'verified', # verify-email/password
+        ]);
         $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
             'create', 'store', # user-register
             'addStudent', 'storeStudent',
-            'verify', # verify-email/password
+            'verify', 'verified', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
-        // @FIXME:  Route [verification.notice] not defined.
-//        $this->middleware('verified')->except([
-//            'logout', 'login', 'auth', # login-logout
-//            'create', 'store', # user-register
-//            'verify', # verify-email/password
-//            'forgot', 'forgotSend', 'reset', 'update', # reset-password
-//        ]);
     }
 
     /**
@@ -252,17 +250,6 @@ class UserController extends Controller
         $courses = $user->courses()->count();
         $sessions = $user->sessions();
         $forms = $user->forms()->count();
-
-//        if (!$user->hasVerifiedEmail()) {
-//            $request->session()->flash('emailVerifiedSent', true);
-//            $user->sendEmailVerificationNotification();
-//            $request->session()->flash('message', [
-//                'level' => 'info',
-//                'heading' => 'You need to verify your email',
-//                'body' => 'We\'ve sent a link to ' . $user->getEmailForVerification() . '.' .
-//                    'Follow the instructions there to complete your registration.'
-//            ]);
-//        }
 
         return response(view('user.home', compact('title', 'user', 'students', 'instructors', 'enrolled', 'courses', 'sessions', 'forms')), 200, $request->headers->all());
     }
@@ -762,5 +749,24 @@ class UserController extends Controller
             'body' => 'Check you inbox for our email, and follow the instructions to reset your password.'
         ]);
         return redirect()->action('UserController@login', [], 302);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function verified(Request $request)
+    {
+        $title = 'Please verify your email';
+//            $request->session()->flash('emailVerifiedSent', true);
+//            $user->sendEmailVerificationNotification();
+
+        $request->session()->flash('message', [
+            'level' => 'info',
+            'heading' => 'You need to verify your email',
+            'body' => 'We\'ve sent a link to ' . $request->user()->getEmailForVerification() . '.\n' .
+                'Follow the instructions there to complete your registration.'
+        ]);
+        return \response(view('user.verified-notice', compact('title')), 200, $request->headers->all());
     }
 }

@@ -35,6 +35,9 @@ Route::match(['get'], '/login', 'UserController@login')->name('login');
 Route::match(['post'], '/auth', 'UserController@auth')->name('user.auth');
 Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 
+Route::group(['prefix' => '/users'], function () {
+    Route::match(['get'], '/verified', 'UserController@verified')->name('verification.notice');
+});
 # COURSE
 Route::match(['get'], '/courses', 'CourseController@index')->name('course.index');
 Route::group(['prefix' => '/courses'], function () {

@@ -337,6 +337,7 @@ class SessionController extends Controller
                 ->with('errors', $validator->errors());
         }
 
+        dd($request->all());
         foreach ($request->get('questions') as $id => $q) {
             try {
                 $question = Question::findOrFail($id);

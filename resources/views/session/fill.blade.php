@@ -9,7 +9,12 @@
         @method('POST')
         @csrf
 
-        <h3 class="">{{ $form->title }}</h3>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <h3 class="d-block">{{ $form->title }}</h3>
+            <div class="form-text d-block text-info">
+                {{ $session->instructions }}
+            </div>
+        </div>
         @foreach($questions as $i => $q)
             @php
                 $teammates = Auth::user()->teammates()->collect()
@@ -195,10 +200,17 @@
             return sum;
         };
         $(function () {
+            if ($('.criteria').find("input[type='number']").first().val().length) {
+                $('.criteria').each(() => {
+                    calculateGroupPoints($(this));
+                });
+            }
             $(document).on('submit', 'form', function (e) {
                 $(this).find('.criteria').each(function () {
                     let sum = parseInt($(this).data('sum'));
                     if (sum < 100) {
+                        window.scrollTo(window.scrollX, this.getClientRects()[0].y);
+                        $(this).highlight(2000);
                         $(this).find('.invalid-feedback').text('Total points should be 100');
                         e.preventDefault();
                         e.stopImmediatePropagation();

@@ -26,7 +26,15 @@
         ]) !!}
     @endif
 
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        window.urlParams = urlParams;
+    </script>
+
     <script type="text/javascript" defer>
+        $.fn.highlight = function (speed = 3000) {
+            this.effect("highlight", {}, speed);
+        };
         $.validator.setDefaults({
             onkeyup: false,
             errorPlacement: function (error, element) {
@@ -126,22 +134,22 @@
                                href="{{ url('/courses/create') }}">Create</a>
                         </div>
                     </li>
-                        <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'session.') !== false) ? ' active' : '' }}">
-                            <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">Sessions</a>
-                            <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                                <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.index') !== false) ? ' active' : '' }}"
-                                   href="{{ url('/sessions') }}">My Sessions</a>
-                                <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.create') !== false) ? ' active' : '' }}"
-                                   href="{{ url('/sessions/create') }}">Create</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'form.') !== false) ? ' active' : '' }}">
-                            <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">Forms</a>
-                            <div class="dropdown-menu" aria-labelledby="course-dropdown">
-                                <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'form.index') !== false) ? ' active' : '' }}"
-                                   href="{{ url('/forms/') }}">My Forms</a>
+                    <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'session.') !== false) ? ' active' : '' }}">
+                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">Sessions</a>
+                        <div class="dropdown-menu" aria-labelledby="course-dropdown">
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.index') !== false) ? ' active' : '' }}"
+                               href="{{ url('/sessions') }}">My Sessions</a>
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.create') !== false) ? ' active' : '' }}"
+                               href="{{ url('/sessions/create') }}">Create</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'form.') !== false) ? ' active' : '' }}">
+                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">Forms</a>
+                        <div class="dropdown-menu" aria-labelledby="course-dropdown">
+                            <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'form.index') !== false) ? ' active' : '' }}"
+                               href="{{ url('/forms/') }}">My Forms</a>
                             <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'form.create') !== false) ? ' active' : '' }}"
                                href="{{ url('/forms/create') }}">Create</a>
                         </div>

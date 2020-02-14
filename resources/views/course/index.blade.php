@@ -57,18 +57,6 @@
                                        title="View {{ $course->instructor_name }} Profile">{{ $course->instructor_name }}</a>
                                 </td>
                             @endif
-                            {{--                                @if(Auth::user()->can('course.edit', ['id'=>$course->course_id]))--}}
-                            {{--                                    <a href="{{ url('/courses/' . $course->course_id . '/edit') }}" class="material-icons"--}}
-                            {{--                                       title="Update Course {{ $course->code }}"--}}
-                            {{--                                       aria-label="Update Course {{ $course->code }}">edit</a>--}}
-                            {{--                                @endif--}}
-                            {{--                                @if(Auth::user()->can('session.index', ['cid'=>$course->course_id]))--}}
-                            {{--                                    <a href="{{ url('/courses/' . $course->course_id . '/sessions') }}"--}}
-                            {{--                                       class="material-icons"--}}
-                            {{--                                       title="View Sessions of {{ $course->code }}"--}}
-                            {{--                                       aria-label="View Sessions of {{ $course->code }}">assignment</a>--}}
-                            {{--                                @endif--}}
-                            {{--                                <a href="{{ url('/courses/' . $course->course_id . '/delete') }}" class="material-icons">delete_forever</a>--}}
                         </tr>
                     @endforeach
                     </tbody>
@@ -93,6 +81,10 @@
             {!! "let cols = [{col: 0, order: 'asc'}];" !!}
             @endif
             $('#my-courses').tablesorter({tablesorterColumns: cols});
+
+            $('a.page-link').each((i, element) => {
+                element.href += '&ac_year=' + urlParams.get('ac_year');
+            });
         });
     </script>
 @endsection

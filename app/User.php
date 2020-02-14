@@ -626,6 +626,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'session.fill':
                 return isset($cid) && $this->isStudent() && $this->studentCourses()->where('courses.id', '=', $cid);
             case 'user.home':
+            case 'verification.notice':
             case 'user.show':
             case 'user.profile':
             case 'course.index':
