@@ -233,7 +233,7 @@ footer {
   overflow-y: hidden;
   position: fixed;
   bottom: 0;
-  z-index: 2147483647;
+  z-index: 2147483640;
 }
 
 .card {
@@ -302,10 +302,24 @@ footer {
   user-select: none;
 }
 
-.form-group {
-  input[type="radio"] {
-    &:hover {
+//.form-group {
+//  input[type="radio"] {
+//    &:hover {
+//
+//    }
+//  }
+//}
 
-    }
+.alert.d-inline-block {
+  min-width: 350px;
+  min-height: 150px;
+  position: fixed;
+  left: 100%;
+  top: 100%;
+  z-index: 2147483641;
+
+  .btn {
+    max-width: 26px;
+    max-height: 25px;
   }
 }

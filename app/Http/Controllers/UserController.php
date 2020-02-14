@@ -48,9 +48,11 @@ class UserController extends Controller
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
         $this->middleware('verified')->except([
+            'profile',
             'logout', 'login', 'auth', # login-logout
             'create', 'store', # user-register
             'verify', 'verified', # verify-email/password
+            'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
         $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
@@ -737,7 +739,10 @@ class UserController extends Controller
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'You need to verify your e-mail!',
-                'body' => sprintf("We can not send you the reset e-mail, until you verify your email. If you still can not remember your password, please contact us at <a href='mailto:%s' title='Administrator'>%s</a>", config('app.admin.address'), config('app.admin.address'))
+                'body' => "We can not send you the reset e-mail, until you verify your email.<br>If you still can not remember your password, please contact us at " .
+                    html()->a('mailto:' . config('app.admin.address'), config('app.admin.address'))
+                        ->attribute('title', 'Administrator')
+                        ->attribute('aria-label', 'Administrator')
             ]);
             return redirect()->action('UserController@login', [], 302);
         }
@@ -758,8 +763,8 @@ class UserController extends Controller
     public function verified(Request $request)
     {
         $title = 'Please verify your email';
-//            $request->session()->flash('emailVerifiedSent', true);
-//            $user->sendEmailVerificationNotification();
+        $request->session()->flash('emailVerifiedSent', true);
+        Auth::user()->sendEmailVerificationNotification();
 
         $request->session()->flash('message', [
             'level' => 'info',

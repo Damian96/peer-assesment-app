@@ -1,20 +1,20 @@
 {
-    "_readme": [
-        "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-        "This file is @generated automatically"
-    ],
-    "content-hash": "01dc7c8fd39d7f4d0e180867f1e4b674",
-    "packages": [
-        {
-            "name": "biscolab/laravel-recaptcha",
-            "version": "4.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/biscolab/laravel-recaptcha.git",
-                "reference": "3e990f54b712d5c82c004139840f48dd34662cff"
-            },
-            "dist": {
+  "_readme": [
+    "This file locks the dependencies of your project to a known state",
+    "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+    "This file is @generated automatically"
+  ],
+  "content-hash": "cb0d6aecb3cd0ee291651a03d5e68587",
+  "packages": [
+    {
+      "name": "biscolab/laravel-recaptcha",
+      "version": "4.0.1",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/biscolab/laravel-recaptcha.git",
+        "reference": "3e990f54b712d5c82c004139840f48dd34662cff"
+      },
+      "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/biscolab/laravel-recaptcha/zipball/3e990f54b712d5c82c004139840f48dd34662cff",
                 "reference": "3e990f54b712d5c82c004139840f48dd34662cff",
@@ -1673,26 +1673,94 @@
                     "email": "thibaud@aztech.io"
                 }
             ],
-            "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
-            "homepage": "https://github.com/ramsey/uuid",
-            "keywords": [
-                "guid",
-                "identifier",
-                "uuid"
-            ],
-            "time": "2019-12-17T08:18:51+00:00"
+          "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
+          "homepage": "https://github.com/ramsey/uuid",
+          "keywords": [
+            "guid",
+            "identifier",
+            "uuid"
+          ],
+          "time": "2019-12-17T08:18:51+00:00"
+        },
+    {
+      "name": "spatie/laravel-html",
+      "version": "2.24.0",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/spatie/laravel-html.git",
+        "reference": "577ac734b4a1e8e5ab7a5a382d10b4e57f8020d5"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/spatie/laravel-html/zipball/577ac734b4a1e8e5ab7a5a382d10b4e57f8020d5",
+        "reference": "577ac734b4a1e8e5ab7a5a382d10b4e57f8020d5",
+        "shasum": ""
+      },
+      "require": {
+        "illuminate/http": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0",
+        "illuminate/support": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0",
+        "php": "^7.1"
+      },
+      "require-dev": {
+        "mockery/mockery": "^1.0",
+        "phpunit/phpunit": "^7.0|^8.0"
+      },
+      "type": "library",
+      "extra": {
+        "laravel": {
+          "providers": [
+            "Spatie\\Html\\HtmlServiceProvider"
+          ],
+          "aliases": {
+            "Html": "Spatie\\Html\\Facades\\Html"
+          }
+        }
+      },
+      "autoload": {
+        "psr-4": {
+          "Spatie\\Html\\": "src"
+        },
+        "files": [
+          "src/helpers.php"
+        ]
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Sebastian De Deyne",
+          "email": "sebastian@spatie.be",
+          "homepage": "https://spatie.be",
+          "role": "Developer"
         },
         {
-            "name": "swiftmailer/swiftmailer",
-            "version": "v6.2.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "149cfdf118b169f7840bbe3ef0d4bc795d1780c9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/149cfdf118b169f7840bbe3ef0d4bc795d1780c9",
+          "name": "Freek Van der Herten",
+          "email": "freek@spatie.be",
+          "homepage": "https://spatie.be",
+          "role": "Developer"
+        }
+      ],
+      "description": "A fluent html builder",
+      "homepage": "https://github.com/spatie/laravel-html",
+      "keywords": [
+        "html",
+        "spatie"
+      ],
+      "time": "2019-09-24T19:35:00+00:00"
+    },
+    {
+      "name": "swiftmailer/swiftmailer",
+      "version": "v6.2.3",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/swiftmailer/swiftmailer.git",
+        "reference": "149cfdf118b169f7840bbe3ef0d4bc795d1780c9"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/149cfdf118b169f7840bbe3ef0d4bc795d1780c9",
                 "reference": "149cfdf118b169f7840bbe3ef0d4bc795d1780c9",
                 "shasum": ""
             },

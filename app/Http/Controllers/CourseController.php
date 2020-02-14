@@ -23,7 +23,7 @@ class CourseController extends Controller
         $this->middleware('web');
         $this->middleware('guest');
         $this->middleware('role');
-//        $this->middleware('verified');
+        $this->middleware('verified');
     }
 
     /**
@@ -316,11 +316,21 @@ class CourseController extends Controller
      * @method DELETE
      * @param Request $request
      * @param Course $course
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      * @throws \Exception
      */
     public function destroy(Request $request, Course $course)
     {
+        if ($course->sessions()->exists()) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'Cannot delete Course!',
+                'body' => 'This course is associated another Session(s), and cannot be deleted!'
+                    . '<br>' . 'If you truly want to delete it, please delete its associated Session(s) first.'
+            ]);
+            return redirect()->back(302);
+        }
+
         try {
             if ($course->delete()) {
                 $request->session()->flash('message', [

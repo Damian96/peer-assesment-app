@@ -32,7 +32,7 @@ class SessionController extends Controller
         $this->middleware('web');
         $this->middleware('guest');
         $this->middleware('role');
-//        $this->middleware('verified');
+        $this->middleware('verified');
     }
 
     /**
