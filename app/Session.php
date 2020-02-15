@@ -4,6 +4,7 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Session
@@ -199,6 +200,18 @@ class Session extends Model
     public function groups()
     {
         return $this->hasMany('\App\Group', 'session_id', 'id');
+    }
+
+    /**
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getUserGroup(User $user)
+    {
+        return DB::table($this->table)
+            ->join('groups', 'groups.session_id', 'sessions.id')
+            ->join('user_group', 'user_group.group_id', 'groups.id')
+            ->where('user_group.user_id', '=', $user->id)->get(['groups.*'])->first();
     }
 
     /**

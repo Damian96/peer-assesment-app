@@ -25,6 +25,9 @@
                     <tr class="tsTitles">
                         <th>Title</th>
                         <th>Deadline</th>
+                        @if (Auth::user()->isStudent())
+                            <th>Group</th>
+                        @endif
                         <th></th>
                     </tr>
                     </thead>
@@ -33,6 +36,9 @@
                         <tr>
                             <td>{{ $session->title_full }}</td>
                             <td>{{ $session->deadline_full }}</td>
+                            @if (Auth::user()->isStudent())
+                                <td class="font-italic">{{ $session->hasJoinedGroup(Auth::user()) ? $session->getUserGroup(Auth::user())->name : 'N/A' }}</td>
+                            @endif
                             @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())
                                 <td class="action-cell">
                                     <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
@@ -213,7 +219,7 @@
                 buttons: {
                     formSubmit: {
                         text: 'Add & Join',
-                        btnClass: 'btn-bluebtn-dup',
+                        btnClass: 'btn-blue',
                         action: function () {
                             if (this.$input[0].checkValidity()) {
                                 this.$form.submit();
@@ -250,7 +256,7 @@
                 buttons: {
                     formSubmit: {
                         text: 'Add & Join',
-                        btnClass: 'btn-blue',
+                        btnClass: 'btn-blue ',
                         action: function () {
                             // console.debug(this, parseInt(this.$select.value));
 
