@@ -1,5 +1,6 @@
 <div class="{{ $template ? 'template' : null }} card col-xs-12 col-sm-12 col-md-12 p-0 my-2">
-    <input name="question[{{ $count ?? '#' }}][type]" type="hidden" class="d-none">
+    <input name="question[{{ $count ?? '#' }}][type]" type="hidden" class="d-none"
+           value="{{ !$template ? $question->type : null }}">
     <!-- Card Title -->
     <div class="col-sm-12 col-md-12 py-2 px-3 card-title-container">
         <h4 class="card-title d-inline"><i class="material-icons">@php
@@ -26,7 +27,7 @@
                         }
                     }
                 @endphp</i><span
-                class="card-title-content">{{ $question->title ?? '' }}</span></h4>
+                class="card-title-content">&nbsp;{{ $question->title ?? '' }}</span></h4>
         <div class="btn-toolbar d-inline float-right">
             <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Delete Question">
                 <button type="button"

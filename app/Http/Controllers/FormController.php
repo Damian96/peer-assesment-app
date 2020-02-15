@@ -251,6 +251,11 @@ class FormController extends Controller
 
         if ($validator->fails()) {
             $request->request->add(['cards' => $request->get('question', [])]);
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Could not save form!',
+                'body' => $validator->errors()->first()
+            ]);
             return redirect()->back(302)
                 ->withInput($request->request->all())
                 ->withErrors($validator->errors())
