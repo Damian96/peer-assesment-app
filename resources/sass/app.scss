@@ -248,8 +248,16 @@ footer {
 }
 
 .card {
+  .card-title-container {
+    background: $info;
+  }
+
   .card-title {
     max-height: 35px;
+
+    .material-icons {
+      color: white;
+    }
 
     .btn-block {
       cursor: default;
@@ -289,6 +297,12 @@ footer {
 
     .add-choice {
       cursor: pointer;
+    }
+
+    label[for*="[question]"] {
+      max-width: 90%;
+      max-height: 20px;
+      overflow: hidden;
     }
   }
 

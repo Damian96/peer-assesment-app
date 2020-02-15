@@ -38,8 +38,8 @@
              */
             return (e.parentElement.querySelector(':hover') === e);
         };
-        $.fn.highlight = function (speed = 3000) {
-            this.effect("highlight", {}, speed);
+        $.fn.highlight = function (speed = 3000, color = 'lightyellow') {
+            this.effect("highlight", {color: color}, speed);
         };
         $.validator.setDefaults({
             onkeyup: false,

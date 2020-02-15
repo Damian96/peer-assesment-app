@@ -211,6 +211,7 @@ class Session extends Model
         return DB::table($this->table)
             ->join('groups', 'groups.session_id', 'sessions.id')
             ->join('user_group', 'user_group.group_id', 'groups.id')
+            ->where('groups.session_id', '=', $this->id)
             ->where('user_group.user_id', '=', $user->id)->get(['groups.*'])->first();
     }
 

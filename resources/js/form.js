@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
         return false;
     }
 
-    let old_data = sessionStorage.getItem(document.querySelector('form').getAttribute('name'));
-    old_data = new URLSearchParams(old_data);
-    window.old_data = old_data;
+    // let old_data = sessionStorage.getItem(document.querySelector('form').getAttribute('name'));
+    // old_data = new URLSearchParams(old_data);
+    // window.old_data = old_data;
     let card_template = $('.card.template').remove();
     window.card_template = card_template;
     let choice_template = card_template.find('.choice').first().clone();
@@ -21,12 +21,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
         let patt = /\[[#\d]\]/i;
         // console.log('replace', count);
         card.attr('data-count', count);
-        card.find('input[name]').each(function () {
+        card.find('input[name]').each(function (i, item) {
             // console.debug($(this), count);
-            $(this).attr('name', this.getAttribute('name').replace(patt, replace));
+            $(item).attr('name', this.getAttribute('name').replace(patt, replace));
         });
-        card.find('label[for]').each(function () {
-            $(this).attr('for', this.getAttribute('for').replace(patt, replace));
+        card.find('label[for]').each(function (i, item) {
+            $(item).attr('for', this.getAttribute('for').replace(patt, replace));
         });
     };
 
@@ -35,12 +35,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
         let key = form.attr('name');
         let data = new URLSearchParams(new FormData(form[0])).toString();
         sessionStorage.setItem(key, data);
-        return true;
+        return data;
     };
 
     window.count = $(".card.col-sm-12").length;
 
     window.addCardListeners = function (card) {
+        // console.debug(card);
         card.find('.card-body').on('shown.bs.collapse', function (e) {
             $(this).closest('.card').find('.close-icon.material-icons').text('keyboard_arrow_up');
             return true;
@@ -50,17 +51,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
             return true;
         });
         card.find('.moveup-question').on('click', function (card, e) {
-            // console.debug(card);
+            // console.debug(card, e);
             let cCount = parseInt(card[0].getAttribute('data-count'));
             let prev = card.prev();
             replaceCardNames(card, cCount - 1);
             replaceCardNames(prev, cCount);
             if (prev.hasClass('card')) {
                 prev.before(card);
-                card.effect('highlight', {}, 1000);
+                card.highlight(500);
             }
-            if (!window.location.href.includes('edit'))
-                storeFormData();
+            // if (!window.location.href.includes('edit'))
+            //     storeFormData();
             return true;
         }.bind(null, card));
         card.find('.movedown-question').on('click', function (card, e) {
@@ -71,16 +72,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
             replaceCardNames(next, cCount);
             if (next.hasClass('card')) {
                 next.after(card);
-                card.effect('highlight', {}, 1000);
+                card.highlight(500);
+                card.find('.bg-info').first().highlight(500);
             }
-            if (!window.location.href.includes('edit'))
-                storeFormData();
+            // if (!window.location.href.includes('edit'))
+            //     storeFormData();
             return true;
         }.bind(null, card));
         card.find('.delete-question').on('click', function (card, e) {
             let i = $(this).data('count');
-            console.debug(card, e, i);
-            array_data.question = array_data.question.splice(i, 1);
+            // console.debug(card, e, i);
+            // array_data.question = array_data.question.splice(i, 1);
             window.count--;
             if (window.count == 1) {
                 // $('#session_id').combobox('enable');
@@ -90,14 +92,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
             card.slideUp('fast', function () {
                 this.remove();
             });
-            if (!window.location.href.includes('edit'))
-                storeFormData();
+            // if (!window.location.href.includes('edit'))
+            //     storeFormData();
             return true;
         }.bind(null, card));
-        card.find('input[name*="[title]"]').on('keyup', function () {
-            let el = $(this).closest('.card').find('.card-title');
-            let title = `${el.data('title')} - ${this.value}`;
-            el.text(title);
+        card.find('input[name*="[title]"]').on('change', function () {
+            $(this).closest('.card').find('.card-title-content').text(` ${this.value}`);
         });
     };
 
@@ -109,22 +109,20 @@ document.addEventListener('DOMContentLoaded', function (e) {
      * @returns {boolean}
      */
     window.createCard = function (type, id, title = null, data = null) {
-        console.debug(arguments);
+        // console.debug(arguments);
 
         // Initialise variables
         let card = card_template.clone();
         let max = 5;
-        let subtitle = '';
+        // let subtitle = '';
         let minlbl = 'Highly Disagree';
         let maxlbl = 'Highly Agree';
         if (data) {
             title = (title ? title : data.title);
             max = data.hasOwnProperty('max') && data.max != null ? data.max : 5;
-            subtitle = ((data.hasOwnProperty('subtitle') && data.subtitle != null) ? data.subtitle : '');
+            // subtitle = ((data.hasOwnProperty('subtitle') && data.subtitle != null) ? data.subtitle : '');
             minlbl = data.hasOwnProperty('minlbl') && data.minlbl != null ? data.minlbl : 'Highly Disagree';
             maxlbl = data.hasOwnProperty('maxlbl') && data.maxlbl != null ? data.maxlbl : 'Highly Agree';
-        } else {
-            title = (title ? title : `${type} - #${window.count}`);
         }
 
         // Add Question type
@@ -135,11 +133,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
             .removeClass('d-none');
 
         // Add card title
-        card.find('[data-title]')
-            .data('title', title)
-            .text(title)
-            .end()
-            .find('input[name*="[title]"]')
+        card.find('.card-title-content').text(title);
+        card.find('input[name*="[title]"]')
             .val(title);
         // .find('input[name*="subtitle"]');
         // .val(subtitle);
@@ -162,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         // remove extras / show specifics
         switch (type) {
             case 'linear-scale':
+                card.find('.card-title > i.material-icons').text('linear_scale');
                 card.find('.scale.d-none').removeClass('d-none').addClass('d-block');
                 card.find('.multiple').remove();
                 card.find('input[name*="[max]"]').val(max);
@@ -170,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 card.find('input[name*=max]').first()[0].onchange();
                 break;
             case 'multiple-choice':
+                card.find('.card-title > i.material-icons').text('radio_button_checked');
                 card.find('.multiple.d-none').removeClass('d-none').addClass('d-block');
                 card.find('.scale').remove();
                 card.find('.add-choice').on('click', addChoice);
@@ -182,11 +179,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 }
                 break;
             case 'eval':
+                card.find('.card-title > i.material-icons').text('filter_5');
+                card.find('.multiple').remove();
+                card.find('.scale').remove();
+                break;
             case 'paragraph':
+                card.find('.card-title > i.material-icons').text('format_align_justify');
                 card.find('.multiple').remove();
                 card.find('.scale').remove();
                 break;
             case 'criteria':
+                card.find('.card-title > i.material-icons').text('account_circle');
                 card.find('.multiple').remove();
                 card.find('.scale').remove();
                 break;
@@ -199,19 +202,15 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
         // Append & Blink & Expand
         $('#card-container').append(card);
-        card.effect('highlight', {}, 1000);
+        card.highlight(500);
         if (!card.find('.card-body').hasClass('show'))
             card.find('.close-question')[0].click();
 
         // Re-enable submit
         $('form').find('button[type=submit]')[0].removeAttribute('disabled');
 
-        if (!window.location.href.includes('edit')) {
-            // Store data to sessionStorage
-            storeFormData();
-        }
-
         window.count++;
+        window.formData = storeFormData();
         return true;
     };
 
@@ -243,80 +242,25 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 $(this).remove();
             });
         } else {
-            choice.effect('highlight', {}, 1000);
+            choice.highlight(500);
         }
         return true;
     };
 
     $('button.question-type').on('click', function () {
-        // $('#session_id').combobox('disable');
-        // $('button.question-type').removeAttr('disabled');
         createCard(this.id, `${this.id}-${window.count + 1}`, `${this.id} - #${window.count + 1}`);
         return true;
     });
-    $(document).on('submit', 'form', function (e) {
-        if (!window.location.href.includes('edit')) storeFormData();
-        // console.debug(this, e);
+    $(document).on('submit', 'form', function () {
+        window.formData = storeFormData();
         return true;
     });
-
-    // @TODO: make array data to Object
-    window.retrieveFormData = function () {
-        let array_data = [];
-        array_data['question'] = [];
-        // map old_data to array_data
-        let c = 0;
-        for (let item of old_data) {
-            // console.debug('old_data', item, c);
-            if (item[0].includes('question')) { // questions
-                let i = parseInt(item[0].split('[')[1][0]);
-                let key = item[0].split('[')[2].split(']')[0];
-                if (!array_data['question'][i]) {
-                    array_data['question'][i] = [];
-                }
-                if (item[0].includes('max') || item[0].includes('min')) { // all other types
-                    array_data['question'][i][key] = item[1];
-                } else if (item[0].includes('choices') && array_data['question'][i]['choices'] != null) {
-                    array_data['question'][i][key].push(item[1]); // push choices array
-                } else if (item[0].includes('choices') && !array_data['question'][i]['choices']) {
-                    array_data['question'][i][key] = [item[1]]; // initialize choices array
-                } else { // title, subtitle, others...
-                    array_data['question'][i][key] = item[1];
-                }
-                c++;
-            } else if (item[0].includes('title') || item[0].includes('footnote')) { // form title / subtitle / footnote
-                array_data[item[0]] = item[1];
+    window.formData = storeFormData();
+    if (window.location.href.includes('forms/edit') || window.location.href.includes('forms/create')) {
+        window.onbeforeunload = function () {
+            if (formData.includes('question')) {
+                return 'Are you sure you want to leave? If you leave you will lose all your changes!';
             }
-        }
-        console.debug('array_data', array_data);
-        window.array_data = array_data;
-    };
-
-    retrieveFormData();
-    window.array_data = array_data;
-    // console.debug('array_data', array_data);
-    if (count == 0 && !window.location.href.includes('edit')) { // add old cards from 'array_data'
-        if (array_data.hasOwnProperty('title') && array_data['title'])
-            $("input[name='title']").val(array_data['title']);
-        if (array_data.hasOwnProperty('subtitle') && array_data['subtitle'])
-            $("input[name='subtitle']").val(array_data['subtitle']);
-        if (array_data.hasOwnProperty('footnote') && array_data['footnote'])
-            $("input[name='footnote']").val(array_data['footnote']);
-        array_data['question'].forEach((data) => {
-            createCard(data.type, data.type + '-' + window.count, data.title, data);
-            return true;
-        });
-    } else { // cards already exists
-        $(".card.col-sm-12").each(() => {
-            addCardListeners($(this));
-        });
-        $('.add-choice').on('click', addChoice);
-        $('.delete-choice').on('click', deleteChoice);
-
-        // new edited questions
-        array_data['question'].slice(count).forEach((data) => {
-            createCard(data.type, data.type + '-' + window.count, data.title, data);
-            return true;
-        });
+        };
     }
 });
