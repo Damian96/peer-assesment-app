@@ -143,47 +143,6 @@
             .append(method)
             .append('@csrf');
         addForm.append(group);
-
-        var joinForm = $(document.createElement('form'));
-        joinForm.attr('action', "{{ url('sessions/#/join-group') }}")
-            .attr('method', 'POST');
-
-        group = $(document.createElement('div'));
-        group.attr('class', 'form-group text-center mt-1');
-
-        label = $(document.createElement('label'));
-        label.attr('class', 'form-control-md mr-2')
-            .text('Group');
-
-        let select = $(document.createElement('select'));
-        select.attr('name', 'id')
-            .addClass('form-control-md')
-            .attr('required', 'true')
-            .attr('aria-required', 'true');
-
-        group.append(label)
-            .append(select)
-            .append(session.clone()) // clone existing elements
-            .append(error.clone())
-            .append(method.clone())
-            .append($('@csrf'));
-        joinForm.append(group);
-
-        $.ajax({
-            success: function (data) {
-                // console.debug(data);
-                window.groups = data.data;
-
-                let o = document.createElement('option');
-                for (let group of window.groups) {
-                    o.value = group.id;
-                    o.innerText = group.name;
-                    select.append($(o));
-                }
-            },
-            url: "{{ url('/api/groups/all?api_token=' . Auth::user()->api_token) }}",
-            headers: {accept: 'application/json'},
-        });
     </script>
     <script type="text/javascript" defer>
         $(function () {
@@ -250,15 +209,39 @@
                 }
             });
             $('.join-group').confirm({
-                title: 'Join Group',
-                content: $(joinForm[0]),
+                content: function () {
+                    var jc = this;
+                    return $.ajax({
+                        url: `api/groups/${this.$target[0].dataset.id}/form?api_token={{ Auth::user()->api_token }}`,
+                        dataType: 'text',
+                        method: 'get',
+                        headers: {
+                            accept: 'text/plain'
+                        }
+                    }).done(function (response) {
+                        // console.debug(response, this);
+                        jc.setTitle('Join Group');
+                        jc.setContent(response);
+
+                        jc.$select = jc.$content.find('select');
+                        jc.$form = jc.$content.find('form');
+                        jc.$error = jc.$content.find('error');
+                    }).fail(function () {
+                        // console.debug(this, jc);
+                        jc.setContent('Something went wrong.');
+                    });
+                },
                 escapeKey: 'cancel',
                 buttons: {
                     formSubmit: {
-                        text: 'Add & Join',
+                        text: 'Join Group',
                         btnClass: 'btn-blue ',
                         action: function () {
-                            // console.debug(this, parseInt(this.$select.value));
+                            this.$select = this.$content.find('select');
+                            this.$form = this.$content.find('form');
+                            this.$error = this.$content.find('error');
+
+                            console.debug(this, parseInt(this.$select.value));
 
                             if (parseInt(this.$select.val()) > 0) {
                                 this.$form.submit();
@@ -273,20 +256,6 @@
                     cancel: function () {
                     },
                 },
-                onContentReady: function () {
-                    let form = this.$content.find('form');
-                    let session_id = this.$target.attr('data-id');
-                    this.$form = form;
-                    this.$select = form.find('select');
-                    this.$session = form.find('input[name="session_id"]');
-                    this.$error = form.find('.invalid-feedback');
-
-                    this.$select.attr('name', 'group_id');
-                    this.$session.val(session_id);
-
-                    // Replace appropriate form_id on form's action
-                    form[0].setAttribute('action', form[0].getAttribute('action').replace(/#/i, session_id));
-                }
             });
         });
     </script>

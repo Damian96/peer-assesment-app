@@ -49,5 +49,7 @@ class GroupCollection extends ResourceCollection
      * @param array $data
      * @return $this
      */
-//    public function additional(array $data) {}
+    public function additional(array $data)
+    {
+    }
 }
