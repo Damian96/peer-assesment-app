@@ -32,6 +32,12 @@
     </script>
 
     <script type="text/javascript" defer>
+        var isHover = function (e) {
+            /**
+             * @var HTMLElement e
+             */
+            return (e.parentElement.querySelector(':hover') === e);
+        };
         $.fn.highlight = function (speed = 3000) {
             this.effect("highlight", {}, speed);
         };

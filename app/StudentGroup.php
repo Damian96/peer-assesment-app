@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Traits\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -28,12 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class StudentGroup extends Model
 {
-    use HasCompositePrimaryKey;
-
     protected $table = 'user_group';
     protected $connection = 'mysql';
     public $incrementing = false;
-    protected $primaryKey = ['user_id', 'group_id'];
 
     protected $fillable = [
         'user_id', 'group_id'
@@ -42,6 +38,11 @@ class StudentGroup extends Model
     protected $casts = [
         'user_id' => 'int',
         'group_id' => 'int',
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
     ];
 
     /**

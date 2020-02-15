@@ -8,6 +8,7 @@ use App\Group;
 use App\Question;
 use App\Review;
 use App\Rules\DateCompare;
+use App\Rules\UniqueCombo;
 use App\Session;
 use App\StudentGroup;
 use App\StudentSession;
@@ -50,15 +51,25 @@ class SessionController extends Controller
                 'required', 'date_format:d-m-Y', new DateCompare(request(), 'open_date', '>')
             ]
         ];
+
         switch ($action) {
+            case 'joinGroup':
+                return [
+                    '_method' => 'bail|required|in:POST',
+                    'session_id' => 'bail|required|min:1|integer|exists:sessions,id',
+                    'group_id' => 'bail|required|min:1|integer|exists:groups,id',
+                ];
             case 'addGroup':
                 return [
-                    '_method' => 'required|in:_POST',
-                    'title' => 'required|min:10|max:255',
+                    '_method' => 'bail|required|in:POST',
+                    'session_id' => 'bail|required|min:1|integer|exists:sessions,id',
+                    'title' => [
+                        'required', 'min:10', 'max:255', new UniqueCombo(request(), 'groups', 'name', 'session_id')
+                    ],
                 ];
             case 'fillin':
                 return [
-                    '_method' => 'required|in:_POST',
+                    '_method' => 'required|in:POST',
                 ];
             case 'create':
             case 'store':
@@ -90,6 +101,13 @@ class SessionController extends Controller
     public function messages(string $action)
     {
         switch ($action) {
+            case 'addGroup':
+                return [
+                    'title.required' => 'The Group should have a title!',
+                    'title.min' => 'The Group\'s title should be at least 10 characters long!',
+                    'title.max' => 'The Group\'s title should be at most 255 characters long!',
+                    'title.unique' => 'The Group\'s title should be at most 255 characters long!',
+                ];
             case 'create':
             case 'store':
             case 'edit':
@@ -352,7 +370,7 @@ class SessionController extends Controller
     {
         $validator = Validator::make($this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
-        if (!$validator->valid()) {
+        if ($validator->fails()) {
             return redirect()->back(302)
                 ->withInput($request->all())
                 ->withErrors($validator->errors())
@@ -451,15 +469,21 @@ class SessionController extends Controller
     /**
      * @param Request $request
      * @param Session $session
-     * @return
+     * @return Response|RedirectResponse
      * @throws \Throwable
      */
     public function addGroup(Request $request, Session $session)
     {
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
-        if (!$validator->valid()) {
+        if ($validator->fails()) {
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Could not add a new Group!',
+                'body' => $validator->messages()->first()
+            ]);
             return redirect()->back()
+                ->withInput($request->all())
                 ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
@@ -480,7 +504,55 @@ class SessionController extends Controller
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'Success!',
-            'body' => "You have created & joined the Group {$group->title} successfully!"
+            'body' => "You have created & joined the Group {$group->title} successfully!" .
+                " You can now fill the Session's Peer Assessment Form!"
+        ]);
+        return redirect()->back();
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     * @return Response|RedirectResponse
+     * @throws \Throwable
+     */
+    public function joinGroup(Request $request, Session $session)
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+
+        if ($validator->fails()) {
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Could not join this Group!',
+                'body' => $validator->messages()->first()
+            ]);
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors($validator->errors())
+                ->with('errors', $validator->errors());
+        }
+
+        try {
+            $joined = new StudentGroup(['user_id' => Auth::user()->id, 'group_id' => $request->get('group_id')]);
+            $joined->saveOrFail();
+
+            $group = Group::whereId($request->get('group_id'))->firstOrFail();
+        } catch (\Throwable $e) {
+            throw_if(env('APP_DEBUG', false), $e);
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => "Error while joining Group!",
+                'body' => "Something went wrong while joining Group!"
+            ]);
+            return redirect()->back()
+                ->withInput($request->all());
+        }
+
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'Success!',
+            'body' => "You have joined Group '{$group->title}' successfully!" .
+                " You can now fill the Session's Peer Assessment Form!"
         ]);
         return redirect()->back();
     }

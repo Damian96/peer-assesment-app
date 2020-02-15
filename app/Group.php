@@ -48,6 +48,16 @@ class Group extends Model
         'mark' => 'int'
     ];
 
+    public function __get($key)
+    {
+        switch ($key) {
+            case 'title':
+                return $this->getAttribute('name');
+            default:
+                return parent::__get($key);
+        }
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */

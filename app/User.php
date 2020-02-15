@@ -643,6 +643,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                     && $this->studentCourses()->where('courses.id', '=', $cid)
                     && !StudentSession::whereUserId(Auth::user()->id)->where('session_id', '=', $arguments['session']->id)->exists();
             case 'session.addGroup':
+            case 'session.joinGroup':
                 return isset($cid) && $this->isStudent()
                     && !StudentGroup::whereUserId(Auth::user()->id)
                         ->whereIn('group_id', Group::whereSessionId($arguments['session']->id)->get(['id']))

@@ -30,6 +30,7 @@ Route::middleware('api')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
 
+// @TODO: add Cache
 Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {
     Route::get('/all', function (Request $request) {
         $except = $request->get('except', '');

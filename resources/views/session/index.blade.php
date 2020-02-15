@@ -5,26 +5,17 @@
 @endsection
 
 @section('content')
-    {{--    @if(!Auth::user()->isStudent())--}}
-    {{--        <div class="row my-2">--}}
-    {{--            <div class="col-md-12">--}}
-    {{--                <form method="GET" class="form-inline" onchange="this.submit()">--}}
-    {{--                    <input type="hidden" value="{{ request('page', 1) }}" class="hidden" name="page" id="page">--}}
-    {{--                    <label for="status">Status--}}
-    {{--                        <select id="status" name="status" class="ml-2 form-control-sm">--}}
-    {{--                            <option value="enabled"{{ request('status', false) !== 'disabled' ? ' selected' : false }}>--}}
-    {{--                                Enabled--}}
-    {{--                            </option>--}}
-    {{--                            <option value="disabled"{{ request('status', false) === 'disabled' ? ' selected' : false }}>--}}
-    {{--                                Disabled--}}
-    {{--                            </option>--}}
-    {{--                        </select>--}}
-    {{--                    </label>--}}
-    {{--                </form>--}}
-    {{--            </div>--}}
-    {{--        </div>--}}
-    {{--    @endif--}}
     <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <p class="lead">
+                Here are all your active Sessions that you have not yet submitted.
+                To complete a Session you must:<br>
+            <ol>
+                <li>Join or Add & Join a Group</li>
+                <li>Fill the Session's Form</li>
+            </ol>
+            </p>
+        </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             @if ($sessions->isNotEmpty())
                 <table id="my-sessions" class="table table-striped ts">
@@ -136,10 +127,14 @@
             .attr('minlength', '10')
             .attr('maxlength', '255');
 
+        let session = $('{!! html()->input('hidden', 'session_id') !!}');
+        let method = $('@method('POST')');
+
         group.append(label)
             .append(input)
+            .append(session)
             .append(error)
-            .append('@method('POST')')
+            .append(method)
             .append('@csrf');
         addForm.append(group);
 
@@ -162,9 +157,10 @@
 
         group.append(label)
             .append(select)
+            .append(session.clone()) // clone existing elements
             .append(error.clone())
-            .append('@method('POST')')
-            .append('@csrf');
+            .append(method.clone())
+            .append($('@csrf'));
         joinForm.append(group);
 
         $.ajax({
@@ -206,7 +202,9 @@
 
             // Initialize table
             {!! "let cols = [{col: 0, order: 'asc'}, {col: 1, order: 'asc'}];" !!}
-            $('#my-sessions').tablesorter({tablesorterColumns: cols});
+            $('#my-sessions').tablesorter({
+                tablesorterColumns: cols
+            });
 
             $('.add-group').confirm({
                 title: 'Add & Join Group',
@@ -215,9 +213,8 @@
                 buttons: {
                     formSubmit: {
                         text: 'Add & Join',
-                        btnClass: 'btn-blue btn-dup',
+                        btnClass: 'btn-bluebtn-dup',
                         action: function () {
-                            // console.debug(this);
                             if (this.$input[0].checkValidity()) {
                                 this.$form.submit();
                                 return true;
@@ -237,7 +234,10 @@
                     let session_id = this.$target.attr('data-id');
                     this.$form = form;
                     this.$input = form.find('input[name="title"]');
+                    this.$session = form.find('input[name="session_id"]');
                     this.$error = form.find('.invalid-feedback');
+
+                    this.$session.val(session_id);
 
                     // Replace appropriate form_id on form's action
                     form[0].setAttribute('action', form[0].getAttribute('action').replace(/#/i, session_id));
@@ -250,11 +250,11 @@
                 buttons: {
                     formSubmit: {
                         text: 'Add & Join',
-                        btnClass: 'btn-blue btn-dup',
+                        btnClass: 'btn-blue',
                         action: function () {
-                            // console.debug(this);
+                            // console.debug(this, parseInt(this.$select.value));
 
-                            if (parseInt(this.$select.value) > 0) {
+                            if (parseInt(this.$select.val()) > 0) {
                                 this.$form.submit();
                                 return true;
                             } else {
@@ -272,7 +272,11 @@
                     let session_id = this.$target.attr('data-id');
                     this.$form = form;
                     this.$select = form.find('select');
+                    this.$session = form.find('input[name="session_id"]');
                     this.$error = form.find('.invalid-feedback');
+
+                    this.$select.attr('name', 'group_id');
+                    this.$session.val(session_id);
 
                     // Replace appropriate form_id on form's action
                     form[0].setAttribute('action', form[0].getAttribute('action').replace(/#/i, session_id));

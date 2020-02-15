@@ -11,10 +11,12 @@ class Handler extends ExceptionHandler
     /**
      * A list of the exception types that are not reported.
      *
+     * @see: https://github.com/octobercms/october/issues/4359
      * @var array
      */
     protected $dontReport = [
         \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException::class,
+//        \Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException::class,
     ];
 
     /**
@@ -53,9 +55,10 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param \Illuminate\Http\Request $request
+     * @param \Exception $exception
      * @return \Illuminate\Http\Response
+     * @throws Exception
      */
     public function render($request, Exception $exception)
     {
