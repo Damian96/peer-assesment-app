@@ -25,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 //        Resource::withoutWrapping();
+        date_default_timezone_set(config('app.timezone'));
     }
 }

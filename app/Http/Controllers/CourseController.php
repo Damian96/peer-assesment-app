@@ -283,7 +283,9 @@ class CourseController extends Controller
             $request->merge(['user_id' => $course->user_id]);
         }
 
-        if ($course->fill($request->all())->save()) {
+        $course = $course->fill($request->all());
+        $course->ac_year_carbon = null;
+        if ($course->save()) {
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => 'Course Updated successfully!',

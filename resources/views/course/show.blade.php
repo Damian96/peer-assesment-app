@@ -76,12 +76,6 @@
                                    title="Update Course {{ $course->code }}"
                                    aria-label="Update Course {{ $course->code }}">edit</a>
                             @endif
-                            @if(Auth::user()->can('session.index', ['cid'=>$course->id]))
-                                <a href="{{ url('/courses/' . $course->id . '/sessions') }}"
-                                   class="material-icons"
-                                   title="View Sessions of {{ $course->code }}"
-                                   aria-label="View Sessions of {{ $course->code }}">assignment</a>
-                            @endif
                             @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
                                       class="d-inline-block">
@@ -196,8 +190,12 @@
                             <tr>
                                 <th scope="row">{{ $s->id }}</th>
                                 <td class="text-center">{{ $s->title }}</td>
-                                <td class="text-center">{{ $s->deadline }}</td>
-                                <td class="text-center">{{ $s->open_date }}</td>
+                                <td class="text-center">{{ $s->deadline_uk  }}<i
+                                        class="text-muted">{{ $s->deadline_days ? ' (' . $s->deadline_days . ')' : null }}</i>
+                                </td>
+                                <td class="text-center">{{ $s->open_date_uk }}<i
+                                        class="text-muted">{{ $s->open_date_days ? ' (' . $s->open_date_days . ')' : null }}</i>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>

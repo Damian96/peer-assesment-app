@@ -9,6 +9,7 @@ return [
 //        'start' => '2016-09-01 00:00:00',
         'full' => DATE_COOKIE,
         'stamp' => 'Y-m-d H:i:s',
+        'uk_full' => 'd F Y',
         'ac_year' => 'Y-01-01 00:00:00',
     ],
     'departments' => [

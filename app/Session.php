@@ -39,6 +39,8 @@ use Illuminate\Support\Facades\DB;
  * @method static whereNotIn(string $string, array $except)
  * @mixin \Eloquentform
  * @property string $open_date
+ * @property int open_date_int
+ * @property int deadline_int
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
  */
 class Session extends Model
@@ -56,12 +58,38 @@ class Session extends Model
         switch ($name) {
             case 'course_title':
                 return $this->course()->exists() ? $this->course()->first()->title : 'N/A';
+            case 'open_date_days':
+                try {
+                    $date = Carbon::createFromTimestamp($this->open_date_int);
+                    $now = Carbon::now();
+                    if ($date->timestamp > $now->timestamp)
+                        return $date->diffInDays($now) . ' days from now';
+                    else
+                        return false;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            case 'open_date_uk':
+                return Carbon::createFromTimestamp($this->open_date_int)->format(config('constants.date.uk_full'));
             case 'open_date_int':
-                return Carbon::createFromFormat(config('constants.date.stamp'), $this->open_date, config('app.timezone'))->timestamp;
+                return Carbon::createFromFormat(config('constants.date.stamp'), $this->open_date)->timestamp;
+            case 'deadline_days':
+                try {
+                    $date = Carbon::createFromTimestamp($this->deadline_int);
+                    $now = Carbon::now();
+                    if ($date->timestamp > $now->timestamp)
+                        return $date->diffInDays($now) . ' days from now';
+                    else
+                        return false;
+                } catch (\Exception $e) {
+                    return false;
+                }
+            case 'deadline_uk':
+                return Carbon::createFromTimestamp($this->deadline_int)->format(config('constants.date.uk_full'));
             case 'deadline_int':
-                return Carbon::createFromFormat(config('constants.date.stamp'), $this->deadline, config('app.timezone'))->timestamp;
+                return Carbon::createFromFormat(config('constants.date.stamp'), $this->deadline)->timestamp;
             case 'deadline_full':
-                return Carbon::createFromTimeString($this->deadline, config('app.timezone'))->format(config('constants.date.full'));
+                return Carbon::createFromTimeString($this->deadline)->format(config('constants.date.full'));
             case 'title_full':
                 return $this->title . ' | ' . $this->course()->first()->ac_year;
             case 'instructor_fullname':

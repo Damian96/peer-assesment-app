@@ -60,6 +60,7 @@ use Laravel\Scout\Searchable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $students
  * @property-read int|null $students_count
  * @property int ac_year_year
+ * @property string instructor_fullname
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereDepartment($value)
  */
 class Course extends Model
@@ -174,6 +175,17 @@ class Course extends Model
         }
     }
 
+    public function __set($key, $value)
+    {
+        switch ($key) {
+            case ('ac_year_carbon' && !$value):
+                unset($this->attributes['ac_year_carbon']);
+                break;
+            default:
+                parent::__set($key, $value);
+        }
+    }
+
     /**
      * The "booting" method of the model.
      *
@@ -183,14 +195,17 @@ class Course extends Model
     {
         parent::boot();
 
-        static::retrieved(function ($course) {
+        $handler = function ($course) {
             /**
              * @var Course $course
              */
             if ($course->id == self::DUMMY_ID) return;
             $course->ac_year_time = $course->ac_year_int = $course->acYearToTimestamp($course->ac_year);
             $course->ac_year_carbon = Carbon::createFromTimestamp($course->ac_year_time, config('app.timezone'));
-        });
+        };
+
+        static::retrieved($handler);
+        static::saved($handler);
     }
 
     /**
