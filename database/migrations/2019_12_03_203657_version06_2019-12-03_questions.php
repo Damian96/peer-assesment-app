@@ -19,7 +19,8 @@ class Version0620191203Questions extends Migration
             $table->string('title');
             $table->string('subtitle')->nullable();
             $table->text('data');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->foreign('form_id')->references('id')->on('forms');
         });

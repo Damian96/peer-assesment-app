@@ -137,7 +137,7 @@
                         <thead>
                         <th scope="row">#</th>
                         <th>Name</th>
-                        <th></th>
+                        <th>Actions</th>
                         </thead>
                         <tbody>
                         @foreach($course->students()->getModels() as $i => $s)

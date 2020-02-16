@@ -30,7 +30,7 @@
                         @if (Auth::user()->isStudent())
                             <th>Group</th>
                         @endif
-                        <th></th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody class="tsGroup">
@@ -92,11 +92,11 @@
                 {{ $sessions->links() }}
             @else
                 @if (Auth::user()->can('session.create'))
-                    <h4 class="text-warning">You do not have any Sessions yet!</h4>
+                    <h4 class="text-dark">You do not have any Sessions yet!</h4>
                     <p>
                         <a class="btn btn-primary" href="{{ url('/sessions/create/') }}"
                            title="Add Session"
-                           aria-roledescription="Add Session">Add Session</a>
+                           aria-roledescription="Add Session">Create Session</a>
                     </p>
                 @elseif (Auth::user()->isStudent())
                     <h4 class="text-success">Congratulations! You have submitted all registered Sessions.</h4>

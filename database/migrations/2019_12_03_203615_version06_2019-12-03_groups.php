@@ -18,7 +18,8 @@ class Version0620191203Groups extends Migration
             $table->bigInteger('session_id')->unsigned();
             $table->string('name', 255);
             $table->char('mark', 1)->nullable()->default('0');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->foreign('session_id')->references('id')->on('sessions');
         });

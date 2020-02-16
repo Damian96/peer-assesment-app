@@ -68,8 +68,7 @@
                 data-rule-required="true"
                 data-msg-required="{!! $messages['department.required'] !!}"
                 data-rule-in="{!! $departments !!}"
-                data-msg-in="{!! $messages['department.in'] !!}"
-        >
+                data-msg-in="{!! $messages['department.in'] !!}">
             <option
                 value="admin"{{ old('department', isset($course) ? $course->department : '') == 'admin' ? 'selected' : '' }}>
                 ---
@@ -142,7 +141,6 @@
     </div>
 
     @if (false)
-        {{--    @if (isset($course) && ! $course->copied() && Auth::user()->can('course.edit', ['course' =>  $course]))--}}
         <div class="form-group">
             <button type="submit" class="btn btn-block btn-outline-info" role="button" name="copy" id="copy"
                     title="Copy to current Academic Year"

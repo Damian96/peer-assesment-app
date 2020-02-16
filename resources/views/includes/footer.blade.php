@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         <div class="col-xs-12 col-sm-4 col-md-4">
-            Designed by <a title="Damian96" target="_blank" href="https://github.com/Damian96">@Damian96</a>
+            Designed by @Damian96
         </div>
         <div class="col-xs-12 col-sm-4 col-md-4 text-left text-center">
             <strong class="text-warning">Beta</strong> version

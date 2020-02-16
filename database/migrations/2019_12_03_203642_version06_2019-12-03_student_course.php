@@ -17,7 +17,8 @@ class Version0620191203StudentCourse extends Migration
             $table->bigInteger('id', true, true);
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('course_id')->unsigned();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->index('user_id', 'user_id_index');
             $table->index('course_id', 'course_id_index');

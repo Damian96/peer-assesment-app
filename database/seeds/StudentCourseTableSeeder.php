@@ -19,9 +19,9 @@ class StudentCourseTableSeeder extends Seeder
 
         /* `peerassessDB`.`student_course` */
         $student_course = array(
-            array('user_id' => '3', 'course_id' => '2'),
+            array('user_id' => '4', 'course_id' => '1'),
             array('user_id' => '4', 'course_id' => '2'),
-            array('user_id' => '5', 'course_id' => '2')
+            array('user_id' => '4', 'course_id' => '3'),
         );
 
         foreach ($student_course as $sc) {

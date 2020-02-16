@@ -14,7 +14,7 @@
                 <th>Status</th>
                 <th>Instructions</th>
                 <th>Deadline</th>
-                <th></th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>

@@ -20,7 +20,8 @@ class Version0620191203Forms extends Migration
             $table->string('subtitle', 255)->nullable();
             $table->string('footnote', 255)->nullable();
             $table->char('mark', 1)->nullable()->default('0')->comment('class mark');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->foreign('session_id')->references('id')->on('sessions');
         });

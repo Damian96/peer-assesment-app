@@ -15,7 +15,7 @@
     <script charset="utf-8" src="{{ mix('/js/app.js') }}"></script>
 
     {{--    @if (env('APP_ENV') !== 'local')--}}
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+    {{--    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">--}}
     {{--    @endif--}}
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -131,7 +131,7 @@
                     </li>
                 @else
                     <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'course.') !== false) ? ' active' : '' }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" id="course-dropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">Courses</a>
                         <div class="dropdown-menu" aria-labelledby="course-dropdown">
                             <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'course.index') !== false) ? ' active' : '' }}"
@@ -141,7 +141,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'session.') !== false) ? ' active' : '' }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" id="course-dropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">Sessions</a>
                         <div class="dropdown-menu" aria-labelledby="course-dropdown">
                             <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'session.index') !== false) ? ' active' : '' }}"
@@ -151,7 +151,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'form.') !== false) ? ' active' : '' }}">
-                        <a class="nav-link dropdown-toggle" href="#" id="course-dropdown" data-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" id="course-dropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">Forms</a>
                         <div class="dropdown-menu" aria-labelledby="course-dropdown">
                             <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'form.index') !== false) ? ' active' : '' }}"
@@ -166,7 +166,7 @@
         <div class="navbar-collapse collapse w-100 order-2 order-md-1 dual-collapse2" id="userMenu">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown{{ (strpos(Route::current()->getName(), 'user.show') !== false || strpos(Route::current()->getName(), 'user.profile') !== false) ? ' active' : '' }}">
-                    <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" data-toggle="dropdown"
+                    <a class="nav-link dropdown-toggle" id="user-dropdown" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }}</a>
                     <div class="dropdown-menu" aria-labelledby="user-dropdown">
                         <a class="dropdown-item{{ (strpos(Route::current()->getName(), 'user.show') !== false || strpos(Route::current()->getName(), 'user.profile') !== false) ? ' active' : '' }}"
@@ -180,7 +180,7 @@
         <div class="navbar-collapse collapse w-100 order-2 dual-collapse2">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="user-dropdown" data-toggle="dropdown"
+                    <a class="nav-link dropdown-toggle" id="user-dropdown" data-toggle="dropdown"
                        aria-haspopup="true" aria-expanded="false">Guest</a>
                     <div class="dropdown-menu" aria-labelledby="user-dropdown">
                         <a class="dropdown-item" href="{{ url('/login') }}">Login</a>

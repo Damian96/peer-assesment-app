@@ -17,7 +17,7 @@
                         <th>Title</th>
                         <th>Session</th>
                         <th>Course</th>
-                        <th></th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -179,12 +179,15 @@
                 },
             },
             onContentReady: function () {
-                let jc = this;
                 let form = this.$content.find('form');
-                let session_id = jc.$target.closest('tr').attr('data-session-id');
-                let form_id = jc.$target.closest('tr').attr('data-form-id');
                 this.$form = form;
                 this.$select = form.find('select');
+                let session_id = this.$target.closest('tr').attr('data-session-id');
+
+                if (!this.$select[0].childElementCount) {
+                    this.setTitle('Warning!');
+                    this.setContent('You have not created any Sessions!');
+                }
 
                 if (parseInt(session_id) > 0) {
                     // Remove current form's session
@@ -192,10 +195,11 @@
                 }
 
                 // Replace appropriate form_id on form's action
+                let form_id = this.$target.closest('tr').attr('data-form-id');
                 form[0].setAttribute('action', form[0].getAttribute('action').replace(/#/i, form_id));
 
                 // Initialize combobox
-                jc.$select.combobox();
+                this.$select.combobox();
                 $('.ui-autocomplete').css('z-index', '100000000');
             }
         });

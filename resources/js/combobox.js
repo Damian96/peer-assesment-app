@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
             this.input = $(document.createElement('input'))
                 .appendTo(this.wrapper)
                 .val(value)
-                .attr("title", "")
+                // .attr('id', this.id ? this.id : null)
+                // .attr("title", this.title ? this.title : null)
                 .addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left")
                 .autocomplete({
                     delay: 0,

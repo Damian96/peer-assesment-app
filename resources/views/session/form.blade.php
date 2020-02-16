@@ -51,7 +51,7 @@
         </div>
     @endif
     <div class="form-group">
-        <label for="deadline">
+        <label for="open_date">
             <span class="mr-2">Opens At</span><br>
             <span class="text-muted">Date always at midnight. When will the Session open?</span>
             <input type="text" id="open_date" name="open_date" readonly aria-readonly="true"
@@ -140,26 +140,11 @@
             });
             $('#open_date').datepicker('setDate', '{{ old('deadline', isset($session) ? date('d-m-Y', $session->open_date_int) : null) }}');
             // Course custom ComboBox jQueryUI
-            $('#course').combobox();
+            // $('#course').combobox();
             @if ($errors->has('studentid'))
             $('#course').next()
                 .addClass('is-invalid');
             @endif
-            // Forms custom ComboBox jQueryUI
-            // $('#form').combobox({
-            //     select: function (event, option) {
-            //         option = option.item;
-            //         console.debug(event, option);
-            //         // if (option.hasAttribute('data-template')) {
-            //         //     $('#form').closest('.form-group')
-            //         //         .attr('title', 'The Form you selected is a template, so it will be duplicated!')
-            //         //         .tooltip();
-            //         // } else {
-            //         //     $('#form').closest('.form-group')
-            //         //         .attr('title', '');
-            //         // }
-            //     }
-            // });
             @if ($errors->has('form'))
             $('#form').next()
                 .addClass('is-invalid');

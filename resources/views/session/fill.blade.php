@@ -9,33 +9,40 @@
         @method('POST')
         @csrf
 
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mb-3">
             <h3 class="d-block">{{ $form->title }}</h3>
-            <div class="form-text d-block text-info">
+            <div class="d-block instructions">
                 {{ $session->instructions }}
             </div>
         </div>
         @foreach($questions as $i => $q)
             @php
-                $teammates = Auth::user()->teammates()->collect()
+                $teammates = Auth::user()->teammates()->collect();
             @endphp
-            <div class="offset-1 col-sm-10 col-md-10 border-dark border py-2 my-2">
-                <h5>{{ $q->title }}</h5>
+            <fieldset class="offset-1 col-sm-10 col-md-10 border-dark rounded py-2 my-2">
+                <i class="d-block text-muted">Question #{{ $i+1 }}</i>
+                <legend><h4>{{ $q->title }}</h4></legend>
                 @if ($q->type === 'linear-scale')
                     <div class="form-group uselect-none">
                         <span class="mx-2">{{ $q->minlbl }}<input class="ml-2" type="radio"
+                                                                  id="question-{{ $q->id }}-1"
                                                                   required
                                                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
-                                                                  value="1"></span>
+                                                                  value="1">
+                        <label class="d-none" for="{{ $q->id }}-1">{{ $q->minlbl }}</label></span>
                         @for($i=2;$i<$q->max;$i++)
                             <span class="mx-2"><input type="radio"
+                                                      id="question-{{ $q->id }}-{{ $i }}"
                                                       required
-                                                      name="questions[{{ $q->id }}][{{ $q->type }}][]" value="{{ $i }}"></span>
+                                                      name="questions[{{ $q->id }}][{{ $q->type }}][]" value="{{ $i }}">
+                            <label class="d-none" for="question-{{ $q->id }}-{{ $i }}">{{ $i }}</label></span>
                         @endfor
                         <span class="mx-2"><input class="mr-2" type="radio"
+                                                  id="question-{{ $q->id }}-{{ $q->max }}"
                                                   required
                                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
-                                                  value="{{ $q->max }}">{{ $q->maxlbl }}</span>
+                                                  value="{{ $q->max }}">{{ $q->maxlbl }}
+                        <label class="d-none" for="{{ $q->id }}-{{ $q->max }}">{{ $q->maxlbl }}</label></span>
                     </div>
                 @elseif ($q->type === 'multiple-choice')
                     <div class="form-group">
@@ -50,7 +57,7 @@
                     <div class="form-group">
                         <table class="table table-bordered table-striped">
                             <thead>
-                            <th></th>
+                            <th>#</th>
                             <th>1</th>
                             <th>2</th>
                             <th>3</th>
@@ -111,22 +118,29 @@
                     </div>
                 @elseif ($q->type === 'paragraph')
                     <div class="form-group">
+                        <label class="d-none" for="question-{{ $q->id }}">{{ $q->title }}</label>
                         <textarea type="text" name="questions[{{ $q->id }}][{{ $q->type }}][]" class="form-control"
+                                  id="question-{{ $q->id }}"
                                   placeholder="Write anything here..."
                                   aria-placeholder="Write anything here..."
                                   style="min-height: 50px; max-height: 150px;"></textarea>
                     </div>
                 @elseif ($q->type == 'criteria')
+                    @php
+                        $label = 'Distribute 100 points among your teammates including yourself';
+                    @endphp
                     <div class="form-group criteria" data-sum="0">
                         <table class="table table-bordered table-striped">
+                            <caption>{{ $label }}</caption>
                             <thead>
-                            <th></th>
-                            <th>Distribute 100 points among your teammates including yourself</th>
+                            <th>Student</th>
+                            <th>Mark</th>
                             </thead>
                             <tbody>
                             <tr>
                                 <td>Yourself</td>
                                 <td><input type="number"
+                                           id="question-{{ $q->id }}-{{ Auth::user()->id }}"
                                            required
                                            aria-required="true"
                                            min="0"
@@ -136,12 +150,16 @@
                                            aria-valuemax="100"
                                            class="form-control"
                                            aria-invalid="false"
-                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]"></td>
+                                           name="questions[{{ $q->id }}][{{ $q->type }}][{{ Auth::user()->id }}]">
+                                    <label for="question-{{ $q->id }}-{{ Auth::user()->id }}"
+                                           class="d-none">{{ $label }}</label>
+                                </td>
                             </tr>
                             @foreach($teammates as $t)
                                 <tr>
                                     <td>{{ $t->full_name }}</td>
                                     <td><input type="number"
+                                               id="question-{{ $q->id }}-{{ $t->id }}"
                                                min="0"
                                                max="100"
                                                step="1"
@@ -150,6 +168,8 @@
                                                class="form-control"
                                                aria-invalid="false"
                                                name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="0">
+                                        <label class="d-none"
+                                               for="question-{{ $q->id }}-{{ $t->id }}">{{ $label }}</label>
                                     </td>
                                 </tr>
                             @endforeach
@@ -158,7 +178,7 @@
                         <span class="invalid-feedback d-block font-weight-bold"></span>
                     </div>
                 @endif
-            </div>
+            </fieldset>
         @endforeach
 
         <div class="col-sm-12 col-md-12 mt-5 mb-2">
