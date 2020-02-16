@@ -20,8 +20,7 @@
                 $teammates = Auth::user()->teammates()->collect();
             @endphp
             <fieldset class="offset-1 col-sm-10 col-md-10 border-dark rounded py-2 my-2">
-                <i class="d-block text-muted">Question #{{ $i+1 }}</i>
-                <legend><h4>{{ $q->title }}</h4></legend>
+                <legend><i class="d-block text-muted">Question #{{ $i+1 }}</i><h4>{{ $q->title }}</h4></legend>
                 @if ($q->type === 'linear-scale')
                     <div class="form-group uselect-none">
                         <span class="mx-2">{{ $q->minlbl }}<input class="ml-2" type="radio"
@@ -227,13 +226,12 @@
             }
             $(document).on('submit', 'form', function (e) {
                 $(this).find('.criteria').each(function () {
-                    let sum = parseInt($(this).data('sum'));
-                    if (sum < 100) {
+                    if (parseInt($(this).data('sum')) < 100) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
                         window.scrollTo(window.scrollX, this.getClientRects()[0].y);
                         $(this).highlight(2000);
                         $(this).find('.invalid-feedback').text('Total points should be 100');
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
                         return false;
                     }
                 });

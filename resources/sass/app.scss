@@ -85,7 +85,11 @@ form {
   max-height: 250px;
 }
 
-.form-control-md {
+.form-group,
+.form-control,
+.form-control-sm,
+.form-control-md,
+.form-control-lg {
   &.is-invalid {
     border-color: rgb(220, 53, 69);
     padding-right: calc(1.5em + 0.75rem);
@@ -390,6 +394,10 @@ footer {
 }
 
 fieldset {
+  i {
+    font-size: .65em;
+  }
+
   &:before {
     content: "";
     position: absolute;
