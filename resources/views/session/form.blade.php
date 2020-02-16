@@ -33,7 +33,7 @@
     @if (isset($session) && $session->form()->exists())
         <input type="hidden" class="hidden" value="{{ $session->form()->first()->getModel()->id }}" name="form">
     @endif
-    @if (!empty($forms))
+    @if (!empty($forms) && !isset($session))
         <div class="form-group">
             <label id="form-lbl" class="form-text" for="form">Form</label>
 

@@ -6,16 +6,18 @@
 
 @section('content')
     <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <p class="lead">
-                Here are all your active Sessions that you have not yet submitted.
-                To complete a Session you must:<br>
-            <ol>
-                <li>Join or Add & Join a Group</li>
-                <li>Fill the Session's Form</li>
-            </ol>
-            </p>
-        </div>
+        @if (Auth::user()->isStudent())
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <p class="lead">
+                    Here are all your active Sessions that you have not yet submitted.
+                    To complete a Session you must:<br>
+                <ol>
+                    <li>Join or Add & Join a Group</li>
+                    <li>Fill the Session's Form</li>
+                </ol>
+                </p>
+            </div>
+        @endif
         <div class="col-xs-12 col-sm-12 col-md-12">
             @if ($sessions->isNotEmpty())
                 <table id="my-sessions" class="table table-striped ts">
