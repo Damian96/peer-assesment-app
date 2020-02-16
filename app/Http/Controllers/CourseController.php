@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Course;
+use App\StudentCourse;
 use App\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -82,6 +82,11 @@ class CourseController extends Controller
             'description' => 'nullable|string|max:150'
         ];
         switch ($action) {
+            case 'disenroll':
+                return [
+                    '_method' => 'required|in:DELETE',
+                    'user_id' => 'required|integer|exists:users,id'
+                ];
             case 'create':
             case 'store':
             case 'update':
@@ -197,8 +202,7 @@ class CourseController extends Controller
         }
 
         $request->merge(['user_id' => intval($request->get('instructor', Auth::user()->id))]);
-        $request->merge(['ac_year' => Course::getCurrentAcYear()]);
-        $request->request->set('ac_year', Carbon::now(config('app.timezone'))->format(config('Y')));
+        $request->request->set('ac_year', Course::toAcademicYear(now(config('app.timezone'))->timestamp));
         $course = new Course($request->all());
         if ($course->save()) {
             $request->session()->flash('message', [
@@ -295,19 +299,27 @@ class CourseController extends Controller
      * Copy the specified Course to the current academic year.
      * @method POST
      * @param Request $request
-     * @return void
+     * @param Course $course
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function copy(Request $request, Course $course)
     {
-        $clone = $course->copyToCurrentYear();
-        $title = 'Course ' . $course->code;
+        try {
+            $clone = $course->copyToCurrentYear();
+        } catch (\Throwable $e) {
+            throw_if(env('APP_DEBUG', false), $e);
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Something went wrong while coping the Course!',
+            ]);
+            return redirect()->back();
+        }
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'The Course has been successfully copied!',
         ]);
-        return redirect()->action('CourseController@show', [$clone], 302)
-            ->withInput($request->input())
-            ->with('title', $title);
+        return redirect()->action('CourseController@show', ['course' => $clone]);
     }
 
     /**
@@ -365,5 +377,70 @@ class CourseController extends Controller
     public function students(Request $request, Course $course)
     {
         return \response(view('course.students', compact('title', 'students', 'course')));
+    }
+
+    /**
+     * @param Request $request
+     * @param Course $course
+     * @return \Illuminate\Http\RedirectResponse|void
+     * @throws \Throwable
+     */
+    public function disenroll(Request $request, Course $course)
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+
+        if ($validator->fails()) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'Could not disenroll Student from Course!',
+                'body' => $validator->errors()->first()
+            ]);
+            return redirect()->back()
+                ->withInput($request->all());
+        }
+
+        try {
+            $student = User::whereId($request->get('user_id', 0))
+                ->firstOrFail();
+        } catch (\Throwable $e) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'Could not disenroll Student from Course!',
+                'body' => $validator->errors()->first()
+            ]);
+            return redirect()->back();
+        }
+
+        if (!$student->isRegistered($course->id)) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => "Something went wrong.",
+                'body' => "The Student {$student->lname} is not enrolled in this course!"
+            ]);
+            return redirect()->back();
+        }
+
+        $enrolled = StudentCourse::whereCourseId($course->id)
+            ->where('user_id', '=', $student->id)
+            ->first();
+
+        try {
+            $enrolled->delete();
+        } catch (\Throwable $e) {
+            throw_if(env('APP_DEBUG', false), $e);
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => "Something went wrong.",
+                'body' => "Could not disenroll Student {$student->lname} from Course!"
+            ]);
+            return redirect()->back();
+        }
+
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => "Disenroll Successful!",
+            'body' => "Student {$student->lname} has been disenrolled from Course!"
+        ]);
+        return redirect()->back();
     }
 }

@@ -254,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
     $(document).on('submit', 'form', function () {
         window.formData = storeFormData();
+        window.onbeforeunload = null;
         return true;
     });
     window.formData = storeFormData();

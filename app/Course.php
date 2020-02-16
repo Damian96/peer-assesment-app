@@ -266,20 +266,19 @@ class Course extends Model
 
     /**
      * @return Course|false
+     * @throws \Throwable
      */
     public function copyToCurrentYear()
     {
         if ($this->copied()) return false;
         $clone = $this->refresh()->replicate(['id', 'status']);
         $now = Carbon::now(config('app.timezone'));
-        if ($now->month >= 8) {
-            $clone->ac_year = $now->setMonth(10)->format(config('constants.date.stamp'));
-        } else {
-            $clone->ac_year = $now->setMonth(1)->format(config('constants.date.stamp'));
-        }
+        $clone->ac_year = self::toAcademicYear($now->timestamp);
+        unset($clone->attributes['ac_year_carbon']);
         try {
             $clone->saveOrFail();
         } catch (\Throwable $e) {
+            throw_if(env('APP_DEBUG', false), $e);
             return false;
         }
         return $clone;
@@ -335,7 +334,7 @@ class Course extends Model
      * @param int $time
      * @return string
      */
-    public static function toAcademicYear($time)
+    public static function toAcademicYear(int $time)
     {
         $carbon = Carbon::createFromTimestamp($time, config('app.timezone'));
         if ($carbon->month <= 1 || $carbon->month >= 6) { // Fall Semester

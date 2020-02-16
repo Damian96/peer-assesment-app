@@ -17,7 +17,8 @@
     "itsgoingd/clockwork": "^4.0",
     "laravel/framework": "^6.0",
     "laravel/tinker": "^1.0",
-    "spatie/laravel-html": "^2.24"
+    "spatie/laravel-html": "^2.24",
+    "ext-json": "*"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.6",

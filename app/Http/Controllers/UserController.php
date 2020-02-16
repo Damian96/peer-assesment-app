@@ -26,14 +26,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class UserController extends Controller
 {
     /**
-     * Where to redirect users after login.
-     *
-     * @deprecated
-     * @var string
-     */
-//    protected $redirectTo = '/index';
-
-    /**
      * Create a new controller instance.
      *
      * @return void
@@ -92,18 +84,9 @@ class UserController extends Controller
             case 'register.student':
                 return [
                     '_method' => 'required|string|in:POST',
-
-//                    'csv' => 'required_if:form,import-students|file|mimes:csv|lt:5000',
                     'csv-data' => 'required_if:form,import-students|string|min:10|max:10000',
                     'course_id' => 'required_if:form,import-students|numeric|min:1|exists:courses,id',
-
                     'studentid' => 'required_if:form,select-student|not_in:---,N/A|numeric|exists:users,id',
-
-                    'email' => 'required_if:form,add-student|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email|not_in:dummy@citycollege.sheffield.eu',
-                    'fname' => 'required_if:form,add-student|string|min:3|max:25',
-                    'lname' => 'required_if:form,add-student|string|min:3|max:25',
-                    'department' => 'required_if:form,add-student|string|max:5|not_in:admin',
-                    'reg_num' => 'required_if:form,add-student|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
                 ];
             case 'storeCsv':
                 return [
@@ -246,6 +229,7 @@ class UserController extends Controller
         $user = Auth::user();
         $title = 'Homepage';
 
+        // Statistics
         $students = User::getAllStudents()->count();
         $instructors = User::getInstructors()->count();
         $enrolled = $user->enrolled()->count();
@@ -287,19 +271,15 @@ class UserController extends Controller
     {
         $title = 'Add Students to ' . $course->code;
         $messages = $this->messages('register.student');
-        return response(view('user.addStudent', [
-            'title' => $title,
-            'messages' => $messages,
-            'user' => Auth::user(),
-            'course' => $course,
-            'students' => User::getAllStudents()->filter(function ($student) use ($course) {
-                /**
-                 * @var User $student
-                 * @var Course $course
-                 */
-                return !$student->isRegistered($course->id) && !$student->id == Course::DUMMY_ID;
-            }),
-        ]), 200, $request->headers->all());
+        $students = User::getAllStudents()->filter(function ($student) use ($course) {
+            /**
+             * @var User $student
+             * @var Course $course
+             */
+            return !$student->isRegistered($course->id);
+        });
+
+        return response(view('user.addStudent', compact('title', 'messages', 'course', 'students')), 200, $request->headers->all());
     }
 
     /**
@@ -377,21 +357,6 @@ class UserController extends Controller
                 ]);
             }
             return redirect()->action('CourseController@show', [$course], 302, $request->headers->all());
-        } elseif ($request->get('form') == 'add-student') {
-            $request->merge(['instructor' => '0', 'admin' => '0']);
-            $result = new User($request->all());
-            $result->password = $result->generateStudentPassword();
-            $student = $result;
-            $onAfterSave = function () use ($student, $course) {
-                $enrollment = new StudentCourse(['user_id' => $student->id, 'course_id' => $course->id]);
-                $enrollment->save();
-                $student->sendStudentInvitationEmail($course);
-            };
-            $message = [
-                'level' => 'success',
-                'heading' => 'Student successfully created.',
-                'body' => sprintf("We have sent an e-mail to %s, inviting him to your course.", $result->email),
-            ];
         } elseif ($request->get('form') == 'select-student') {
             try {
                 $user = User::whereId(intval($request->get('studentid', 0)))
@@ -504,7 +469,6 @@ class UserController extends Controller
                 return $user;
             });
             Auth::setUser($user);
-            $user->last_login = 'loggedin!';
 
             if ($user->isStudent()) {
                 return redirect('courses', 302, $request->headers->all());

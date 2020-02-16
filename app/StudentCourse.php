@@ -23,17 +23,11 @@ use Illuminate\Database\Eloquent\Model;
 class StudentCourse extends Model
 {
     protected $table = 'student_course';
-    public $incrementing = false;
+    protected $primaryKey = 'id';
+    protected $keyType = 'int';
+    public $incrementing = true;
 
-    /**
-     * The model's default values for attributes.
-     *
-     * @var array
-     */
-    protected $attributes = [
-        'user_id' => 1,
-        'course_id' => 1,
-    ];
+    protected $guarded = ['id'];
 
     /**
      * The attributes that are mass assignable.
@@ -44,12 +38,18 @@ class StudentCourse extends Model
         'user_id', 'course_id'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
+        'id' => 'int',
         'user_id' => 'int',
         'course_id' => 'int',
         'created_at' => 'datetime',

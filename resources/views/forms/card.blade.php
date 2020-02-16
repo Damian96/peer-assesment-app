@@ -40,7 +40,7 @@
                 <button tabindex="0" type="button" class="btn btn-sm btn-outline-dark close-question"
                         aria-label="Collapse Question"
                         data-toggle="collapse"
-                        data-target=""
+                        data-target="#collapse-{{ $count ?? '' }}"
                         aria-expanded="true"
                         aria-controls=""><i class="material-icons close-icon">keyboard_arrow_up</i></button>
             </div>
@@ -58,7 +58,7 @@
         </div>
     </div>
     <!-- Card Body -->
-    <div class="card-body collapse show pt-0">
+    <div class="card-body collapse show pt-0" id="collapse-{{ $count ?? '' }}">
         <div class="form-group question-title">
             <label class="form-control-sm">Title</label>
             <input type="text" name="question[{{ $count ?? '' }}][title]" class="form-control"

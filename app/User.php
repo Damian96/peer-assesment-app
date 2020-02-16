@@ -181,12 +181,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'password_reset_token':
                 $this->password_reset_token = $value;
                 break;
-            case 'last_login':
-                // @TODO: create user.login event listener
-                // https://stackoverflow.com/a/22460203/6330843
-//                $this->last_login = new \DateTime;
-//                $this->save();
-                break;
             default:
                 parent::__set($key, $value);
         }
@@ -211,7 +205,13 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 } catch (\Exception $e) {
                     return $this->created_at;
                 }
-            case 'last_login':
+            case 'last_login_full':
+                try {
+                    $mutable = new Carbon($this->last_login, config('app.timezone'));
+                    return $mutable->format(Config::get('constants.date.full'));
+                } catch (\Exception $e) {
+                    return $this->last_login;
+                }
             case 'updated_date': # Alias of 'update_at'
                 try {
                     $mutable = new Carbon($this->updated_at, config('app.timezone'));
@@ -242,6 +242,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                 else return 'Student';
             case 'crumbs':
                 return empty($this->crumbs) ? [] : $this->crumbs;
+            case 'last_login':
             default:
                 return parent::__get($key);
         }
@@ -369,21 +370,23 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Check if the student is registered in the specified course
-     * @param int $id the course's ID \App\Course\::$id
+     * @param int $course_id
      * @return bool
      */
-    public function isRegistered(int $id)
+    public function isRegistered(int $course_id)
     {
-        return $this->studentCourses()->get()->toBase()->contains('id', '=', $id);
+        return StudentCourse::whereUserId($this->id)
+            ->where('course_id', '=', $course_id)
+            ->exists();
     }
 
     /**
-     * Retrieve the courses that the users is registered on
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Retrieve the courses that this student is registered on
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function studentCourses()
     {
-        return $this->belongsToMany('\App\Course', 'student_course', 'user_id', 'course_id');
+        return $this->hasMany(\App\StudentCourse::class, 'user_id', 'id');
     }
 
     /**
@@ -684,7 +687,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.view':
             case 'form.duplicate':
             case 'form.delete':
-            return isset($cid) && ($cid == \App\Course::DUMMY_ID || $this->isInstructor() && $this->ownsCourse($cid));
+            case 'course.disenroll':
+                return isset($cid) && ($cid == \App\Course::DUMMY_ID || ($this->isInstructor() && $this->ownsCourse($cid)));
             default:
                 return false;
         }

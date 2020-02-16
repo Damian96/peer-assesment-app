@@ -234,7 +234,7 @@ class FormController extends Controller
      */
     public function edit(Request $request, Form $form)
     {
-        $title = 'Edit Form ' . $form->id;
+        $title = "Edit Form {$form->id} of Session {$form->session()->first()->title}";
         return response(view('forms.edit', compact('title', 'form')), 200, $request->headers->all());
     }
 

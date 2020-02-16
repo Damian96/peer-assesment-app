@@ -143,12 +143,29 @@
                         <thead>
                         <th scope="row">#</th>
                         <th>Name</th>
+                        <th></th>
                         </thead>
                         <tbody>
                         @foreach($course->students()->getModels() as $i => $s)
                             <tr>
-                                <th scope="row">{{ $i }}</th>
+                                <th scope="row">{{ $i+1 }}</th>
                                 <td class="text-left">{{ $s->name }}</td>
+                                <td class="action-cell">
+                                    <form method="POST"
+                                          action="{{ url('/courses/' . $course->id . '/disenroll/') }}"
+                                          class="d-inline-block">
+                                        @method('DELETE')
+                                        @csrf
+                                        {{ html()->hidden('user_id', $s->user_id) }}
+                                        <button type="submit"
+                                                class="btn btn-lg btn-link material-icons text-danger disenroll-student"
+                                                data-title="Are you sure you want to disenroll {{ $s->full_name }}?"
+                                                data-content="This action is irreversible."
+                                                title="Disenroll {{ $s->lname }}"
+                                                aria-label="Disenroll {{ $s->lname }}">highlight_off
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -233,6 +250,25 @@
                 buttons: {
                     delete: {
                         text: 'Delete',
+                        btnClass: 'btn-red',
+                        action: function (e) {
+                            this.$target.closest('form').submit();
+                            // window.location.replace(this.$target.closest('form').attr('action'));
+                            return true;
+                        }
+                    },
+                    close: function () {
+                    }
+                },
+                theme: 'material',
+                type: 'red',
+                typeAnimated: true,
+            });
+            $('.disenroll-student').confirm({
+                escapeKey: 'close',
+                buttons: {
+                    delete: {
+                        text: 'Disenroll',
                         btnClass: 'btn-red',
                         action: function (e) {
                             this.$target.closest('form').submit();
