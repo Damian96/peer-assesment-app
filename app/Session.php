@@ -264,4 +264,12 @@ class Session extends Model
     {
         return $this->groups()->exists();
     }
+
+    /**
+     * @return bool
+     */
+    public function hasEnded()
+    {
+        return time() > $this->deadline_int;
+    }
 }

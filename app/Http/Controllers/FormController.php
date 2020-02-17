@@ -343,6 +343,15 @@ class FormController extends Controller
      */
     public function delete(Request $request, Form $form)
     {
+        if (!$form->session()->first()->hasEnded()) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => sprintf("Could not delete Form"),
+                'body' => 'The Form could not be deleted because it has open Session(s) associated',
+            ]);
+            return redirect()->back(302, $request->headers->all());
+        }
+
         if ($form->questions()->exists()) {
             foreach ($form->questions()->getModels() as $q) {
                 $q->delete();
@@ -360,7 +369,7 @@ class FormController extends Controller
         throw_if(env('APP_DEBUG', false), 500, sprintf("Could not delete form: %s", $form->title));
         $request->session()->flash('message', [
             'level' => 'danger',
-            'heading' => sprintf("Could not delete Form: %s", $form->title),
+            'heading' => sprintf("Could not delete Form"),
         ]);
         return redirect()->back(302, $request->headers->all());
     }

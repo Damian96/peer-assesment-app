@@ -21,7 +21,8 @@ class Version0620191203Groups extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->foreign('session_id')->references('id')->on('sessions');
+            $table->foreign('session_id', 'groups_sessions_foreign')->references('id')->on('sessions')
+                ->onDelete('CASCADE');
         });
     }
 

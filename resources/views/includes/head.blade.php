@@ -84,8 +84,6 @@
         });
         $(document).ready(function () {
             $('.tip').tipr();
-        });
-        $(function () {
             // Show User's Menu
             $('.navbar-toggler').on('click', function (e) {
                 if (!$('#userMenu').hasClass('show')) {

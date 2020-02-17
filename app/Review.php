@@ -44,7 +44,8 @@ class Review extends Model
     protected $guarded = ['id'];
 
     protected $fillable = [
-        'sender_id', 'recipient_id', 'question_id', 'mark', 'comment', 'answer', 'type'
+        'sender_id', 'recipient_id', 'question_id',
+        'mark', 'comment', 'answer', 'type', 'title'
     ];
 
     protected $casts = [
@@ -53,6 +54,7 @@ class Review extends Model
         'question_id' => 'int',
         'mark' => 'int',
         'type' => 'string',
+        'title' => 'string',
         'comment' => 'string',
         'answer' => 'string'
     ];
@@ -61,6 +63,7 @@ class Review extends Model
         'recipient_id' => 0,
         'mark' => 0,
         'type' => null,
+        'title' => null,
         'comment' => null,
         'answer' => null,
     ];

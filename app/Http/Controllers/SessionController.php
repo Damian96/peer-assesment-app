@@ -317,11 +317,11 @@ class SessionController extends Controller
      */
     public function delete(Request $request, Session $session)
     {
-        if ($session->groups()->exists()) {
+        if (!$session->hasEnded()) {
             $request->session()->flash('message', [
                 'level' => 'warning',
-                'heading' => 'Cannot delete Session!',
-                'body' => 'This Session has other Group(s) associated, so it cannot be deleted.'
+                'heading' => 'Could not delete Session!',
+                'body' => 'This Session has not yet ended, so you might not want to lose any feedback.'
             ]);
             return redirect()->back(302);
         }

@@ -26,9 +26,10 @@ class Version0620191203Reviews extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->foreign('sender_id')->references('id')->on('users');
-            $table->foreign('recipient_id')->references('id')->on('users');
-            $table->foreign('question_id')->references('id')->on('questions');
+            $table->foreign('sender_id', 'reviews_users_sender_foreign')->references('id')->on('users');
+            $table->foreign('recipient_id', 'reviews_users_recipient_foreign')->references('id')->on('users');
+            $table->foreign('question_id', 'reviews_questions_foreign')->references('id')->on('questions')
+                ->onDelete('CASCADE');
             $table->index('sender_id');
             $table->index('question_id');
         });

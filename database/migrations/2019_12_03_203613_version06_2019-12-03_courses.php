@@ -26,7 +26,7 @@ class Version0620191203Courses extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id', 'courses_users_foreign')->references('id')->on('users');
             $table->index('user_id');
             $table->index('ac_year');
         });

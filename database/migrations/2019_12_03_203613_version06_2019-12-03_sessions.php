@@ -24,7 +24,7 @@ class Version0620191203Sessions extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->foreign('course_id')->references('id')->on('courses');
+            $table->foreign('course_id', 'sessions_courses_foreign')->references('id')->on('courses');
         });
     }
 

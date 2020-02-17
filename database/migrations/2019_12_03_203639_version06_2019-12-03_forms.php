@@ -15,7 +15,7 @@ class Version0620191203Forms extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement();
-            $table->bigInteger('session_id')->unsigned()->default(0);
+            $table->bigInteger('session_id')->unsigned()->nullable()->default(0);
             $table->string('title', 255);
             $table->string('subtitle', 255)->nullable();
             $table->string('footnote', 255)->nullable();
@@ -23,7 +23,8 @@ class Version0620191203Forms extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->foreign('session_id')->references('id')->on('sessions');
+            $table->foreign('session_id', 'forms_sessions_foreign')->references('id')->on('sessions')
+                ->onDelete('SET NULL');
         });
     }
 

@@ -22,7 +22,7 @@ class Version0620191203Questions extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->foreign('form_id')->references('id')->on('forms');
+            $table->foreign('form_id', 'questions_forms_foreign')->references('id')->on('forms');
         });
     }
 

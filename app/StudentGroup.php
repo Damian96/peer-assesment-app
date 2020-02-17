@@ -29,7 +29,10 @@ class StudentGroup extends Model
 {
     protected $table = 'user_group';
     protected $connection = 'mysql';
-    public $incrementing = false;
+    public $incrementing = true;
+    protected $primaryKey = 'id';
+
+    protected $guarded = ['id'];
 
     protected $fillable = [
         'user_id', 'group_id'
