@@ -15,27 +15,9 @@
                 <input type="hidden" name="form_id" value="{{ $form->id }}" class="hidden">
                 <input type="hidden" name="session_id" value="{{ $form->session_id }}" class="hidden">
 
-                <div class="col-sm-12 col-md-12">
-                    <label class="form-control-sm">Add New Question:</label>
-                    <button id="multiple-choice" type="button" class="btn btn-large btn-info question-type">
-                        <i class="material-icons">radio_button_checked</i>Multiple Choice
-                    </button>
-                    <button id="linear-scale" type="button" class="btn btn-large btn-info question-type">
-                        <i class="material-icons">linear_scale</i>Linear Scale
-                    </button>
-                    <button id="paragraph" type="button" class="btn btn-large btn-info question-type"><i
-                            class="material-icons">format_align_justify</i>Paragraph
-                    </button>
-                    <button id="eval" type="button" class="btn btn-large btn-info question-type">
-                        <i class="material-icons">filter_5</i>Peer Evaluation<br><i>(on a scale of 5)</i>
-                    </button>
-                    <button id="criteria" type="button" class="btn btn-large btn-info question-type">
-                        <i class="material-icons">account_circle</i>Peer Evaluation<br><i>(distribute 100)</i>
-                    </button>
-                </div>
+                @include('forms.addQuestion')
                 <div class="col-sm-12 col-md-12">
                     <hr/>
-                    <h4>Form Preview</h4>
                     <div class="form-group">
                         <label for="form-title">Title</label>
                         <input type="text" name="title" required aria-required="true" maxlength="255"

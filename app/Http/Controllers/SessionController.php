@@ -386,7 +386,8 @@ class SessionController extends Controller
             }
             $review = new Review([
                 'question_id' => $question->id,
-                'sender_id' => Auth::user()->id
+                'sender_id' => Auth::user()->id,
+                'title' => $question->title
             ]);
             switch (key($q)) {
                 case 'linear-scale': // mark
@@ -400,7 +401,7 @@ class SessionController extends Controller
                     $review->fill([
                         'recipient_id' => Course::DUMMY_ID,
                         'answer' => $question->data['choices'][current($q)[0]],
-                        'type' => 'm',
+                        'type' => 'c',
                     ]);
                     break;
                 case 'paragraph': // comment
@@ -415,9 +416,10 @@ class SessionController extends Controller
                     foreach ($q[key($q)] as $uid => $m) {
                         $r = new Review([
                             'question_id' => $question->id,
+                            'title' => $question->title,
                             'sender_id' => Auth::user()->id,
                             'recipient_id' => $uid,
-                            'type' => key($q) == 'criteria' ? 'c' : 'e',
+                            'type' => key($q) == 'criteria' ? 'r' : 'e',
                             'mark' => $m,
                         ]);
                         try {

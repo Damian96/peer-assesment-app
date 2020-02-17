@@ -167,11 +167,13 @@
                 typeAnimated: true,
             });
 
+            @if ($sessions->isNotEmpty())
             // Initialize table
             {!! "let cols = [{col: 0, order: 'asc'}, {col: 1, order: 'asc'}];" !!}
             $('#my-sessions').tablesorter({
                 tablesorterColumns: cols
             });
+            @endif
 
             $('.add-group').confirm({
                 title: 'Add & Join Group',

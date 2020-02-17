@@ -5,6 +5,7 @@
       <w>authenticatable</w>
       <w>autocompleteselect</w>
       <w>bcrypt</w>
+      <w>beforesubmit</w>
       <w>biscolab</w>
       <w>cachebusting</w>
       <w>cids</w>

@@ -26,6 +26,10 @@ body {
     background: white;
     margin-bottom: 12vh;
 
+    @include media-breakpoint-down('sm') {
+      margin-bottom: 16vh;
+    }
+
     .title {
       border-bottom: 1px solid $primary-fg;
       padding-bottom: 9px;
@@ -85,7 +89,6 @@ form {
   max-height: 250px;
 }
 
-.form-group,
 .form-control,
 .form-control-sm,
 .form-control-md,
@@ -269,6 +272,13 @@ footer {
   }
 }
 
+.question-type {
+  @include media-breakpoint-down('md') {
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+}
+
 .card {
   .card-title-container {
     background: $info;
@@ -341,9 +351,9 @@ footer {
       color: darken($primary, 15%);
     }
 
-    &.active {
-      //color: darken !important;
-    }
+    //&.active {
+    //  //color: darken !important;
+    //}
   }
 }
 
@@ -360,14 +370,6 @@ footer {
 .uselect-none {
   user-select: none;
 }
-
-//.form-group {
-//  input[type="radio"] {
-//    &:hover {
-//
-//    }
-//  }
-//}
 
 .alert.d-inline-block {
   min-width: 350px;
@@ -393,9 +395,21 @@ footer {
   color: darken($primary, 25%);
 }
 
-fieldset {
+.form-group.criteria {
   i {
     font-size: .65em;
+  }
+
+  &.is-invalid {
+    &:before {
+      border-top: 5px solid $danger !important;
+    }
+  }
+
+  &.is-valid {
+    &:before {
+      border-top: 5px solid $success !important;
+    }
   }
 
   &:before {
@@ -405,6 +419,39 @@ fieldset {
     top: 0;
     height: 5px;
     width: 50%;
-    border-top: 5px solid mix($primary, orange);
+  }
+
+  &:not(.is-invalid):not(.is-valid) {
+    &:before {
+      border-top: 5px solid mix($primary, orange);
+    }
+
+  }
+}
+
+.btn-toolbar {
+  user-select: none;
+}
+
+@include media-breakpoint-down('sm') {
+  .d-xs-none {
+    display: none !important;
+  }
+  .d-xs-block {
+    display: block !important;
+  }
+  .col-xs {
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+  }
+  .text-xs-center {
+    text-align: center !important;
+  }
+  .text-xs-left {
+    text-align: left !important;
+  }
+  .text-xs-right {
+    text-align: right !important;
   }
 }

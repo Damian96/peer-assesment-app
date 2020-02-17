@@ -300,7 +300,7 @@ class FormController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                abort_unless(env('APP_DEBUG', false), 500, "Could not delete Question {$question->id}!");
+                throw_if(env('APP_DEBUG', false), $e);
                 $request->session()->flash('message', [
                     'level' => 'danger',
                     'heading' => "Could not save/update/delete Question {$question->id}!",

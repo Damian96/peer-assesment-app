@@ -88,7 +88,7 @@ http://www.tipue.com/tipr
                     // var p_l = this.offsetParent.offsetWidth + c_l + ($(this).index() * w_e);
                     var p_l = c_l - (w_t / 2) + (w_e / 2);
 
-                    console.debug('tipr:', p_l, $(this).index());
+                    // console.debug('tipr:', p_l, $(this).index());
                     $(tipr_cont).css('left', `${p_l}px`);
                     // $(tipr_cont).css('transform', `translateX(${m_l}px)`);
                     // $(tipr_cont).css('margin-left', m_l + 'px');

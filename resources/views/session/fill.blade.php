@@ -166,7 +166,7 @@
                                                aria-valuemax="100"
                                                class="form-control"
                                                aria-invalid="false"
-                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]" value="0">
+                                               name="questions[{{ $q->id }}][{{ $q->type }}][{{ $t->id }}]">
                                         <label class="d-none"
                                                for="question-{{ $q->id }}-{{ $t->id }}">{{ $label }}</label>
                                     </td>
@@ -181,9 +181,7 @@
         @endforeach
 
         <div class="col-sm-12 col-md-12 mt-5 mb-2">
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-block">Submit</button>
-            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
         </div>
     </form>
 @endsection
@@ -194,21 +192,19 @@
             // console.debug(this);
             let group = $(this).closest('.form-group');
             let points = calculateGroupPoints(group);
-            if (points > 100) {
+            if ((points > 0 && points < 100) || points > 100) {
                 group.find('.invalid-feedback').text('Total points exceed 100 limit');
                 $(this).removeClass('is-valid')
                     .addClass('is-invalid')
                     .attr('aria-invalid', 'true');
-                this.setCustomValidity('Total points exceed 100 limit');
+                return false;
+            } else {
+                $(this).removeClass('is-invalid')
+                    .attr('aria-invalid', 'false')
+                    .addClass('is-valid');
+                group.find('.invalid-feedback').text('');
                 return true;
-            } else if (points > 0 && points < 100) {
-                group.find('.invalid-feedback').text('Total points should be 100');
             }
-            $(this).removeClass('is-invalid')
-                .attr('aria-invalid', 'false')
-                .addClass('is-valid');
-            this.setCustomValidity('');
-            group.find('.invalid-feedback').text('');
         };
         var calculateGroupPoints = function (group) {
             let sum = 0;
@@ -219,22 +215,18 @@
             return sum;
         };
         $(function () {
-            if ($('.criteria').find("input[type='number']").first().val().length) {
-                $('.criteria').each(() => {
-                    calculateGroupPoints($(this));
-                });
-            }
             $(document).on('submit', 'form', function (e) {
-                $(this).find('.criteria').each(function () {
-                    if (parseInt($(this).data('sum')) < 100) {
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
-                        window.scrollTo(window.scrollX, this.getClientRects()[0].y);
-                        $(this).highlight(2000);
-                        $(this).find('.invalid-feedback').text('Total points should be 100');
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                $('.criteria').each((i, group) => {
+                    if (criteriaOnChangeHandler.call(group)) {
+                        this.submit();
+                        return true;
+                    } else {
                         return false;
                     }
                 });
+                return false;
             });
             $('.form-group.criteria').find('input').on('focusout click', criteriaOnChangeHandler);
         });

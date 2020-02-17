@@ -1,4 +1,4 @@
-<div class="{{ $template ? 'template' : null }} card col-xs-12 col-sm-12 col-md-12 p-0 my-2">
+<div class="{{ $template ? 'template' : null }} card col-sm-12 col-sm-12 col-md-12 p-0 my-2">
     <input name="question[{{ $count ?? '#' }}][type]" type="hidden" class="d-none"
            value="{{ !$template ? $question->type : null }}">
     <!-- Card Title -->
@@ -36,7 +36,7 @@
                         class="btn btn-sm btn-outline-danger delete-question"><i class="material-icons">delete</i>
                 </button>
             </div>
-            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Collapse Question">
+            <div class="btn-group btn-group-sm tip d-xs-none" role="toolbar" data-tip="Collapse Question">
                 <button tabindex="0" type="button" class="btn btn-sm btn-outline-dark close-question"
                         aria-label="Collapse Question"
                         data-toggle="collapse"
@@ -44,13 +44,13 @@
                         aria-expanded="true"
                         aria-controls=""><i class="material-icons close-icon">keyboard_arrow_up</i></button>
             </div>
-            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Move Question Up">
+            <div class="btn-group btn-group-sm tip d-xs-none" role="toolbar" data-tip="Move Question Up">
                 <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question"><i
                         class="material-icons"
                         aria-label="Move Question Up"
                     >arrow_upward</i></button>
             </div>
-            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Move Question Down">
+            <div class="btn-group btn-group-sm tip d-xs-none" role="toolbar" data-tip="Move Question Down">
                 <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark movedown-question"
                         aria-label="Move Question Down"><i
                         class="material-icons">arrow_downward</i></button>
@@ -86,7 +86,7 @@
                    onchange="(function(e) { $(this).closest('.form-group').next().find('.max-num').text(this.value)}.bind(this, event))();">
         </div>
         <div class="form-group scale my-3 {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : '' }}">
-            <label for="question[{{ $count ?? '' }}][minlbl]" class="form-control-sm">1:
+            <label for="question[{{ $count ?? '' }}][minlbl]" class="form-control-sm">1
                 <input type="text" name="question[{{ $count ?? '' }}][minlbl]"
                        placeholder="Highly Disagree"
                        value="{{ $question->minlbl ?? '' }}"
@@ -100,16 +100,16 @@
                        aria-required="true" class="form-text d-inline"></label>
         </div>
         <div class="form-group multiple my-3 {{ (!$template && empty($question->choices)) ? 'd-none' : '' }}">
-            <div class="col-xs-12 col-sm-12 col-md-12 choice-container">
+            <div class="choice-container">
                 @if (!$template && !empty($question->choices))
                     @foreach($question->choices as $j => $choice)
                         <div class="row choice">
-                            <div class="col-xs-5 col-sm-5 col-md-5 text-center overflow-hidden">
+                            <div class="col-sm text-center overflow-hidden">
                                 <i class="material-icons text-muted">radio_button_unchecked</i>
                                 <label for="question[{{ $count ?? '' }}][choices][{{ $j }}]" class="form-control-sm">
                                     {{ $choice }}</label>
                             </div>
-                            <div class="col-xs-5 col-md-5 text-left">
+                            <div class="col-sm text-left">
                                 <input class="form-control-sm" name="question[{{ $count ?? '' }}][choices][{{ $j }}]"
                                        type="text"
                                        placeholder="choice"
@@ -120,20 +120,20 @@
                                        oninput="(function() {$(this).closest('div').prev().find('label')[0].lastChild.textContent = this.value;
                                    }.bind(this, event)());">
                             </div>
-                            <div class="col-xs-12 col-sm-1 col-md-1">
+                            <div class="col-sm">
                                 <i class="btn btn-sm btn-sm btn-danger delete-choice material-icons">close</i>
                             </div>
                         </div>
                     @endforeach
                 @else
                     <div class="row choice">
-                        <div class="col-xs-5 col-sm-5 col-md-5 text-center overflow-hidden">
+                        <div class="col-xs col-sm text-center overflow-hidden">
                             <i class="material-icons text-muted">radio_button_unchecked</i>
                             <label for="question[{{ $count ?? '' }}][choices][]" class="form-control-sm"
                                    style="max-width: 90%; max-height: 20px; overflow: hidden;">
                                 Yes</label>
                         </div>
-                        <div class="col-xs-5 col-md-5 text-left">
+                        <div class="col-xs col-sm text-md-left">
                             <input class="form-control-sm" name="question[{{ $count ?? '' }}][choices][]"
                                    type="text"
                                    placeholder="choice"
@@ -145,7 +145,7 @@
                                         $(this).closest('div').prev().find('label')[0].lastChild.textContent = this.value;
                                    }.bind(this, event)());">
                         </div>
-                        <div class="col-xs-12 col-sm-1 col-md-1">
+                        <div class="col-xs col-sm">
                             <i class="btn btn-sm btn-sm btn-danger delete-choice material-icons">close</i>
                         </div>
                     </div>

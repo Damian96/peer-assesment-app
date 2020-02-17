@@ -3,10 +3,10 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <table class="table table-striped">
+            <table class="table table-striped table-responsive-sm">
                 <thead>
-                    <tr>
-                        @if ($user->isAdmin())
+                <tr>
+                    @if ($user->isAdmin())
                         <th>ID</th>
                         <th>Full Name</th>
                         <th>Email</th>

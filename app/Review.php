@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Question $question
  * @property-read \App\User $recipient
  * @property-read \App\User $sender
- * @property string type
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review query()
@@ -88,5 +87,26 @@ class Review extends Model
     public function question()
     {
         return $this->hasOne('\App\Question', 'id', 'question_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeFull()
+    {
+        switch ($this->type) {
+            case 'p':
+                return 'Paragraph';
+            case 'eval':
+                return 'Peer Evaluation (on a scale of 5)';
+            case 'r':
+                return 'Peer Evaluation (distribute 100)';
+            case 's':
+                return 'Linear Scale';
+            case 'c':
+                return 'Multiple Choice';
+            default:
+                return 'N/A';
+        }
     }
 }

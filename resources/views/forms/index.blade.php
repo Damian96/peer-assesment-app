@@ -8,25 +8,24 @@
     <div class="row">
         <div class="col-sm-12 col-md-12">
             @if ($merged->isNotEmpty())
-                <table class="table table-striped">
+                <table class="table table-striped table-responsive-sm">
                     <caption
                         class="">{{ sprintf("Showing results %s-%s of total %s Forms", $first, $last, $total) }}</caption>
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Title</th>
-                        <th>Session</th>
+                        <th class="">Title</th>
+                        <th class="">Session</th>
                         <th>Course</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {{--                    {{ dd($merged->all()) }}--}}
                     @foreach($merged->all() as $i => $form)
                         <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id > 0 ?? '0' }}">
                             <th scope="row">{{ ($i+1) }}</th>
-                            <td>{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
-                            <td>
+                            <td class="">{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
+                            <td class="">
                                 @if ($form->session_id > 0)
                                     {{ $form->session_title ?? 'N/A' }}
                                 @else<span class="text-muted">{{ 'N/A' }}</span>@endif
