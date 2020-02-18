@@ -70,16 +70,22 @@ form {
   }
 
   select {
-    color: whitesmoke !important;
-    background: darken($gray-500, 15%) !important;
+    color: white !important;
+    background: darken($gray-300, 50%) !important;
+
+    option {
+      color: inherit;
+      background: inherit;
+    }
   }
 }
 
 .btn-primary {
-  color: darken($secondary, 50%);
+  color: darken($secondary, 50%) !important;
 
   &:hover {
-    color: darken($secondary, 15%);
+    color: lighten($secondary, 25%) !important;
+    background: darken($primary-bg-dark, 5%) !important;
   }
 }
 
@@ -185,6 +191,10 @@ form {
   .material-icons {
     line-height: 20px;
     font-size: 20px;
+
+    &.text-warning {
+      color: darken($warning, 30%) !important;
+    }
   }
 
   form {
@@ -211,6 +221,14 @@ table {
 
     > td {
       padding: 5px 10.5px;
+    }
+  }
+
+  tr {
+    td {
+      a {
+        color: darken($primary-bg-dark, 10%);
+      }
     }
   }
 
@@ -357,10 +375,10 @@ footer {
   margin-right: -15px;
 
   .breadcrumb-item {
-    color: darken($primary, 35%);
+    color: darken($primary-bg-dark, 0%);
 
     a {
-      color: darken($primary, 15%);
+      color: darken($primary-bg-dark, 10%);
     }
   }
 }
@@ -396,6 +414,18 @@ footer {
 
 .nav-link {
   cursor: pointer;
+
+  &.active {
+    background: darken($primary-bg-dark, 15%);
+  }
+}
+
+.dropdown-item {
+  &:focus,
+  &:active,
+  &.active {
+    background: darken($primary-bg-dark, 15%);
+  }
 }
 
 // Fill Session

@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <p class="text-info text-justify">
+    <p class="form-note">
         Note: Form Templates are not associated to any Session they are only used as
         pre-defined templates that <strong>are associated to each Instructor Account</strong>.
         <strong>They can be duplicated into other Sessions.</strong></p>
