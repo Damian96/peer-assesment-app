@@ -4,6 +4,10 @@
     {{ Breadcrumbs::render('form.index') }}
 @endsection
 
+@php
+    $csrf = csrf_field();
+@endphp
+
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
@@ -49,7 +53,8 @@
                                     <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}"
                                           class="d-inline-block">
                                         @method('DELETE')
-                                        @csrf
+                                        {{ $csrf }}
+
                                         <button type="submit"
                                                 class="btn btn-lg btn-link material-icons text-danger delete-form"
                                                 data-title="Are you sure you want to delete this Form?"
@@ -64,7 +69,6 @@
                     @endforeach
                     </tbody>
                 </table>
-                {{--                {{ $merged->links() }}--}}
             @else
                 <h2>You do not have any Forms yet!</h2>
                 <p>
@@ -115,8 +119,8 @@
 
                 form.find('.form-group')
                     .append(select)
-                    .append('@method('POST')')
-                    .append('@csrf');
+                    .append('{{ method_field('POST') }}')
+                    .append('{{ $csrf }}');
 
                 // console.debug(form, sessions);
             },

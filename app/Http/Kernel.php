@@ -2,10 +2,21 @@
 
 namespace App\Http;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Routing\Router;
 
 class Kernel extends HttpKernel
 {
+    public function __construct(Application $app, Router $router)
+    {
+        if (env('APP_ENV', 'local') != 'local') {
+            $this->middlewareGroups['api'][] = \App\Http\Middleware\ResponseCacheMiddleware::class;
+        }
+
+        parent::__construct($app, $router);
+    }
+
     /**
      * The application's global HTTP middleware stack.
      *
@@ -38,11 +49,9 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            \App\Http\Middleware\EncryptCookies::class,
-            \Illuminate\Session\Middleware\StartSession::class,
+            'auth.api',
             'throttle:60,1',
             'bindings',
-            'auth.api',
         ],
     ];
 

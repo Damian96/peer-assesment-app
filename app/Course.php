@@ -147,6 +147,10 @@ class Course extends Model
                 } else {
                     return Carbon::createFromTimestamp(strtotime($this->updated_at), config('app.timezone'))->format(config('constants.date.full'));
                 }
+            case 'semester':
+            case 'ac_year_semester':
+                return substr($this->ac_year, -4);
+            case 'year':
             case 'ac_year_int':
             case 'ac_year_time':
                 return $this->ac_year_time;

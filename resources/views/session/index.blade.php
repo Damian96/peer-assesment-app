@@ -37,7 +37,7 @@
                     @foreach($sessions as $session)
                         <tr>
                             <td>{{ $session->title_full }}</td>
-                            <td>{{ $session->deadline_full }}</td>
+                            <td>{{ $session->deadline_uk }}</td>
                             @if (Auth::user()->isStudent())
                                 <td class="font-italic">{{ $session->hasJoinedGroup(Auth::user()) ? $session->getUserGroup(Auth::user())->name : 'N/A' }}</td>
                             @endif
@@ -88,6 +88,13 @@
                         </tr>
                     @endforeach
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-muted">Note: All Sessions deadlines are always exactly at midnight
+                            (00:00).
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
                 {{ $sessions->links() }}
             @else

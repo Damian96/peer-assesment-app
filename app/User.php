@@ -808,4 +808,12 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->whereIn('student_course.course_id', $courses);
         return $query->get();
     }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

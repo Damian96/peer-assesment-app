@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// @TODO: add Cache
 
 /**
  * auth:api Middleware -> expects always JSON !!

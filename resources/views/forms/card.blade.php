@@ -29,39 +29,42 @@
                 @endphp</i><span
                 class="card-title-content">&nbsp;{{ $question->title ?? '' }}</span></h4>
         <div class="btn-toolbar d-inline float-right">
-            <div class="btn-group btn-group-sm tip" role="toolbar" data-tip="Delete Question">
+            <div class="btn-group btn-group-sm" role="toolbar">
                 <button type="button"
                         tabindex="0"
                         aria-label="Delete Question"
+                        title="Delete Question"
                         class="btn btn-sm btn-outline-danger delete-question"><i class="material-icons">delete</i>
                 </button>
             </div>
-            <div class="btn-group btn-group-sm tip d-xs-none" role="toolbar" data-tip="Collapse Question">
+            <div class="btn-group btn-group-sm d-xs-none" role="toolbar">
                 <button tabindex="0" type="button" class="btn btn-sm btn-outline-dark close-question"
+                        title="Collapse Question"
                         aria-label="Collapse Question"
                         data-toggle="collapse"
-                        data-target="#collapse-{{ $count ?? '' }}"
+                        data-target="#collapse-{{ $count ?? '#' }}"
                         aria-expanded="true"
                         aria-controls=""><i class="material-icons close-icon">keyboard_arrow_up</i></button>
             </div>
-            <div class="btn-group btn-group-sm tip d-xs-none" role="toolbar" data-tip="Move Question Up">
-                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question"><i
-                        class="material-icons"
-                        aria-label="Move Question Up"
-                    >arrow_upward</i></button>
-            </div>
-            <div class="btn-group btn-group-sm tip d-xs-none" role="toolbar" data-tip="Move Question Down">
-                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark movedown-question"
-                        aria-label="Move Question Down"><i
-                        class="material-icons">arrow_downward</i></button>
-            </div>
+            {{--            <div class="btn-group btn-group-sm d-xs-none" role="toolbar">--}}
+            {{--                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question"><i--}}
+            {{--                        class="material-icons"--}}
+            {{--                        aria-label="Move Question Up"--}}
+            {{--                    >arrow_upward</i></button>--}}
+            {{--            </div>--}}
+            {{--            <div class="btn-group btn-group-sm d-xs-none" role="toolbar">--}}
+            {{--                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark movedown-question"--}}
+            {{--                        aria-label="Move Question Down"><i--}}
+            {{--                        class="material-icons">arrow_downward</i></button>--}}
+            {{--            </div>--}}
         </div>
     </div>
     <!-- Card Body -->
-    <div class="card-body collapse show pt-0" id="collapse-{{ $count ?? '' }}">
+    <div class="card-body collapse show pt-0" id="collapse-{{ $count ?? '#' }}">
         <div class="form-group question-title">
-            <label class="form-control-sm">Title</label>
-            <input type="text" name="question[{{ $count ?? '' }}][title]" class="form-control"
+            <label for="question-{{ $count ?? '#' }}-title" class="form-control-sm">Title</label>
+            <input type="text" name="question[{{ $count ?? '#' }}][title]" class="form-control"
+                   id="question-{{ $count ?? '#' }}-title"
                    value="{{ $question->title ?? '' }}"
                    required aria-required="true"
                    maxlength="100"
@@ -74,9 +77,10 @@
             <span class="invalid-feedback"><strong></strong></span>
         </div>
         <div class="form-group scale {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : '' }}">
-            <label for="question[{{ $count ?? '' }}][max]" class="form-control-sm">Maximum</label>
+            <label for="question-{{ $count ?? '#' }}-max" class="form-control-sm">Maximum</label>
             <input type="number"
-                   name="question[{{ $count ?? '' }}][max]"
+                   name="question[{{ $count ?? '#' }}][max]"
+                   id="question-{{ $count ?? '#' }}-max"
                    class="form-control-sm"
                    value="{{ $question->max ?? '' }}"
                    min="2" max="10"
@@ -86,16 +90,18 @@
                    onchange="(function(e) { $(this).closest('.form-group').next().find('.max-num').text(this.value)}.bind(this, event))();">
         </div>
         <div class="form-group scale my-3 {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : '' }}">
-            <label for="question[{{ $count ?? '' }}][minlbl]" class="form-control-sm">1
-                <input type="text" name="question[{{ $count ?? '' }}][minlbl]"
+            <label for="question-{{ $count ?? '#' }}-minlbl" class="form-control-sm">1
+                <input type="text" name="question[{{ $count ?? '#' }}][minlbl]"
+                       id="question-{{ $count ?? '#' }}-minlbl"
                        placeholder="Highly Disagree"
                        value="{{ $question->minlbl ?? '' }}"
                        required
                        aria-readonly="true" class="form-text d-inline"></label>
-            <label for="question[{{ $count ?? '' }}][maxlbl]" class="form-control-sm"><span
+            <label for="question-{{ $count ?? '#' }}-maxlbl" class="form-control-sm"><span
                     class="max-num d-inline">{{ $question->max ?? '' }}</span>
-                <input type="text" name="question[{{ $count ?? '' }}][maxlbl]" placeholder="Highly Agree"
+                <input type="text" name="question[{{ $count ?? '#' }}][maxlbl]" placeholder="Highly Agree"
                        required
+                       id="question-{{ $count ?? '#' }}-maxlbl"
                        value="{{ $question->maxlbl ?? '' }}"
                        aria-required="true" class="form-text d-inline"></label>
         </div>
@@ -106,11 +112,11 @@
                         <div class="row choice">
                             <div class="col-sm text-center overflow-hidden">
                                 <i class="material-icons text-muted">radio_button_unchecked</i>
-                                <label for="question[{{ $count ?? '' }}][choices][{{ $j }}]" class="form-control-sm">
+                                <label for="question[{{ $count ?? '#' }}][choices][{{ $j }}]" class="form-control-sm">
                                     {{ $choice }}</label>
                             </div>
                             <div class="col-sm text-left">
-                                <input class="form-control-sm" name="question[{{ $count ?? '' }}][choices][{{ $j }}]"
+                                <input class="form-control-sm" name="question[{{ $count ?? '#' }}][choices][{{ $j }}]"
                                        type="text"
                                        placeholder="choice"
                                        aria-placeholder="choice"
@@ -129,12 +135,12 @@
                     <div class="row choice">
                         <div class="col-xs col-sm text-center overflow-hidden">
                             <i class="material-icons text-muted">radio_button_unchecked</i>
-                            <label for="question[{{ $count ?? '' }}][choices][]" class="form-control-sm"
+                            <label for="question[{{ $count ?? '#' }}][choices][]" class="form-control-sm"
                                    style="max-width: 90%; max-height: 20px; overflow: hidden;">
                                 Yes</label>
                         </div>
                         <div class="col-xs col-sm text-md-left">
-                            <input class="form-control-sm" name="question[{{ $count ?? '' }}][choices][]"
+                            <input class="form-control-sm" name="question[{{ $count ?? '#' }}][choices][]"
                                    type="text"
                                    placeholder="choice"
                                    aria-placeholder="choice"

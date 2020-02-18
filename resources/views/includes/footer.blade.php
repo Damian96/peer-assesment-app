@@ -23,5 +23,11 @@
 
 @yield('end_footer')
 
+<script type="text/javascript" defer>
+    document.addEventListener('DOMContentLoaded', function () {
+        $(document).tooltip();
+    });
+</script>
+
 </body>
 </html>

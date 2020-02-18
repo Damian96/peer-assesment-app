@@ -83,7 +83,6 @@
             },
         });
         $(document).ready(function () {
-            $('.tip').tipr();
             // Show User's Menu
             $('.navbar-toggler').on('click', function (e) {
                 if (!$('#userMenu').hasClass('show')) {

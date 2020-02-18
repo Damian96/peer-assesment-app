@@ -11,7 +11,6 @@ import 'webpack-jquery-ui/effects.js';
 require('jquery-validation/dist/jquery.validate');
 require('@curveballerpacks/tablesorter');
 require('jquery-confirm');
-require('./../../plugins/js/tipr.js');
 
 // Custom JavaScript
 require('./combobox');

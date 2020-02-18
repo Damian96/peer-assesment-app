@@ -46,33 +46,33 @@ document.addEventListener('DOMContentLoaded', function (e) {
             $(this).closest('.card').find('.close-icon.material-icons').text('keyboard_arrow_down');
             return true;
         });
-        card.find('.moveup-question').on('click', function (card, e) {
-            // console.debug(card, e);
-            let cCount = parseInt(card[0].getAttribute('data-count'));
-            let prev = card.prev();
-            replaceCardNames(card, cCount - 1);
-            replaceCardNames(prev, cCount);
-            if (prev.hasClass('card')) {
-                prev.before(card);
-                card.highlight(500);
-            }
-
-            return true;
-        }.bind(null, card));
-        card.find('.movedown-question').on('click', function (card, e) {
-            // console.debug(card);
-            let cCount = parseInt(card[0].getAttribute('data-count'));
-            let next = card.next();
-            replaceCardNames(card, cCount + 1);
-            replaceCardNames(next, cCount);
-            if (next.hasClass('card')) {
-                next.after(card);
-                card.highlight(500);
-                card.find('.bg-info').first().highlight(500);
-            }
-
-            return true;
-        }.bind(null, card));
+        // card.find('.moveup-question').on('click', function (card, e) {
+        //     // console.debug(card, e);
+        //     let cCount = parseInt(card[0].getAttribute('data-count'));
+        //     let prev = card.prev();
+        //     replaceCardNames(card, cCount - 1);
+        //     replaceCardNames(prev, cCount);
+        //     if (prev.hasClass('card')) {
+        //         prev.before(card);
+        //         card.highlight(500);
+        //     }
+        //
+        //     return true;
+        // }.bind(null, card));
+        // card.find('.movedown-question').on('click', function (card, e) {
+        //     // console.debug(card);
+        //     let cCount = parseInt(card[0].getAttribute('data-count'));
+        //     let next = card.next();
+        //     replaceCardNames(card, cCount + 1);
+        //     replaceCardNames(next, cCount);
+        //     if (next.hasClass('card')) {
+        //         next.after(card);
+        //         card.highlight(500);
+        //         card.find('.bg-info').first().highlight(500);
+        //     }
+        //
+        //     return true;
+        // }.bind(null, card));
         card.find('.delete-question').on('click', function (card, e) {
             // let i = $(this).data('count');
             console.debug(arguments);
@@ -251,6 +251,22 @@ document.addEventListener('DOMContentLoaded', function (e) {
     $('button.question-type').on('click', function () {
         createCard(this.id, `${this.id}-${window.count + 1}`, `${this.id} - #${window.count + 1}`);
         return true;
+    });
+    $('#collapse-all').on('click', () => {
+        $('.card.col-sm-12').each(() => {
+            let close = $(this).find('.close-question');
+            if ('true' === close.attr('aria-expanded')) {
+                $(this).find('.close-question').click();
+            }
+        });
+    });
+    $('#expand-all').on('click', () => {
+        $('.card.col-sm-12').each(() => {
+            let close = $(this).find('.close-question');
+            if (close.attr('aria-expanded') !== 'true') {
+                $(this).find('.close-question').click();
+            }
+        });
     });
     $(document).on('submit', 'form', function () {
         window.formData = storeFormData();

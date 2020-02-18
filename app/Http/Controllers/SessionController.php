@@ -236,6 +236,7 @@ class SessionController extends Controller
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => sprintf("Session %s has been saved successfully!", $session->id),
+                'body' => 'You should now add a new Form to this Session!'
             ]);
             $session->sendEmailNotification();
             return redirect()->action('SessionController@show', ['session' => $session], 302);
@@ -354,7 +355,7 @@ class SessionController extends Controller
 
         throw_if(!$session->form()->exists(), new NotFoundHttpException("This Session does not have an associated Form!"));
         $form = $session->form()->first();
-        $questions = $form->questions()->getResults();
+        $questions = $form->questions()->orderBy('updated_at', 'DESC')->getResults();
 
         return response(view('session.fill', compact('title', 'questions', 'form', 'session')), 200, $request->headers->all());
     }

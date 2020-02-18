@@ -107,7 +107,7 @@ class FormController extends Controller
                     'question.array' => 'The Form should have questions!',
                 ];
             default:
-                break;
+                return [];
         }
     }
 
@@ -235,7 +235,8 @@ class FormController extends Controller
     public function edit(Request $request, Form $form)
     {
         $title = "Edit Form {$form->id} of Session {$form->session()->first()->title}";
-        return response(view('forms.edit', compact('title', 'form')), 200, $request->headers->all());
+        $questions = $form->questions()->getModels();
+        return response(view('forms.edit', compact('title', 'questions', 'form')), 200, $request->headers->all());
     }
 
     /**
@@ -377,13 +378,13 @@ class FormController extends Controller
     /**
      * @method _POST
      * @param Request $request
-     * @param Form $form
+     * @param FormTemplate $form
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      * @throws \Throwable
      */
     public function duplicate(Request $request, FormTemplate $form)
     {
-        $validator = Validator::make($request->all(), [], $this->rules(__FUNCTION__, $request));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
             $request->session()->flash('message', [
@@ -404,38 +405,39 @@ class FormController extends Controller
             'mark' => 0
         ]);
 
-        if (!$form->save()) {
+        try {
+            $form->saveOrFail();
+        } catch (\Throwable $e) {
             throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Could not duplicate Form!',
             ]);
             return redirect()->action('FormController@index', 302);
-        }
-
-        foreach ($original->questions() as $q) {
-            $model = new Question();
-            $model->fill([
-                'title' => $q['title'],
-                'form_id' => $form->id,
-                'data' => json_encode($q['data'])
-            ]);
-
-            if (!$model->save()) {
-                throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
-                $request->session()->flash('message', [
-                    'level' => 'danger',
-                    'heading' => 'Could not duplicate Form!',
+        } finally {
+            foreach ($original->questions() as $q) {
+                $model = new Question();
+                $model->fill([
+                    'title' => $q['title'],
+                    'form_id' => $form->id,
+                    'data' => json_encode($q['data'])
                 ]);
-                return redirect()->action('FormController@index', 302);
-            }
-        }
 
-        $request->session()->flash('message', [
-            'level' => 'success',
-            'heading' => 'You successfully duplicated the Form!',
-            'body' => sprintf("The new form is : %s", $form->id)
-        ]);
-        return redirect()->action('FormController@index', [], 302);
+                if (!$model->save()) {
+                    throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
+                    $request->session()->flash('message', [
+                        'level' => 'danger',
+                        'heading' => 'Could not duplicate Form!',
+                    ]);
+                    return redirect()->action('FormController@index', 302);
+                }
+            }
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => 'You successfully duplicated the Form!',
+                'body' => sprintf("The new form is : %s", $form->id)
+            ]);
+            return redirect()->action('FormController@index', [], 302);
+        }
     }
 }

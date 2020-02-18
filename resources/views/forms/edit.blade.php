@@ -18,36 +18,17 @@
                 @include('forms.addQuestion')
                 <div class="col-sm-12 col-md-12">
                     <hr/>
-                    <div class="form-group">
-                        <label for="form-title">Title</label>
-                        <input type="text" name="title" required aria-required="true" maxlength="255"
-                               value="{{ old('title', false) ? old('title') : $form->title }}"
-                               placeholder="The form's main title" class="form-control">
-                        <span class="invalid-feedback"><strong>{{ $errors->first('title') ?? '' }}</strong></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="form-subtitle">Subtitle <span
-                                class="text-muted">(leave blank for none)</span></label>
-                        <input type="text" name="subtitle" maxlength="255" placeholder="The form's main subtitle"
-                               value="{{ old('subtitle', false) ? old('subtitle') : $form->subtitle }}"
-                               class="form-control{{ $errors->first('subtitle') ?? 'is-invalid' }}">
-                        <span
-                            class="invalid-feedback {{ $errors->first('subtitle') ?? 'd-block' }}"><strong>{{ $errors->first('subtitle') ?? '' }}</strong></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="footnote">Footer Note <span
-                                class="text-muted">(leave blank for none)</span></label>
-                        <input type="text" name="footnote" maxlength="255" placeholder="The form's Foot Note"
-                               value="{{ old('footnote', false) ? old('footnote') : $form->footnote }}"
-                               class="form-control">
-                        <span class="invalid-feedback"><strong>{{ $errors->first('footnote') ?? '' }}</strong></span>
-                    </div>
+                    @include('forms.formData', [
+                        'form' => $form,
+                        'errors' => $errors
+                    ])
                 </div>
                 <div id="card-container" class="container-fluid">
                     @include('forms.card', [
                         'template' => true
                     ])
-                    @foreach($form->questions()->getModels() as $q => $question)
+                    @include('forms.questionToolbar')
+                    @foreach($questions as $q => $question)
                         @include('forms.card', [
                             'template' => false,
                           'title' => $question->title,

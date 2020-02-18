@@ -1,6 +1,5 @@
 // Imports
 @import "~normalize.css/normalize.css";
-@import "./../../plugins/css/tipr.css";
 @import "~bootstrap/scss/bootstrap";
 @import 'variables';
 @import "~jquery-confirm/dist/jquery-confirm.min.css";
@@ -277,6 +276,14 @@ footer {
     margin-right: 5px;
     margin-bottom: 5px;
   }
+
+  color: darken($secondary, 30%);
+  background: lighten($info, 30%);
+
+  &:hover {
+    color: darken($secondary, 0);
+    background: lighten($info, 0);
+  }
 }
 
 .card {
@@ -306,18 +313,6 @@ footer {
         margin-left: 5px;
         cursor: pointer;
       }
-
-      .close-question {
-        cursor: ns-resize;
-      }
-
-      .moveup-question {
-        cursor: n-resize;
-      }
-
-      .movedown-question {
-        cursor: s-resize;
-      }
     }
   }
 
@@ -338,6 +333,23 @@ footer {
     }
   }
 
+  .delete-question {
+    background: darken($dark, 30%);
+    color: lighten($danger, 30%);
+    border-color: lighten($danger, 30%);
+  }
+
+  .close-question {
+    cursor: ns-resize;
+  }
+
+  .moveup-question {
+    cursor: n-resize;
+  }
+
+  .movedown-question {
+    cursor: s-resize;
+  }
 }
 
 .breadcrumb {
@@ -350,10 +362,6 @@ footer {
     a {
       color: darken($primary, 15%);
     }
-
-    //&.active {
-    //  //color: darken !important;
-    //}
   }
 }
 
