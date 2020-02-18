@@ -2,8 +2,6 @@
 
 namespace App;
 
-use App\Notifications\AppResetPasswordEmail;
-use App\Notifications\AppVerifyEmail;
 use App\Notifications\StudentInviteEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
@@ -75,6 +73,7 @@ use Illuminate\Support\Str;
  * @property-read int|null $courses_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Session[] $sessions
  * @property-read int|null $sessions_count
+ * @property string password_reset_token
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
@@ -570,10 +569,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEmailVerificationNotification()
     {
-        if (env('APP_ENV', 'local') !== 'local') {
-            $mailer = new AppVerifyEmail($this);
-            Mail::to($this->email)->send($mailer);
-        }
+//        if (env('APP_ENV', 'local') !== 'local') {
+//            $mailer = new AppVerifyEmail($this);
+//            Mail::to($this->email)->send($mailer);
+//        }
         clock()->info("Sent email verification to: {$this->email}");
     }
 
@@ -705,10 +704,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password_reset_token = $token;
         try {
-            if (env('APP_ENV', 'local') !== 'local') {
-                $mailer = new AppResetPasswordEmail($this);
-                Mail::to($this->email)->send($mailer);
-            }
+//            if (env('APP_ENV', 'local') !== 'local') {
+//                $mailer = new AppResetPasswordEmail($this);
+//                Mail::to($this->email)->send($mailer);
+//            }
             clock()->info("AppResetPasswordEmail sent to {$this->email}");
         } catch (\Throwable $e) {
             clock()->info("Failed to send AppResetPasswordEmail to {$this->email}", ['trace' => true]);

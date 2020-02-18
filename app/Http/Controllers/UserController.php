@@ -40,11 +40,10 @@ class UserController extends Controller
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
         $this->middleware('verified')->except([
-            'profile',
             'logout', 'login', 'auth', # login-logout
             'create', 'store', # user-register
             'verify', 'verified', # verify-email/password
-            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+//            'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
         $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
@@ -588,7 +587,7 @@ class UserController extends Controller
     public function verify(Request $request)
     {
         if (!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password', 'invite', 'enroll'], true)) {
-            throw abort(401);
+            throw abort(401, "The request you sent is invalid.");
         }
 
         $redirect_fail = Auth::check() ? 'UserController@index' : 'UserController@login';
@@ -597,11 +596,11 @@ class UserController extends Controller
         try {
             $user = User::whereId(intval($request->get('id', -1)))->firstOrFail()->refresh();
         } catch (ModelNotFoundException $e) { # invalid user / hacking attempt;
-            throw abort(401);
+            throw abort(401, "The request you sent is invalid.");
         }
 
         if (strcmp($request->get('hash', null), sha1($user->getEmailForVerification())) != 0) { # invalid user / hacking attempt;
-            throw abort(401);
+            throw abort(401, "The request you sent is invalid.");
         }
 
         if (Carbon::now(config('app.timezone'))->timestamp > intval($request->get('expires', 0))) { # link expired;
@@ -634,7 +633,7 @@ class UserController extends Controller
             $request->session()->flash('user', $user);
             return redirect()->action('UserController@reset', ['token' => $user->token], 302, $request->headers->all());
         } else { # unknown action / hacking attempt
-            throw abort(401);
+            throw abort(401, "The request you sent is invalid.");
         }
     }
 
@@ -727,8 +726,10 @@ class UserController extends Controller
     public function verified(Request $request)
     {
         $title = 'Please verify your email';
+        if (!$request->session()->has('emailVerifiedSent')) {
+            Auth::user()->sendEmailVerificationNotification();
+        }
         $request->session()->flash('emailVerifiedSent', true);
-        Auth::user()->sendEmailVerificationNotification();
 
         $request->session()->flash('message', [
             'level' => 'info',
