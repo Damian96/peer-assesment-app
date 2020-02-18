@@ -20,6 +20,9 @@ class Version0620191203Sessions extends Migration
             $table->string('title', 255);
             $table->timestamp('deadline')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->text('instructions');
+            $table->tinyInteger('groups')->comment('maximum groups');
+            $table->tinyInteger('min_group_size')->comment('maximum group size');
+            $table->tinyInteger('max_group_size')->comment('minimum group size');
             $table->timestamp('open_date')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));

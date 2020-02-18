@@ -69,7 +69,6 @@
                                                title="This Session does not have any groups!"
                                                aria-label="This Session does not have any groups!"
                                                class="material-icons text-muted">group</a>
-
                                         @else
                                             <a href="{{ url('#') }}"
                                                title="Join a group"
@@ -77,11 +76,13 @@
                                                aria-label="Join a group"
                                                class="material-icons join-group">group</a>
                                         @endif
-                                        <a href="{{ url('#') }}"
-                                           title="Add a group"
-                                           data-id="{{ $session->id }}"
-                                           aria-label="Add a group"
-                                           class="material-icons add-group text-success">group_add</a>
+                                        @if ($session->canAddGroup())
+                                            <a href="{{ url('#') }}"
+                                               title="Add a group"
+                                               data-id="{{ $session->id }}"
+                                               aria-label="Add a group"
+                                               class="material-icons add-group text-success">group_add</a>
+                                        @endif
                                     @endif
                                 </td>
                             @endif
@@ -139,7 +140,7 @@
             .addClass('form-control-md')
             .attr('required', 'true')
             .attr('aria-required', 'true')
-            .attr('minlength', '10')
+            .attr('minlength', '5')
             .attr('maxlength', '255');
 
         let session = $('{!! html()->input('hidden', 'session_id') !!}');

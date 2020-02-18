@@ -3,9 +3,12 @@
     @method($method)
     @csrf
 
+    @if (isset($form) && !isset($forms))
+        <input type="hidden" class="hidden" value="{{ $form->id }}" name="form" id="form">
+    @endif
     @if (isset($course) && !isset($courses))
         <input type="hidden" class="hidden" value="{{ $course->id }}" name="course" id="course">
-    @else
+    @elseif (!isset($session))
         @php $course = isset($course) ? $course : ((isset($session) && $session->course()->exists()) ? $session->course()->first() : null); @endphp
         <div class="form-group">
             <label class="form-text" for="course">Course</label>
@@ -116,6 +119,74 @@
         </span>
     </div>
     <div class="form-group">
+        <label class="form-text" for="groups">Maximum Groups</label>
+        <input class="form-control{{ $errors->has('groups') ? ' is-invalid' : '' }}"
+               name="groups"
+               type="number"
+               id="groups"
+               min="1"
+               aria-valuemin="1"
+               max="25"
+               aria-valuemax="25"
+               value="{{ old('groups', isset($session) ? $session->groups : '') }}"
+               data-rule-required="true"
+               data-msg-required="{{ $messages['groups.required'] ?? '' }}"
+               data-rule-min="1"
+               data-msg-min="{{ $messages['groups.min'] ?? '' }}"
+               data-rule-max="25"
+               data-msg-max="{{ $messages['groups.max'] ?? '' }}"
+               aria-invalid="{{ $errors->has('groups') ? 'true' : 'false' }}">
+        <span class="invalid-feedback d-block">
+        @if ($errors->has('groups'))<strong>{{ $errors->first('groups') }}</strong>@endif
+        </span>
+    </div>
+    <div class="form-group d-flex justify-content-around flex-row flex-nowrap align-items-stretch">
+        <div class="flex-column flex-grow-1">
+            <label class="form-text" for="min_group_size">Minimum Group size</label>
+            <input class="form-control-md{{ $errors->has('min_group_size') ? ' is-invalid' : '' }}"
+                   name="min_group_size"
+                   type="number"
+                   id="min_group_size"
+                   min="2"
+                   aria-valuemin="2"
+                   max="5"
+                   aria-valuemax="5"
+                   value="{{ old('groups', isset($session) ? $session->min_group_size : '') }}"
+                   data-rule-required="true"
+                   data-msg-required="{{ $messages['min_group_size.required'] ?? '' }}"
+                   data-rule-min="2"
+                   data-msg-min="{{ $messages['min_group_size.min'] ?? '' }}"
+                   data-rule-max="5"
+                   data-msg-max="{{ $messages['min_group_size.max'] ?? '' }}"
+                   aria-invalid="{{ $errors->has('min_group_size') ? 'true' : 'false' }}">
+            <span class="invalid-feedback d-block">
+            @if ($errors->has('min_group_size'))<strong>{{ $errors->first('min_group_size') }}</strong>@endif
+            </span>
+        </div>
+        <div class="flex-column flex-grow-1">
+            <label class="form-text" for="min_group_size">Maximum Group size</label>
+            <input class="form-control-md{{ $errors->has('max_group_size') ? ' is-invalid' : '' }}"
+                   name="max_group_size"
+                   type="number"
+                   id="max_group_size"
+                   min="2"
+                   aria-valuemin="2"
+                   max="6"
+                   aria-valuemax="6"
+                   value="{{ old('groups', isset($session) ? $session->max_group_size : '') }}"
+                   data-rule-required="true"
+                   data-msg-required="{{ $messages['max_group_size.required'] ?? '' }}"
+                   data-rule-min="2"
+                   data-msg-min="{{ $messages['max_group_size.min'] ?? '' }}"
+                   data-rule-max="6"
+                   data-msg-max="{{ $messages['max_group_size.max'] ?? '' }}"
+                   aria-invalid="{{ $errors->has('max_group_size') ? 'true' : 'false' }}">
+            <span class="invalid-feedback d-block">
+            @if ($errors->has('max_group_size'))<strong>{{ $errors->first('max_group_size') }}</strong>@endif
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
         <button type="submit" class="btn btn-block btn-primary" role="button" title="{{ $button['title'] }}"
                 aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
     </div>
@@ -175,6 +246,12 @@
                     instructions: {
                         required: true,
                         maxlength: 1000
+                    },
+                    groups: {
+                        required: true,
+                        digits: true,
+                        min: 2,
+                        max: 25,
                     },
                     deadline: {
                         required: true,

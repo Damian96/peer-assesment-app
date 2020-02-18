@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\DB;
  * @property string $open_date
  * @property int open_date_int
  * @property int deadline_int
+ * @property int max_groups
+ * @property int groups
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
  */
 class Session extends Model
@@ -56,6 +58,8 @@ class Session extends Model
     public function __get($name)
     {
         switch ($name) {
+            case 'max_groups':
+                return $this->groups;
             case 'course_title':
                 return $this->course()->exists() ? $this->course()->first()->title : 'N/A';
             case 'open_date_days':
@@ -155,7 +159,8 @@ class Session extends Model
      * @var array
      */
     protected $fillable = [
-        'deadline', 'course_id', 'form_id', 'instructions', 'title', 'open_date'
+        'deadline', 'course_id', 'form_id', 'instructions', 'title', 'open_date',
+        'groups', 'min_group_size', 'max_group_size',
     ];
 
     /**
@@ -177,6 +182,9 @@ class Session extends Model
         'deadline' => 'datetime',
         'course_id' => 'int',
         'form_id' => 'int',
+        'groups' => 'int',
+        'min_group_size' => 'int',
+        'max_group_size' => 'int',
         'instructions' => 'string',
     ];
 
@@ -263,6 +271,15 @@ class Session extends Model
     public function hasGroups()
     {
         return $this->groups()->exists();
+    }
+
+    /**
+     * Returns whether a new group can be added to this session
+     * @return bool
+     */
+    public function canAddGroup()
+    {
+        return !$this->hasGroups() || $this->groups()->count() < $this->max_groups;
     }
 
     /**

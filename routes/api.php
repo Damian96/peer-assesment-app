@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Auth;
  * auth:api Middleware -> expects always JSON !!
  */
 
+/**
+ * @TODO: make APIController
+ */
+
 Route::post('/user/login', 'ApiController@login')->name('api.login');
 Route::middleware('api')->get('/user', function (Request $request) {
     return json_encode(Auth::guard('api')->user());
@@ -58,12 +62,14 @@ Route::group(['prefix' => '/groups', 'middleware' => 'api'], function () {
              */
             $select = $select->addChild(html()->option($model->name, $model->id));
         }
+
         $output = html()->form('POST', url("/sessions/{$session->id}/join-group"))
             ->addChild(html()->div(html()->label('Group')->addClass('form-control-md mr-2'))->addClass('form-group text-center mt-1')
                 ->addChild($select)
                 ->addChild(html()->span()->attribute('class', 'invalid-feedback d-block'))
                 ->addChild(html()->input('hidden', 'session_id', $session->id))
-                ->addChild(html()->input('hidden', '_method', 'POST')));
+                ->addChild(html()->input('hidden', '_method', 'POST'))
+                ->addChild(csrf_field()));
 
         return $output;
     });

@@ -64,7 +64,7 @@ class SessionController extends Controller
                     '_method' => 'bail|required|in:POST',
                     'session_id' => 'bail|required|min:1|integer|exists:sessions,id',
                     'title' => [
-                        'required', 'min:10', 'max:255', new UniqueCombo(request(), 'groups', 'name', 'session_id')
+                        'required', 'min:5', 'max:255', new UniqueCombo(request(), 'groups', 'name', 'session_id')
                     ],
                 ];
             case 'fillin':
@@ -74,20 +74,22 @@ class SessionController extends Controller
             case 'create':
             case 'store':
                 return array_merge($rules, [
+                    '_method' => 'required|in:POST',
+                    'groups' => 'required|numeric|min:2|max:25',
+                    'min_group_size' => 'required|numeric|min:2|max:5',
+                    'max_group_size' => 'required|numeric|min:2|max:6',
                     'course' => 'required|numeric|exists:courses,id',
                     'title' => 'required|string|min:3|max:50',
                 ]);
             case 'edit':
             case 'update':
                 return array_merge($rules, [
-                    'form' => 'required|numeric|exists:forms,id',
-                    'course' => 'required|numeric|exists:courses,id',
+                    'groups' => 'required|numeric|min:2|max:25',
+                    'min_group_size' => 'required|numeric|min:2|max:5',
+                    'max_group_size' => 'required|numeric|min:2|max:6',
+//                    'form' => 'required|numeric|exists:forms,id',
+//                    'course' => 'required|numeric|exists:courses,id',
                     'title' => 'required|string|min:3|max:50',
-                    'instructions' => 'required|string|max:1000',
-                    'open_date' => 'required|different:deadline|date_format:d-m-Y',
-                    'deadline' => [
-                        'required', 'date_format:d-m-Y', new DateCompare(request(), 'open_date', '>')
-                    ]
                 ]);
             default:
                 return [];
@@ -113,6 +115,18 @@ class SessionController extends Controller
             case 'edit':
             case 'update':
                 return [
+                    'groups.required' => 'The maximum number of Groups is required!',
+                    'groups.numeric' => 'The value of Groups is invalid!',
+                    'groups.min' => 'There should be at least 2 Groups!',
+                    'groups.max' => 'There should be at most 25 Groups!',
+                    'min_group_size.required' => 'The minimum group size is required!',
+                    'min_group_size.numeric' => 'The minimum group size is invalid!',
+                    'min_group_size.min' => 'The minimum group size is at least 2!',
+                    'min_group_size.max' => 'The minimum group size is at most 6',
+                    'max_group_size.required' => 'The maximum group size is required!',
+                    'max_group_size.numeric' => 'The maximum group size is invalid!',
+                    'max_group_size.min' => 'The maximum group size is at least 2!',
+                    'max_group_size.max' => 'The maximum group size is at most 6',
                     'form.required' => 'The target Form is required!',
                     'form.numeric' => 'Invalid Form!',
                     'form.exists' => 'Invalid Form!',
@@ -125,6 +139,7 @@ class SessionController extends Controller
                     'instructions.required' => 'The Session should have instructions!',
                     'instructions.max' => 'The Session instructions should not exceed 1000 characters!',
                     'deadline.required' => 'The Session deadline is required!',
+                    'deadline.DateCompare' => 'The Session deadline should be different than the open date!',
                     'deadline.date_format' => 'The Session deadline should have a valid format!',
                     'open_date.required' => 'The Session open_date is required!',
                     'open_date.date_format' => 'The Session open_date should have a valid format!',
@@ -138,7 +153,6 @@ class SessionController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @param Course $course
      * @return \Illuminate\Http\Response
      */
     public function all(Request $request)
@@ -262,33 +276,34 @@ class SessionController extends Controller
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
                 ->withHeaders($request->headers->all())
+                ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }
 
         $now = Carbon::now(config('app.timezone'))
             ->format(config('constants.date.stamp'));
         $request->request->add([
-            'course_id' => $request->get('course', false),
-            'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', $now)), config('app.timezone'))
+            'course_id' => $request->get('course', $session->course_id),
+            'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', $now)))
                 ->format(config('constants.date.stamp')),
-            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', $now)), config('app.timezone'))
+            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', $now)))
                 ->format(config('constants.date.stamp')),
         ]);
-        if ($request->get('form', 0) == 1) {
-            $form = Form::find(1)->replicate()->fill([
-                'session_id' => $session->id,
-                'mark' => '0',
-            ]);
-
-            if (!$form->save()) {
-                throw_if(env('APP_DEBUG', false), 500, sprintf("Could not update Session %s!", $session->id));
-                return redirect()->back(302, $request->headers->all());
-            }
-        }
+//        if ($request->get('form', 0) == 1) {
+//            $form = Form::find(1)->replicate()->fill([
+//                'session_id' => $session->id,
+//                'mark' => '0',
+//            ]);
+//
+//            if (!$form->save()) {
+//                throw_if(env('APP_DEBUG', false), 500, sprintf("Could not update Session %s!", $session->id));
+//                return redirect()->back(302, $request->headers->all());
+//            }
+//        }
         if ($session->update($request->except(['course', '_token', '_method', 'form']))) {
             $request->session()->flash('message', [
                 'level' => 'success',
-                'heading' => sprintf("Session %s has been saved successfully!", $session->id),
+                'heading' => sprintf("Session %s has been updated successfully!", $session->id),
             ]);
             $session->sendEmailNotification();
             return redirect()->back(302, $request->headers->all());
