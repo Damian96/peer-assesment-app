@@ -501,7 +501,6 @@ class UserController extends Controller
     {
         $title = 'Profile';
         $user = Auth::user();
-        dd($user->calculateIndividualMark());
         return response(view('user.profile', compact('title', 'user')),
             200, $request->headers->all());
     }

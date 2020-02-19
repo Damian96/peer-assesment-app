@@ -47,4 +47,22 @@ class StudentSession extends Model
         'session_id' => null,
         'mark' => null,
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     */
+    public function group()
+    {
+        return $this->hasOneThrough(\App\Group::class, \App\StudentGroup::class,
+            'user_id', 'id', 'user_id', 'group_id');
+    }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function student()
+    {
+        return $this->hasOne(\App\User::class, 'id', 'user_id');
+    }
 }

@@ -75,6 +75,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Session[] $sessions
  * @property-read int|null $sessions_count
  * @property string password_reset_token
+ * @property Group group
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
@@ -164,6 +165,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
              */
             if ($model->hasVerifiedEmail())
                 $model->generateApiToken();
+
+            if ($model->group()->exists())
+                $model->group = $model->group()->first();
         });
         parent::boot();
     }
@@ -300,11 +304,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the StudentGroup record associated with the student.
-     * @return Group|Group[]|\Illuminate\Database\Eloquent\Collection|Model
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
      */
     public function group()
     {
-        return Group::findOrFail(StudentGroup::whereUserId($this->id)->first()->group_id);
+        return $this->hasOneThrough(\App\StudentGroup::class, \App\Group::class,
+            'id', 'group_id',
+            'id', 'id');
+//        dd($query->first());
+//        return $query;
     }
 
     /**
@@ -318,7 +326,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
             ->whereNotNull('users.email_verified_at')
             ->where('users.id', '!=', Auth::user()->id)
-            ->where('user_group.group_id', '=', $this->group()->id)
+            ->where('user_group.group_id', '=', $this->group->id)
             ->selectRaw(self::RAW_FULL_NAME)
             ->addSelect('users.*')
             ->distinct()
@@ -388,6 +396,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function studentCourses()
     {
         return $this->hasMany(\App\StudentCourse::class, 'user_id', 'id');
+    }
+
+    /**
+     * Retrieve the Sessions that this student has submitted
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function studentSessions()
+    {
+        return $this->hasMany(\App\StudentSession::class, 'user_id', 'id');
     }
 
     /**
@@ -745,10 +762,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-        if (env('APP_ENV', 'local') !== 'local') {
-            $mailer = new StudentEnrollEmail($this, $course);
-            Mail::to($this->email)->send($mailer);
-        }
+//        if (env('APP_ENV', 'local') !== 'local') {
+//            $mailer = new StudentEnrollEmail($this, $course);
+//            Mail::to($this->email)->send($mailer);
+//        }
         clock()->info("StudentEnrollEmail sent to {$this->email}");
     }
 
@@ -757,8 +774,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * Pattern: /[a-z]{3}[0-9]{3}[a-z]{3}/i
      * @return string|false
      */
-    public
-    function generateStudentPassword()
+    public function generateStudentPassword()
     {
         try {
             $this->password_plain =
@@ -778,8 +794,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @param string $action
      * @return string
      */
-    public
-    function verificationUrl(String $action)
+    public function verificationUrl(String $action)
     {
         return URL::temporarySignedRoute(
             'user.verify',
@@ -829,7 +844,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function calculateIndividualMark()
     {
-        $group_mark = $this->group()->mark;
+        $group_mark = $this->group->mark;
 
         if ($group_mark == 0) {
             throw new NotFoundHttpException("This group has not been marked yet");

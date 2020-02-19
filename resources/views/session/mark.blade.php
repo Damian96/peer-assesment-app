@@ -30,6 +30,7 @@
                         @else
                             <i class="material-icons text-success"
                                title="This Group has already been marked: [{{ $g->mark }}]">verified_user</i>
+                            Mark: <span class="text-info">{{ $g->mark }}</span> / <span class="text-muted">100</span>
                         @endif
                     </td>
                     </tbody>
