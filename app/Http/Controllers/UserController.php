@@ -100,13 +100,11 @@ class UserController extends Controller
             case 'store':
                 return [
                     '_method' => 'required|string|in:POST',
-
-                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users|not_in:dummy@citycollege.sheffield.eu',
+                    'email' => 'required|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users|not_in:dummy@citycollege.sheffield.eu',
                     'password' => 'required|string|min:3|max:50',
                     'fname' => 'required|string|min:3|max:25',
                     'lname' => 'required|string|min:3|max:25',
                     'instructor' => 'nullable|boolean',
-                    'terms' => 'accepted',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             case 'auth':
@@ -131,9 +129,9 @@ class UserController extends Controller
         $messages = [
             'email.required' => 'We need to know your e-mail address!',
             'email.regex' => 'The e-mail must be an academic one!',
-            'email.filter' => 'Invalid e-mail address!',
-            'email.email' => 'Invalid e-mail address!',
-            'email.unique' => 'Invalid e-mail address!',
+//            'email.filter' => 'Invalid e-mail address!',
+//            'email.email' => 'Invalid e-mail address!',
+            'email.unique' => 'This email already exists!',
 
             'fname.required' => 'We need to know your first name!',
             'lname.required' => 'We need to know your last name!',
@@ -422,7 +420,7 @@ class UserController extends Controller
                 'heading' => 'You have successfully registered!',
                 'body' => 'Please check you email at ' . $user->email . ' to complete the registration.'
             ]);
-            return redirect()->route('user.login');
+            return redirect('/login');
         }
 
         return redirect()->back(302)
@@ -501,7 +499,6 @@ class UserController extends Controller
     {
         $title = 'Profile';
         $user = Auth::user();
-        dd($user->calculateIndividualMark());
         return response(view('user.profile', compact('title', 'user')),
             200, $request->headers->all());
     }

@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="row">
-        @if (Auth::user()->isStudent())
+        @if (Auth::user()->isStudent() && $sessions->isNotEmpty())
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <p class="lead">
                     Here are all your active Sessions that you have not yet submitted.
@@ -115,9 +115,34 @@
                 @elseif (Auth::user()->isStudent())
                     <h4 class="text-success">Congratulations! You have submitted all registered Sessions.</h4>
                     <p class="text-justify">
-                        We will notify you when there is a new Session, by sending you an email to:
+                        We will notify you when a new Session opens, by sending you an email to:
                         <strong>{{ Auth::user()->email }}</strong>
                     </p>
+
+                    @if (Auth::user()->studentSessions()->exists())
+                        <table class="table table-striped">
+                            <caption></caption>
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th>Group Mark</th>
+                                <th>Individual Mark</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach(Auth::user()->studentSessions()->getModels() as $i => $ss)
+                                <tr>
+                                    <th scope="col">{{ $i+1 }}</th>
+                                    <td>{{ $ss->group()->first()->mark > 0 ? $ss->group()->first()->mark : 'N/A'  }}</td>
+                                    <td>{{ $ss->mark > 0 ? $ss->mark : 'N/A' }}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    @endif
                 @endif
             @endif
         </div>

@@ -53,7 +53,7 @@
                     <strong>{{ $errors->first('form') ?? '' }}</strong></span>
         </div>
     @endif
-    @if (!$session->isOpen())
+    @if (!isset($session) || (isset($session) && !$session->isOpen()))
         <div class="form-group">
             <label for="open_date">
                 <span class="mr-2">Opens At</span><br>
@@ -126,7 +126,7 @@
         @if ($errors->has('instructions'))<strong>{{ $errors->first('instructions') }}</strong>@endif
         </span>
     </div>
-    @if (!$session->isOpen())
+    @if (!isset($session) || (isset($session) && !$session->isOpen()))
         <div class="form-group">
             <label class="form-text" for="groups">Maximum Groups</label>
             <input class="form-control{{ $errors->has('groups') ? ' is-invalid' : '' }}"
@@ -152,7 +152,7 @@
         <div class="form-group d-flex justify-content-around flex-row flex-nowrap align-items-stretch">
             <div class="flex-column flex-grow-1">
                 <label class="form-text" for="min_group_size">Minimum Group size</label>
-                <input class="form-control-md{{ $errors->has('min_group_size') ? ' is-invalid' : '' }}"
+                <input class="form-control{{ $errors->has('min_group_size') ? ' is-invalid' : '' }}"
                        name="min_group_size"
                        type="number"
                        id="min_group_size"
@@ -174,7 +174,7 @@
             </div>
             <div class="flex-column flex-grow-1">
                 <label class="form-text" for="min_group_size">Maximum Group size</label>
-                <input class="form-control-md{{ $errors->has('max_group_size') ? ' is-invalid' : '' }}"
+                <input class="form-control{{ $errors->has('max_group_size') ? ' is-invalid' : '' }}"
                        name="max_group_size"
                        type="number"
                        id="max_group_size"
@@ -195,7 +195,7 @@
             </span>
             </div>
         </div>
-    @else
+    @elseif (isset($session))
         <div class="form-text font-weight-bold">
             <p>
                 <span class="text-warning">Warning:</span> Already opened Sessions can not change their Group limits!
