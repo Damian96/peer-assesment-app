@@ -43,7 +43,7 @@ class UserController extends Controller
             'logout', 'login', 'auth', # login-logout
             'create', 'store', # user-register
             'verify', 'verified', # verify-email/password
-//            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+            'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
         $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
@@ -675,6 +675,14 @@ class UserController extends Controller
      */
     public function forgot(Request $request)
     {
+        if (Auth::guard('web')->check()) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'You are already logged in!'
+            ]);
+            return redirect()->back(302);
+        }
+
         $title = 'Forgot Password';
         $messages = $this->messages(__FUNCTION__);
         return \response(view('user.forgot', compact('title', 'messages')), 200, $request->headers->all());
@@ -688,6 +696,13 @@ class UserController extends Controller
      */
     public function forgotSend(Request $request)
     {
+        if (Auth::guard('web')->check()) {
+            $request->session()->flash('message', [
+                'level' => 'warning',
+                'heading' => 'You are already logged in!'
+            ]);
+            return redirect()->back(302);
+        }
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
