@@ -109,7 +109,7 @@
                         email: {
                             required: "{!! $messages['email.required'] !!}",
                             email: "{!! $messages['email.regex'] !!}",
-                            maxlength: "{!! $messages['email.filter'] !!}"
+                            {{--maxlength: "{!! $messages['email.filter'] !!}"--}}
                         },
                         password: {
                             required: "{!! $messages['password.required'] !!}",
