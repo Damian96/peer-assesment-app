@@ -67,11 +67,15 @@ class Group extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return \Illuminate\Support\Collection
      */
     public function students()
     {
-        return $this->hasManyThrough('\App\User', '\App\StudentGroup');
+        return DB::table('users')
+            ->join('user_group', 'users.id', '=', 'user_group.user_id')
+            ->where('user_group.group_id', '=', $this->id)
+            ->get(['users.*'])
+            ->collect();
     }
 
     /**

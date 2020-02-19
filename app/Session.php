@@ -289,4 +289,12 @@ class Session extends Model
     {
         return time() > $this->deadline_int;
     }
+
+    /**
+     * @return bool
+     */
+    public function isOpen()
+    {
+        return time() > $this->open_date_int;
+    }
 }

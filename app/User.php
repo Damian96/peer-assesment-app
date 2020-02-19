@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class User
@@ -317,9 +318,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
             ->whereNotNull('users.email_verified_at')
             ->where('users.id', '!=', Auth::user()->id)
-            ->where('user_group.group_id', '=', $this->group()->first()->id)
+            ->where('user_group.group_id', '=', $this->group()->id)
             ->selectRaw(self::RAW_FULL_NAME)
             ->addSelect('users.*')
+            ->distinct()
             ->get(['users .*']);
     }
 
@@ -630,6 +632,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             return $this->isInstructor();
         } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
             $cid = $arguments['course']->id;
+        } elseif (array_key_exists('group', $arguments) && $arguments['group'] instanceof Group) {
+            $cid = $arguments['group']->session()->first()->course_id;
         } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
             $cid = $arguments['session']->course_id;
         } elseif (array_key_exists('id', $arguments)) {
@@ -677,6 +681,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'course.add-student':
             case 'session.view':
             case 'session.show':
+            case 'session.mark':
+            case 'group.show':
+            case 'group.storeMark':
             case 'session.update':
             case 'session.edit':
             case 'form.update':
@@ -814,5 +821,48 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return float|int
+     * @throws \Throwable
+     */
+    public function calculateIndividualMark()
+    {
+        $group_mark = $this->group()->mark;
+
+        if ($group_mark == 0) {
+            throw new NotFoundHttpException("This group has not been marked yet");
+        }
+
+        $self = Review::whereRecipientId($this->getId())
+            ->where('sender_id', '=', $this->getId())
+            ->where('type', '=', 'r') // criteria
+            ->sum('mark');
+
+        $others = Review::whereSenderId($this->getId())
+            ->where('recipient_id', '!=', $this->getId())
+            ->where('type', '=', 'r') // criteria
+            ->sum('mark');
+
+        $ids = array_column($this->teammates()->toArray(), 'id');
+        array_push($ids, $this->id);
+        $factors = array_combine($ids, $ids);
+
+        $total = ($self + $others);
+        foreach ($factors as $id => $f) {
+            if ($id == $this->getId()) {
+                $factors[$id] = $self / $total;
+            } else {
+                $sum = Review::whereSenderId($this->getId())
+                    ->where('recipient_id', '=', $id)
+                    ->where('type', '=', 'r')
+                    ->sum('mark');
+                $factors[$id] = $sum / $total;
+            }
+        }
+
+        throw_if(array_sum($factors) != 1, new \Exception("Invalid Reviews by Student " . $this->full_name));
+        return array_sum($factors) * $group_mark;
     }
 }

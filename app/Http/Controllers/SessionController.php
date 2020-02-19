@@ -84,9 +84,9 @@ class SessionController extends Controller
             case 'edit':
             case 'update':
                 return array_merge($rules, [
-                    'groups' => 'required|numeric|min:2|max:25',
-                    'min_group_size' => 'required|numeric|min:2|max:5',
-                    'max_group_size' => 'required|numeric|min:2|max:6',
+                    'groups' => 'nullable|numeric|min:2|max:25',
+                    'min_group_size' => 'nullable|numeric|min:2|max:5',
+                    'max_group_size' => 'nullable|numeric|min:2|max:6',
 //                    'form' => 'required|numeric|exists:forms,id',
 //                    'course' => 'required|numeric|exists:courses,id',
                     'title' => 'required|string|min:3|max:50',
@@ -573,5 +573,17 @@ class SessionController extends Controller
                 " You can now fill the Session's Peer Assessment Form!"
         ]);
         return redirect()->back();
+    }
+
+    /**
+     * @param Request $request
+     * @param Session $session
+     * @return Response|RedirectResponse
+     */
+    public function mark(Request $request, Session $session)
+    {
+        $title = "Mark {$session->title}";
+        $groups = $session->groups()->getModels();
+        return \response(view('session.mark', compact('title', 'session', 'groups')), 200, $request->headers->all());
     }
 }

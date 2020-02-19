@@ -44,7 +44,13 @@
                             @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())
                                 <td class="action-cell">
                                     <a href="{{ url('/sessions/' . $session->id . '/edit') }}"
-                                       class="material-icons text-warning">edit</a>
+                                       class="material-icons text-warning"
+                                       title="Edit {{ $session->title }}"
+                                       aria-label="Edit {{ $session->title }}">edit</a>
+                                    <a href="{{ url('/sessions/' . $session->id . '/mark') }}"
+                                       class="material-icons text-info"
+                                       title="Mark {{ $session->title }}"
+                                       aria-label="Mark {{ $session->title }}">group_work</a>
                                     <form method="POST" action="{{ url('/sessions/' . $session->id . '/delete') }}"
                                           class="d-inline-block">
                                         @method('DELETE')

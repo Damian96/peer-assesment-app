@@ -78,9 +78,14 @@ form {
       background: inherit;
     }
   }
+
+  .text-warning {
+    color: darken($warning, 30%) !important;
+  }
 }
 
-.btn-primary {
+.btn-primary,
+.btn-dup {
   color: darken($secondary, 50%) !important;
 
   &:hover {

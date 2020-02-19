@@ -38,6 +38,7 @@ Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 Route::group(['prefix' => '/users'], function () {
     Route::match(['get'], '/verified', 'UserController@verified')->name('verification.notice');
 });
+
 # COURSE
 Route::match(['get'], '/courses', 'CourseController@index')->name('course.index');
 Route::group(['prefix' => '/courses'], function () {
@@ -66,6 +67,7 @@ Route::group(['prefix' => '/sessions'], function () {
     Route::match(['post'], '{session}/fillin', 'SessionController@fillin')->name('session.fillin');
     Route::match(['get'], '{session}/delete', 'SessionController@delete')->name('session.delete');
     Route::match(['get'], '{session}/edit', 'SessionController@edit')->name('session.edit');
+    Route::match(['get'], '{session}/mark', 'SessionController@mark')->name('session.mark');
     Route::match(['post'], '{session}/update', 'SessionController@update')->name('session.update');
     Route::match(['delete'], '{session}/delete', 'SessionController@delete')->name('session.delete');
 });
@@ -78,4 +80,9 @@ Route::group(['prefix' => '/forms'], function () {
     Route::match(['get'], '/{form}/edit', 'FormController@edit')->name('form.edit');
     Route::match(['delete'], '/{form}/delete', 'FormController@delete')->name('form.delete');
     Route::match(['post'], '/{form}/duplicate', 'FormController@duplicate')->name('form.duplicate');
+});
+
+Route::group(['prefix' => '/groups'], function () {
+    Route::match(['get'], '/{group}', 'GroupController@show')->name('group.show');
+    Route::match(['post'], '/{group}/store-mark', 'GroupController@storeMark')->name('group.show');
 });
