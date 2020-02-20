@@ -29,8 +29,14 @@
                             </form>
                         @else
                             <i class="material-icons text-success"
-                               title="This Group has already been marked: [{{ $g->mark }}]">verified_user</i>
+                               title="This Group has already been marked: [{{ $g->mark }}]">done_all</i>
                             Mark: <span class="text-info">{{ $g->mark }}</span> / <span class="text-muted">100</span>
+                            <a href="#" class="show-marks material-icons"
+                               data-title="Show Marks of {{ $g->name }}"
+                               data-marks="{{ implode(',', $g->marks()) }}"
+                               data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
+                               title="Show Marks of {{ $g->name }}"
+                               aria-label="Show Marks of {{ $g->name }}">receipt</a>
                         @endif
                     </td>
                     </tbody>
@@ -42,7 +48,6 @@
 
 @section('end_footer')
     <script type="text/javascript" defer>
-        @if ($g->mark == 0)
         $(function () {
             let label = $(document.createElement('label'));
             label.attr('for', 'mark-popup')
@@ -98,6 +103,22 @@
                 }
             });
         });
-        @endif
+        var marksOl = $(document.createElement('ol'));
+        $('.show-marks').on('click', function () {
+            let marks = $(this).attr('data-marks').split(',');
+            let names = $(this).attr('data-students').split(',');
+
+            for (let i = 0; i < marks.length; i++) {
+                let li = document.createElement('li');
+                li.textContent = `${names[i]}: ${marks[i]}/100`;
+                marksOl.append($(li));
+            }
+
+            // console.debug(marksOl, marks, names);
+            $.alert({
+                title: $(this).attr('data-title'),
+                content: marksOl,
+            });
+        });
     </script>
 @endsection

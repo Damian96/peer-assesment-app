@@ -60,7 +60,7 @@ class GroupController extends Controller
     public function show(Group $group)
     {
         $title = "Group {$group->name}";
-        return response(view('group.show', compact('title', 'group')), 200);
+        return response(view('groups.show', compact('title', 'group')), 200);
     }
 
     /**

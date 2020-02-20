@@ -73,4 +73,13 @@ class Group extends Model
         return User::whereIn('id', $this->hasMany(\App\StudentGroup::class, 'group_id', 'id')
             ->get(['user_group.user_id'])->toArray());
     }
+
+    /**
+     * @return array
+     */
+    public function marks()
+    {
+        return array_column(StudentSession::whereIn('user_id', $this->students()->select(['users.id']))
+            ->get(['student_session.mark'])->toArray(), 'mark');
+    }
 }

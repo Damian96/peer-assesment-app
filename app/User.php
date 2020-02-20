@@ -85,6 +85,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     use SendsPasswordResetEmails;
 
     const RAW_FULL_NAME = 'CONCAT(SUBSTR(fname, 1, 1), ". ", lname) AS full_name';
+    const PA_WEIGHT_GROUP = .5;
 
     protected $table = 'users';
     protected $primaryKey = 'id';
@@ -884,15 +885,13 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         if ($group_mark == 0)
             throw new NotFoundHttpException("This group has not been marked yet");
 
-        $criteria = $this->getMarkFactor($session_id, 'r');
-        $eval = $this->getMarkFactor($session_id, 'e');
-
+//        $criteria = $this->getMarkFactor($session_id, 'r');
+//        $eval = $this->getMarkFactor($session_id, 'e');
 //        $cnt_criteria = Review::whereSessionId($session_id)
 //            ->where('sender_id', '=', $this->id)
 //            ->where('type', '=', 'r')
 //            ->groupBy(['question_id'])
 //            ->count();
-//
 //        $cnt_eval = Review::whereSessionId($session_id)
 //            ->where('sender_id', '=', $this->id)
 //            ->where('type', '=', 'e')
@@ -900,10 +899,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 //            ->count();
 //        $cnt = $cnt_criteria + $cnt_eval;
 
-        $criteria_factor = $this->getMarkFactor($session_id, 'r');
-        $eval_factor = $this->getMarkFactor($session_id, 'e');
-        $total_factor = $criteria_factor + $eval_factor;
-        $mark = intval($total_factor * $group_mark);
+        $total_factor = $this->getMarkFactor($session_id, 'r') + $this->getMarkFactor($session_id, 'e');
+        $mark = (self::PA_WEIGHT_GROUP * $group_mark) + ($total_factor * (self::PA_WEIGHT_GROUP * $group_mark));
         return $mark > 100 ? 100 : $mark;
     }
 
