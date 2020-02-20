@@ -165,9 +165,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
              */
             if ($model->hasVerifiedEmail())
                 $model->generateApiToken();
-
-            if ($model->group()->exists())
-                $model->group = $model->group()->first();
         });
         parent::boot();
     }
@@ -304,15 +301,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the StudentGroup record associated with the student.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @return Model|\Illuminate\Database\Query\Builder|object
      */
     public function group()
     {
-        return $this->hasOneThrough(\App\StudentGroup::class, \App\Group::class,
-            'id', 'group_id',
-            'id', 'id');
-//        dd($query->first());
-//        return $query;
+        return $this->hasOne(\App\StudentGroup::class, 'user_id', 'id')->first()->group()->first();
     }
 
     /**
@@ -325,8 +318,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->join('student_course', 'student_course.user_id', '=', 'users.id')
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
             ->whereNotNull('users.email_verified_at')
-            ->where('users.id', '!=', Auth::user()->id)
-            ->where('user_group.group_id', '=', $this->group->id)
+            ->where('users.id', '!=', $this->id)
+            ->where('user_group.group_id', '=', $this->group()->id)
             ->selectRaw(self::RAW_FULL_NAME)
             ->addSelect('users.*')
             ->distinct()
@@ -839,45 +832,46 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * @param $session_id
      * @return float|int
      * @throws \Throwable
      */
-    public function calculateIndividualMark()
+    public function getMarkFactor($session_id, $type = 'r')
     {
-        $group_mark = $this->group->mark;
+        $self = Review::whereRecipientId($this->getId())
+            ->where('sender_id', '=', $this->getId())
+            ->where('session_id', '=', $session_id)
+            ->where('type', '=', $type) // criteria
+            ->sum('mark');
 
+        $total = Review::whereSenderId($this->getId())
+            ->where('session_id', '=', $session_id)
+            ->where('type', '=', $type) // criteria
+            ->sum('mark');
+
+//        var_dump($self, $total);
+        return floatval($self / $total);
+    }
+
+    public function calculateMark($session_id)
+    {
+        $group_mark = $this->group()->mark;
+
+        // @TODO: add fudge_factor
         if ($group_mark == 0) {
             throw new NotFoundHttpException("This group has not been marked yet");
         }
 
-        $self = Review::whereRecipientId($this->getId())
-            ->where('sender_id', '=', $this->getId())
-            ->where('type', '=', 'r') // criteria
-            ->sum('mark');
+        return intval($this->getMarkFactor($session_id) * $group_mark);
+    }
 
-        $others = Review::whereSenderId($this->getId())
-            ->where('recipient_id', '!=', $this->getId())
-            ->where('type', '=', 'r') // criteria
-            ->sum('mark');
-
-        $ids = array_column($this->teammates()->toArray(), 'id');
-        array_push($ids, $this->id);
-        $factors = array_combine($ids, $ids);
-
-        $total = ($self + $others);
-        foreach ($factors as $id => $f) {
-            if ($id == $this->getId()) {
-                $factors[$id] = $self / $total;
-            } else {
-                $sum = Review::whereSenderId($this->getId())
-                    ->where('recipient_id', '=', $id)
-                    ->where('type', '=', 'r')
-                    ->sum('mark');
-                $factors[$id] = $sum / $total;
-            }
-        }
-
-        throw_if(array_sum($factors) != 1, new \Exception("Invalid Reviews by Student " . $this->full_name));
-        return array_sum($factors) * $group_mark;
+    /**
+     * @param int $session_id
+     * @return int
+     */
+    public function getIndividualMark($session_id)
+    {
+        return $this->studentSessions()->where('session_id', '=', $session_id)
+            ->first()->mark;
     }
 }

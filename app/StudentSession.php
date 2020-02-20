@@ -57,6 +57,13 @@ class StudentSession extends Model
             'user_id', 'id', 'user_id', 'group_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function session()
+    {
+        return $this->hasOne(\App\Session::class, 'id', 'session_id');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

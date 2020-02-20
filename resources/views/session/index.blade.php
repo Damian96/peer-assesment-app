@@ -130,10 +130,11 @@
                             </tr>
                             </thead>
                             <tbody>
+                            {{--                            @php \App\Session::checkForClosed(); exit; @endphp--}}
                             @foreach(Auth::user()->studentSessions()->getModels() as $i => $ss)
                                 <tr>
                                     <th scope="col">{{ $i+1 }}</th>
-                                    <td>{{ $ss->group()->first()->mark > 0 ? $ss->group()->first()->mark : 'N/A'  }}</td>
+                                    <td>{{ $ss->group()->first() ? $ss->group()->first()->mark : 'N/A'  }}</td>
                                     <td>{{ $ss->mark > 0 ? $ss->mark : 'N/A' }}</td>
                                 </tr>
                             @endforeach
