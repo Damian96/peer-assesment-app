@@ -849,20 +849,43 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->where('type', '=', $type) // criteria
             ->sum('mark');
 
-//        var_dump($self, $total);
-        return floatval($self / $total);
+        $teammates = array_column($this->teammates()->toArray(), 'id');
+        $team = array_push($teammates, $this->id);
+
+        $submitted = array_column(StudentSession::whereSessionId($session_id)
+            ->whereIn('user_id', $teammates)
+            ->get(['user_id'])->toArray(), 'user_id');
+
+        $not_submitted = array_filter($teammates, function ($id) use ($submitted) {
+            return !in_array($id, $submitted);
+        });
+
+        if (empty($not_submitted) && $total > 0) { // everyone submitted
+            return round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
+        } elseif ($total == 0) { // this student did not submit
+            return 0;
+        } else { // calculate with fudge factor
+            $factor = round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
+            $fudge = round(floatval(count($teammates) / count($submitted)), 2, PHP_ROUND_HALF_DOWN);
+            return round($factor * $fudge, 2);
+        }
     }
 
-    public function calculateMark($session_id)
+    /**
+     * @param $session_id
+     * @param string $type
+     * @return int
+     * @throws \Throwable
+     */
+    public function calculateMark($session_id, $type = 'r')
     {
         $group_mark = $this->group()->mark;
 
-        // @TODO: add fudge_factor
-        if ($group_mark == 0) {
+        if ($group_mark == 0)
             throw new NotFoundHttpException("This group has not been marked yet");
-        }
 
-        return intval($this->getMarkFactor($session_id) * $group_mark);
+        $mark = intval($this->getMarkFactor($session_id, $type = 'r') * $group_mark);
+        return $mark > 100 ? 100 : $mark;
     }
 
     /**
