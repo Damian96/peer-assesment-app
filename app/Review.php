@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereMark($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereQuestionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereRecipientId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereSenderId($value)
  * @mixin \Eloquent
