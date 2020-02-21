@@ -1,46 +1,62 @@
 @extends('layouts.app')
 
+@section('breadcrumbs')
+    {{ Breadcrumbs::render('session.mark', $session) }}
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
             <table class="table table-striped ts">
-                <caption></caption>
+                <caption>Showing results {{ count($groups) }} of total {{ count($groups) }} Groups</caption>
                 <thead class="">
                 <th scope="col">#</th>
                 <th>Group Name</th>
                 <th class="text-center">No. of Students</th>
+                <th class="text-center">Mark</th>
                 <th class="text-right">Actions</th>
                 </thead>
+                <tbody class="">
                 @foreach($groups as $i => $g)
-                    <tbody class="">
-                    <th scope="col">{{ $i }}</th>
-                    <td>{{ $g->name }}</td>
-                    <td class="text-center">{{ $g->students()->count() }}</td>
-                    <td class="action-cell text-right">
-                        @if ($g->mark == 0)
-                            <form action="{{ url('groups/' . $g->id . '/store-mark') }}" method="POST">
-                                @method('POST')
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $g->id }}">
-                                <a href="#" title="Mark {{ $g->name }}" aria-label="Mark {{ $g->name }}"
-                                   class="mark-group" data-id="{{ $g->id }}" data-name="{{ $g->name }}">
-                                    <i class="material-icons text-warning">assignment</i>
-                                </a>
-                            </form>
-                        @else
-                            <i class="material-icons text-success"
-                               title="This Group has already been marked: [{{ $g->mark }}]">done_all</i>
-                            Mark: <span class="text-info">{{ $g->mark }}</span> / <span class="text-muted">100</span>
-                            <a href="#" class="show-marks material-icons"
-                               data-title="Show Marks of {{ $g->name }}"
-                               data-marks="{{ implode(',', $g->marks()) }}"
+                    <tr>
+                        <th scope="col">{{ $i+1 }}</th>
+                        <td>{{ $g->name }}</td>
+                        <td class="text-center">{{ $g->students()->count() }}</td>
+                        <td class="text-center">
+                            @if ($g->mark > 0)
+                                Mark: <span class="text-info">{{ $g->mark }}</span> / <span
+                                    class="text-muted">100</span>
+                            @else<span class="text-muted">N/A</span>
+                            @endif
+                        </td>
+                        <td class="action-cell text-right">
+                            <a href="#" class="show-students material-icons"
+                               data-title="Show Students of {{ $g->name }}"
                                data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
-                               title="Show Marks of {{ $g->name }}"
-                               aria-label="Show Marks of {{ $g->name }}">receipt</a>
-                        @endif
-                    </td>
-                    </tbody>
+                               title="Show Students of {{ $g->name }}"
+                               aria-label="Show Students of {{ $g->name }}">group</a>
+                            @if ($g->mark == 0)
+                                <form action="{{ url('groups/' . $g->id . '/store-mark') }}" method="POST">
+                                    @method('POST')
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $g->id }}">
+                                    <a href="#" title="Mark {{ $g->name }}" aria-label="Mark {{ $g->name }}"
+                                       class="mark-group" data-id="{{ $g->id }}" data-name="{{ $g->name }}">
+                                        <i class="material-icons text-warning">assignment</i>
+                                    </a>
+                                </form>
+                            @else
+                                <a href="#" class="show-marks material-icons"
+                                   data-title="Show Marks of {{ $g->name }}"
+                                   data-marks="{{ implode(',', $g->marks()) }}"
+                                   data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
+                                   title="Show Marks of {{ $g->name }}"
+                                   aria-label="Show Marks of {{ $g->name }}">receipt</a>
+                            @endif
+                        </td>
+                    </tr>
                 @endforeach
+                </tbody>
             </table>
         </div>
     </div>
@@ -103,10 +119,10 @@
                 }
             });
         });
-        var marksOl = $(document.createElement('ol'));
         $('.show-marks').on('click', function () {
             let marks = $(this).attr('data-marks').split(',');
             let names = $(this).attr('data-students').split(',');
+            let marksOl = $(document.createElement('ol'));
 
             for (let i = 0; i < marks.length; i++) {
                 let li = document.createElement('li');
@@ -116,6 +132,23 @@
 
             // console.debug(marksOl, marks, names);
             $.alert({
+                escapeKey: 'ok',
+                title: $(this).attr('data-title'),
+                content: marksOl,
+            });
+        });
+        $('.show-students').on('click', function () {
+            let names = $(this).attr('data-students').split(',');
+            let marksOl = $(document.createElement('ol'));
+
+            for (let i = 0; i < names.length; i++) {
+                let li = document.createElement('li');
+                li.textContent = `${names[i]}`;
+                marksOl.append($(li));
+            }
+
+            $.alert({
+                escapeKey: 'ok',
                 title: $(this).attr('data-title'),
                 content: marksOl,
             });

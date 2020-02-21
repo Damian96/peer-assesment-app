@@ -84,6 +84,18 @@ Breadcrumbs::for('session.edit', function ($trail, $session) {
     $trail->push('Edit Session', route('session.edit', $session));
 });
 
+// Edit Session
+Breadcrumbs::for('session.mark', function ($trail, $session) {
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    $trail->push('My Sessions', route('session.index'));
+    if (last($crumbs) == 'session.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.view'))
+        $trail->push("Session '{$session->title}'", route('session.view'));
+
+    $trail->push("Mark Session '{$session->title}'", route('session.mark', $session));
+});
+
 // View Session
 Breadcrumbs::for('session.view', function ($trail, $session) {
     $crumbs = session()->get('crumbs', []);
