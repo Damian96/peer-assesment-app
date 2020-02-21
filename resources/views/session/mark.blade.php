@@ -7,16 +7,18 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
-            <table class="table table-striped ts">
+            <table id="my-groups" class="table table-striped ts">
                 <caption>Showing results {{ count($groups) }} of total {{ count($groups) }} Groups</caption>
-                <thead class="">
-                <th scope="col">#</th>
-                <th>Group Name</th>
-                <th class="text-center">No. of Students</th>
-                <th class="text-center">Mark</th>
-                <th class="text-right">Actions</th>
+                <thead>
+                <tr class="tsTitles">
+                    <th scope="col">#</th>
+                    <th>Group Name</th>
+                    <th class="text-center">No. of Students</th>
+                    <th class="text-center">Mark</th>
+                    <th class="text-right">Actions</th>
+                </tr>
                 </thead>
-                <tbody class="">
+                <tbody class="tsGroup">
                 @foreach($groups as $i => $g)
                     <tr>
                         <th scope="col">{{ $i+1 }}</th>
@@ -153,5 +155,12 @@
                 content: marksOl,
             });
         });
+        @if (!empty($groups))
+        // Initialize table
+        {!! "let cols = [{col: 1, order: 'asc'}, {col: 2, order: 'asc'}];" !!}
+        $('#my-groups').tablesorter({
+            tablesorterColumns: cols
+        });
+        @endif
     </script>
 @endsection
