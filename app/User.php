@@ -76,6 +76,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @property-read int|null $sessions_count
  * @property string password_reset_token
  * @property Group group
+ * @property string fullname
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
@@ -651,6 +652,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             $cid = $arguments['id'];
         } elseif (array_key_exists('cid', $arguments)) {
             $cid = $arguments['cid'];
+        } elseif (array_key_exists('user', $arguments) && $arguments['user'] instanceof User) {
+            $user = $arguments['user'];
         }
 
         switch ($ability) {
@@ -665,9 +668,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                     && !StudentGroup::whereUserId(Auth::user()->id)
                         ->whereIn('group_id', Group::whereSessionId($arguments['session']->id)->get(['id']))
                         ->exists();
+            case 'user.show':
+                return (!Auth::user()->isStudent() || Auth::user()->id == $user->id) && isset($user) && !$user->isAdmin();
             case 'user.home':
             case 'verification.notice':
-            case 'user.show':
             case 'user.profile':
             case 'course.index':
             case 'session.index':

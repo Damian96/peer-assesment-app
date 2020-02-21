@@ -23,7 +23,6 @@ Route::match(['get'], '/register', 'UserController@create')->name('register');
 
 Route::match(['post'], '/store', 'UserController@store')->name('user.store');
 Route::match(['put'], '/update', 'UserController@update')->name('user.update');
-Route::match(['get'], '{user}/show', 'UserController@show')->name('user.show');
 Route::match(['get'], '/profile', 'UserController@profile')->name('user.profile');
 Route::match(['get'], '/password/forgot', 'UserController@forgot')->name('user.forgot');
 Route::match(['post'], '/password/send', 'UserController@forgotSend')->name('user.forgotSend');
@@ -37,6 +36,7 @@ Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 
 Route::group(['prefix' => '/users'], function () {
     Route::match(['get'], '/verified', 'UserController@verified')->name('verification.notice');
+    Route::match(['get'], '{user}/show', 'UserController@show')->name('user.show');
 });
 
 # COURSE
