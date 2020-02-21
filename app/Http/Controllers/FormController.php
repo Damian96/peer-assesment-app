@@ -278,15 +278,17 @@ class FormController extends Controller
             return redirect()->back(302, []);
         }
 
+//        dd($request->get('question'), array_slice($request->get('question'), $form->questions()->count()),
+//        $form->questions()->getModels());
         foreach ($form->questions()->getModels() as $i => $question) {
             /**
              * @var Question $question
              */
             try {
-                if (!isset($request->get('question')[$i]))
+                if (!isset($request->get('question')[$question->id]))
                     $question->delete();
                 else {
-                    $data = $request->get('question', [])[$i];
+                    $data = $request->get('question', [])[$question->id];
                     if (isset($data['id'])) {
                         $question->update([
                             'title' => $data['title'],
