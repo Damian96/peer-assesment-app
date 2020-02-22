@@ -99,7 +99,7 @@
                     </tbody>
                     <tfoot>
                     <tr>
-                        <td colspan="3" class="text-muted">Note: All Sessions deadlines are always exactly at midnight
+                        <td colspan="4" class="text-muted">Note: All Sessions deadlines are always exactly at midnight
                             (00:00).
                         </td>
                     </tr>

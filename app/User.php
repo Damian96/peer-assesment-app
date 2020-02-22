@@ -710,6 +710,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.delete':
             case 'course.disenroll':
                 return isset($cid) && ($cid == \App\Course::DUMMY_ID || ($this->isInstructor() && $this->ownsCourse($cid)));
+            case 'config.store':
             default:
                 return false;
         }
@@ -855,7 +856,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->sum('mark');
 
         $teammates = array_column($this->teammates()->toArray(), 'id');
-        $team = array_push($teammates, $this->id);
+//        $team = array_push($teammates, $this->id);
 
         $submitted = array_column(StudentSession::whereSessionId($session_id)
             ->whereIn('user_id', $teammates)
@@ -871,8 +872,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             return 0;
         } else { // calculate with fudge factor
             $factor = round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
-            $fudge = round(floatval(count($teammates) / count($submitted)), 2, PHP_ROUND_HALF_DOWN);
-            return round($factor * $fudge, 2);
+            return round($factor * floatval(env('FUDGE_FACTOR')), 2);
         }
     }
 
@@ -889,22 +889,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
         if ($group_mark == 0)
             throw new NotFoundHttpException("This group has not been marked yet");
 
-//        $criteria = $this->getMarkFactor($session_id, 'r');
-//        $eval = $this->getMarkFactor($session_id, 'e');
-//        $cnt_criteria = Review::whereSessionId($session_id)
-//            ->where('sender_id', '=', $this->id)
-//            ->where('type', '=', 'r')
-//            ->groupBy(['question_id'])
-//            ->count();
-//        $cnt_eval = Review::whereSessionId($session_id)
-//            ->where('sender_id', '=', $this->id)
-//            ->where('type', '=', 'e')
-//            ->groupBy(['question_id'])
-//            ->count();
-//        $cnt = $cnt_criteria + $cnt_eval;
-
         $total_factor = $this->getMarkFactor($session_id, 'r') + $this->getMarkFactor($session_id, 'e');
-        $mark = (self::PA_WEIGHT_GROUP * $group_mark) + ($total_factor * (self::PA_WEIGHT_GROUP * $group_mark));
+        $group_weight = floatval(env('GROUP_WEIGHT'));
+        $mark = ($group_weight * $group_mark) + ($total_factor * ($group_weight * $group_mark));
         return $mark > 100 ? 100 : $mark;
     }
 
