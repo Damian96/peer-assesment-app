@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    {{ Breadcrumbs::render('sessions') }}
+    {{ Breadcrumbs::render('session.index') }}
 @endsection
 
 @section('content')
@@ -25,6 +25,7 @@
                         class="">{{ sprintf("Showing results %s-%s of total %s Sessions", $sessions->firstItem(), $sessions->lastItem(), $sessions->total()) }}</caption>
                     <thead>
                     <tr class="tsTitles">
+                        <th scope="col">#</th>
                         <th>Title</th>
                         <th>Deadline</th>
                         @if (Auth::user()->isStudent())
@@ -34,8 +35,9 @@
                     </tr>
                     </thead>
                     <tbody class="tsGroup">
-                    @foreach($sessions as $session)
+                    @foreach($sessions as $i => $session)
                         <tr>
+                            <th scope="col">{{ $i+1 }}</th>
                             <td>{{ $session->title_full }}</td>
                             <td>{{ $session->deadline_uk }}</td>
                             @if (Auth::user()->isStudent())
@@ -120,31 +122,31 @@
                     </p>
 
                     @if (Auth::user()->studentSessions()->exists())
-                        <table class="table table-striped">
+                        <table class="table table-striped ts">
                             <caption></caption>
                             <thead>
-                            <tr>
+                            <tr class="tsTitles">
                                 <th scope="col">#</th>
                                 <th>Group Mark</th>
                                 <th>Individual Mark</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="tsGroup">
                             @foreach(Auth::user()->studentSessions()->getModels() as $i => $ss)
                                 @php
-                                    $ss->mark = $ss->student()->first()->calculateMark($ss->session_id);
+                                    /**
+                                    * @var \App\StudentSession $ss
+                                    */
+                                        $ss->mark = $ss->student()->first()->calculateMark($ss->session_id);
                                 @endphp
                                 <tr>
                                     <th scope="col">{{ $i+1 }}</th>
                                     <td>{{ $ss->group()->first() ? $ss->group()->first()->mark : 'N/A'  }}</td>
                                     <td>{{ $ss->mark > 0 ? $ss->mark : 'N/A' }}</td>
-                                    {{--                                    <td>{{ $ss->student()->first()->calculateMark($ss->session_id) }}</td>--}}
                                 </tr>
                             @endforeach
                             </tbody>
-                            <tfoot>
-
-                            </tfoot>
+                            {{--                            <tfoot></tfoot>--}}
                         </table>
                     @endif
                 @endif
@@ -212,7 +214,7 @@
 
             @if ($sessions->isNotEmpty())
             // Initialize table
-            {!! "let cols = [{col: 0, order: 'asc'}, {col: 1, order: 'asc'}];" !!}
+            {!! "let cols = [{col: 1, order: 'asc'}, {col: 2, order: 'asc'}];" !!}
             $('#my-sessions').tablesorter({
                 tablesorterColumns: cols
             });

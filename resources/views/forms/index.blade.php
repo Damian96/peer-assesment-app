@@ -37,7 +37,7 @@
                             <td>
                                 @if ($form->code)
                                     <a href="{{ url('/courses/' . $form->course_id . '/view' ) }}" target="_self">
-                                        {{ $form->code }}
+                                        {{ $form->code }} <i class="material-icons icon-sm">link</i>
                                     </a>
                                 @else<span class="text-muted">{{ 'N/A' }}</span>@endif
                             </td>

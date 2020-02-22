@@ -146,7 +146,8 @@
                                 <td class="text-left">
                                     <a href="{{ url('/users/' . $s->user_id . '/show') }}"
                                        title="Show {{ $s->name }}'s Profile"
-                                       aria-label="Show {{ $s->name }}'s Profile">{{ $s->name }}</a>
+                                       aria-label="Show {{ $s->name }}'s Profile">{{ $s->name }} <i
+                                            class="material-icons icon-sm">link</i></a>
                                 </td>
                                 <td class="action-cell">
                                     <form method="POST"
