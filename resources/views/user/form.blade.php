@@ -107,14 +107,14 @@
         @endif
     </div>
 
-    <div class="form-group">
-        <label class="py-0" for="terms" title="{{ $messages['terms.required'] }}">Do you agree
-            with {{ config('app.name') }} <b>Terms and Conditions</b>?
-            <input class="ml-3" type="checkbox" required id="terms" name="terms"
-                   oninvalid="this.setCustomValidity('{{ $messages['terms.required'] }}');"
-                   oninput="this.setCustomValidity('');" tabindex="0">
-        </label>
-    </div>
+    {{--    <div class="form-group">--}}
+    {{--        <label class="py-0" for="terms" title="{{ $messages['terms.required'] }}">Do you agree--}}
+    {{--            with {{ config('app.name') }} <b>Terms and Conditions</b>?--}}
+    {{--            <input class="ml-3" type="checkbox" required id="terms" name="terms"--}}
+    {{--                   oninvalid="this.setCustomValidity('{{ $messages['terms.required'] }}');"--}}
+    {{--                   oninput="this.setCustomValidity('');" tabindex="0">--}}
+    {{--        </label>--}}
+    {{--    </div>--}}
 
     @if(request()->route()->named('*register') && request()->ip() != '127.0.0.1')
         <div class="form-group">
