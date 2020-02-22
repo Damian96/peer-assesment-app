@@ -1,6 +1,6 @@
 git:
   quiet: true
-  sparse_checkout: .git/info/sparse-checkout
+  sparse_checkout: .github/sparse-checkout
 branches:
   only:
     - master
