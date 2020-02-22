@@ -40,7 +40,7 @@ class UserController extends Controller
         ]);
         $this->middleware('verified')->except([
             'logout', 'login', 'auth', # login-logout
-//            'create', 'store', # user-register
+            'create', 'store', # user-register
             'verify', 'verified', # verify-email/password
 //            'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
@@ -410,7 +410,8 @@ class UserController extends Controller
             return redirect()->action('UserController@create')
                 ->withInput($request->input())
                 ->with('title', 'Register')
-                ->with('errors', $validator->getMessageBag());
+                ->withErrors($validator->errors())
+                ->with('errors', $validator->errors());
         }
 
         $request->merge(['password' => Hash::make($request->get('password'))]);
@@ -455,6 +456,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      *
      * TODO: add last_login (event?) save?
+     * @throws \Throwable
      */
     public function auth(Request $request)
     {
@@ -466,19 +468,23 @@ class UserController extends Controller
         }
 
         if (Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')], boolval($request->get('remember', false)))) {
-            $user = User::getUserByEmail($request->get('email'));
-            $request->setUserResolver(function () use ($user) {
-                return $user;
-            });
-            Auth::setUser($user);
-
-            if ($user->isStudent()) {
-                return redirect('courses', 302, $request->headers->all());
-            } else {
-                return redirect('home', 302, $request->headers->all());
+            try {
+                $user = User::whereEmail($request->get('email'))->firstOrFail();
+            } catch (\Throwable $e) {
+                throw_if(env('APP_DEBUG', false), $e);
+                return redirect()->back();
+            } finally {
+                $request->setUserResolver(function () use ($user) {
+                    return $user;
+                });
+                Auth::setUser($user);
+                if ($user->isStudent()) {
+                    return redirect('courses', 302, $request->headers->all());
+                } else {
+                    return redirect('home', 302, $request->headers->all());
+                }
             }
         }
-
         throw abort(500, 'Could not authenticate user', $request->headers->all());
     }
 
