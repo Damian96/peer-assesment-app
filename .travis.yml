@@ -1,3 +1,9 @@
+git:
+  quiet: true
+  sparse_checkout: skip-worktree-map-file
+branches:
+  only:
+    - master
 language: php
 php:
   - 7.3
