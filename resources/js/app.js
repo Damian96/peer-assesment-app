@@ -16,6 +16,7 @@ require('jquery-confirm');
 require('./combobox');
 require('./form');
 require('./alert');
+// require('./datepicker');
 
 window.Papa = require('papaparse/papaparse');
 

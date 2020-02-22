@@ -69,7 +69,7 @@ class StudentGroup extends Model
      */
     public function group()
     {
-        return $this->hasOne('\App\Group', 'id', 'user_id');
+        return $this->hasOne('\App\Group', 'id', 'group_id');
     }
 
     /**

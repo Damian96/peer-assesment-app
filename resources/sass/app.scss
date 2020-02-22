@@ -82,6 +82,10 @@ form {
   .text-warning {
     color: darken($warning, 30%) !important;
   }
+
+  a {
+    color: darken($primary-bg-dark, 10%);
+  }
 }
 
 .btn-primary,
@@ -251,8 +255,8 @@ table {
           border-top: 5px solid transparent;
           border-bottom: 5px solid transparent;
           position: absolute;
-          left: 25%;
-          transform: translateX(-50%);
+          right: 0;
+          //transform: translateX(-50%);
         }
       }
 
@@ -496,5 +500,11 @@ footer {
   }
   .text-xs-right {
     text-align: right !important;
+  }
+}
+
+.material-icons {
+  &.icon-sm {
+    font-size: .8em;
   }
 }

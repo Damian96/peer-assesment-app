@@ -17,7 +17,7 @@ class Version0620191203Groups extends Migration
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('session_id')->unsigned();
             $table->string('name', 255);
-            $table->tinyInteger('mark')->nullable()->default(0);
+            $table->tinyInteger('mark')->unsigned()->nullable()->default(0);
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 

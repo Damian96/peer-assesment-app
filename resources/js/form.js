@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
     window.replaceCardNames = function (card, count = window.count) {
         let replace = `[${(count).toString()}]`;
         let patt = /\[[#\d]\]/i;
+        while ($(`input[name^='question[${count}]`).length > 0) {
+            count++;
+            replace = `[${(count).toString()}]`
+        }
+        // console.debug(count, replace, $(`input[name^='question[${count}]`));
+
         card.attr('data-count', count);
         card.find('input[name]').each(function (i, item) {
             // console.debug($(this), count);

@@ -42,6 +42,7 @@
 
             <select name="form" id="form" class="form-control{{ $errors->has('form') ? ' is-invalid' : '' }}"
                     data-rule-required="true"
+                    tabindex="0"
                     data-msg-required="{{ $messages['form.required'] ?? '' }}"
                     aria-labelledby="form-lbl">
                 @foreach($forms as $f)
@@ -60,6 +61,7 @@
                 <span class="text-muted">Date always at midnight. When will the Session open?</span>
                 <input type="text" id="open_date" name="open_date" readonly aria-readonly="true"
                        data-rule-required="true"
+                       tabindex="0"
                        data-msg-required="{{ $messages['open_date.required'] }}"
                        data-rule-pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}"
                        data-msg-pattern="{{ $messages['open_date.date_format'] }}"
@@ -81,6 +83,7 @@
             <span class="mr-2">Deadline</span><br>
             <span class="text-muted">Date always at midnight. When will the Session close?</span>
             <input type="text" id="deadline" name="deadline" readonly aria-readonly="true"
+                   tabindex="0"
                    data-rule-required="true"
                    data-msg-required="{{ $messages['deadline.required'] }}"
                    data-rule-pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}"
@@ -95,6 +98,7 @@
         <label class="form-text" for="title">Title</label>
         <input type="text" name="title" id="title"
                value="{{ old('title', isset($session) ? $session->title: null ) }}"
+               tabindex="0"
                class="form-control{{ $errors->has('title') ? ' is-invalid' : '' }}"
                placeholder="Session's title"
                aria-placeholder="Session's title"
@@ -112,6 +116,7 @@
         <label class="form-text" for="instructions">Instructions</label>
         <textarea class="form-control{{ $errors->has('instructions') ? ' is-invalid' : '' }}"
                   name="instructions"
+                  tabindex="0"
                   id="instructions" maxlength="500"
                   data-rule-required="true"
                   data-msg-required="{{ $messages['instructions.required'] }}"
@@ -130,6 +135,7 @@
         <div class="form-group">
             <label class="form-text" for="groups">Maximum Groups</label>
             <input class="form-control{{ $errors->has('groups') ? ' is-invalid' : '' }}"
+                   tabindex="0"
                    name="groups"
                    type="number"
                    id="groups"
@@ -153,6 +159,7 @@
             <div class="flex-column flex-grow-1">
                 <label class="form-text" for="min_group_size">Minimum Group size</label>
                 <input class="form-control{{ $errors->has('min_group_size') ? ' is-invalid' : '' }}"
+                       tabindex="0"
                        name="min_group_size"
                        type="number"
                        id="min_group_size"
@@ -173,8 +180,9 @@
             </span>
             </div>
             <div class="flex-column flex-grow-1">
-                <label class="form-text" for="min_group_size">Maximum Group size</label>
+                <label class="form-text" for="max_group_size">Maximum Group size</label>
                 <input class="form-control{{ $errors->has('max_group_size') ? ' is-invalid' : '' }}"
+                       tabindex="0"
                        name="max_group_size"
                        type="number"
                        id="max_group_size"

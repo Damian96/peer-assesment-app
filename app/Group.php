@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 /**
  * App\Group
@@ -67,25 +66,20 @@ class Group extends Model
     }
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Query\Builder
      */
     public function students()
     {
-        return DB::table('users')
-            ->join('user_group', 'users.id', '=', 'user_group.user_id')
-            ->where('user_group.group_id', '=', $this->id)
-            ->get(['users.*'])
-            ->collect();
+        return User::whereIn('id', $this->hasMany(\App\StudentGroup::class, 'group_id', 'id')
+            ->get(['user_group.user_id'])->toArray());
     }
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
-    public function users()
+    public function marks()
     {
-        return DB::table('users')
-            ->join('student_course', 'student_course.user_id', 'users.id')
-            ->whereIn('users.id', $this->students()->get())
-            ->get(['users.*']);
+        return array_column(StudentSession::whereIn('user_id', $this->students()->select(['users.id']))
+            ->get(['student_session.mark'])->toArray(), 'mark');
     }
 }
