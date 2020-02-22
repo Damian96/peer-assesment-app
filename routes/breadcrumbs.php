@@ -63,7 +63,7 @@ Breadcrumbs::for('session.create', function ($trail, $course = null) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (in_array('course.view', array_slice($crumbs, -2), true))
+    if (isset($course) && in_array('course.view', array_slice($crumbs, -2), true))
         $trail->push('Course ' . $course->code, route('course.view', $course));
     if (!isset($course) && (in_array('session.index', array_slice($crumbs, -2), true)))
         $trail->push('My Sessions', route('session.index'));

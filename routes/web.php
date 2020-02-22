@@ -24,6 +24,7 @@ Route::match(['get'], '/register', 'UserController@create')->name('register');
 Route::match(['post'], '/store', 'UserController@store')->name('user.store');
 Route::match(['put'], '/update', 'UserController@update')->name('user.update');
 Route::match(['get'], '/profile', 'UserController@profile')->name('user.profile');
+Route::match(['put'], '/config/store', 'UserController@storeConfig')->name('user.config');
 Route::match(['get'], '/password/forgot', 'UserController@forgot')->name('user.forgot');
 Route::match(['post'], '/password/send', 'UserController@forgotSend')->name('user.forgotSend');
 Route::match(['get'], '/password/reset', 'UserController@reset')->name('user.reset');

@@ -21,7 +21,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Class UserController
  * @package App\Http\Controllers
  *
- * TODO: implement ErrorController
  */
 class UserController extends Controller
 {
@@ -114,6 +113,12 @@ class UserController extends Controller
                     'password' => 'required|string|min:3|max:50',
                     'remember' => 'nullable|in:0,1,on,off',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
+                ];
+            case 'storeConfig':
+                return [
+                    '_method' => 'required|string|in:PUT',
+                    'fudge' => 'required|numeric|min:.5|max:2',
+                    'group' => 'required|numeric|min:.5|max:1',
                 ];
             default:
                 return [];
@@ -751,5 +756,31 @@ class UserController extends Controller
                 'Follow the instructions there to complete your registration.'
         ]);
         return \response(view('user.verified-notice', compact('title')), 200, $request->headers->all());
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storeConfig(Request $request)
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors($validator->errors())
+                ->with('errors', $validator->errors());
+        }
+
+        parent::updateDotEnv('FUDGE_FACTOR', $request->get('fudge', env('FUDGE_FACTOR')));
+        parent::updateDotEnv('GROUP_WEIGHT', $request->get('group', env('GROUP_WEIGHT')));
+
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'Success!',
+            'body' => 'Configuration updated successfully!'
+        ]);
+        return redirect()->back();
     }
 }

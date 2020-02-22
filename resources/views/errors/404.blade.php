@@ -14,7 +14,7 @@
         @php
             $default_error_message = "Please <a href='javascript:history.back()''>go back</a> or return to <a href='".url('')."'>our homepage</a>.";
         @endphp
-        {{ (Auth::guard('web')->check() && Auth::check() && !Auth::user()->isStudent()) ? $exception->getMessage() : null }}
+        {{ (Auth::guard('web')->check() && Auth::check()) ? $exception->getMessage() : null }}
         <br>
         {!! $default_error_message !!}
     </p>

@@ -253,7 +253,7 @@ class SessionController extends Controller
                 'body' => 'You should now add a new Form to this Session!'
             ]);
             $session->sendEmailNotification();
-            return redirect()->action('SessionController@show', ['session' => $session], 302);
+            return redirect()->action('FormController@index', [], 302);
         }
 
         abort_if(env('APP_DEBUG', false), 500, sprintf("Could not save Session %s!", $session->id));
