@@ -1,6 +1,6 @@
 git:
   quiet: true
-  sparse_checkout: skip-worktree-map-file
+  sparse_checkout: info/sparse-checkout
 branches:
   only:
     - master
