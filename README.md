@@ -9,5 +9,7 @@
 * [Node Package Manager](https://www.npmjs.com/)
 * [PHPStorm](https://www.jetbrains.com/phpstorm/promo/)
 
+## [![Build Status](https://travis-ci.com/Damian96/peer-assesment-app.svg?branch=master)](https://travis-ci.com/Damian96/peer-assesment-app)
+
 # License
 The software is licensed under the [GNU General Public License v3.0](https://github.com/Damian96/peer-assesment-app/blob/master/LICENSE)
