@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereMark($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereQuestionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereSessionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereRecipientId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Review whereSenderId($value)
  * @mixin \Eloquent
@@ -45,12 +46,14 @@ class Review extends Model
 
     protected $fillable = [
         'sender_id', 'recipient_id', 'question_id',
-        'mark', 'comment', 'answer', 'type', 'title'
+        'mark', 'comment', 'answer', 'type', 'title',
+        'session_id'
     ];
 
     protected $casts = [
         'sender_id' => 'int',
         'recipient_id' => 'int',
+        'session_id' => 'int',
         'question_id' => 'int',
         'mark' => 'int',
         'type' => 'string',
@@ -61,6 +64,8 @@ class Review extends Model
 
     protected $attributes = [
         'recipient_id' => 0,
+        'session_id' => null,
+        'question_id' => null,
         'mark' => 0,
         'type' => null,
         'title' => null,

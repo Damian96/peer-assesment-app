@@ -41,9 +41,9 @@ class UserController extends Controller
         ]);
         $this->middleware('verified')->except([
             'logout', 'login', 'auth', # login-logout
-            'create', 'store', # user-register
+//            'create', 'store', # user-register
             'verify', 'verified', # verify-email/password
-            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+//            'forgot', 'forgotSend', 'reset', 'update', # reset-password
         ]);
         $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
@@ -486,7 +486,7 @@ class UserController extends Controller
      */
     public function show(Request $request, User $user)
     {
-        $title = $user->fullname . ' Profile';
+        $title = "{$user->fullname} Profile";
         return response(view('user.profile', compact('title', 'user')), 200, $request->headers->all());
     }
 

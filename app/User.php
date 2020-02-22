@@ -76,6 +76,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @property-read int|null $sessions_count
  * @property string password_reset_token
  * @property Group group
+ * @property string fullname
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
@@ -85,6 +86,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     use SendsPasswordResetEmails;
 
     const RAW_FULL_NAME = 'CONCAT(SUBSTR(fname, 1, 1), ". ", lname) AS full_name';
+    const PA_WEIGHT_GROUP = .5;
 
     protected $table = 'users';
     protected $primaryKey = 'id';
@@ -165,9 +167,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
              */
             if ($model->hasVerifiedEmail())
                 $model->generateApiToken();
-
-            if ($model->group()->exists())
-                $model->group = $model->group()->first();
         });
         parent::boot();
     }
@@ -304,15 +303,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the StudentGroup record associated with the student.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @return Model|\Illuminate\Database\Query\Builder|object
      */
     public function group()
     {
-        return $this->hasOneThrough(\App\StudentGroup::class, \App\Group::class,
-            'id', 'group_id',
-            'id', 'id');
-//        dd($query->first());
-//        return $query;
+        return $this->hasOne(\App\StudentGroup::class, 'user_id', 'id')->first()->group()->first();
     }
 
     /**
@@ -325,8 +320,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             ->join('student_course', 'student_course.user_id', '=', 'users.id')
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
             ->whereNotNull('users.email_verified_at')
-            ->where('users.id', '!=', Auth::user()->id)
-            ->where('user_group.group_id', '=', $this->group->id)
+            ->where('users.id', '!=', $this->id)
+            ->where('user_group.group_id', '=', $this->group()->id)
             ->selectRaw(self::RAW_FULL_NAME)
             ->addSelect('users.*')
             ->distinct()
@@ -657,6 +652,8 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             $cid = $arguments['id'];
         } elseif (array_key_exists('cid', $arguments)) {
             $cid = $arguments['cid'];
+        } elseif (array_key_exists('user', $arguments) && $arguments['user'] instanceof User) {
+            $user = $arguments['user'];
         }
 
         switch ($ability) {
@@ -671,9 +668,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
                     && !StudentGroup::whereUserId(Auth::user()->id)
                         ->whereIn('group_id', Group::whereSessionId($arguments['session']->id)->get(['id']))
                         ->exists();
+            case 'user.show':
+                return (!Auth::user()->isStudent() || Auth::user()->id == $user->id) && isset($user) && !$user->isAdmin();
             case 'user.home':
             case 'verification.notice':
-            case 'user.show':
             case 'user.profile':
             case 'course.index':
             case 'session.index':
@@ -839,45 +837,84 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * @param $session_id
+     * @param string $type
      * @return float|int
-     * @throws \Throwable
      */
-    public function calculateIndividualMark()
+    public function getMarkFactor($session_id, $type = 'r')
     {
-        $group_mark = $this->group->mark;
-
-        if ($group_mark == 0) {
-            throw new NotFoundHttpException("This group has not been marked yet");
-        }
-
         $self = Review::whereRecipientId($this->getId())
             ->where('sender_id', '=', $this->getId())
-            ->where('type', '=', 'r') // criteria
+            ->where('session_id', '=', $session_id)
+            ->where('type', '=', $type) // criteria
             ->sum('mark');
 
-        $others = Review::whereSenderId($this->getId())
-            ->where('recipient_id', '!=', $this->getId())
-            ->where('type', '=', 'r') // criteria
+        $total = Review::whereSenderId($this->getId())
+            ->where('session_id', '=', $session_id)
+            ->where('type', '=', $type) // criteria
             ->sum('mark');
 
-        $ids = array_column($this->teammates()->toArray(), 'id');
-        array_push($ids, $this->id);
-        $factors = array_combine($ids, $ids);
+        $teammates = array_column($this->teammates()->toArray(), 'id');
+        $team = array_push($teammates, $this->id);
 
-        $total = ($self + $others);
-        foreach ($factors as $id => $f) {
-            if ($id == $this->getId()) {
-                $factors[$id] = $self / $total;
-            } else {
-                $sum = Review::whereSenderId($this->getId())
-                    ->where('recipient_id', '=', $id)
-                    ->where('type', '=', 'r')
-                    ->sum('mark');
-                $factors[$id] = $sum / $total;
-            }
+        $submitted = array_column(StudentSession::whereSessionId($session_id)
+            ->whereIn('user_id', $teammates)
+            ->get(['user_id'])->toArray(), 'user_id');
+
+        $not_submitted = array_filter($teammates, function ($id) use ($submitted) {
+            return !in_array($id, $submitted);
+        });
+
+        if (empty($not_submitted) && $total > 0) { // everyone submitted
+            return round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
+        } elseif ($total == 0) { // this student did not submit
+            return 0;
+        } else { // calculate with fudge factor
+            $factor = round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
+            $fudge = round(floatval(count($teammates) / count($submitted)), 2, PHP_ROUND_HALF_DOWN);
+            return round($factor * $fudge, 2);
         }
+    }
 
-        throw_if(array_sum($factors) != 1, new \Exception("Invalid Reviews by Student " . $this->full_name));
-        return array_sum($factors) * $group_mark;
+    /**
+     * @param $session_id
+     * @param string $type
+     * @return int
+     * @throws \Throwable
+     */
+    public function calculateMark($session_id, $type = 'r')
+    {
+        $group_mark = $this->group()->mark;
+
+        if ($group_mark == 0)
+            throw new NotFoundHttpException("This group has not been marked yet");
+
+//        $criteria = $this->getMarkFactor($session_id, 'r');
+//        $eval = $this->getMarkFactor($session_id, 'e');
+//        $cnt_criteria = Review::whereSessionId($session_id)
+//            ->where('sender_id', '=', $this->id)
+//            ->where('type', '=', 'r')
+//            ->groupBy(['question_id'])
+//            ->count();
+//        $cnt_eval = Review::whereSessionId($session_id)
+//            ->where('sender_id', '=', $this->id)
+//            ->where('type', '=', 'e')
+//            ->groupBy(['question_id'])
+//            ->count();
+//        $cnt = $cnt_criteria + $cnt_eval;
+
+        $total_factor = $this->getMarkFactor($session_id, 'r') + $this->getMarkFactor($session_id, 'e');
+        $mark = (self::PA_WEIGHT_GROUP * $group_mark) + ($total_factor * (self::PA_WEIGHT_GROUP * $group_mark));
+        return $mark > 100 ? 100 : $mark;
+    }
+
+    /**
+     * @param int $session_id
+     * @return int
+     */
+    public function getIndividualMark($session_id)
+    {
+        return $this->studentSessions()->where('session_id', '=', $session_id)
+            ->first()->mark;
     }
 }

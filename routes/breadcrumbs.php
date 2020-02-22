@@ -6,6 +6,7 @@
 //});
 
 // Courses
+
 Breadcrumbs::for('courses', function ($trail) {
     $trail->push('My Courses', route('course.index'));
 
@@ -24,9 +25,6 @@ Breadcrumbs::for('course.show', function ($trail, $course) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index'))
-        $trail->push('Active Sessions', route('session.index'));
-
     $trail->push('Course ' . $course->code, route('course.view', $course));
 });
 
@@ -35,7 +33,7 @@ Breadcrumbs::for('course.add-student', function ($trail, $user, $course) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view'))
+    if (in_array('course.view', array_slice($crumbs, -2), true))
         $trail->push('Course ' . $course->code, route('course.view', $course));
 
     $trail->push('Add Students', route('course.add-student', $course));
@@ -46,7 +44,7 @@ Breadcrumbs::for('course.edit', function ($trail, $course) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view'))
+    if (in_array('course.view', array_slice($crumbs, -2), true))
         $trail->push('Course ' . $course->code, route('course.view', $course));
 
     $trail->push('Edit Course ' . $course->code, route('course.edit', $course));
@@ -65,9 +63,9 @@ Breadcrumbs::for('session.create', function ($trail, $course = null) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (isset($course) && (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view')))
+    if (in_array('course.view', array_slice($crumbs, -2), true))
         $trail->push('Course ' . $course->code, route('course.view', $course));
-    if (!isset($course) && (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index')))
+    if (!isset($course) && (in_array('session.index', array_slice($crumbs, -2), true)))
         $trail->push('My Sessions', route('session.index'));
 
     $trail->push('Create Session', route('session.create'));
@@ -78,10 +76,22 @@ Breadcrumbs::for('session.edit', function ($trail, $session) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'session.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'session.index'))
+    if (in_array('session.index', array_slice($crumbs, -2), true))
         $trail->push('My Sessions', route('session.index'));
 
     $trail->push('Edit Session', route('session.edit', $session));
+});
+
+// Edit Session
+Breadcrumbs::for('session.mark', function ($trail, $session) {
+    $crumbs = session()->get('crumbs', []);
+    $trail->parent('courses');
+
+    $trail->push('My Sessions', route('session.index'));
+    if (in_array('session.view', array_slice($crumbs, -2), true))
+        $trail->push("Session '{$session->title}'", route('session.view'));
+
+    $trail->push("Mark Session '{$session->title}'", route('session.mark', $session));
 });
 
 // View Session
@@ -89,41 +99,29 @@ Breadcrumbs::for('session.view', function ($trail, $session) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'sessions' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'sessions'))
+    if (in_array('session.index', array_slice($crumbs, -2), true))
         $trail->push('My Sessions', route('session.index'));
 
     $trail->push('View Session', route('session.view', $session));
 });
 
 // Courses > ? > Sessions of [CCPX]
-Breadcrumbs::for('session.index', function ($trail, $sessions, $course) {
+Breadcrumbs::for('session.index', function ($trail) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view'))
-        $trail->push('Course ' . $course->code, route('course.view', $course));
-
-    $trail->push('Sessions', route('session.index', $course->id));
-});
-
-// Courses > ? > Sessions of [CCPX]
-Breadcrumbs::for('sessions', function ($trail) {
-    $crumbs = session()->get('crumbs', []);
-    $trail->parent('courses');
+//    if (in_array('course.view', array_slice($crumbs, -2), true)) {
+//        $id = substr(request()->server->get('HTTP_REFERER'), strpos(request()->server->get('HTTP_REFERER'), 'courses/') + 8, 1);
+//        try {
+//            $course = Course::findOrFail($id);
+//            $trail->push('Course ' . $course->code, route('course.view', $course));
+//        } catch (\Throwable $e) {
+//            return false;
+//        }
+//    }
 
     $trail->push('My Sessions', route('session.index'));
 });
-
-// ? > Active Sessions
-//Breadcrumbs::for('session.active', function ($trail, $sessions) {
-//    $crumbs = session()->get('crumbs', []);
-//    $trail->parent('courses');
-//
-////    if (last($crumbs) == 'course.view' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'course.view'))
-////        $trail->push('Course ' . $course->code, route('course.view', $course));
-//
-//    $trail->push('Active Sessions', route('session.active', $sessions));
-//});
 
 // ? > Add Form
 Breadcrumbs::for('form.create', function ($trail) {
@@ -138,7 +136,7 @@ Breadcrumbs::for('form.edit', function ($trail, $form) {
     $crumbs = session()->get('crumbs', []);
     $trail->parent('courses');
 
-    if (last($crumbs) == 'form.index' || (count($crumbs) >= 2 && $crumbs[count($crumbs) - 2] == 'form.index'))
+    if (in_array('form.index', array_slice($crumbs, -2), true))
         $trail->push('My Forms', route('form.index'));
 
     $trail->push('Edit Form ' . $form->id, route('form.edit', $form));

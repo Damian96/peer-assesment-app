@@ -18,6 +18,7 @@ class Version0620191203Reviews extends Migration
             $table->bigInteger('sender_id')->unsigned();
             $table->bigInteger('recipient_id')->unsigned()->comment('none:11');
             $table->bigInteger('question_id')->unsigned();
+            $table->bigInteger('session_id')->unsigned();
             $table->string('title', 255)->comment('question title');
             $table->tinyInteger('mark')->nullable()->default('0')->comment('eval/linear-scale[0-100]');
             $table->char('type', 1)->comment('[e]valuation/[p]aragraph/[s]cale/[c]hoice/crite[r]ia');
@@ -32,6 +33,7 @@ class Version0620191203Reviews extends Migration
                 ->onDelete('CASCADE');
             $table->index('sender_id');
             $table->index('question_id');
+            $table->index('session_id');
         });
     }
 

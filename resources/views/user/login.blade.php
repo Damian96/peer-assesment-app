@@ -68,10 +68,12 @@
                 @endif
 
                 <div class="form-text">
-                    <label>Don't have an account? <a href="{{ url('/register') }}" title="Register" tabindex="-1">Register
-                            here</a>.</label><br>
-                    <label><a href="{{ url('/password/forgot') }}" title="Forgot your password?" tabindex="-1">Forgot
-                            your password?</a></label>
+                    <span></span>Don't have an account? <a href="{{ url('/register') }}" title="Register"
+                                                           aria-label="Register" tabindex="-1">Register
+                        here</a>.</span><br>
+                    <span><a href="{{ url('/password/forgot') }}" title="Forgot your password?"
+                             aria-label="Forgot your password?" tabindex="-1">Forgot
+                            your password?</a></span>
                 </div>
 
                 <div class="form-group">

@@ -12,11 +12,11 @@
     <div class="row">
         <div class="col-sm-12 col-md-12">
             @if ($merged->isNotEmpty())
-                <table class="table table-striped table-responsive-sm">
+                <table id="my-forms" class="table table-striped table-responsive-sm ts">
                     <caption
                         class="">{{ sprintf("Showing results %s-%s of total %s Forms", $first, $last, $total) }}</caption>
                     <thead>
-                    <tr>
+                    <tr class="tsTitles">
                         <th>#</th>
                         <th class="">Title</th>
                         <th class="">Session</th>
@@ -24,7 +24,7 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="tsGroup">
                     @foreach($merged->all() as $i => $form)
                         <tr data-form-id="{{ $form->id }}" data-session-id="{{ $form->session_id > 0 ?? '0' }}">
                             <th scope="row">{{ ($i+1) }}</th>
@@ -37,7 +37,7 @@
                             <td>
                                 @if ($form->code)
                                     <a href="{{ url('/courses/' . $form->course_id . '/view' ) }}" target="_self">
-                                        {{ $form->code }}
+                                        {{ $form->code }} <i class="material-icons icon-sm">link</i>
                                     </a>
                                 @else<span class="text-muted">{{ 'N/A' }}</span>@endif
                             </td>
@@ -206,5 +206,12 @@
                 $('.ui-autocomplete').css('z-index', '100000000');
             }
         });
+        @if ($merged->isNotEmpty())
+        // Initialize table
+        {!! "let cols = [{col: 1, order: 'asc'}, {col: 2, order: 'asc'}];" !!}
+        $('#my-forms').tablesorter({
+            tablesorterColumns: cols
+        });
+        @endif
     </script>
 @endsection

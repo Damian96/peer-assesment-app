@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $user_id
  * @property int $session_id
+ * @property int $mark
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|\App\StudentSession newModelQuery()
@@ -57,6 +58,13 @@ class StudentSession extends Model
             'user_id', 'id', 'user_id', 'group_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function session()
+    {
+        return $this->hasOne(\App\Session::class, 'id', 'session_id');
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

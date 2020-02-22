@@ -402,6 +402,7 @@ class SessionController extends Controller
             }
             $review = new Review([
                 'question_id' => $question->id,
+                'session_id' => $session->id,
                 'sender_id' => Auth::user()->id,
                 'title' => $question->title
             ]);
@@ -432,6 +433,7 @@ class SessionController extends Controller
                     foreach ($q[key($q)] as $uid => $m) {
                         $r = new Review([
                             'question_id' => $question->id,
+                            'session_id' => $session->id,
                             'title' => $question->title,
                             'sender_id' => Auth::user()->id,
                             'recipient_id' => $uid,
