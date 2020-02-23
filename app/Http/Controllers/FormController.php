@@ -416,30 +416,31 @@ class FormController extends Controller
                 'heading' => 'Could not duplicate Form!',
             ]);
             return redirect()->action('FormController@index', 302);
-        } finally {
-            foreach ($original->questions() as $q) {
-                $model = new Question();
-                $model->fill([
-                    'title' => $q['title'],
-                    'form_id' => $form->id,
-                    'data' => json_encode($q['data'])
-                ]);
-
-                if (!$model->save()) {
-                    throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
-                    $request->session()->flash('message', [
-                        'level' => 'danger',
-                        'heading' => 'Could not duplicate Form!',
-                    ]);
-                    return redirect()->action('FormController@index', 302);
-                }
-            }
-            $request->session()->flash('message', [
-                'level' => 'success',
-                'heading' => 'You successfully duplicated the Form!',
-                'body' => sprintf("The new form is : %s", $form->id)
-            ]);
-            return redirect()->action('FormController@index', [], 302);
         }
+
+        foreach ($original->questions() as $q) {
+            $model = new Question();
+            $model->fill([
+                'title' => $q['title'],
+                'form_id' => $form->id,
+                'data' => json_encode($q['data'])
+            ]);
+
+            if (!$model->save()) {
+                throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
+                $request->session()->flash('message', [
+                    'level' => 'danger',
+                    'heading' => 'Could not duplicate Form!',
+                    'body' => 'Could not replicate form'
+                ]);
+                return redirect()->action('FormController@index', 302);
+            }
+        }
+        $request->session()->flash('message', [
+            'level' => 'success',
+            'heading' => 'You successfully duplicated the Form!',
+            'body' => sprintf("The new form is : %s", $form->id)
+        ]);
+        return redirect()->action('FormController@index', [], 302);
     }
 }

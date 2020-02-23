@@ -1,73 +1,5 @@
 const mix = require('laravel-mix');
 const webpack = require('webpack');
-// const jquery = require('jquery');
-// const jqueryUI = require('webpack-jquery-ui');
-
-// class JSPlugins {
-
-//     /**
-//      * All dependencies that should be installed by Mix.
-//      *
-//      * @return {Array}
-//      */
-//     // dependencies() {
-//     //     return ['jquery', 'webpack-jquery-ui'];
-//     // }
-
-//     /**
-//      * Register the component.
-//      *
-//      * When your component is called, all user parameters
-//      * will be passed to this method.
-//      *
-//      * Ex: register(src, output) {}
-//      * Ex: mix.yourPlugin('src/path', 'output/path');
-//      *
-//      * @param  {*} ...params
-//      * @return {void}
-//      *
-//      */
-//     // register() { }
-
-//     /**
-//      * Boot the component. This method is triggered after the
-//      * user's webpack.mix.js file has executed.
-//      */
-//     // boot() { }
-
-//     /**
-//      * Override the generated webpack configuration.
-//      *
-//      * @param  {Object} webpackConfig
-//      * @return {void}
-//      */
-//     // webpackConfig(webpackConfig) { }
-
-//     /**
-//      * Babel config to be merged with Mix's defaults.
-//      *
-//      * @return {Object}
-//      */
-//     // babelConfig() { }
-
-//     /**
-//      * Rules to be merged with the master webpack loaders.
-//      *
-//      * @return {Array|Object}
-//      */
-//     // webpackRules() {}
-
-//     webpackPlugins() {
-//         return [
-//             new webpack.ProvidePlugin({
-//                 $: 'jquery',
-//                 jQuery: 'jquery'
-//             })
-//         ]
-//     }
-// }
-
-// mix.extend(JSPlugins.name.toString().toLowerCase(), new JSPlugins());
 
 /*
  |--------------------------------------------------------------------------
@@ -101,5 +33,3 @@ if (mix.inProduction()) {
         ],
     });
 }
-
-// .jsplugins();
