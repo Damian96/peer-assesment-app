@@ -60,8 +60,7 @@
   "prefer-stable": true,
   "scripts": {
     "test": [
-      "vendor/bin/phpunit -c phpunit.xmlAPP_NAME=OPESAdds testing directory
-      "
+      "vendor/bin/phpunit -c phpunit.xmlAPP_NAME=OPESAdds testing directory"
     ],
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
