@@ -30,7 +30,7 @@ body {
     }
 
     .title {
-      border-bottom: 1px solid $primary-fg;
+      border-bottom: 1px solid $primary-fg-aria;
       padding-bottom: 9px;
       position: relative;
       font-family: $font-family-monospace;
@@ -39,6 +39,10 @@ body {
       margin-bottom: 15px;
       margin-top: 20px;
       text-transform: uppercase;
+    }
+
+    h2, h3, h4, h5 {
+      color: $primary-fg-aria !important;
     }
   }
 }
@@ -84,7 +88,7 @@ form {
   }
 
   a {
-    color: darken($primary-bg-dark, 10%);
+    color: $primary-bg-aria;
   }
 }
 
@@ -95,6 +99,15 @@ form {
   &:hover {
     color: lighten($secondary, 25%) !important;
     background: darken($primary-bg-dark, 5%) !important;
+  }
+}
+
+.btn-success {
+  color: darken($secondary, 50%) !important;
+
+  &:hover {
+    color: lighten($secondary, 25%) !important;
+    background: darken($success, 25%) !important;
   }
 }
 
@@ -236,7 +249,7 @@ table {
   tr {
     td {
       a {
-        color: darken($primary-bg-dark, 10%);
+        color: $primary-bg-aria;
       }
     }
   }
@@ -387,7 +400,7 @@ footer {
     color: darken($primary-bg-dark, 0%);
 
     a {
-      color: darken($primary-bg-dark, 10%);
+      color: $primary-bg-aria;
     }
   }
 }
@@ -513,10 +526,9 @@ footer {
     font-style: italic;
     color: lighten($text-muted, 25%);
     cursor: not-allowed;
+    width: 20px;
 
     > i.material-icons {
-      position: relative;
-      z-index: 1000;
       transform: translate(-90%);
       color: $text-muted;
       font-weight: bolder;

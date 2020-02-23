@@ -7,7 +7,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <table class="table table-striped">
+            <table class="table table-striped table-responsive-sm">
                 <thead>
                 <tr>
                     @if (Auth::user()->isAdmin())
@@ -117,11 +117,11 @@
         @if (Auth::user()->can('course.edit', ['id' => $course->id]))
             <div class="col-sm-12 col-md-12">
                 <a href="{{ url( '/courses/' . $course->id . '/add-student') }}"
-                   class="btn btn-success">
+                   class="btn btn-success my-2 col-sm-12 d-md-inline mr-md-2">
                     Add Students to {{ $course->code }}
                 </a>
                 <a href="{{ url( '/sessions/create/' . $course->id ) }}"
-                   class="btn btn-success">
+                   class="btn btn-success my-2 col-sm-12 d-md-inline mr-md-2">
                     Add Sessions to {{ $course->code }}
                 </a>
             </div>
@@ -132,12 +132,14 @@
             <div class="col-sm-12 col-md-12">
                 @if ($course->students()->first())
                     <h3 class="my-3">Enrolled Students</h3>
-                    <table class="table table-striped">
+                    <table class="table table-striped table-responsive-sm">
                         <caption>Enrolled Students to {{ $course->code }}</caption>
                         <thead>
-                        <th scope="row">#</th>
-                        <th>Name</th>
-                        <th>Actions</th>
+                        <tr>
+                            <th scope="row">#</th>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
                         </thead>
                         <tbody>
                         @foreach($course->students()->getModels() as $i => $s)
@@ -170,7 +172,7 @@
                         </tbody>
                     </table>
                 @else
-                    <h3 class="text-warning my-3">This course does not have any Students</h3>
+                    <h3 class="my-3">This course does not have any Students</h3>
                 @endif
             </div>
         @endif
@@ -180,7 +182,7 @@
             <div class="col-sm-12 col-md-12">
                 @if ($course->sessions()->first())
                     <h3>Linked Sessions</h3>
-                    <table class="table table-striped">
+                    <table class="table table-striped table-responsive-sm">
                         <caption>This course has {{ $course->sessions()->count() }} Sessions</caption>
                         <thead>
                         <tr>
@@ -211,7 +213,7 @@
                         </tfoot>
                     </table>
                 @else
-                    <h3 class="text-warning my-3">This course does not have any Sessions</h3>
+                    <h3 class="my-3">This course does not have any Sessions</h3>
                 @endif
             </div>
         @endif
