@@ -14,16 +14,18 @@ cache:
     - vendor
 before_script:
   - cp .env.travis .env
-  - sudo mysql -e 'create database testing;'
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
   - php artisan key:generate
+  - php artisan serve &
   - php artisan migrate
   - php artisan db:seed
-  - php artisan serve &
-  - AID=`ps aux | grep -oP -m 1 -w "\K[0-9]{4}(?= .*artisan\sserve)"` && sleep 3
+  - cat .env
+#  - AID=`ps aux | grep -oP -m 1 -w "\K[0-9]{4}(?= .*artisan\sserve)"` && sleep 3
+before_install:
+  - sudo mysql -e 'CREATE DATABASE testing;'
 script:
-  - curl -F email=istamatopoulou@citycollege.sheffield.eu,password=123,remeber=1,localhost=1 127.0.0.1:8000/auth
+  #  - curl -F email=istamatopoulou@citycollege.sheffield.eu,password=123,remeber=1,localhost=1 127.0.0.1:8000/auth
   - vendor/bin/phpunit -c phpunit.xml --verbose
 after_script:
   - kill %1
