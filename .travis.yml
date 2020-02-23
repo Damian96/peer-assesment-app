@@ -21,7 +21,9 @@ before_script:
   - php artisan migrate
   - php artisan db:seed
   - php artisan serve &
+  - AID=`ps aux | grep -oP -m 1 -w "\K[0-9]{4}(?= .*artisan\sserve)"` && sleep 3
 script:
-  - vendor/bin/phpunit -c phpunit.xml
+  - vendor/bin/phpunit -c phpunit.xml --verbose
 after_script:
   - kill %1
+  - unset AID
