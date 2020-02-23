@@ -47,11 +47,13 @@ class CoursesTableSeeder extends Seeder
             ]);
         }
 
+        // Insert DUMMY row
         DB::table($this->table)->insert([
             'id' => Course::DUMMY_ID,
             'user_id' => 1,
             'code' => 'N/A',
             'status' => '0',
+            'ac_year' => 'UN-' . date('Y'),
             'department' => 'N/A',
         ]);
     }
