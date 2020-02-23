@@ -7,7 +7,5 @@
 
 !/app/Http/Resources/
 !/app/Http/Requests/
-!/app/Notifications/
 
 !/database/dumps/
-!/database/factories/
