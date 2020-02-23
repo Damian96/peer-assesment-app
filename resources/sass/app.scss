@@ -507,4 +507,20 @@ footer {
   &.icon-sm {
     font-size: .8em;
   }
+
+  &.strikethrough {
+    font-weight: lighter;
+    font-style: italic;
+    color: lighten($text-muted, 25%);
+    cursor: not-allowed;
+
+    > i.material-icons {
+      position: relative;
+      z-index: 1000;
+      transform: translate(-90%);
+      color: $text-muted;
+      font-weight: bolder;
+      font-size: 1.125em;
+    }
+  }
 }

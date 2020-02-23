@@ -10,7 +10,7 @@
                         switch ($question->type)
                         {
                             case 'multiple-choice':
-                                echo 'radio_button_unchecked';
+                                echo 'radio_button_checked';
                                 break;
                                 case 'linear-scale':
                                     echo 'linear_scale';
@@ -27,7 +27,7 @@
                         }
                     }
                 @endphp</i><span
-                class="card-title-content">&nbsp;{{ $question->title ?? '' }}</span></h4>
+                class="card-title-content">&nbsp;{{ !$template ? $question->title : null }}</span></h4>
         <div class="btn-toolbar d-inline float-right">
             <div class="btn-group btn-group-sm" role="toolbar">
                 <button type="button"
@@ -76,25 +76,25 @@
                    data-msg-maxlength="The Question's title should be at most 255 characters long!">
             <span class="invalid-feedback"><strong></strong></span>
         </div>
-        <div class="form-group scale {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : '' }}">
+        <div class="form-group scale {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : null }}">
             <label for="question-{{ $count ?? '#' }}-max" class="form-control-sm">Maximum</label>
             <input type="number"
                    name="question[{{ $count ?? '#' }}][max]"
                    id="question-{{ $count ?? '#' }}-max"
                    class="form-control-sm"
-                   value="{{ $question->max ?? '' }}"
+                   value="{{ !$template ? $question->max : null }}"
                    min="2" max="10"
                    required
                    aria-required="true"
                    data-rule-required="true"
                    onchange="(function(e) { $(this).closest('.form-group').next().find('.max-num').text(this.value)}.bind(this, event))();">
         </div>
-        <div class="form-group scale my-3 {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : '' }}">
+        <div class="form-group scale my-3 {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : null }}">
             <label for="question-{{ $count ?? '#' }}-minlbl" class="form-control-sm">1
                 <input type="text" name="question[{{ $count ?? '#' }}][minlbl]"
                        id="question-{{ $count ?? '#' }}-minlbl"
                        placeholder="Highly Disagree"
-                       value="{{ $question->minlbl ?? '' }}"
+                       value="{{ !$template ? $question->minlbl : null }}"
                        required
                        aria-readonly="true" class="form-text d-inline"></label>
             <label for="question-{{ $count ?? '#' }}-maxlbl" class="form-control-sm"><span
@@ -102,21 +102,24 @@
                 <input type="text" name="question[{{ $count ?? '#' }}][maxlbl]" placeholder="Highly Agree"
                        required
                        id="question-{{ $count ?? '#' }}-maxlbl"
-                       value="{{ $question->maxlbl ?? '' }}"
+                       value="{{ !$template ? $question->maxlbl : null }}"
                        aria-required="true" class="form-text d-inline"></label>
         </div>
-        <div class="form-group multiple my-3 {{ (!$template && empty($question->choices)) ? 'd-none' : '' }}">
+        <div
+            class="form-group multiple my-3 {{ (!$template && $question->type != 'multiple-choice') ? 'd-none' : null }}">
             <div class="choice-container">
-                @if (!$template && !empty($question->choices))
-                    @foreach($question->choices as $j => $choice)
-                        <div class="row choice">
+                @if (!$template && $question->type == 'multiple-choice')
+                    @foreach($question->choices as $i => $choice)
+                        <div class="row choice" title="{{ $choice }}" aria-label="{{ $choice }}">
                             <div class="col-sm text-center overflow-hidden">
                                 <i class="material-icons text-muted">radio_button_unchecked</i>
-                                <label for="question[{{ $count ?? '#' }}][choices][{{ $j }}]" class="form-control-sm">
+                                <label for="question[{{ $count ?? '#' }}][choices][{{ $i }}]" class="form-control-sm">
                                     {{ $choice }}</label>
                             </div>
                             <div class="col-sm text-left">
-                                <input class="form-control-sm" name="question[{{ $count ?? '#' }}][choices][{{ $j }}]"
+                                <label for="question[{{ $count ?? '#' }}][choices][{{ $i }}]"
+                                       class="d-none">Choice {{ $choice }}</label>
+                                <input class="form-control-sm" name="question[{{ $count ?? '#' }}][choices][{{ $i }}]"
                                        type="text"
                                        placeholder="choice"
                                        aria-placeholder="choice"

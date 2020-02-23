@@ -259,21 +259,19 @@ document.addEventListener('DOMContentLoaded', function (e) {
         return true;
     });
     $('#collapse-all').on('click', () => {
-        $('.card.col-sm-12').each(() => {
-            let close = $(this).find('.close-question');
-            if ('true' === close.attr('aria-expanded')) {
-                $(this).find('.close-question').click();
-            }
+        $('.close-question').each((i, btn) => {
+            if (btn.getAttribute('aria-expanded') == 'true')
+                btn.click();
         });
     });
     $('#expand-all').on('click', () => {
-        $('.card.col-sm-12').each(() => {
-            let close = $(this).find('.close-question');
-            if (close.attr('aria-expanded') !== 'true') {
-                $(this).find('.close-question').click();
-            }
+        $('.close-question').each((i, btn) => {
+            if (btn.getAttribute('aria-expanded') != 'true')
+                btn.click();
         });
     });
+    $('.delete-choice').on('click', deleteChoice);
+    $('.add-choice').on('click', addChoice);
     $(document).on('submit', 'form', function () {
         window.formData = storeFormData();
         window.onbeforeunload = null;
