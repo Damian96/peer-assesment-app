@@ -31,9 +31,9 @@
                     @foreach($questions as $q => $question)
                         @include('forms.card', [
                             'template' => false,
-                          'title' => $question->title,
-                          'count' => $question->id,
-                          'question' => $question
+                            'title' => $question->title,
+                            'count' => $question->id,
+                            'question' => $question
                         ])
                     @endforeach
                 </div>

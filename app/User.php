@@ -303,11 +303,12 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the StudentGroup record associated with the student.
-     * @return Model|\Illuminate\Database\Query\Builder|object
+     * @return bool|Model|\Illuminate\Database\Query\Builder|object
      */
     public function group()
     {
-        return $this->hasOne(\App\StudentGroup::class, 'user_id', 'id')->first()->group()->first();
+        $ss = $this->hasOne(\App\StudentGroup::class, 'user_id', 'id');
+        return $ss->exists() ? $ss->first()->group()->first() : false;
     }
 
     /**
@@ -884,6 +885,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function calculateMark($session_id, $type = 'r')
     {
+        if (!$this->group()) throw new NotFoundHttpException("This student does not belong to any group!");
         $group_mark = $this->group()->mark;
 
         if ($group_mark == 0)

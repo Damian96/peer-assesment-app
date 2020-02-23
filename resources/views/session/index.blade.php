@@ -76,19 +76,19 @@
                                             <a href="{{ url('#') }}"
                                                title="This Session does not have any groups!"
                                                aria-label="This Session does not have any groups!"
-                                               class="material-icons text-muted">group</a>
+                                               class="material-icons strikethrough">group<i class="material-icons">remove</i></a>
                                         @else
                                             <a href="{{ url('#') }}"
-                                               title="Join a group"
+                                               title="Join an existing Group"
+                                               aria-label="Join an existing Group"
                                                data-id="{{ $session->id }}"
-                                               aria-label="Join a group"
                                                class="material-icons join-group">group</a>
                                         @endif
                                         @if ($session->canAddGroup())
                                             <a href="{{ url('#') }}"
-                                               title="Add a group"
+                                               title="Add & Join a group"
+                                               aria-label="Add & Join a group"
                                                data-id="{{ $session->id }}"
-                                               aria-label="Add a group"
                                                class="material-icons add-group text-success">group_add</a>
                                         @endif
                                     @endif
@@ -120,35 +120,6 @@
                         We will notify you when a new Session opens, by sending you an email to:
                         <strong>{{ Auth::user()->email }}</strong>
                     </p>
-
-                    @if (Auth::user()->studentSessions()->exists())
-                        <table class="table table-striped ts">
-                            <caption></caption>
-                            <thead>
-                            <tr class="tsTitles">
-                                <th scope="col">#</th>
-                                <th>Group Mark</th>
-                                <th>Individual Mark</th>
-                            </tr>
-                            </thead>
-                            <tbody class="tsGroup">
-                            @foreach(Auth::user()->studentSessions()->getModels() as $i => $ss)
-                                @php
-                                    /**
-                                    * @var \App\StudentSession $ss
-                                    */
-                                        $ss->mark = $ss->student()->first()->calculateMark($ss->session_id);
-                                @endphp
-                                <tr>
-                                    <th scope="col">{{ $i+1 }}</th>
-                                    <td>{{ $ss->group()->first() ? $ss->group()->first()->mark : 'N/A'  }}</td>
-                                    <td>{{ $ss->mark > 0 ? $ss->mark : 'N/A' }}</td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                            {{--                            <tfoot></tfoot>--}}
-                        </table>
-                    @endif
                 @endif
             @endif
         </div>

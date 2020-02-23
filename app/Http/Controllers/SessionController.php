@@ -172,18 +172,22 @@ class SessionController extends Controller
     public function index(Request $request)
     {
         $title = 'My Sessions';
-        $submitted = StudentSession::whereUserId(Auth::user()->id);
+        $submitted = StudentSession::whereUserId(Auth::user()->id)
+            ->where('mark', '>', '0');
         $sessions = Session::query()
             ->select('sessions.*')
             ->leftJoin('courses', 'courses.id', 'sessions.course_id');
         if (Auth::user()->isStudent()) {
             $sessions->join('student_course', 'student_course.course_id', 'courses.id')
-                ->whereNotIn('sessions.id', $submitted->exists() ? $submitted->get(['session_id'])->toArray() : [])
                 ->where('student_course.user_id', '=', Auth::user()->id);
+            if ($submitted->exists())
+                $sessions->whereNotIn('sessions.id', $submitted->get(['session_id'])->toArray());
         } elseif (Auth::user()->isInstructor()) {
             $sessions->where('courses.user_id', '=', Auth::user()->id);
         }
-        $sessions = $sessions->where('sessions.id', '!=', Course::DUMMY_ID)->paginate(self::PER_PAGE);
+        $sessions = $sessions->where('sessions.id', '!=', Course::DUMMY_ID)
+            ->where('courses.id', '!=', Course::DUMMY_ID)
+            ->paginate(self::PER_PAGE);
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
 
