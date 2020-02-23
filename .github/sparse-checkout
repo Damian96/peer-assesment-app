@@ -2,7 +2,6 @@
 !/resources/
 !/public/*/*
 !/plugins/
-!/storage/
 !/docs/
 !/.vscode/
 
