@@ -32,9 +32,6 @@ Homestead.json
 *.bp
 *.backup
 
-# ADD LATER
-/tests/
-
 # PHPDoc
 /docs/**/
 /docs/*.html
