@@ -561,7 +561,7 @@ class SessionController extends Controller
             $joined->saveOrFail();
 
             $group = Group::whereId($request->get('group_id'))->firstOrFail();
-        } catch (\Throwable $e) {
+        } catch (ModelNotFoundException $e) {
             throw_if(env('APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',

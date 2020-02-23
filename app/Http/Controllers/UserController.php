@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Course;
+use App\Rules\FQDN;
+use App\Rules\PrependedEmailExists;
 use App\StudentCourse;
 use App\User;
 use Carbon\Carbon;
@@ -109,7 +111,14 @@ class UserController extends Controller
             case 'auth':
             case 'login':
                 return [
-                    'email' => 'required|email:filter|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|exists:users|not_in:dummy@citycollege.sheffield.eu',
+                    'email' => [
+                        'required',
+                        'string',
+                        'min:5',
+                        'max:35',
+                        'regex:/^[a-z]+$/',
+                        new PrependedEmailExists()
+                    ],
                     'password' => 'required|string|min:3|max:50',
                     'remember' => 'nullable|in:0,1,on,off',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
@@ -119,6 +128,11 @@ class UserController extends Controller
                     '_method' => 'required|string|in:PUT',
                     'fudge' => 'required|numeric|min:.5|max:2',
                     'group' => 'required|numeric|min:.5|max:1',
+                    'domain' => [
+                        'required',
+                        'string',
+                        new FQDN()
+                    ],
                 ];
             default:
                 return [];
@@ -133,9 +147,7 @@ class UserController extends Controller
     {
         $messages = [
             'email.required' => 'We need to know your e-mail address!',
-            'email.regex' => 'The e-mail must be an academic one!',
-//            'email.filter' => 'Invalid e-mail address!',
-//            'email.email' => 'Invalid e-mail address!',
+            'email.regex' => 'The e-mail is not valid!',
             'email.unique' => 'This email already exists!',
 
             'fname.required' => 'We need to know your first name!',
@@ -455,7 +467,6 @@ class UserController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      *
-     * TODO: add last_login (event?) save?
      * @throws \Throwable
      */
     public function auth(Request $request)
@@ -467,22 +478,28 @@ class UserController extends Controller
                 ->with('errors', $validator->errors()->getMessageBag());
         }
 
-        if (Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')], boolval($request->get('remember', false)))) {
+        $email = $request->get('email') . '@' . config('app.domain');
+        if (Auth::attempt(['email' => $email,
+            'password' => $request->get('password')],
+            boolval($request->get('remember', false)))
+        ) {
             try {
-                $user = User::whereEmail($request->get('email'))->firstOrFail();
-            } catch (\Throwable $e) {
+                $user = User::whereEmail($email)->firstOrFail();
+            } catch (ModelNotFoundException $e) {
                 throw_if(env('APP_DEBUG', false), $e);
-                return redirect()->back();
-            } finally {
-                $request->setUserResolver(function () use ($user) {
-                    return $user;
-                });
-                Auth::setUser($user);
-                if ($user->isStudent()) {
-                    return redirect('courses', 302, $request->headers->all());
-                } else {
-                    return redirect('home', 302, $request->headers->all());
-                }
+                return redirect()->back()
+                    ->withInput($request->all())
+                    ->withErrors($validator->errors());
+            }
+            // } finally {} This overrides the exception as if it were never thrown
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
+            Auth::setUser($user);
+            if ($user->isStudent()) {
+                return redirect('courses', 302, $request->headers->all());
+            } else {
+                return redirect('home', 302, $request->headers->all());
             }
         }
         throw abort(500, 'Could not authenticate user', $request->headers->all());
@@ -781,6 +798,7 @@ class UserController extends Controller
 
         parent::updateDotEnv('FUDGE_FACTOR', $request->get('fudge', env('FUDGE_FACTOR')));
         parent::updateDotEnv('GROUP_WEIGHT', $request->get('group', env('GROUP_WEIGHT')));
+        parent::updateDotEnv('ORG_DOMAIN', $request->get('domain', env('ORG_DOMAIN')));
 
         $request->session()->flash('message', [
             'level' => 'success',

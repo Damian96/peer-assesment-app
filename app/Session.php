@@ -299,6 +299,7 @@ class Session extends Model
     }
 
     /**
+     * Check for closed Sessions
      * @return void
      * @throws \Throwable
      */
@@ -318,7 +319,7 @@ class Session extends Model
                      * @var \App\User $student
                      */
                     try {
-//                        var_dump($student->calculateMark($session->id));
+                        var_dump($student->calculateMark($session->id));
                     } catch (\Throwable $e) {
                         throw $e;
                     }

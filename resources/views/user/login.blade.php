@@ -10,17 +10,24 @@
                 <div class="form-group">
                     <label id="email-lbl" class="control-label" for="email">Email</label>
 
-                    <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
-                           name="email" value="{{ old('email') }}" id="email" autofocus tabindex="0"
-                           required aria-labelledby="email-lbl"
-                           minlength="3" maxlength="255"
-                           aria-required="true"
-                           data-rule-required="true"
-                           data-msg-required="{!! $messages['email.required'] ?? '' !!}"
-                           data-rule-minlegth="3"
-                           data-msg-minlegth="{!! $messages['email.min'] ?? '' !!}"
-                           data-rule-maxlength="255"
-                           data-msg-maxlength="{!! $messages['email.max'] ?? '' !!}">
+                    <div class="input-group">
+                        <input type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                               name="email" value="{{ old('email') }}" id="email" autofocus tabindex="0"
+                               required aria-labelledby="email-lbl"
+                               minlength="3" maxlength="255"
+                               aria-required="true"
+                               {{--                               data-rule-pattern=""--}}
+                               {{--                               data-msg-pattern=""--}}
+                               data-rule-required="true"
+                               data-msg-required="{!! $messages['email.required'] ?? '' !!}"
+                               data-rule-minlegth="3"
+                               data-msg-minlegth="{!! $messages['email.min'] ?? '' !!}"
+                               data-rule-maxlength="255"
+                               data-msg-maxlength="{!! $messages['email.max'] ?? '' !!}">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">{{ config('app.domain') }}</button>
+                        </div>
+                    </div>
 
                     <span class="invalid-feedback d-block">@if ($errors->has('email'))
                             <strong>{{ $errors->first('email') }}</strong>@endif</span>
@@ -109,21 +116,17 @@
                     },
                     messages: {
                         email: {
-                            required: "{!! $messages['email.required'] !!}",
-                            email: "{!! $messages['email.regex'] !!}",
-                            {{--maxlength: "{!! $messages['email.filter'] !!}"--}}
+                            required: "{!! $messages['email.required'] ?? '' !!}",
+                            pattern: "{!! $messages['email.regex'] ?? '' !!}",
                         },
                         password: {
-                            required: "{!! $messages['password.required'] !!}",
-                            minlength: "{!! $messages['password.min'] !!}",
-                            maxlength: "{!! $messages['password.max'] !!}"
+                            required: "{!! $messages['password.required'] ?? '' !!}",
+                            minlength: "{!! $messages['password.min'] ?? '' !!}",
+                            maxlength: "{!! $messages['password.max'] ?? '' !!}"
                         },
                     }
                 });
 
-                // console.log(form, form.valid());
-                // event.preventDefault();
-                // return false;
                 return form.valid();
             });
         });

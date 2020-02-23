@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Course;
 use App\StudentCourse;
 use App\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -404,7 +405,7 @@ class CourseController extends Controller
         try {
             $student = User::whereId($request->get('user_id', 0))
                 ->firstOrFail();
-        } catch (\Throwable $e) {
+        } catch (ModelNotFoundException $e) {
             $request->session()->flash('message', [
                 'level' => 'warning',
                 'heading' => 'Could not disenroll Student from Course!',
@@ -428,7 +429,7 @@ class CourseController extends Controller
 
         try {
             $enrolled->delete();
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             throw_if(env('APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
