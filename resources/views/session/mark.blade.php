@@ -7,59 +7,63 @@
 @section('content')
     <div class="row">
         <div class="col-sm-12 col-md-12">
-            <table id="my-groups" class="table table-striped ts">
-                <caption>Showing results {{ count($groups) }} of total {{ count($groups) }} Groups</caption>
-                <thead>
-                <tr class="tsTitles">
-                    <th scope="col">#</th>
-                    <th>Group Name</th>
-                    <th class="text-center">No. of Students</th>
-                    <th class="text-center">Mark</th>
-                    <th class="text-right">Actions</th>
-                </tr>
-                </thead>
-                <tbody class="tsGroup">
-                @foreach($groups as $i => $g)
-                    <tr>
-                        <th scope="col">{{ $i+1 }}</th>
-                        <td>{{ $g->name }}</td>
-                        <td class="text-center">{{ $g->students()->count() }}</td>
-                        <td class="text-center">
-                            @if ($g->mark > 0)
-                                Mark: <span class="text-info">{{ $g->mark }}</span> / <span
-                                    class="text-muted">100</span>
-                            @else<span class="text-muted">N/A</span>
-                            @endif
-                        </td>
-                        <td class="action-cell text-right">
-                            <a href="#" class="show-students material-icons"
-                               data-title="Show Students of {{ $g->name }}"
-                               data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
-                               title="Show Students of {{ $g->name }}"
-                               aria-label="Show Students of {{ $g->name }}">group</a>
-                            @if ($g->mark == 0)
-                                <form action="{{ url('groups/' . $g->id . '/store-mark') }}" method="POST">
-                                    @method('POST')
-                                    @csrf
-                                    <input type="hidden" name="id" value="{{ $g->id }}">
-                                    <a href="#" title="Mark {{ $g->name }}" aria-label="Mark {{ $g->name }}"
-                                       class="mark-group" data-id="{{ $g->id }}" data-name="{{ $g->name }}">
-                                        <i class="material-icons text-warning">assignment</i>
-                                    </a>
-                                </form>
-                            @else
-                                <a href="#" class="show-marks material-icons"
-                                   data-title="Show Marks of {{ $g->name }}"
-                                   data-marks="{{ implode(',', $g->marks()) }}"
-                                   data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
-                                   title="Show Marks of {{ $g->name }}"
-                                   aria-label="Show Marks of {{ $g->name }}">receipt</a>
-                            @endif
-                        </td>
+            @if (!empty($groups))
+                <table id="my-groups" class="table table-striped ts">
+                    <caption>Showing results {{ count($groups) }} of total {{ count($groups) }} Groups</caption>
+                    <thead>
+                    <tr class="tsTitles">
+                        <th scope="col">#</th>
+                        <th>Group Name</th>
+                        <th class="text-center">No. of Students</th>
+                        <th class="text-center">Mark</th>
+                        <th class="text-right">Actions</th>
                     </tr>
-                @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="tsGroup">
+                    @foreach($groups as $i => $g)
+                        <tr>
+                            <th scope="col">{{ $i+1 }}</th>
+                            <td>{{ $g->name }}</td>
+                            <td class="text-center">{{ $g->students()->count() }}</td>
+                            <td class="text-center">
+                                @if ($g->mark > 0)
+                                    Mark: <span class="text-info">{{ $g->mark }}</span> / <span
+                                        class="text-muted">100</span>
+                                @else<span class="text-muted">N/A</span>
+                                @endif
+                            </td>
+                            <td class="action-cell text-right">
+                                <a href="#" class="show-students material-icons"
+                                   data-title="Show Students of {{ $g->name }}"
+                                   data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
+                                   title="Show Students of {{ $g->name }}"
+                                   aria-label="Show Students of {{ $g->name }}">group</a>
+                                @if ($g->mark == 0)
+                                    <form action="{{ url('groups/' . $g->id . '/store-mark') }}" method="POST">
+                                        @method('POST')
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{ $g->id }}">
+                                        <a href="#" title="Mark {{ $g->name }}" aria-label="Mark {{ $g->name }}"
+                                           class="mark-group" data-id="{{ $g->id }}" data-name="{{ $g->name }}">
+                                            <i class="material-icons text-warning">assignment</i>
+                                        </a>
+                                    </form>
+                                @else
+                                    <a href="#" class="show-marks material-icons"
+                                       data-title="Show Marks of {{ $g->name }}"
+                                       data-marks="{{ implode(',', $g->marks()) }}"
+                                       data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
+                                       title="Show Marks of {{ $g->name }}"
+                                       aria-label="Show Marks of {{ $g->name }}">receipt</a>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <h4 class="text-dark">There are no Groups created for this Session yet!</h4>
+            @endif
         </div>
     </div>
 @endsection

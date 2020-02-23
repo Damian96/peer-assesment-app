@@ -6,13 +6,12 @@
             <h2>Welcome <strong>{{ $user->name }}</strong></h2>
         </div>
     </div>
-    <!-- TODO: add overall statistics -->
     @if (!Auth::user()->isStudent())
         <div class="row">
             <div class="col-sm-12 col-md-12">
                 <div id="statistics" class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
                     <div class="toast-header">
-                        <strong class="mr-auto">Account Statistics</strong>
+                        <strong class="mr-auto">{{ Auth::user()->getRole() }} Statistics</strong>
                     </div>
                     <div class="toast-body">
                         <ul class="">
@@ -20,12 +19,6 @@
                             <li>Total Courses: <b>{{ $courses }}</b></li>
                             <li>Total Sessions: <b>{{ $sessions->count() }}</b>
                                 <ul>
-                                    <li>Active:
-                                        <b>{{ Auth::user()->sessions()->count() }}</b>
-                                    </li>
-                                    <li>Inactive:
-                                        <b>{{ Auth::user()->sessions()->count() }}</b>
-                                    </li>
                                     <li>Opened:
                                         <b>{{ Auth::user()->sessions()->whereDate('sessions.deadline', '>=', date(config('constants.date.stamp')))->count() }}</b>
                                     </li>

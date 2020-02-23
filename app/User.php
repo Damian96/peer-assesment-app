@@ -359,7 +359,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     public function forms()
     {
         return Form::query()
-            ->whereIn('session_id', array_column($this->sessions()->get(['sessions.id'])->toArray(), 'id'))
+            ->whereIn('session_id', array_column($this->sessions()->toBase()->select('sessions.id')->get(['sessions.id'])->toArray(), 'id'))
             ->get();
     }
 
@@ -905,5 +905,18 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         return $this->studentSessions()->where('session_id', '=', $session_id)
             ->first()->mark;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRole()
+    {
+        if ($this->isStudent())
+            return 'Student';
+        elseif ($this->isAdmin())
+            return 'Administrator';
+        else
+            return 'Instructor';
     }
 }
