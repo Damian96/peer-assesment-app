@@ -2,6 +2,10 @@ name: Laravel
 
 on: [push]
 
+branches:
+  only:
+    master
+
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
