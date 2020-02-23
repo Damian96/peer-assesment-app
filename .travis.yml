@@ -3,7 +3,7 @@ git:
   sparse_checkout: .github/sparse-checkout
 branches:
   only:
-    - master
+    - test
 language: php
 php:
   - 7.3
