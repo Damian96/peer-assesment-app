@@ -8,7 +8,6 @@
   ],
   "license": "MIT",
   "require": {
-    "php": "^7.2",
     "biscolab/laravel-recaptcha": "^4.0",
     "davejamesmiller/laravel-breadcrumbs": "5.3.0",
     "egulias/email-validator": "^2.1",
@@ -33,7 +32,10 @@
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "platform": {
+      "php": "7.3.11"
+    }
   },
   "extra": {
     "laravel": {
