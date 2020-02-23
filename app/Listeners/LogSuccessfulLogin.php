@@ -4,6 +4,10 @@ namespace App\Listeners;
 
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class LogSuccessfulLogin
+ * @package App\Listeners
+ */
 class LogSuccessfulLogin
 {
     /**
