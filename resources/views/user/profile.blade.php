@@ -66,10 +66,10 @@
                         <p class="form-text text-muted">Before each students score is calculated, there’s one more
                             bit of information that is needed; how many students were in the group, and how many of them
                             submitted marks.<br>To compensate, the system calculates a multiplication factor to bring
+                            the total number of submissions back up to 100% of the group. This value is identified as
                             the
-                            total number of submissions back up to 100% of the group. This value is identified as the
-                            <i>fudge
-                                factor</i>.</p>
+                            <i>fudge factor</i>. The fudge factor is ignored if there is total participation is a
+                            Session's submission.</p>
                         <input id="fudge" name="fudge"
                                class="form-control{{ $errors->has('fudge') ? ' is-invalid' : null }}"
                                type="number" step=".15" min=".5" max="2"
@@ -85,8 +85,7 @@
                     <div class="form-group">
                         <label for="group-weight">Group Mark Weight</label>
                         <p class="form-text text-muted">The weight of the <i>Group's</i> mark in the final calculation
-                            of
-                            every individual's mark.</p>
+                            of every individual's mark.</p>
                         <input type="number" name="group"
                                class="form-control{{ $errors->has('domain') ? ' is-invalid' : null }}"
                                step=".1" min=".5" max="1" value="{{ old('group', config('mark.group')) }}"
