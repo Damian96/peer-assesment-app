@@ -41,10 +41,10 @@ Route::group(['prefix' => '/users'], function () {
 });
 
 # COURSE
-Route::match(['get'], '/courses', 'CourseController@index')->name('course.index');
 Route::group(['prefix' => '/courses'], function () {
-    Route::match(['get'], 'create', 'CourseController@create')->name('course.create');
-    Route::match(['get'], '{course}/edit', 'CourseController@edit')->name('course.edit');
+    Route::get('', 'CourseController@index')->name('course.index');
+    Route::get('create', 'CourseController@create')->name('course.create');
+    Route::get('{course}/edit', 'CourseController@edit')->name('course.edit');
     Route::match(['put'], '{course}', 'CourseController@update')->name('course.update');
     Route::match(['post'], '/store  ', 'CourseController@store')->name('course.store');
     Route::match(['delete'], '/{course}/delete', 'CourseController@destroy')->name('course.destroy');

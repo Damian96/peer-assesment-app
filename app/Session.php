@@ -127,7 +127,6 @@ class Session extends Model
     {
         parent::boot();
 
-        // @TODO: add deadline_carbon, open_date_carbon
         static::retrieved(function ($session) {
             $course = $session->course()->exists() ? $session->course()->first()->getModel() : null;
             $session->course = $course;

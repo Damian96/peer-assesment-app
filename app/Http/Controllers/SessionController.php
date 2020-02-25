@@ -479,7 +479,6 @@ class SessionController extends Controller
             }
         }
 
-        // @TODO: calculate mark
         $filled = new StudentSession(['user_id' => Auth::user()->id, 'session_id' => $session->id, 'mark' => 0]);
         $filled->save();
         $request->session()->flash('message', [

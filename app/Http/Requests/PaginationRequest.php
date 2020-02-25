@@ -2,14 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 /**
  * Class PaginationRequest
  * @package App\Http\Requests
- * @deprecated
  */
-class PaginationRequest extends FormRequest
+class PaginationRequest extends Request
 {
     protected $method = 'GET';
 
@@ -30,22 +29,20 @@ class PaginationRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     /**
-     * @return string|void
+     * Get the full URL for the request.
+     *
+     * @return string
      */
     public function fullUrl()
     {
         $parent = parent::fullUrl();
         $parsed = parse_url($parent);
-        if (preg_match('/.*sessions\?page=([0-9]+)$/i', $parent, $matches) && isset($matches[1])) {
-            $page = intval($matches[1]);
-            return "{$parsed['scheme']}://{$parsed['host']}{$parsed['path']}/page/{$page}";
-        }
+        if (preg_match('/.*courses\?page=([0-9]+).*/i', $parent, $matches) && isset($matches[1]))
+            return sprintf("%s://%s%s/page/%d}", $parsed['scheme'], $parsed['host'], $parsed['path'], intval($matches[1]));
         return $parent;
     }
 }

@@ -245,7 +245,7 @@ class UserController extends Controller
 
         // Statistics
         $students = User::getAllStudents()->count();
-        $instructors = User::getInstructors()->count();
+        $instructors = count(User::getInstructors());
         $enrolled = $user->enrolled()->count();
         $courses = $user->courses()->count();
         $sessions = $user->sessions();
@@ -575,8 +575,7 @@ class UserController extends Controller
                 'level' => 'success',
                 'heading' => 'Password successfully changed!',
             ]);
-            // TODO: add password copy email,
-            // TODO: remove password_resets row
+            // TODO: add passwordChange email template
             return redirect('/login', 302, $request->headers->all());
         } else {
             throw abort(404);
@@ -667,7 +666,6 @@ class UserController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      * @throws \Throwable
-     * // @TODO: add strong password validation
      */
     public function reset(Request $request)
     {

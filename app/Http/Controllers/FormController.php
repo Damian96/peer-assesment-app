@@ -169,7 +169,6 @@ class FormController extends Controller
      * @method _POST
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     * @TODO: change form templates to their own table
      */
     public function store(Request $request)
     {
