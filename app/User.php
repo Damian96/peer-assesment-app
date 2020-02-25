@@ -190,7 +190,6 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
-     * @TODO: convert to Mutators - https://laravel.com/docs/master/eloquent-mutators#introduction
      * @see https://www.php.net/manual/en/language.oop5.overloading.php#object.get
      * @param string $key
      * @return mixed
@@ -430,17 +429,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     /**
      * Get all the instructors
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Database\Eloquent\Builder[]|Model[]|\Illuminate\Database\Query\Builder[]
      */
     public static function getInstructors()
     {
-        return DB::table('users')
-            ->selectRaw(self::RAW_FULL_NAME)
-            ->addSelect('users.*')
-            ->where('instructor', '=', '1')
+        return self::whereInstructor('1')
             ->where('admin', '=', '0')
             ->whereNotNull('email_verified_at')
-            ->get(['users.*']);
+            ->selectRaw(self::RAW_FULL_NAME)
+            ->addSelect('users.*')->getModels();
     }
 
     /**

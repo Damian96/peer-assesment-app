@@ -21,6 +21,7 @@
       <w>fillable</w>
       <w>fillin</w>
       <w>fname</w>
+      <w>fqdn</w>
       <w>frotnend</w>
       <w>fullname</w>
       <w>giankakis</w>
@@ -35,10 +36,13 @@
       <w>movedown</w>
       <w>moveup</w>
       <w>navbar</w>
+      <w>paginateroute</w>
       <w>papaparse</w>
       <w>peerassess</w>
       <w>sami</w>
+      <w>similarid</w>
       <w>sorttable</w>
+      <w>spatie</w>
       <w>splitted</w>
       <w>strpos</w>
       <w>studentid</w>

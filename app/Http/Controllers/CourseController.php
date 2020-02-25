@@ -157,7 +157,9 @@ class CourseController extends Controller
             $ac_year = intval(date('Y'));
         }
 
-        $query->orderBy('courses.created_at', 'desc');
+        // Custom Pagination
+        $query->where('courses.id', '!=', Course::DUMMY_ID)
+            ->orderBy('courses.created_at', 'desc');
         $page = intval($request->get('page', 1));
         if ($query->count() <= Course::PER_PAGE * $page)
             $courses = $query->paginate(Course::PER_PAGE, '*', 'page', $page);

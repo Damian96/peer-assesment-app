@@ -32,13 +32,9 @@
                 <tr>
                     @if (Auth::user()->isAdmin())
                         <th scope="row">{{ $course->id }}</th>
-                        <td><a href="{{ '/' . $course->user_id . '/show' }}" title="Course Instructor"
-                               aria-label="Course Instructor">{{ $course->instructor_name }}</a>
+                        <td><a href="{{ "/users/{$course->user_id}/show" }}" title="Show Instructor's Profile"
+                               aria-label="Show Instructor's Profile">{{ $course->instructor_name }}</a>
                         </td>
-                        <td>{{ $course->title }}</td>
-                        <td>{{ $course->department_title }}</td>
-                        <td class="text-center">{{ $course->ac_year_pair }}</td>
-                    @else
                         <td>{{ $course->title }}</td>
                         <td class="text-center">{{ $course->department_title }}</td>
                         <td class="text-center">
@@ -53,8 +49,45 @@
                                 @endforeach
                             </select>
                         </td>
-                    @endif
-                    @if (Auth::user()->ownsCourse($course->id))
+                        <td class="action-cell text-right">
+                            @if (!$course->copied())
+                                <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
+                                    @method('POST')
+                                    @csrf
+                                    <button type="submit"
+                                            id="copy-course"
+                                            class="btn btn-lg btn-link material-icons text-warning"
+                                            title="Copy to current Academic Year"
+                                            data-title="Copy to current Academic Year?"
+                                            data-content="This will create a duplicate."
+                                            aria-label="Copy to current Academic Year">next_week
+                                    </button>
+                                </form>
+                            @endif
+                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
+                                <a href="{{ url('/courses/' . $course->id . '/edit') }}"
+                                   class="material-icons text-warning"
+                                   title="Update Course {{ $course->code }}"
+                                   aria-label="Update Course {{ $course->code }}">edit</a>
+                            @endif
+                            <?php // @TODO: add disable POST link ?>
+                            @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
+                                <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
+                                      class="d-inline-block">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit"
+                                            id="delete-course"
+                                            class="btn btn-lg btn-link material-icons text-danger"
+                                            data-title="Are you sure you want to delete this course?"
+                                            data-content="This action is irreversible."
+                                            title="Delete {{ $course->code }}"
+                                            aria-label="Delete {{ $course->code }}">delete_forever
+                                    </button>
+                                </form>
+                            @endif
+                        </td>
+                    @elseif (!Auth::user()->isAdmin() && Auth::user()->ownsCourse($course->id))
                         <td class="action-cell text-right">
                             @if (!$course->copied())
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
@@ -93,8 +126,8 @@
                             @endif
                         </td>
                     @else
-                        <td class="text-center">
-                            <a href="{{ url($course->instructor . '/show/') }}"
+                        <td class="text-right">
+                            <a href="{{ url( sprintf("/users/%s/show/",$course->instructor)) }}"
                                title="View Instructor's profile"
                                aria-label="View Instructor's profile">
                                 {{ $course->instructor_name }}

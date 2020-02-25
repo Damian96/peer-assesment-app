@@ -103,6 +103,7 @@
       <path value="$PROJECT_DIR$/vendor/league/commonmark" />
       <path value="$PROJECT_DIR$/vendor/symfony/error-handler" />
       <path value="$PROJECT_DIR$/vendor/spatie/laravel-html" />
+      <path value="$PROJECT_DIR$/vendor/spatie/laravel-paginateroute" />
     </include_path>
   </component>
   <component name="PhpProjectServersManager">

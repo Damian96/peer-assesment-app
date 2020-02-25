@@ -8,13 +8,18 @@ use Illuminate\Contracts\Validation\Rule;
 class PrependedEmailExists implements Rule
 {
     /**
+     * @var string|null $message
+     */
+    private $message;
+
+    /**
      * Create a new rule instance.
      *
-     * @return void
+     * @param string $message
      */
-    public function __construct()
+    public function __construct($message = null)
     {
-        //
+        $this->message = $message;
     }
 
     /**
@@ -26,7 +31,8 @@ class PrependedEmailExists implements Rule
      */
     public function passes($attribute, $value)
     {
-        return User::whereEmail($value . '@' . config('app.domain'))->exists();
+        $email = sprintf("%s@%s", $value, config('app.domain'));
+        return filter_var($email, FILTER_VALIDATE_EMAIL) && User::whereEmail($email)->exists();
     }
 
     /**
@@ -36,6 +42,6 @@ class PrependedEmailExists implements Rule
      */
     public function message()
     {
-        return 'The :attribute email does not exist!';
+        return $this->message ? $this->message : 'The :attribute is not a valid email or does not exist!';
     }
 }

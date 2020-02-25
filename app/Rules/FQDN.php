@@ -18,7 +18,6 @@ class FQDN implements Rule
      */
     public function __construct()
     {
-        //
     }
 
     /**
@@ -40,6 +39,6 @@ class FQDN implements Rule
      */
     public function message()
     {
-        return 'Invalid Domain Name.';
+        return 'The :attribute is not a valid Qualified Domain Name.';
     }
 }
