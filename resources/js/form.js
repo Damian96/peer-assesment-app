@@ -115,17 +115,9 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
         // Initialise variables
         let card = card_template.clone();
-        let max = 5;
         // let subtitle = '';
-        let minlbl = 'Highly Disagree';
-        let maxlbl = 'Highly Agree';
-        if (data) {
+        if (data)
             title = (title ? title : data.title);
-            max = data.hasOwnProperty('max') && data.max != null ? data.max : 5;
-            // subtitle = ((data.hasOwnProperty('subtitle') && data.subtitle != null) ? data.subtitle : '');
-            minlbl = data.hasOwnProperty('minlbl') && data.minlbl != null ? data.minlbl : 'Highly Disagree';
-            maxlbl = data.hasOwnProperty('maxlbl') && data.maxlbl != null ? data.maxlbl : 'Highly Agree';
-        }
 
         // Add Question type
         card.find("input[name*=type]").val(type);
@@ -156,14 +148,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
         // remove extras / show specifics
         switch (type) {
-            case 'linear-scale':
+            case 'likert-scale':
                 card.find('.card-title > i.material-icons').text('linear_scale');
                 card.find('.scale.d-none').removeClass('d-none').addClass('d-block');
                 card.find('.multiple').remove();
-                card.find('input[name*="[max]"]').val(max);
-                card.find('input[name*="[minlbl]"]').val(minlbl);
-                card.find('input[name*="[maxlbl]"]').val(maxlbl);
-                card.find('input[name*=max]').first()[0].onchange();
                 break;
             case 'multiple-choice':
                 card.find('.card-title > i.material-icons').text('radio_button_checked');
@@ -188,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 card.find('.multiple').remove();
                 card.find('.scale').remove();
                 break;
-            case 'criteria':
+            case 'criterion':
                 card.find('.card-title > i.material-icons').text('account_circle');
                 card.find('.multiple').remove();
                 card.find('.scale').remove();
@@ -255,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     };
 
     $('button.question-type').on('click', function () {
-        createCard(this.id, `${this.id}-${window.count + 1}`, `${this.id} - #${window.count + 1}`);
+        createCard(this.id, `${this.id}-${window.count + 1}`, `${this.id}#${window.count + 1}`);
         return true;
     });
     $('#collapse-all').on('click', () => {

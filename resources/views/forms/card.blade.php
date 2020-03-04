@@ -12,7 +12,7 @@
                             case 'multiple-choice':
                                 echo 'radio_button_checked';
                                 break;
-                                case 'linear-scale':
+                                case 'likert-scale':
                                     echo 'linear_scale';
                                     break;
                                     case 'paragraph':
@@ -21,7 +21,7 @@
                                         case 'eval':
                                             echo 'filter_5';
                                             break;
-                                            case 'criteria':
+                                            case 'criterion':
                                                 echo 'account_circle';
                                                 break;
                         }
@@ -46,17 +46,6 @@
                         aria-expanded="true"
                         aria-controls=""><i class="material-icons close-icon">keyboard_arrow_up</i></button>
             </div>
-            {{--            <div class="btn-group btn-group-sm d-xs-none" role="toolbar">--}}
-            {{--                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark moveup-question"><i--}}
-            {{--                        class="material-icons"--}}
-            {{--                        aria-label="Move Question Up"--}}
-            {{--                    >arrow_upward</i></button>--}}
-            {{--            </div>--}}
-            {{--            <div class="btn-group btn-group-sm d-xs-none" role="toolbar">--}}
-            {{--                <button type="button" tabindex="0" class="btn btn-sm btn-outline-dark movedown-question"--}}
-            {{--                        aria-label="Move Question Down"><i--}}
-            {{--                        class="material-icons">arrow_downward</i></button>--}}
-            {{--            </div>--}}
         </div>
     </div>
     <!-- Card Body -->
@@ -75,35 +64,6 @@
                    data-rule-maxlength="100"
                    data-msg-maxlength="The Question's title should be at most 255 characters long!">
             <span class="invalid-feedback"><strong></strong></span>
-        </div>
-        <div class="form-group scale {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : null }}">
-            <label for="question-{{ $count ?? '#' }}-max" class="form-control-sm">Maximum</label>
-            <input type="number"
-                   name="question[{{ $count ?? '#' }}][max]"
-                   id="question-{{ $count ?? '#' }}-max"
-                   class="form-control-sm"
-                   value="{{ !$template ? $question->max : null }}"
-                   min="2" max="10"
-                   required
-                   aria-required="true"
-                   data-rule-required="true"
-                   onchange="(function(e) { $(this).closest('.form-group').next().find('.max-num').text(this.value)}.bind(this, event))();">
-        </div>
-        <div class="form-group scale my-3 {{ (!$template && $question->type != 'linear-scale') ? 'd-none' : null }}">
-            <label for="question-{{ $count ?? '#' }}-minlbl" class="form-control-sm">1
-                <input type="text" name="question[{{ $count ?? '#' }}][minlbl]"
-                       id="question-{{ $count ?? '#' }}-minlbl"
-                       placeholder="Highly Disagree"
-                       value="{{ !$template ? $question->minlbl : null }}"
-                       required
-                       aria-readonly="true" class="form-text d-inline"></label>
-            <label for="question-{{ $count ?? '#' }}-maxlbl" class="form-control-sm"><span
-                    class="max-num d-inline">{{ $question->max ?? '' }}</span>
-                <input type="text" name="question[{{ $count ?? '#' }}][maxlbl]" placeholder="Highly Agree"
-                       required
-                       id="question-{{ $count ?? '#' }}-maxlbl"
-                       value="{{ !$template ? $question->maxlbl : null }}"
-                       aria-required="true" class="form-text d-inline"></label>
         </div>
         <div
             class="form-group multiple my-3 {{ (!$template && $question->type != 'multiple-choice') ? 'd-none' : null }}">

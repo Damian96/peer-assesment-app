@@ -37,15 +37,11 @@ class FormController extends Controller
         $rules = [];
         if ($request->has('question')) {
             foreach ($request->get('question', []) as $i => $q) {
-                $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,linear-scale,eval,paragraph,criteria';
+                $rules['question.' . $i . '.type'] = 'required|string|in:multiple-choice,likert-scale,eval,paragraph,criterion';
                 $rules['question.' . $i . '.title'] = 'required|string|max:255';
                 $rules['question.' . $i . '.subtitle'] = 'nullable|string|max:255';
                 if ($q['type'] === 'multiple-choice') {
                     $rules['question.' . $i . '.choices'] = 'required|array';
-                } elseif ($q['type'] === 'linear-scale') {
-                    $rules['question.' . $i . '.max'] = 'required|int|min:1|max:100';
-                    $rules['question.' . $i . '.minlbl'] = 'required|string|max:255';
-                    $rules['question.' . $i . '.maxlbl'] = 'required|string|max:255';
                 }
             }
         }
@@ -182,8 +178,8 @@ class FormController extends Controller
                 ->with('errors', $validator->errors());
         }
 
+        $request->merge(['session_id' => Course::DUMMY_ID]);
         $form = new Form($request->all());
-        $form->setAttribute('session_id', Course::DUMMY_ID);
         if (!$form->save() && env('APP_DEBUG', false)) {
             throw abort(500, sprintf("Could not insert Form in database"));
         } elseif (!env('APP_DEBUG', false)) {
@@ -277,8 +273,6 @@ class FormController extends Controller
             return redirect()->back(302, []);
         }
 
-//        dd($request->get('question'), array_slice($request->get('question'), $form->questions()->count()),
-//        $form->questions()->getModels());
         foreach ($form->questions()->getModels() as $i => $question) {
             /**
              * @var Question $question

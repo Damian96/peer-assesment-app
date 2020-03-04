@@ -19,7 +19,7 @@ class CoursesTableSeeder extends Seeder
      */
     public function run()
     {
-        $instructors = array_column(User::getInstructors()->toArray(), 'id');
+        $instructors = array_column(User::whereInstructor('1')->get(['users.id'])->toArray(), 'id');
         if (empty($instructors)) {
             throw new Exception("No Instructors in `users` table." . "\n" . "aborting...");
         }

@@ -324,6 +324,8 @@ class SessionController extends Controller
      */
     public function show(Request $request, Session $session)
     {
+        abort_if($session->id == Course::DUMMY_ID, 404);
+
         $title = 'View Session ' . $session->title;
         return response(view('session.view', compact('title', 'session')));
     }
@@ -374,7 +376,8 @@ class SessionController extends Controller
 
         throw_if(!$session->form()->exists(), new NotFoundHttpException("This Session does not have an associated Form!"));
         $form = $session->form()->first();
-        $questions = $form->questions()->orderBy('updated_at', 'DESC')->getResults();
+//        $questions = $form->questions()->orderBy('updated_at', 'DESC')->getResults();
+        $questions = $form->questions()->getResults();
 
         return response(view('session.fill', compact('title', 'questions', 'form', 'session')), 200, $request->headers->all());
     }
@@ -411,7 +414,7 @@ class SessionController extends Controller
                 'title' => $question->title
             ]);
             switch (key($q)) {
-                case 'linear-scale': // mark
+                case 'likert-scale': // mark
                     $review->fill([
                         'recipient_id' => Course::DUMMY_ID,
                         'mark' => current($q)[0],
@@ -432,7 +435,7 @@ class SessionController extends Controller
                         'type' => 'p',
                     ]);
                     break;
-                case 'criteria': // mark
+                case 'criterion': // mark
                 case 'eval': // mark
                     foreach ($q[key($q)] as $uid => $m) {
                         $r = new Review([
@@ -441,7 +444,7 @@ class SessionController extends Controller
                             'title' => $question->title,
                             'sender_id' => Auth::user()->id,
                             'recipient_id' => $uid,
-                            'type' => key($q) == 'criteria' ? 'r' : 'e',
+                            'type' => key($q) == 'criterion' ? 'r' : 'e',
                             'mark' => $m,
                         ]);
                         try {

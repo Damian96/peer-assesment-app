@@ -10,8 +10,8 @@
             <table class="table table-striped table-responsive-sm">
                 <thead>
                 <tr>
+                    <th scope="row">ID</th>
                     @if (Auth::user()->isAdmin())
-                        <th scope="col">ID</th>
                         <th>Owner</th>
                         <th>Title</th>
                         <th class="text-center">Department</th>
@@ -30,8 +30,22 @@
                 </thead>
                 <tbody>
                 <tr>
+                    <th scope="row">{{ $course->id }}</th>
+                    <td>{{ $course->title }}</td>
+                    <td class="text-center">{{ $course->department_title }}</td>
+                    <td class="text-center">
+                        <select id="similarid" name="similarid"
+                                class="form-control-sm{{ $errors->has('similarid') ? ' is-invalid' : '' }}"
+                            {{ count($similars) == 0 ? 'readonly' : '' }}>
+                            <option
+                                value="---"{{ count($similars) == 0 ? ' selected' : '' }}>{{ $course->ac_year_pair }}</option>
+                            @foreach($similars as $similar)
+                                <option
+                                    value="{{ $similar->id }}"{{ old('similarid') == $similar->id }}>{{ $similar->ac_year_pair }}</option>
+                            @endforeach
+                        </select>
+                    </td>
                     @if (Auth::user()->isAdmin())
-                        <th scope="row">{{ $course->id }}</th>
                         <td><a href="{{ "/users/{$course->user_id}/show" }}" title="Show Instructor's Profile"
                                aria-label="Show Instructor's Profile">{{ $course->instructor_name }}</a>
                         </td>
