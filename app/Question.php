@@ -63,9 +63,6 @@ class Question extends Model
     {
         return [
             'type' => isset($data['type']) ? $data['type'] : null,
-            'max' => isset($data['max']) ? $data['max'] : null,
-            'minlbl' => isset($data['minlbl']) ? $data['minlbl'] : null,
-            'maxlbl' => isset($data['maxlbl']) ? $data['maxlbl'] : null,
             'choices' => isset($data['choices']) ? $data['choices'] : null,
         ];
     }
@@ -79,12 +76,6 @@ class Question extends Model
         switch ($name) {
             case 'type':
                 return $this->data->type;
-            case 'max':
-                return $this->data->max;
-            case 'minlbl':
-                return $this->data->minlbl;
-            case 'maxlbl':
-                return $this->data->maxlbl;
             case 'choices':
                 return $this->data->choices;
             case 'data':

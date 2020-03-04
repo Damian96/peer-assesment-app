@@ -3,8 +3,8 @@
     <button id="multiple-choice" type="button" class="btn btn-large question-type">
         <i class="material-icons">radio_button_checked</i>Multiple Choice
     </button>
-    <button id="linear-scale" type="button" class="btn btn-large question-type">
-        <i class="material-icons">linear_scale</i>Linear Scale
+    <button id="likert-scale" type="button" class="btn btn-large question-type">
+        <i class="material-icons">linear_scale</i>Likert Scale
     </button>
     <button id="paragraph" type="button" class="btn btn-large question-type">
         <i class="material-icons">format_align_justify</i>Paragraph
@@ -13,7 +13,7 @@
             title="Peer Evaluation on a scale of 1 to 5">
         <i class="material-icons">filter_5</i>Peer Evaluation<br>
     </button>
-    <button id="criteria" type="button" class="btn btn-large question-type"
+    <button id="criterion" type="button" class="btn btn-large question-type"
             title="Peer Evaluation distributing 100 points between team members">
         <i class="material-icons">account_circle</i>Peer Evaluation<br>
     </button>

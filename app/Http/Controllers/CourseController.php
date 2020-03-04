@@ -231,6 +231,8 @@ class CourseController extends Controller
      */
     public function show(Request $request, Course $course)
     {
+        abort_if($course->id == Course::DUMMY_ID, 404);
+
         $title = $course->code . ' - ' . $course->ac_year_pair;
 
         $similars = Course::whereCode($course->code)

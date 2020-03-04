@@ -15,33 +15,55 @@
                 {{ $session->instructions }}
             </div>
         </div>
+        {{--        {{ dd($questions->first()) }}--}}
         @foreach($questions as $i => $q)
             @php
                 $teammates = Auth::user()->teammates()->collect();
             @endphp
             <fieldset class="offset-1 col-sm-10 col-md-10 border-dark rounded py-2 my-2">
                 <legend><i class="d-block text-muted">Question #{{ $i+1 }}</i><h4>{{ $q->title }}</h4></legend>
-                @if ($q->type === 'linear-scale')
+                @if ($q->type === 'likert-scale')
                     <div class="form-group uselect-none">
-                        <span class="mx-2">{{ $q->minlbl }}<input class="ml-2" type="radio"
-                                                                  id="question-{{ $q->id }}-1"
-                                                                  required
-                                                                  name="questions[{{ $q->id }}][{{ $q->type }}][]"
-                                                                  value="1">
-                        <label class="d-none" for="{{ $q->id }}-1">{{ $q->minlbl }}</label></span>
-                        @for($i=2;$i<$q->max;$i++)
-                            <span class="mx-2"><input type="radio"
-                                                      id="question-{{ $q->id }}-{{ $i }}"
-                                                      required
-                                                      name="questions[{{ $q->id }}][{{ $q->type }}][]" value="{{ $i }}">
-                            <label class="d-none" for="question-{{ $q->id }}-{{ $i }}">{{ $i }}</label></span>
-                        @endfor
-                        <span class="mx-2"><input class="mr-2" type="radio"
-                                                  id="question-{{ $q->id }}-{{ $q->max }}"
-                                                  required
-                                                  name="questions[{{ $q->id }}][{{ $q->type }}][]"
-                                                  value="{{ $q->max }}">{{ $q->maxlbl }}
-                        <label class="d-none" for="{{ $q->id }}-{{ $q->max }}">{{ $q->maxlbl }}</label></span>
+                        <span class="mx-2">
+                            <label class="" for="question-{{ $q->id }}-1">Strongly Agree</label>
+                            <input class="ml-2" type="radio"
+                                   id="question-{{ $q->id }}-1"
+                                   required
+                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                   value="1">
+                        </span>
+                        <span class="mx-2">
+                            <label class="" for="question-{{ $q->id }}-2">Agree</label>
+                            <input class="ml-2" type="radio"
+                                   id="question-{{ $q->id }}-2"
+                                   required
+                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                   value="2">
+                        </span>
+                        <span class="mx-2">
+                            <label class="" for="question-{{ $q->id }}-3">Neutral</label>
+                            <input class="ml-2" type="radio"
+                                   id="question-{{ $q->id }}-3"
+                                   required
+                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                   value="3">
+                        </span>
+                        <span class="mx-2">
+                            <label class="" for="question-{{ $q->id }}-4">Disagree</label>
+                            <input class="ml-2" type="radio"
+                                   id="question-{{ $q->id }}-4"
+                                   required
+                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                   value="4">
+                        </span>
+                        <span class="mx-2">
+                            <label class="" for="question-{{ $q->id }}-5">Strongly Disagree</label>
+                            <input class="ml-2" type="radio"
+                                   id="question-{{ $q->id }}-4"
+                                   required
+                                   name="questions[{{ $q->id }}][{{ $q->type }}][]"
+                                   value="5">
+                        </span>
                     </div>
                 @elseif ($q->type === 'multiple-choice')
                     <div class="form-group">
@@ -124,11 +146,11 @@
                                   aria-placeholder="Write anything here..."
                                   style="min-height: 50px; max-height: 150px;"></textarea>
                     </div>
-                @elseif ($q->type == 'criteria')
+                @elseif ($q->type === 'criterion')
                     @php
                         $label = 'Distribute 100 points among your teammates including yourself';
                     @endphp
-                    <div class="form-group criteria" data-sum="0">
+                    <div class="form-group criterion" data-sum="0">
                         <table class="table table-bordered table-striped">
                             <caption>{{ $label }}</caption>
                             <thead>
@@ -188,7 +210,7 @@
 
 @section('end_footer')
     <script type="text/javascript">
-        var criteriaOnChangeHandler = function () {
+        var criterionOnChangeHandler = function () {
             // console.debug(this);
             let group = $(this).closest('.form-group');
             let points = calculateGroupPoints(group);
@@ -218,8 +240,8 @@
             $(document).on('submit', 'form', function (e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                $('.criteria').each((i, group) => {
-                    if (criteriaOnChangeHandler.call(group)) {
+                $('.criterion').each((i, group) => {
+                    if (criterionOnChangeHandler.call(group)) {
                         this.submit();
                         return true;
                     } else {
@@ -228,7 +250,7 @@
                 });
                 return false;
             });
-            $('.form-group.criteria').find('input').on('focusout click', criteriaOnChangeHandler);
+            $('.form-group.criterion').find('input').on('focusout click', criterionOnChangeHandler);
         });
     </script>
 @endsection
