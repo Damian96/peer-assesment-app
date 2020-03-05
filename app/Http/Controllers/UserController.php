@@ -39,12 +39,14 @@ class UserController extends Controller
             'create', 'store', # user-register
             'verify', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
+            'attribution'
         ]);
         $this->middleware('verified')->except([
             'logout', 'login', 'auth', # login-logout
             'create', 'store', # user-register
             'verify', 'verified', # verify-email/password
 //            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+            'attribution'
         ]);
         $this->middleware('role')->except([
             'logout', 'login', 'auth', # login-logout
@@ -52,6 +54,7 @@ class UserController extends Controller
             'addStudent', 'storeStudent',
             'verify', 'verified', # verify-email/password
             'forgot', 'forgotSend', 'reset', 'update', # reset-password
+            'attribution'
         ]);
     }
 
@@ -804,5 +807,13 @@ class UserController extends Controller
             'body' => 'Configuration updated successfully!'
         ]);
         return redirect()->back();
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function attribution(Request $request)
+    {
+        return response(view('user.attribution'), 200, $request->headers->all());
     }
 }

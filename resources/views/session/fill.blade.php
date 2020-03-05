@@ -15,7 +15,6 @@
                 {{ $session->instructions }}
             </div>
         </div>
-        {{--        {{ dd($questions->first()) }}--}}
         @foreach($questions as $i => $q)
             @php
                 $teammates = Auth::user()->teammates()->collect();
