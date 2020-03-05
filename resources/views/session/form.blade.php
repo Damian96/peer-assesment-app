@@ -1,4 +1,4 @@
-{{-- method, action, $errors --}}
+{{-- globals: $method, $action, $errors --}}
 <form role="form" method="{{ $method }}" action="{{ $action }}">
     @method($method)
     @csrf
@@ -12,7 +12,7 @@
         @php $course = isset($course) ? $course : ((isset($session) && $session->course()->exists()) ? $session->course()->first() : null); @endphp
         <div class="form-group">
             <label class="form-text" for="course">Course</label>
-            @if (!empty($courses))
+            @if (!empty($courses->items))
                 <select name="course" id="course" class="form-control{{ $errors->has('course') ? ' is-invalid' : '' }}"
                         readonly="true"
                         data-rule-required="true"
@@ -24,12 +24,10 @@
                             value="{{ $c->id }}"{{ (isset($course) && $course->id == $c->id) ? ' selected' : null  }}>{{ sprintf("%s - %s",$c->code,$c->ac_year_pair) }}</option>
                     @endforeach
                 </select>
-                <span class="invalid-feedback d-inline-block">
-                <strong>@if ($errors->has('course')){{ $errors->first('course') }}@endif</strong>
-                </span>
             @else
-                <div class="form-text text-warning">There are no Courses for this academic year!</div>
+                <div class="form-text text-warning">There are no Courses for this academic year!<br>Maybe <a href="{{ url('courses/create')  }}">Create one?</a></div>
             @endif
+            <span class="invalid-feedback d-inline-block font-weight-bold">@if ($errors->has('course')){{ $errors->first('course') }}@endif</span>
         </div>
     @endif
 
@@ -58,7 +56,7 @@
         <div class="form-group">
             <label for="open_date">
                 <span class="mr-2">Opens At</span><br>
-                <span class="text-muted">Date always at midnight. When will the Session open?</span>
+                <span class="text-muted">When will the Session open? (Time is always at midnight)</span>
                 <input type="text" id="open_date" name="open_date" readonly aria-readonly="true"
                        data-rule-required="true"
                        tabindex="0"
@@ -81,7 +79,7 @@
     <div class="form-group">
         <label for="deadline">
             <span class="mr-2">Deadline</span><br>
-            <span class="text-muted">Date always at midnight. When will the Session close?</span>
+            <span class="text-muted">When will the Session close? (Time is always at midnight)</span>
             <input type="text" id="deadline" name="deadline" readonly aria-readonly="true"
                    tabindex="0"
                    data-rule-required="true"
@@ -155,7 +153,7 @@
         @if ($errors->has('groups'))<strong>{{ $errors->first('groups') }}</strong>@endif
         </span>
         </div>
-        <div class="form-group d-flex justify-content-around flex-row flex-nowrap align-items-stretch">
+        <div class="form-group d-flex justify-content-around flex-row flex-nowrap align-items-stretch mb-5">
             <div class="flex-column flex-grow-1">
                 <label class="form-text" for="min_group_size">Minimum Group size</label>
                 <input class="form-control{{ $errors->has('min_group_size') ? ' is-invalid' : '' }}"
@@ -223,17 +221,21 @@
             $("#deadline").datepicker({
                 dateFormat: 'dd-mm-yy',
                 minDate: 1,
-                maxDate: 6 * 31,
-                defaultDate: '{{ old('deadline', isset($session) ? date('d-m-Y', $session->deadline_int) : null) }}',
+                maxDate: 6 * 30,
+                onSelect: function (dateText) {
+                    window.localStorage.setItem(`{{ $action }}-deadline`, dateText);
+                }
             });
-            $('#deadline').datepicker('setDate', '{{ old('deadline', isset($session) ? date('d-m-Y', $session->deadline_int) : null) }}');
+            $('#deadline').datepicker('setDate', {!! isset($session) ? sprintf("date('d-m-Y', %s)",$session->deadline_int) : "window.localStorage.getItem('{$action}-deadline')" !!});
             $("#open_date").datepicker({
                 dateFormat: 'dd-mm-yy',
                 minDate: 1,
                 maxDate: 6 * 31,
-                defaultDate: '{{ old('deadline', isset($session) ? date('d-m-Y', $session->open_date_int) : null) }}',
+                onSelect: function (dateText) {
+                    window.localStorage.setItem(`{{ $action }}-open_date`, dateText);
+                }
             });
-            $('#open_date').datepicker('setDate', '{{ old('deadline', isset($session) ? date('d-m-Y', $session->open_date_int) : null) }}');
+            $('#open_date').datepicker('setDate', {!! isset($session) ? sprintf("date('d-m-Y', %s)",$session->open_date_int) : "window.localStorage.getItem('{$action}-open_date')" !!});
             // Course custom ComboBox jQueryUI
             // $('#course').combobox();
             @if ($errors->has('studentid'))

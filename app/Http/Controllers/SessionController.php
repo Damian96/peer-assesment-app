@@ -279,7 +279,6 @@ class SessionController extends Controller
         if ($validator->fails()) {
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
-                ->withHeaders($request->headers->all())
                 ->withErrors($validator->errors())
                 ->with('errors', $validator->errors());
         }

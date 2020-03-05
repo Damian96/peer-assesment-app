@@ -1,6 +1,6 @@
 @php $departments = implode(',', config('constants.departments.short')); @endphp
 
-{{-- method, action, $errors --}}
+{{-- globals: $method, $action, $errors, $departments --}}
 <form role="form" method="{{ $method == 'PUT' ? 'POST' : $method }}" action="{{ $action }}">
     @method($method)
     @csrf
