@@ -251,6 +251,15 @@ class Session extends Model
     }
 
     /**
+     * Retrieve the \App\StudentSession record associated with this Session
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function studentSession()
+    {
+        return $this->hasOne(\App\StudentSession::class, 'session_id', 'id');
+    }
+
+    /**
      * Return whether the current user has joined a group.
      * @param User $user
      * @return false

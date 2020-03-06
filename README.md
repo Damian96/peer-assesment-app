@@ -9,8 +9,5 @@
 * [Node Package Manager](https://www.npmjs.com/)
 * [PHPStorm](https://www.jetbrains.com/phpstorm/promo/)
 
-# Attribution
-<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-
 # License
 The software is licensed under the [GNU General Public License v3.0](https://github.com/Damian96/peer-assesment-app/blob/master/LICENSE)
