@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>App\Course | Peer Assessment App Documentation</title>
+
+            <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="../css/sami.css">
+        <script src="../js/jquery-1.11.1.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script src="../js/typeahead.min.js"></script>
+        <script src="../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    
+    
+    </head>
+
+    <body id="class" data-name="class:App_Course" data-root-path="../">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <script>
+            $('option[data-version="'+window.projectVersion+'"]').prop('selected', true);
+        </script>
+        <form id="search-form" action="../search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../index.html">Peer Assessment App Documentation</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="../classes.html">Classes</a></li>
+                                            <li><a href="../namespaces.html">Namespaces</a></li>
+                                        <li><a href="../interfaces.html">Interfaces</a></li>
+                    <li><a href="../traits.html">Traits</a></li>
+                    <li><a href="../doc-index.html">Index</a></li>
+                    <li><a href="../search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                        <div class="namespace-breadcrumbs">
+            <ol class="breadcrumb">
+                <li><span class="label label-default">class</span></li>
+                        <li><a href="../App.html">App</a></li><li class="backslash">\</li><li>Course</li>
+            </ol>
+        </div>
+                <div id="page-content">
+                
+    <div class="page-header">
+        <h1>
+            Course
+                
+        </h1>
+    </div>
+
+    <p>    class
+    <strong>Course</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr>
+</p>
+
+        
+    
+
+            <div class="description">
+            <p>Class User</p>                                </div>
+    
+    
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>PER_PAGE</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>SPRING</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>FALL</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+                    <tr>
+                <td>DUMMY_ID</td>
+                <td class="last">
+                    <p><em></em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
+    
+            <h2>Properties</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td class="type" id="property_table">
+                                        protected                                        
+                </td>
+                <td>$table</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_primaryKey">
+                                        protected                                        
+                </td>
+                <td>$primaryKey</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_keyType">
+                                        protected                                        
+                </td>
+                <td>$keyType</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_connection">
+                                        protected                                        
+                </td>
+                <td>$connection</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_incrementing">
+                                                                                
+                </td>
+                <td>$incrementing</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_perPage">
+                                                                                
+                </td>
+                <td>$perPage</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_ac_year_time">
+                                                                                int
+                </td>
+                <td>$ac_year_time</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_ac_year_int">
+                                                                                int
+                </td>
+                <td>$ac_year_int</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_guarded">
+                                        protected                                        array
+                </td>
+                <td>$guarded</td>
+                <td class="last">The attributes that aren't mass assignable.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_attributes">
+                                        protected                                        array
+                </td>
+                <td>$attributes</td>
+                <td class="last">The model's default values for attributes.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_fillable">
+                                        protected                                        array
+                </td>
+                <td>$fillable</td>
+                <td class="last">The attributes that are mass assignable.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_hidden">
+                                        protected                                        array
+                </td>
+                <td>$hidden</td>
+                <td class="last">The attributes that should be hidden for arrays.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_casts">
+                                        protected                                        array
+                </td>
+                <td>$casts</td>
+                <td class="last">The attributes that should be cast to native types.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_id">
+                                                                                int
+                </td>
+                <td>$id</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_user_id">
+                                                                                int
+                </td>
+                <td>$user_id</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_title">
+                                                                                string
+                </td>
+                <td>$title</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_code">
+                                                                                string
+                </td>
+                <td>$code</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_description">
+                                                                                string
+                </td>
+                <td>$description</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_status">
+                                                                                boolean
+                </td>
+                <td>$status</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_ac_year">
+                                                                                string
+                </td>
+                <td>$ac_year</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_ac_year_month">
+                                                                                int
+                </td>
+                <td>$ac_year_month</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_ac_year_carbon">
+                                                                                <abbr title="Illuminate\Support\Carbon">Carbon</abbr>
+                </td>
+                <td>$ac_year_carbon</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_ac_year_full">
+                                                                                string
+                </td>
+                <td>$ac_year_full</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_department">
+                                                                                string
+                </td>
+                <td>$department</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_department_title">
+                                                                                string
+                </td>
+                <td>$department_title</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_department_full">
+                                                                                string
+                </td>
+                <td>$department_full</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_ac_year_arr">
+                                                                                array
+                </td>
+                <td>$ac_year_arr</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_created_at">
+                                                                                <abbr title="Illuminate\Support\Carbon">Carbon</abbr>|null
+                </td>
+                <td>$created_at</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_updated_at">
+                                                                                <abbr title="Illuminate\Support\Carbon">Carbon</abbr>|null
+                </td>
+                <td>$updated_at</td>
+                <td class="last"></td>
+                <td></td>
+            </tr>
+            </table>
+
+    
+            <h2>Methods</h2>
+
+            <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-2 type">
+                    mixed
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___get">__get</a>(string $key)
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___set">__set</a>($key, $value)
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_boot">boot</a>()
+        
+                                            <p>The "booting" method of the model.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Illuminate\Database\Eloquent\Relations\HasOne">HasOne</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_user">user</a>()
+        
+                                            <p>Get the user that owns the course.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Illuminate\Database\Eloquent\Relations\HasOne">HasOne</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_instructor">instructor</a>()
+        
+                                            <p>Alias of self::user.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    mixed|array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_sessions">sessions</a>()
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_students">students</a>()
+        
+                                            <p>Retrieve the courses that the users is registered on</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<abbr title="Illuminate\Support\Collection">Collection</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getByInstructor">getByInstructor</a>(int $id)
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    <a href="../App/Course.html"><abbr title="App\Course">Course</abbr></a>|false
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_copyToCurrentYear">copyToCurrentYear</a>()
+        
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    bool
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_copied">copied</a>()
+        
+                                            <p>Returns whether the course has been already copied to the current academic year</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;<abbr title="Illuminate\Database\Eloquent\Builder">Builder</abbr>|<abbr title="Illuminate\Database\Query\Builder">Builder</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getCurrentYears">getCurrentYears</a>()
+        
+                                            <p>Retrieve the courses of the current academic year.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_toAcademicYear">toAcademicYear</a>(int $time)
+        
+                                            <p>Format timestamp to a proper 'ac_year' [SE-YYYY]</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;int
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_acYearToTimestamp">acYearToTimestamp</a>(string $ac_year, bool $end = false)
+        
+                                            <p>Format the given ac_year [SE-YYYY] to a UNIX timestamp</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    static&nbsp;string
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_toAcademicYearPair">toAcademicYearPair</a>(int $time)
+        
+                                            <p>Format the given UNIX timestamp to an academic year pair [YYYY-YY]</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+            </div>
+
+
+        <h2>Details</h2>
+
+            <div id="method-details">
+                    <div class="method-item">
+                    <h3 id="method___get">
+        <div class="location">at         line 123</div>
+        <code>                    mixed
+    <strong>__get</strong>(string $key)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$key</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception">Exception</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method___set">
+        <div class="location">at         line 182</div>
+        <code>                    
+    <strong>__set</strong>($key, $value)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td></td>
+                <td>$key</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td></td>
+                <td>$value</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_boot">
+        <div class="location">at         line 198</div>
+        <code>        static    protected        void
+    <strong>boot</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>The "booting" method of the model.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_user">
+        <div class="location">at         line 220</div>
+        <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\HasOne">HasOne</abbr>
+    <strong>user</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Get the user that owns the course.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Illuminate\Database\Eloquent\Relations\HasOne">HasOne</abbr></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_instructor">
+        <div class="location">at         line 238</div>
+        <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\HasOne">HasOne</abbr>
+    <strong>instructor</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Alias of self::user.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Illuminate\Database\Eloquent\Relations\HasOne">HasOne</abbr></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_sessions">
+        <div class="location">at         line 260</div>
+        <code>                    mixed|array
+    <strong>sessions</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>mixed|array</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_students">
+        <div class="location">at         line 269</div>
+        <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
+    <strong>students</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Retrieve the courses that the users is registered on</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getByInstructor">
+        <div class="location">at         line 278</div>
+        <code>        static            <abbr title="Illuminate\Support\Collection">Collection</abbr>
+    <strong>getByInstructor</strong>(int $id)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$id</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Illuminate\Support\Collection">Collection</abbr></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_copyToCurrentYear">
+        <div class="location">at         line 290</div>
+        <code>                    <a href="../App/Course.html"><abbr title="App\Course">Course</abbr></a>|false
+    <strong>copyToCurrentYear</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><a href="../App/Course.html"><abbr title="App\Course">Course</abbr></a>|false</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Throwable">Throwable</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_copied">
+        <div class="location">at         line 311</div>
+        <code>                    bool
+    <strong>copied</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Returns whether the course has been already copied to the current academic year</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>bool</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Throwable">Throwable</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getCurrentYears">
+        <div class="location">at         line 340</div>
+        <code>        static            <abbr title="Illuminate\Database\Eloquent\Builder">Builder</abbr>|<abbr title="Illuminate\Database\Query\Builder">Builder</abbr>
+    <strong>getCurrentYears</strong>()
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Retrieve the courses of the current academic year.</p>                                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td><abbr title="Illuminate\Database\Eloquent\Builder">Builder</abbr>|<abbr title="Illuminate\Database\Query\Builder">Builder</abbr></td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_toAcademicYear">
+        <div class="location">at         line 354</div>
+        <code>        static            string
+    <strong>toAcademicYear</strong>(int $time)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Format timestamp to a proper 'ac_year' [SE-YYYY]</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$time</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                            <h4>See also</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>
+                                            <abbr title="App\:">:</abbr>
+                                    </td>
+                <td>https://www.auth.gr/en/academic_calendar</td>
+            </tr>
+            </table>
+
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_acYearToTimestamp">
+        <div class="location">at         line 378</div>
+        <code>        static            int
+    <strong>acYearToTimestamp</strong>(string $ac_year, bool $end = false)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Format the given ac_year [SE-YYYY] to a UNIX timestamp</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>string</td>
+                <td>$ac_year</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td>bool</td>
+                <td>$end</td>
+                <td>Whether to adjust the dates to the end of the semesters</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>int</td>
+            <td>a UNIX timestamp</td>
+        </tr>
+    </table>
+
+            
+                            <h4>Exceptions</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td><a target="_blank" href="http://php.net/Exception">Exception</a></td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_toAcademicYearPair">
+        <div class="location">at         line 397</div>
+        <code>        static            string
+    <strong>toAcademicYearPair</strong>(int $time)
+        </code>
+    </h3>
+    <div class="details">
+            
+    
+
+                    <div class="method-description">
+                                    <p>Format the given UNIX timestamp to an academic year pair [YYYY-YY]</p>                                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>int</td>
+                <td>$time</td>
+                <td>a UNIX timestamp</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>string</td>
+            <td>an academic year pair [YYYY-YY]</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+            </div>
+
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>
