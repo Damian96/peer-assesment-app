@@ -9,6 +9,7 @@
                 <li>Powered by <a href="https://laravel.com">Laravel Framework</a></li>
                 <li>Developed with <a href="https://getbootstrap.com">Bootstrap Framework</a></li>
                 <li>Icons made by <a href="https://material.io">Google Material Icons</a></li>
+                <li>Icons made by Freepik from <a href="https://flaticon.com">www.flaticon.com</a></li>
                 <li>Developed with <a href="https://jquery.com">jQuery Framework</a></li>
                 <li>Developed with <a href="https://jqueryui.com/">jQuery UI library</a></li>
                 <li>Developed with <a href="https://jqueryvalidation.org/">jQuery Validation library</a></li>

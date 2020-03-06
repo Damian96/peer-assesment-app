@@ -38,7 +38,7 @@
                     @foreach($sessions as $i => $session)
                         <tr>
                             <th scope="col">{{ $i+1 }}</th>
-                            <td>{{ $session->title_full }}</td>
+                            <td class="{{ $session->studentSession()->exists() ? 'text-success' : null }}">{{ $session->title_full }}</td>
                             <td>{{ $session->deadline_uk }}</td>
                             @if (Auth::user()->isStudent())
                                 <td class="font-italic">{{ $session->hasJoinedGroup(Auth::user()) ? $session->getUserGroup(Auth::user())->name : 'N/A' }}</td>
@@ -68,14 +68,22 @@
                                 </td>
                             @else
                                 <td class="action-cell">
-                                    @if ($session->hasJoinedGroup(Auth::user()))
+                                    @if ($session->studentSession()->exists())
+                                        <a href="#"
+                                           title="You have submitted {{ $session->title }}!"
+                                           aria-label="You have submitted {{ $session->title }}!"
+                                           onclick="(function(e) { e.preventDefault(); e.stopImmediatePropagation(); return false; }.bind(null, event))();"
+                                           class="material-icons text-muted">assignment</a>
+                                    @elseif ($session->hasJoinedGroup(Auth::user()))
                                         <a href="{{ url('/sessions/' . $session->id . '/fill') }}"
+                                           title="Fill {{ $session->title }}"
+                                           aria-label="Fill {{ $session->title }}!"
                                            class="material-icons">assignment</a>
                                     @else
                                         @if (!$session->hasGroups())
                                             <a href="{{ url('#') }}"
-                                               title="This Session does not have any groups!"
-                                               aria-label="This Session does not have any groups!"
+                                               title="{{ $session->title }} does not have any groups!"
+                                               aria-label="{{ $session->title }} does not have any groups!"
                                                class="material-icons strikethrough">group<i class="material-icons">remove</i></a>
                                         @else
                                             <a href="{{ url('#') }}"
