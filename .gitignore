@@ -31,7 +31,3 @@ Homestead.json
 *.swp
 *.bp
 *.backup
-
-# PHPDoc
-/docs/**/
-/docs/*.html
