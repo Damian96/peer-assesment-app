@@ -6,6 +6,13 @@ use Symfony\Component\Finder\Finder;
 $iterator = Finder::create()
     ->files()
     ->name('*.php')
-    ->in('./../app/');
+    ->in('./app/');
 
-return new Sami($iterator);
+$options = [
+    'theme'                => 'default',
+    'title'                => 'Peer Assessment App Documentation',
+    'build_dir'            => __DIR__ . '/docs/',
+    'cache_dir'            => __DIR__ . '/docs/cache/',
+];
+
+return new Sami($iterator, $options);
