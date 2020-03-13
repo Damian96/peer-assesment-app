@@ -24,10 +24,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('auth:clear-resets')->dailyAt('17:00');
-        $schedule->call(function () {
-            \App\Session::checkForClosed();
-        })->daily();
+//        $schedule->command('auth:clear-resets')->dailyAt('17:00');
+//        $schedule->call(function () {
+//            \App\Session::checkForClosed();
+//        })->daily();
     }
 
     /**

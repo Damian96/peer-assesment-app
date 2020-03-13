@@ -52,7 +52,8 @@
                                     <a href="#" class="show-marks material-icons"
                                        data-title="Show Marks of {{ $g->name }}"
                                        data-marks="{{ implode(',', $g->marks()) }}"
-                                       data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
+                                       data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->orderBy('id', 'ASC')->get(['full_name'])->toArray(), 'full_name')) }}"
+                                       data-ids="{{ implode(',', array_column($g->students()->orderBy('id', 'ASC')->get(['id'])->toArray(), 'id')) }}"
                                        title="Show Marks of {{ $g->name }}"
                                        aria-label="Show Marks of {{ $g->name }}">receipt</a>
                                 @endif
@@ -128,11 +129,19 @@
         $('.show-marks').on('click', function () {
             let marks = $(this).attr('data-marks').split(',');
             let names = $(this).attr('data-students').split(',');
+            let ids = $(this).attr('data-ids').split(',');
             let marksOl = $(document.createElement('ol'));
 
             for (let i = 0; i < marks.length; i++) {
                 let li = document.createElement('li');
-                li.textContent = `${names[i]}: ${marks[i]}/100`;
+                let a = document.createElement('a');
+                a.href = `{{ url('/sessions/' . $session->id . '/feedback') }}/${ids[i]}`;
+
+                if (marks[i] > 0) {
+                    a.textContent = `${names[i]}: ${marks[i]}/100`;
+                    li.appendChild(a);
+                } else
+                    li.textContent = `${names[i]}: N/A`;
                 marksOl.append($(li));
             }
 

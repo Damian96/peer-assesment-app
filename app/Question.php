@@ -129,4 +129,12 @@ class Question extends Model
 
         return parent::save($options);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function reviews()
+    {
+       return $this->hasMany(\App\Review::class, 'question_id', 'id');
+    }
 }

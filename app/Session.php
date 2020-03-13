@@ -305,34 +305,4 @@ class Session extends Model
     {
         return time() > $this->open_date_int;
     }
-
-    /**
-     * Check for closed Sessions
-     * @return void
-     * @throws \Throwable
-     */
-    public static function checkForClosed()
-    {
-        foreach (self::whereDeadline(now()->format('Y-m-d 00:00:00'))
-                     ->getModels() as $session) {
-            /**
-             * @var \App\Session $session
-             */
-            foreach ($session->groups()->getModels() as $group) {
-                /**
-                 * @var \App\Group $group
-                 */
-                foreach ($group->students()->get(['users.*']) as $student) {
-                    /**
-                     * @var \App\User $student
-                     */
-                    try {
-                        var_dump($student->calculateMark($session->id));
-                    } catch (\Throwable $e) {
-                        throw $e;
-                    }
-                }
-            }
-        }
-    }
 }

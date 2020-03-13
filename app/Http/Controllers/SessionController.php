@@ -12,6 +12,7 @@ use App\Rules\UniqueCombo;
 use App\Session;
 use App\StudentGroup;
 use App\StudentSession;
+use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -592,5 +593,20 @@ class SessionController extends Controller
         $title = "Mark {$session->title}";
         $groups = $session->groups()->getModels();
         return \response(view('session.mark', compact('title', 'session', 'groups')), 200, $request->headers->all());
+    }
+
+    /**
+     * @param Request $request
+     * @param \App\User $student
+     * @param \App\Session $session
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function feedback(Request $request, Session $session, User $student)
+    {
+        $title = 'Show Form Feedback';
+
+        $form = $session->form()->firstOrFail();
+        $questions = $form->questions()->getModels();
+        return response(view('session.feedback', compact('title', 'student', 'session', 'questions', 'form')));
     }
 }
