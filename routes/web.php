@@ -12,7 +12,6 @@
 */
 
 # USER
-
 Route::match(['get'], '/', 'UserController@index')->name('user.home');
 Route::match(['get'], '/home', 'UserController@index')->name('user.home');
 Route::match(['get'], '/index', 'UserController@index')->name('user.home');
@@ -72,6 +71,7 @@ Route::group(['prefix' => '/sessions'], function () {
     Route::match(['get'], '{session}/mark', 'SessionController@mark')->name('session.mark');
     Route::match(['post'], '{session}/update', 'SessionController@update')->name('session.update');
     Route::match(['delete'], '{session}/delete', 'SessionController@delete')->name('session.delete');
+    Route::match(['get'], '{session}/feedback/{student}', 'SessionController@feedback')->name('session.feedback');
 });
 
 Route::group(['prefix' => '/forms'], function () {

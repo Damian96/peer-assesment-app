@@ -638,23 +638,34 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
         if (array_key_exists('form', $arguments) && $arguments['form'] instanceof Form) {
             $cid = $arguments['form']->session()->first()->course_id;
-        } elseif (array_key_exists('form', $arguments) && $arguments['form'] instanceof FormTemplate) {
+        }
+        if (array_key_exists('form', $arguments) && $arguments['form'] instanceof FormTemplate) {
             return $this->isInstructor();
-        } elseif (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
+        }
+        if (array_key_exists('course', $arguments) && $arguments['course'] instanceof Course) {
             $cid = $arguments['course']->id;
-        } elseif (array_key_exists('group', $arguments) && $arguments['group'] instanceof Group) {
+        }
+        if (array_key_exists('group', $arguments) && $arguments['group'] instanceof Group) {
             $cid = $arguments['group']->session()->first()->course_id;
-        } elseif (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
-            $cid = $arguments['session']->course_id;
-        } elseif (array_key_exists('id', $arguments)) {
-            $cid = $arguments['id'];
-        } elseif (array_key_exists('cid', $arguments)) {
+        }
+        if (array_key_exists('cid', $arguments)) {
             $cid = $arguments['cid'];
-        } elseif (array_key_exists('user', $arguments) && $arguments['user'] instanceof User) {
+        }
+        if (array_key_exists('session', $arguments) && $arguments['session'] instanceof Session) {
+            $cid = $arguments['session']->course_id;
+        }
+        if (array_key_exists('user', $arguments) && $arguments['user'] instanceof User) {
             $user = $arguments['user'];
+        }
+        if (array_key_exists('student', $arguments) && $arguments['student'] instanceof User) {
+            $user = $arguments['student'];
         }
 
         switch ($ability) {
+            case 'session.feedback':
+                return isset($user) && isset($cid) &&
+                    $this->isInstructor() && $this->ownsCourse($cid) &&
+                    StudentSession::whereUserId($user->id)->exists();
             case 'session.fillin':
             case 'session.fill':
                 return isset($cid) && $this->isStudent()
@@ -882,16 +893,22 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function calculateMark($session_id, $type = 'r')
     {
-        if (!$this->group()) throw new NotFoundHttpException("This student does not belong to any group!");
         $group_mark = $this->group()->mark;
 
         if ($group_mark == 0)
             throw new NotFoundHttpException("This group has not been marked yet");
 
+        // [e]valuation (0-5), crite[r]ion (0-100)
         $total_factor = $this->getMarkFactor($session_id, 'r') + $this->getMarkFactor($session_id, 'e');
         $group_weight = floatval(env('GROUP_WEIGHT'));
         $mark = ($group_weight * $group_mark) + ($total_factor * ($group_weight * $group_mark));
-        return $mark > 100 ? 100 : $mark;
+        $mark = $mark > 100 ? 100 : $mark;
+
+        $studentSession = \App\StudentSession::whereUserId($this->id)->where('session_id', '=', $session_id)->firstOrFail();
+        $studentSession->mark = $mark;
+        $studentSession->saveOrFail();
+
+        return $mark;
     }
 
     /**

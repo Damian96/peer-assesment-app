@@ -269,7 +269,7 @@
                             this.$form = this.$content.find('form');
                             this.$error = this.$content.find('error');
 
-                            console.debug(this, parseInt(this.$select.value));
+                            // console.debug(this, parseInt(this.$select.value));
 
                             if (parseInt(this.$select.val()) > 0) {
                                 this.$form.submit();
