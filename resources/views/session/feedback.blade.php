@@ -7,7 +7,9 @@
             <div class="d-block text-info">
                 Answers of Student <a href="{{ url('/users/' . $student->id . '/show') }}">{{ $student->full_name }}</a>
                 <br>
-                <button id="export-html" type="button" class="btn btn-primary"><i class="material-icons">save</i> Export to Image</button>
+                <button id="export-png" type="button" class="btn btn-primary"><i class="material-icons">image</i>Export
+                    to Image
+                </button>
             </div>
         </div>
     </div>
@@ -99,16 +101,21 @@
 @section('end_footer')
     <script type="text/javascript" defer>
         $(function () {
-            $('#export-html').click(function () {
-                html2canvas(document.querySelector("#question-container")).then(canvas => {
-                    canvas.toBlob(function (blob) {
-                        let url = URL.createObjectURL(blob);
-                        let a = document.createElement('a');
-                        a.href = url;
-                        a.download = "{{ $form->title . '-' . $student->lname }}";
-                        a.click();
+            $('#export-png').click(function () {
+                $('button').addClass('d-none');
+                html2canvas(document.querySelector('main'))
+                    .then(canvas => {
+                        canvas.toBlob(function (blob) {
+                            let url = URL.createObjectURL(blob);
+                            let a = document.createElement('a');
+                            a.href = url;
+                            a.download = "{{ $form->title . '-' . $student->lname }}";
+                            a.click();
+                        });
+                    })
+                    .finally(() => {
+                        $('button').removeClass('d-none');
                     });
-                });
             });
         });
     </script>
