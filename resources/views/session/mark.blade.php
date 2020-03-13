@@ -136,6 +136,8 @@
                 let li = document.createElement('li');
                 let a = document.createElement('a');
                 a.href = `{{ url('/sessions/' . $session->id . '/feedback') }}/${ids[i]}`;
+                a.title = `Show ${names[i]}'s answers`;
+                a.setAttribute('aria-label', `Show ${names[i]} answers`);
 
                 if (marks[i] > 0) {
                     a.textContent = `${names[i]}: ${marks[i]}/100`;
