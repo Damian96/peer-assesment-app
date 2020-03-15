@@ -220,6 +220,13 @@
                     </table>
                 @else
                     <h3 class="my-3">This course does not have any Students</h3>
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <a href="{{ url('/courses/' . $course->id . '/add-student') }}"
+                           class="btn btn-secondary btn-block"
+                           title="Add Students to {{ $course->code }}" aria-label="Add Students to {{ $course->code }}">
+                            <i class="material-icons">person</i>Add Students to {{ $course->code }}
+                        </a>
+                    </div>
                 @endif
             </div>
         @endif
@@ -261,6 +268,13 @@
                     </table>
                 @else
                     <h3 class="my-3">This course does not have any Sessions</h3>
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <a href="{{ url('/sessions/create/' . $course->id) }}"
+                           class="btn btn-secondary btn-block"
+                           title="Add Sessions to {{ $course->code }}" aria-label="Add Sessions to {{ $course->code }}">
+                            <i class="material-icons">assignment</i>Add Sessions to {{ $course->code }}
+                        </a>
+                    </div>
                 @endif
             </div>
         @endif

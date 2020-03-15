@@ -8,6 +8,7 @@ use App\Form;
 use App\FormTemplate;
 use App\Question;
 use App\Session;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -390,13 +391,26 @@ class FormController extends Controller
             return redirect()->back(302);
         }
 
+        try {
+            $session = Session::whereId($request->get('session_id', false))->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw_if(env('APP_DEBUG', false), $e);
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Something went wrong!',
+                'body' => 'The Session you entered does not exist!'
+            ]);
+            return redirect()->back(302);
+        }
+
         // Duplicate form
         $original = $form;
         $form = new Form($original->getAttributes());
         $form->fill([
             'id' => null,
             'title' => $form->title . ' - duplicate',
-            'session_id' => $request->get('session_id'),
+            'subtitle' => $session->instructions,
+            'session_id' => $session->id,
             'mark' => 0
         ]);
 
@@ -432,7 +446,7 @@ class FormController extends Controller
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'You successfully duplicated the Form!',
-            'body' => sprintf("The new form is : %s", $form->id)
+            'body' => sprintf("The new Form's ID is %s", $form->id)
         ]);
         return redirect()->action('FormController@index', [], 302);
     }

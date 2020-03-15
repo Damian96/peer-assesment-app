@@ -85,6 +85,7 @@ class SessionController extends Controller
             case 'edit':
             case 'update':
                 return array_merge($rules, [
+                    'open_date' => 'nullable',
                     'groups' => 'nullable|numeric|min:2|max:25',
                     'min_group_size' => 'nullable|numeric|min:2|max:5',
                     'max_group_size' => 'nullable|numeric|min:2|max:6',
@@ -203,6 +204,9 @@ class SessionController extends Controller
         $forms = Auth::user()->forms()->concat(Form::whereSessionId(0)->get());
         $courses = Course::getCurrentYears()->where('user_id', '=', Auth::user()->id)->get();
         if ($course instanceof Course && $course->code) {
+            if ($course->ac_year_year != intval(date('Y')))
+                throw new NotFoundHttpException(sprintf("The Course %s is not of the current academic year!", $course->code));
+
             $title = 'Create Session - ' . $course->code;
         } else {
             $course = null;
@@ -278,6 +282,7 @@ class SessionController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
+            dd($validator->errors());
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
                 ->withErrors($validator->errors())
@@ -290,8 +295,8 @@ class SessionController extends Controller
             'course_id' => $request->get('course', $session->course_id),
             'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', $now)))
                 ->format(config('constants.date.stamp')),
-            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', $now)))
-                ->format(config('constants.date.stamp')),
+//            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', $now)))
+//                ->format(config('constants.date.stamp')),
         ]);
 //        if ($request->get('form', 0) == 1) {
 //            $form = Form::find(1)->replicate()->fill([
@@ -304,7 +309,7 @@ class SessionController extends Controller
 //                return redirect()->back(302, $request->headers->all());
 //            }
 //        }
-        if ($session->update($request->except(['course', '_token', '_method', 'form']))) {
+        if ($session->update($request->except(['course', '_token', '_method', 'form', 'groups', 'min_group_size', 'max_group_size']))) {
             $request->session()->flash('message', [
                 'level' => 'success',
                 'heading' => sprintf("Session %s has been updated successfully!", $session->id),
@@ -339,14 +344,14 @@ class SessionController extends Controller
      */
     public function delete(Request $request, Session $session)
     {
-        if (!$session->hasEnded()) {
-            $request->session()->flash('message', [
-                'level' => 'warning',
-                'heading' => 'Could not delete Session!',
-                'body' => 'This Session has not yet ended, so you might not want to lose any feedback.'
-            ]);
-            return redirect()->back(302);
-        }
+//        if (!$session->hasEnded()) {
+//            $request->session()->flash('message', [
+//                'level' => 'warning',
+//                'heading' => 'Could not delete Session!',
+//                'body' => 'This Session has not yet ended, so you might not want to lose any feedback.'
+//            ]);
+//            return redirect()->back(302);
+//        }
 
         if ($session->delete()) {
             $request->session()->flash('message', [

@@ -23,6 +23,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Class UserController
  * @package App\Http\Controllers
  *
+ * @TODO: make terms & conditions page
+ * @TODO: implement google-sign in?
  */
 class UserController extends Controller
 {
@@ -273,7 +275,7 @@ class UserController extends Controller
             return redirect('/home', 302, $request->headers->all());
         }
 
-        $title = 'Register';
+        $title = 'Register as a Student';
         $messages = $this->messages('register');
         return response(view('user.register', compact('title', 'messages')), 200, $request->headers->all());
     }

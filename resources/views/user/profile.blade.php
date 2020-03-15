@@ -48,7 +48,7 @@
                 <tr>
                     <td colspan="2">Registered: {{ $user->registration_date }}</td>
                     <td colspan="1">Verified: {{ $user->verification_date }}</td>
-                    <td colspan="1">Last Login: {{ $user->last_login }}</td>
+                    <td colspan="1">Last Login: {{ $user->last_login_full }}</td>
                 </tr>
                 </tfoot>
             </table>

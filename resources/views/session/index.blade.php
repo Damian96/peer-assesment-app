@@ -60,7 +60,7 @@
                                         <button type="submit"
                                                 class="btn btn-lg btn-link material-icons text-danger delete-session"
                                                 data-title="Are you sure you want to delete this Session?"
-                                                data-content="This action is irreversible."
+                                                data-content="{{ sprintf("%s<br>This action is irreversible.",!$session->hasEnded() ? 'This Session has not yet ended, so you might not want to lose any feedback.' : null) }}"
                                                 title="Delete {{ $session->title }}"
                                                 aria-label="Delete {{ $session->title }}">delete_forever
                                         </button>
