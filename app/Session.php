@@ -97,7 +97,7 @@ class Session extends Model
             case 'deadline_full':
                 return Carbon::createFromTimeString($this->deadline)->format(config('constants.date.full'));
             case 'title_full':
-                return $this->title . ' | ' . $this->course()->first()->ac_year;
+                return $this->title . ' | ' . $this->course()->first()->ac_year . ' - ' . $this->course()->first()->code;
             case 'instructor_fullname':
             case 'owner_name':
             case 'owner_fullname':

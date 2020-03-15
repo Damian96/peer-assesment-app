@@ -190,6 +190,7 @@ class SessionController extends Controller
         $sessions = $sessions->where('sessions.id', '!=', Course::DUMMY_ID)
             ->where('courses.id', '!=', Course::DUMMY_ID)
             ->paginate(self::PER_PAGE);
+//        dd($sessions->items());
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
 

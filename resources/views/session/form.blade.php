@@ -230,7 +230,7 @@
                     window.localStorage.setItem(`{{ $action }}-deadline`, dateText);
                 }
             });
-            $('#deadline').datepicker('setDate', '{!! isset($session) ? sprintf("%s",date('d-m-Y', $session->deadline_int)) : "window.localStorage.getItem('{$action}-deadline')" !!}');
+            $('#deadline').datepicker('setDate', {!! isset($session) ? sprintf("'%s'",date('d-m-Y', $session->deadline_int)) : "window.localStorage.getItem('{$action}-deadline')" !!});
             $("#open_date").datepicker({
                 dateFormat: 'dd-mm-yy',
                 minDate: 1,
@@ -239,7 +239,7 @@
                     window.localStorage.setItem(`{{ $action }}-open_date`, dateText);
                 }
             });
-            $('#open_date').datepicker('setDate', '{!! isset($session) ? sprintf("%s",date('d-m-Y', $session->open_date_int)) : "window.localStorage.getItem('{$action}-open_date')" !!}');
+            $('#open_date').datepicker('setDate', {!! isset($session) ? sprintf("'%s'",date('d-m-Y', $session->open_date_int)) : "window.localStorage.getItem('{$action}-open_date')" !!});
             // Course custom ComboBox jQueryUI
             // $('#course').combobox();
             @if ($errors->has('studentid'))
