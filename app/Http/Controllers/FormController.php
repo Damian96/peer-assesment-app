@@ -143,6 +143,9 @@ class FormController extends Controller
                 'sessions.title AS session_title',
                 'courses.id AS course_id',
             ]);
+//        dd($forms->all(), Form::all());
+//        $forms = Form::all();
+//        dd($forms->first()->session()->first());
         $templates = FormTemplate::whereUserId(Course::DUMMY_ID)
             ->orWhere('user_id', '=', Auth::user()->id)
             ->get(['form_templates.*']);

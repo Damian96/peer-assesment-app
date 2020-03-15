@@ -285,6 +285,8 @@ class UserController extends Controller
      * @param Request $request
      * @param Course $course
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     *
+     * @TODO: move add-student to show
      */
     public function addStudent(Request $request, Course $course)
     {
@@ -392,6 +394,7 @@ class UserController extends Controller
                     'heading' => sprintf("Student %s, is already registered to %s!", $user->name, $course->code),
                 ]);
             }
+//            dd($course);
             $result = new StudentCourse(['user_id' => $user->id, 'course_id' => $course->id]);
             $onAfterSave = function () use ($user, $course) {
                 $user->sendEnrollmentEmail($course);

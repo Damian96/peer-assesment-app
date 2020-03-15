@@ -161,7 +161,7 @@
                 @endif
             </table>
         </div>
-        @if (Auth::user()->can('course.edit', ['id' => $course->id]))
+        @if (!Auth::user()->isAdmin() && Auth::user()->ownsCourse($course->id))
             <div class="col-sm-12 col-md-12">
                 <a href="{{ url( '/courses/' . $course->id . '/add-student') }}"
                    class="btn btn-success my-2 col-sm-12 d-md-inline mr-md-2">

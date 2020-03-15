@@ -68,7 +68,7 @@
                                 </td>
                             @else
                                 <td class="action-cell">
-                                    @if ($session->studentSession()->exists())
+                                    @if ($session->studentSession()->where('user_id', '=', Auth::user()->id)->exists())
                                         <a href="#"
                                            title="You have submitted {{ $session->title }}!"
                                            aria-label="You have submitted {{ $session->title }}!"
