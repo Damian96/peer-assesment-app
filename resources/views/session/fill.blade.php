@@ -213,8 +213,14 @@
             // console.debug(this);
             let group = $(this).closest('.form-group');
             let points = calculateGroupPoints(group);
-            if ((points > 0 && points < 100) || points > 100) {
-                group.find('.invalid-feedback').text('Total points exceed 100 limit');
+            if (points > 0 && points < 100) {
+                group.find('.invalid-feedback').text('Total points should be exactly 100!');
+                $(this).removeClass('is-valid')
+                    .addClass('is-invalid')
+                    .attr('aria-invalid', 'true');
+                return false;
+            } else if (points > 100) {
+                group.find('.invalid-feedback').text('Total points exceed 100 limit!');
                 $(this).removeClass('is-valid')
                     .addClass('is-invalid')
                     .attr('aria-invalid', 'true');
