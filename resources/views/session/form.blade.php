@@ -6,9 +6,11 @@
     @if (isset($form) && !isset($forms))
         <input type="hidden" class="hidden" value="{{ $form->id }}" name="form" id="form">
     @endif
-    @if (isset($course) && !isset($courses))
+    @if (isset($course))
+    <!-- Create Session for CourseX -->
         <input type="hidden" class="hidden" value="{{ $course->id }}" name="course" id="course">
     @elseif (!isset($session))
+    <!-- Create Session -->
         @php $course = isset($course) ? $course : ((isset($session) && $session->course()->exists()) ? $session->course()->first() : null); @endphp
         <div class="form-group">
             <label class="form-text" for="course">Course</label>
@@ -25,9 +27,11 @@
                     @endforeach
                 </select>
             @else
-                <div class="form-text text-warning">There are no Courses for this academic year!<br>Maybe <a href="{{ url('courses/create')  }}">Create one?</a></div>
+                <div class="form-text text-warning">There are no Courses for this academic year!<br>Maybe <a
+                        href="{{ url('courses/create')  }}">Create one?</a></div>
             @endif
-            <span class="invalid-feedback d-inline-block font-weight-bold">@if ($errors->has('course')){{ $errors->first('course') }}@endif</span>
+            <span
+                class="invalid-feedback d-inline-block font-weight-bold">@if ($errors->has('course')){{ $errors->first('course') }}@endif</span>
         </div>
     @endif
 
@@ -221,21 +225,21 @@
             $("#deadline").datepicker({
                 dateFormat: 'dd-mm-yy',
                 minDate: 1,
-                maxDate: 6 * 30,
+                maxDate: '{!! \App\Session::MAX_SELECT_DATE !!}',
                 onSelect: function (dateText) {
                     window.localStorage.setItem(`{{ $action }}-deadline`, dateText);
                 }
             });
-            $('#deadline').datepicker('setDate', {!! isset($session) ? sprintf("date('d-m-Y', %s)",$session->deadline_int) : "window.localStorage.getItem('{$action}-deadline')" !!});
+            $('#deadline').datepicker('setDate', '{!! isset($session) ? sprintf("%s",date('d-m-Y', $session->deadline_int)) : "window.localStorage.getItem('{$action}-deadline')" !!}');
             $("#open_date").datepicker({
                 dateFormat: 'dd-mm-yy',
                 minDate: 1,
-                maxDate: 6 * 31,
+                maxDate: '{!! \App\Session::MAX_SELECT_DATE !!}',
                 onSelect: function (dateText) {
                     window.localStorage.setItem(`{{ $action }}-open_date`, dateText);
                 }
             });
-            $('#open_date').datepicker('setDate', {!! isset($session) ? sprintf("date('d-m-Y', %s)",$session->open_date_int) : "window.localStorage.getItem('{$action}-open_date')" !!});
+            $('#open_date').datepicker('setDate', '{!! isset($session) ? sprintf("%s",date('d-m-Y', $session->open_date_int)) : "window.localStorage.getItem('{$action}-open_date')" !!}');
             // Course custom ComboBox jQueryUI
             // $('#course').combobox();
             @if ($errors->has('studentid'))

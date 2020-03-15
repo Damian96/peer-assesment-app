@@ -31,7 +31,10 @@
                             <td class="">{{ strlen($form->title) > 50 ? substr($form->title, 0, 50) . '...' : $form->title }}</td>
                             <td class="">
                                 @if ($form->session_id > 0)
-                                    {{ $form->session_title ?? 'N/A' }}
+                                    <a href="{{ url('/sessions/' . $form->session_id . '/view') }}"
+                                       title="{{ $form->session_title }}"
+                                       aria-label="{{ $form->session_title }}">{{ $form->session_title }} <i
+                                            class="material-icons icon-sm">link</i></a>
                                 @else<span class="text-muted">{{ 'N/A' }}</span>@endif
                             </td>
                             <td>

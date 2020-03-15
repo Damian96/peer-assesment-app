@@ -65,15 +65,6 @@
     @endif
 
     <div class="form-group">
-        <label class="py-0" for="instructor"
-               onclick="this.firstElementChild.value = this.firstElementChild.checked ? '1' : '0';">
-            Instructor
-            <input class="ml-3" id="instructor" name="instructor" type="checkbox"
-                   {{ old('instructor', isset($user) ? $user->instructor : '') == '1' ? ' checked' : '' }} tabindex="0">
-        </label>
-    </div>
-
-    <div class="form-group">
         <label class="control-label" for="department">Department</label>
 
         <select id="department" name="department" class="form-control" tabindex="0">

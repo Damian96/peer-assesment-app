@@ -51,6 +51,8 @@ class Session extends Model
     protected $table = 'sessions';
     protected $connection = 'mysql';
 
+    const MAX_SELECT_DATE = 180;
+
     /**
      * @param string $name
      * @return mixed|string
@@ -151,6 +153,7 @@ class Session extends Model
      * @var array
      */
     protected $attributes = [
+        'instructions' => null,
     ];
 
     /**
@@ -158,7 +161,7 @@ class Session extends Model
      * @var array
      */
     protected $fillable = [
-        'deadline', 'course_id', 'form_id', 'instructions', 'title', 'open_date',
+        'course_id', 'instructions', 'title', 'open_date', 'deadline',
         'groups', 'min_group_size', 'max_group_size',
     ];
 
