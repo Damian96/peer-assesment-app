@@ -107,9 +107,10 @@ class UserController extends Controller
                 return [
                     '_method' => 'required|string|in:POST',
                     'email' => 'required|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users|not_in:dummy@citycollege.sheffield.eu',
-                    'password' => 'required|string|min:3|max:50',
+                    'password' => 'required|confirmed|string|min:3|max:10',
                     'fname' => 'required|string|min:3|max:25',
                     'lname' => 'required|string|min:3|max:25',
+                    'reg_num' => 'required|min:4|regex:/[A-Z0-9]{4,}/',
                     'instructor' => 'nullable|boolean',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
@@ -160,19 +161,23 @@ class UserController extends Controller
 
             'terms.required' => 'Please accept the terms and conditions!',
 
+            'reg_num.required' => 'Your registration number is required!',
+            'reg_num.regex' => 'The registration number should be only capital letters and numbers!',
+            'reg_num.min' => 'The registration number should be at least 4 characters!',
+
             'password.required' => 'Your password is required!',
-            'password.min' => 'Your Password is too short!',
-            'password.max' => 'Your Password is too long!',
+            'password.min' => 'Your password should be at least 3 characters long!',
+            'password.max' => 'Your password should be at most 10 characters long!',
+
+            'password_confirmation.confirmed' => 'Your passwords should match!',
+            'password_confirmation.required' => 'Please confirm your password!',
+            'password_confirmation.min' => 'Your Password is too short!',
+            'password_confirmation.max' => 'Your Password is too long!',
         ];
 
         switch ($action) {
             case 'reset':
-                return array_merge($messages, [
-                    'password_confirmation.confirmed' => 'Your passwords should match!',
-                    'password_confirmation.required' => 'Please confirm your password!',
-                    'password_confirmation.min' => 'Your Password is too short!',
-                    'password_confirmation.max' => 'Your Password is too long!',
-                ]);
+                return $messages;
             case 'forgot':
             case 'forgotSend':
                 return [

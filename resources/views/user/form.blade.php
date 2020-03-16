@@ -10,11 +10,11 @@
                oninvalid="this.setCustomValidity('{{ $messages['fname.required'] }}')"
                oninput="this.setCustomValidity('')">
 
+        <span class="invalid-feedback d-block">
         @if ($errors->has('fname'))
-            <span class="invalid-feedback">
                 <strong>{{ $errors->first('fname') }}</strong>
+            @endif
             </span>
-        @endif
     </div>
 
     <div class="form-group" title="{{ $messages['lname.required'] }}">
@@ -25,11 +25,11 @@
                oninvalid="this.setCustomValidity('{{ $messages['lname.required'] }}')"
                oninput="this.setCustomValidity('')">
 
+        <span class="invalid-feedback d-block">
         @if ($errors->has('lname'))
-            <span class="invalid-feedback">
                 <strong>{{ $errors->first('lname') }}</strong>
+            @endif
             </span>
-        @endif
     </div>
 
     <div class="form-group" title="{{ $messages['email.required'] }}">
@@ -37,14 +37,27 @@
 
         <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" tabindex="0"
                name="email" value="{{ old('email', isset($user) ? $user->email : '') }}" id="email" required
-               oninvalid="this.validity.patternMismatch ? this.setCustomValidity('{{ $messages['email.regex'] }}') : this.setCustomValidity('{{ $messages['email.required'] }}')"
-               oninput="this.setCustomValidity('')" pattern="^[a-z].+@citycollege\.sheffield\.eu">
+               data-rule-required="true"
+               data-msg-required="{{ $messages['email.required'] }}"
+               data-rule-pattern="{{ '^[a-z].+@' . env('ORG_DOMAIN') }}"
+               data-msg-pattern="{{ $messages['email.regex'] }}">
+        <span class="invalid-feedback d-block">@if ($errors->has('email'))
+                <strong>{{ $errors->first('email') }}</strong>@endif</span>
+    </div>
 
-        @if ($errors->has('email'))
-            <span class="invalid-feedback">
-                <strong>{{ $errors->first('email') }}</strong>
-            </span>
-        @endif
+    <div class="form-group">
+        <label class="control-label" for="reg_num">Registration Number</label>
+
+        <input type="text" class="form-control{{ $errors->has('reg_num') ? ' is-invalid' : '' }}" tabindex="0"
+               name="reg_num" value="{{ old('reg_num', isset($user) ? $user->reg_num : '') }}" id="reg_num"
+               required aria-required="true"
+               data-rule-required="true"
+               data-msg-required="{{ $messages['reg_num.required'] }}"
+               data-rule-pattern="[A-Z0-9]{4,}"
+               data-msg-pattern="{{ $messages['reg_num.regex'] }}">
+        <span class="invalid-feedback d-block">
+            @if ($errors->has('reg_num'))<strong>{{ $errors->first('reg_num') }}</strong>@endif
+        </span>
     </div>
 
     @if(!isset($user))
@@ -52,16 +65,29 @@
             <label class="control-label" for="password">Password</label>
 
             <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password" tabindex="0"
-                   name="password" type="password" value="{{ old('password') }}" required minlength="3" maxlength="50"
-                   oninvalid="if(this.validity.tooShort) this.setCustomValidity('{{ $messages['password.min'] }}'); else if(this.validity.tooLong) this.setCustomValidity('{{ $messages['password.max'] }}');"
-                   oninput="this.setCustomValidity('')">
+                   name="password" type="password" value="{{ old('password') }}"
+                   required="true" aria-required="true"
+                   data-rule-required="true" data-msg-required="{{ $messages['password.required'] }}"
+                   data-rule-minlength="3" data-msg-minlength="{{ $messages['password.min'] }}"
+                   data-rule-maxlength="10" data-msg-maxlength="{{ $messages['password.max'] }}">
 
-            @if ($errors->has('password'))
-                <span class="invalid-feedback">
-                <strong>{{ $errors->first('password') }}</strong>
-            </span>
-            @endif
+            <span class="invalid-feedback d-block">@if ($errors->has('password'))
+                    <strong>{{ $errors->first('password') }}</strong>@endif</span>
         </div>
+
+        <div class="form-group">
+            <label class="control-label" for="password_confirmation">Confirm Password</label>
+            <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="password" tabindex="0"
+                   name="password_confirmation" type="password" value="{{ old('password_confirmation') }}"
+                   required="true" aria-required="true"
+                   data-rule-required="true" data-msg-required="Please validate your password!"
+                   data-rule-equalTo="#password" data-msg-equalTo="Passwords do not match!"
+                   data-rule-minlength="3" data-msg-minlength="{{ $messages['password.min'] }}"
+                   data-rule-maxlength="10" data-msg-maxlength="{{ $messages['password.max'] }}">
+            <span class="invalid-feedback d-block">@if ($errors->has('password_confirmation'))
+                    <strong>{{ $errors->first('password_confirmation') }}</strong>@endif</span>
+        </div>
+
     @endif
 
     <div class="form-group">
@@ -91,31 +117,20 @@
             </option>
         </select>
 
-        @if ($errors->has('department'))
-            <span class="invalid-feedback">
-                <strong>{{ $errors->first('department') }}</strong>
+        <span class="invalid-feedback d-block">@if ($errors->has('department'))
+                <strong>{{ $errors->first('department') }}</strong>@endif
             </span>
-        @endif
     </div>
-
-    {{--    <div class="form-group">--}}
-    {{--        <label class="py-0" for="terms" title="{{ $messages['terms.required'] }}">Do you agree--}}
-    {{--            with {{ config('app.name') }} <b>Terms and Conditions</b>?--}}
-    {{--            <input class="ml-3" type="checkbox" required id="terms" name="terms"--}}
-    {{--                   oninvalid="this.setCustomValidity('{{ $messages['terms.required'] }}');"--}}
-    {{--                   oninput="this.setCustomValidity('');" tabindex="0">--}}
-    {{--        </label>--}}
-    {{--    </div>--}}
 
     @if(request()->route()->named('*register') && request()->ip() != '127.0.0.1')
         <div class="form-group">
             {!! htmlFormSnippet() !!}
 
+            <span class="invalid-feedback d-block">
             @if ($errors->has('g-recaptcha-response'))
-                <span class="invalid-feedback">
-            <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+                    <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+                @endif
         </span>
-            @endif
         </div>
     @else
         <input type="hidden" class="hidden" width="0" height="0" name="localhost" value="1"/>
@@ -130,3 +145,73 @@
                 aria-roledescription="{{ $button['title'] }}" tabindex="0">{{ $button['label'] }}</button>
     </div>
 </form>
+
+
+@section('end_footer')
+    <script type="text/javascript" defer>
+        $(document).on('focusout change', 'input, select, textarea', function () {
+            return $(this).valid();
+        });
+        $(document).on('submit', 'form', function (event) {
+            let form = $(event.target);
+            form.validate({
+                rules: {
+                    fname: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 25
+                    },
+                    lname: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 25,
+                    },
+                    email: {
+                        required: true,
+                        pattern: '{{ '^[a-z].+@' . env('ORG_DOMAIN') }}'
+                    },
+                    reg_num: {
+                        required: true,
+                        pattern: '[A-Z0-9]{4,}',
+                        minlength: 4
+                    },
+                    password: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 10
+                    },
+                    password_confirmation: {
+                        required: true,
+                        equalTo: '#password',
+                        minlength: 3,
+                        maxlength: 10,
+                    }
+                },
+                messages: {
+                    email: {
+                        required: "{!! $messages['email.required'] !!}",
+                        pattern: "{!! $messages['email.regex'] !!}",
+                    },
+                    reg_num: {
+                        required: "{!! $messages['reg_num.required'] !!}",
+                        pattern: "{!! $messages['reg_num.regex'] !!}",
+                        minlength: "{!! $messages['reg_num.min'] !!}",
+                    },
+                    password: {
+                        required: '{!! $messages['password.required'] !!}',
+                        minlength: '{!! $messages['password.min'] !!}',
+                        maxlength: '{!! $messages['password.max'] !!}',
+                    },
+                    password_confirmation: {
+                        equalTo: 'Passwords do not match!',
+                        required: 'Please validate your password!',
+                        minlength: '{!! $messages['password.min'] !!}',
+                        maxlength: '{!! $messages['password.max'] !!}',
+                    }
+                }
+            });
+
+            return form.valid();
+        });
+    </script>
+@endsection

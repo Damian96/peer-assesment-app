@@ -68,8 +68,10 @@ class Session extends Model
                 try {
                     $date = Carbon::createFromTimestamp($this->open_date_int);
                     $now = Carbon::now();
-                    if ($date->timestamp > $now->timestamp)
+                    if ($date->timestamp > $now->timestamp && ($date->diffInDays() > 0))
                         return $date->diffInDays($now) . ' days from now';
+                    elseif ($date->diffInDays($now) == 0)
+                        return 'Tonight at midnight.';
                     else
                         return false;
                 } catch (\Exception $e) {
@@ -83,8 +85,10 @@ class Session extends Model
                 try {
                     $date = Carbon::createFromTimestamp($this->deadline_int);
                     $now = Carbon::now();
-                    if ($date->timestamp > $now->timestamp)
+                    if ($date->timestamp > $now->timestamp && $date->diffInDays($now) > 0)
                         return $date->diffInDays($now) . ' days from now';
+                    else if ($date->diffInDays($now) == 0)
+                        return 'Tonight at midnight.';
                     else
                         return false;
                 } catch (\Exception $e) {
