@@ -70,7 +70,7 @@
             return this.optional(element) || element.checked || value === 'on' || value === '1';
         });
         $.validator.addMethod('pattern', function (value, element, params) {
-            return this.optional(element) || (new RegExp(params, 'im')).test(value);
+            return this.optional(element) || (new RegExp(params, 'm')).test(value);
         });
         $.validator.addMethod('different', function (value, element, params) {
             return this.optional(element) || value !== params;
