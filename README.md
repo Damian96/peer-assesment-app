@@ -2,6 +2,9 @@
 2019-36 - Online Peer Assessment Tool for Group Assignments<br>
 ***a.k.a Online Peer Evaluation System (OPES)***
 
+# DEMO
+Demo is available at [Heroku](https://damp-dusk-04029.herokuapp.com/)
+
 # Technologies
 * [Laravel](https://github.com/laravel/laravel)
 * [Composer](https://getcomposer.org/)
@@ -11,3 +14,4 @@
 
 # License
 The software is licensed under the [GNU General Public License v3.0](https://github.com/Damian96/peer-assesment-app/blob/master/LICENSE)
+
