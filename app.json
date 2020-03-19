@@ -3,7 +3,6 @@
   "description": "",
   "website": "http://damp-dusk-04029.herokuapp.com/login",
   "repository": "https://github.com/Damian96/peer-assesment-app",
-  "logo": "",
   "success_url": "/",
   "scripts": {
     "postdeploy": [
@@ -23,4 +22,3 @@
     "heroku/nodejs"
   ]
 }
-
