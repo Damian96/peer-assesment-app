@@ -6,7 +6,10 @@
   "logo": "",
   "success_url": "/",
   "scripts": {
-    "postdeploy": "npm install && npm run prod"
+    "postdeploy": [
+      "npm install",
+      "npm run prod"
+    ]
   },
   "env": {
   },
