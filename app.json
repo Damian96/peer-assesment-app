@@ -11,8 +11,6 @@
       "npm run prod"
     ]
   },
-  "env": {
-  },
   "formation": {
     "web": {
       "quantity": 2,
@@ -20,13 +18,9 @@
     }
   },
   "image": "heroku/php",
-  "addons": [
-  ],
   "buildpacks": [
     "heroku/php",
     "heroku/nodejs"
-  ],
-  "environments": {
-  }
+  ]
 }
 
