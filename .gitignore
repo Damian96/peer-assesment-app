@@ -31,3 +31,9 @@ Homestead.json
 *.swp
 *.bp
 *.backup
+
+# Cloc only
+.idea/
+.vscode/
+.github/
+docs/*.html
