@@ -53,11 +53,9 @@
                                        class="material-icons text-warning"
                                        title="Update Form {{ $form->id }}"
                                        aria-label="Update Form {{ $form->id }}">edit</a>
-                                    <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}"
-                                          class="d-inline-block">
+                                    <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}">
                                         @method('DELETE')
                                         {{ $csrf }}
-
                                         <button type="submit"
                                                 class="btn btn-lg btn-link material-icons text-danger delete-form"
                                                 data-title="Are you sure you want to delete this Form?"

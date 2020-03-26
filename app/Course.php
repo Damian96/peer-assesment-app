@@ -268,7 +268,9 @@ class Course extends Model
      */
     public function students()
     {
-        return $this->belongsToMany('\App\User', 'student_course', 'course_id', 'user_id');
+        return $this->belongsToMany('\App\User', 'student_course', 'course_id', 'user_id')
+            ->select(['users.*', 'student_course.user_id', 'student_course.course_id'])
+            ->distinct();
     }
 
     /**

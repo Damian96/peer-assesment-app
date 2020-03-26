@@ -20,6 +20,7 @@ class Version0620191203Sessions extends Migration
             $table->string('title', 255);
             $table->timestamp('deadline')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->text('instructions');
+            $table->float('mark_avg')->nullable()->default(0)->comment('average mark');
             $table->tinyInteger('groups')->comment('maximum groups');
             $table->tinyInteger('min_group_size')->comment('maximum group size');
             $table->tinyInteger('max_group_size')->comment('minimum group size');

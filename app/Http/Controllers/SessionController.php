@@ -498,6 +498,36 @@ class SessionController extends Controller
             ->withHeaders($request->headers->all());
     }
 
+//    /**
+//     * @method _POST
+//     * @param Request $request
+//     * @param Session $session
+//     * @return Response|RedirectResponse
+//     * @throws \Throwable
+//     */
+//    public function editfillin(Request $request, Session $session)
+//    {
+//
+//    }
+
+    /**
+     * @method _GET
+     * @param Request $request
+     * @param Session $session
+     * @return Response|RedirectResponse
+     * @throws \Throwable
+     */
+    public function refill(Request $request, Session $session)
+    {
+        $title = sprintf("Fill Session %s", $session->title);
+
+        throw_if(!$session->form()->exists(), new NotFoundHttpException("This Session does not have an associated Form!"));
+        $form = $session->form()->first();
+        $questions = $form->questions()->getResults();
+
+        return response(view('session.fill', compact('title', 'questions', 'form', 'session')), 200, $request->headers->all());
+    }
+
     /**
      * @param Request $request
      * @param Session $session

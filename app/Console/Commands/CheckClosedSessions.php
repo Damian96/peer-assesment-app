@@ -41,16 +41,18 @@ class CheckClosedSessions extends Command
         /**
          * @var array $closing
          */
-        $closing = \App\Session::whereDeadline(now()->format('Y-m-d 00:00:00'))
+        $closing = \App\Session::whereDeadline(now()->format('Y-m-d 00:00:00.000000'))
             ->getModels();
         if (empty($closing)) return false;
 
         $bar = $this->output->createProgressBar(count($closing));
         $bar->start();
+        $this->line("");
         foreach ($closing as $session) {
             /**
              * @var \App\Session $session
              */
+            $marks = [];
             foreach ($session->groups()->getModels() as $group) {
                 /**
                  * @var \App\Group $group
@@ -60,22 +62,29 @@ class CheckClosedSessions extends Command
                      * @var \App\User $student
                      */
                     if ($group && $group->mark && \App\StudentSession::whereUserId($student->id)->where('session_id', '=', $session->id)->exists()) {
-                        $this->line(sprintf("\nGroup mark of %s: %d", $group->name, $group->mark));
+                        $this->line(sprintf("Group mark of %s: %d", $group->name, $group->mark));
                         try {
                             $this->info(sprintf("Calculated mark of Student %s: %d", $student->fullname, $student->calculateMark($session->id)));
                         } catch (\Throwable $e) {
                             $this->error($e->getMessage());
-//                                throw $e;
                         }
                     }
                 }
                 $this->line(sprintf("Finished mark calculation of Group %s", $group->name));
+                $marks[] = $group->mark;
+            }
+            $session->mark_avg = array_sum($marks) / count($marks);
+            try {
+                $session->saveOrFail();
+            } catch (\Throwable $e) {
+                throw $e;
             }
             $this->line(sprintf("Finished mark calculation of Session %s", $session->title));
+            $this->line(sprintf("Average class mark was: %d", $session->mark_avg));
             $bar->advance();
-            $this->line("\n");
         }
         $bar->finish();
+        $this->line("");
         return true;
     }
 }
