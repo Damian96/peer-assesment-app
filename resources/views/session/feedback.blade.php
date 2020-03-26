@@ -109,7 +109,7 @@
                             let url = URL.createObjectURL(blob);
                             let a = document.createElement('a');
                             a.href = url;
-                            a.download = "{{ $form->title . '-' . $student->lname }}";
+                            a.download = "{{ $form->title . '-' . $student->lname }}.png";
                             a.click();
                         });
                     })

@@ -177,7 +177,7 @@
     <div class="row mt-3">
         @if (Auth::user()->ownsCourse($course->id))
             <div class="col-sm-12 col-md-12">
-                @if ($course->students()->first())
+                @if ($course->students()->getModels())
                     <h3 class="my-3">Enrolled Students</h3>
                     <table class="table table-striped table-responsive-sm">
                         <caption>Enrolled Students to {{ $course->code }}</caption>

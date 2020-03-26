@@ -35,7 +35,8 @@
                             <td class="action-cell text-right">
                                 <a href="#" class="show-students material-icons"
                                    data-title="Show Students of {{ $g->name }}"
-                                   data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
+                                   data-students="{{ implode(',', array_column($g->students()->orderBy('id', 'ASC')->selectRaw(\App\User::RAW_FULL_NAME)->get(['full_name'])->toArray(), 'full_name')) }}"
+                                   data-ids="{{ implode(',', array_column($g->students()->select('users.id')->orderBy('id', 'ASC')->get(['users.id'])->toArray(), 'id')) }}"
                                    title="Show Students of {{ $g->name }}"
                                    aria-label="Show Students of {{ $g->name }}">group</a>
                                 @if ($g->mark == 0)
@@ -49,11 +50,20 @@
                                         </a>
                                     </form>
                                 @else
+                                    <form action="{{ url('groups/' . $g->id . '/store-mark') }}" method="POST">
+                                        @method('POST')
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{ $g->id }}">
+                                        <a href="#" title="Mark {{ $g->name }}" aria-label="Mark {{ $g->name }}"
+                                           class="mark-group" data-id="{{ $g->id }}" data-name="{{ $g->name }}">
+                                            <i class="material-icons text-warning">edit</i>
+                                        </a>
+                                    </form>
                                     <a href="#" class="show-marks material-icons"
                                        data-title="Show Marks of {{ $g->name }}"
                                        data-marks="{{ implode(',', $g->marks()) }}"
                                        data-students="{{ implode(',', array_column($g->students()->selectRaw(\App\User::RAW_FULL_NAME)->orderBy('id', 'ASC')->get(['full_name'])->toArray(), 'full_name')) }}"
-                                       data-ids="{{ implode(',', array_column($g->students()->orderBy('id', 'ASC')->get(['id'])->toArray(), 'id')) }}"
+                                       data-ids="{{ implode(',', array_column($g->students()->orderBy('id', 'ASC')->select('users.id')->get(['users.id'])->toArray(), 'id')) }}"
                                        title="Show Marks of {{ $g->name }}"
                                        aria-label="Show Marks of {{ $g->name }}">receipt</a>
                                 @endif
@@ -156,11 +166,17 @@
         });
         $('.show-students').on('click', function () {
             let names = $(this).attr('data-students').split(',');
+            let ids = $(this).attr('data-ids').split(',');
             let marksOl = $(document.createElement('ol'));
 
             for (let i = 0; i < names.length; i++) {
                 let li = document.createElement('li');
-                li.textContent = `${names[i]}`;
+                let a = document.createElement('a');
+                a.textContent = `${names[i]}`;
+                a.title = a.textContent;
+                a.setAttribute('aria-label', a.textContent);
+                a.href = '{{ url('/users/show') }}/' + ids[i];
+                li.appendChild(a);
                 marksOl.append($(li));
             }
 

@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\DB;
  * @property int deadline_int
  * @property int max_groups
  * @property int groups
+ * @property float mark_avg
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
  */
 class Session extends Model
@@ -158,6 +159,7 @@ class Session extends Model
      */
     protected $attributes = [
         'instructions' => null,
+        'mark_avg' => 0,
     ];
 
     /**
@@ -166,7 +168,7 @@ class Session extends Model
      */
     protected $fillable = [
         'course_id', 'instructions', 'title', 'open_date', 'deadline',
-        'groups', 'min_group_size', 'max_group_size',
+        'groups', 'min_group_size', 'max_group_size', 'mark_avg'
     ];
 
     /**

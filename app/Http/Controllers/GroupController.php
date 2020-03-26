@@ -114,7 +114,7 @@ class GroupController extends Controller
 
         $request->session()->flash('message', [
             'level' => 'success',
-            'heading' => "Successfully marked Group {$group->id}!",
+            'heading' => "Successfully marked Group {$group->title}!",
             'body' => $validator->errors()->first()
         ]);
         return redirect()->back()

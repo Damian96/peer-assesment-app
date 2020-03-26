@@ -38,6 +38,7 @@ Route::match(['get'], '/attribution', 'UserController@attribution')->name('user.
 Route::group(['prefix' => '/users'], function () {
     Route::match(['get'], '/verified', 'UserController@verified')->name('verification.notice');
     Route::match(['get'], '{user}/show', 'UserController@show')->name('user.show');
+    Route::match(['get'], '/show/{user}', 'UserController@show')->name('user.show');
 });
 
 # COURSE
@@ -65,10 +66,12 @@ Route::group(['prefix' => '/sessions'], function () {
     Route::match(['post'], '{session}/join-group', 'SessionController@joinGroup')->name('session.joinGroup');
     Route::match(['get'], '{session}/view', 'SessionController@show')->name('session.view');
     Route::match(['get'], '{session}/fill', 'SessionController@fill')->name('session.fill');
+//    Route::match(['get'], '{session}/refill', 'SessionController@refill')->name('session.refill');
     Route::match(['post'], '{session}/fillin', 'SessionController@fillin')->name('session.fillin');
     Route::match(['get'], '{session}/delete', 'SessionController@delete')->name('session.delete');
     Route::match(['get'], '{session}/edit', 'SessionController@edit')->name('session.edit');
     Route::match(['get'], '{session}/mark', 'SessionController@mark')->name('session.mark');
+    Route::match(['get'], '{session}/remark', 'SessionController@mark')->name('session.mark');
     Route::match(['post'], '{session}/update', 'SessionController@update')->name('session.update');
     Route::match(['delete'], '{session}/delete', 'SessionController@delete')->name('session.delete');
     Route::match(['get'], '{session}/feedback/{student}', 'SessionController@feedback')->name('session.feedback');
