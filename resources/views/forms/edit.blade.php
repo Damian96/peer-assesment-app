@@ -23,6 +23,16 @@
                         'errors' => $errors
                     ])
                 </div>
+                @php
+                    /**
+                     * @var array $questions
+                     * @var array $old_questions
+                     */
+                    if (request()->old('question'))
+                        $old_questions = array_slice(request()->old('question'), -(count(request()->old('question'))-count($questions)));
+                    else
+                        $old_questions = [];
+                @endphp
                 <div id="card-container" class="container-fluid">
                     @include('forms.card', [
                         'template' => true
@@ -34,6 +44,15 @@
                             'title' => $question->title,
                             'count' => $question->id,
                             'question' => $question
+                        ])
+                    @endforeach
+                    @foreach($old_questions as $i => $question)
+                        @include('forms.card', [
+                            'template' => false,
+                            'title' => $question['title'],
+                            'type' => $question['type'],
+                            'count' => count($questions)+$i,
+                            'question' => (object)$question
                         ])
                     @endforeach
                 </div>

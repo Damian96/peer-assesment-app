@@ -57,16 +57,14 @@ class FormController extends Controller
                     'form_id' => 'required|int|exists:forms,id',
                     '_method' => 'required|in:POST',
                     'title' => 'required|string|min:15|max:255',
-                    'subtitle' => 'nullable|string|min:15|max:255',
-                    'footnote' => 'nullable|string|min:15|max:255',
+                    'subtitle' => 'nullable|string|min:15|max:50',
                     'question' => 'required|array',
                 ]);
             case 'store':
                 return array_merge($rules, [
                     '_method' => 'required|in:POST',
                     'title' => 'required|string|max:255',
-                    'subtitle' => 'nullable|string|max:255',
-                    'footnote' => 'nullable|string|max:255',
+                    'subtitle' => 'nullable|string|max:50',
                     'question' => 'required|array',
                 ]);
             default:
@@ -265,7 +263,6 @@ class FormController extends Controller
         $form->fill([
             'title' => $request->get('title', $form->title),
             'subtitle' => $request->get('subtitle', $form->subtitle),
-            'footnote' => $request->get('footnote', $form->footnote),
         ]);
 
         if (!$form->save()) {

@@ -23,14 +23,18 @@
                     @endif
                     @if(!Auth::user()->can('session.index', ['cid'=>$course->id]))
                         <th class="text-center">Instructor</th>
-                    @else
-                        <th class="text-right">Links</th>
                     @endif
+                    <th class="text-right">Links</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <th scope="row">{{ $course->id }}</th>
+                    @if (Auth::user()->isAdmin())
+                        <td><a href="{{ "/users/{$course->user_id}/show" }}" title="Show Instructor's Profile"
+                               aria-label="Show Instructor's Profile">{{ $course->instructor_name }}</a>
+                        </td>
+                    @endif
                     <td>{{ $course->title }}</td>
                     <td class="text-center">{{ $course->department_title }}</td>
                     <td class="text-center">
@@ -46,23 +50,6 @@
                         </select>
                     </td>
                     @if (Auth::user()->isAdmin())
-                        <td><a href="{{ "/users/{$course->user_id}/show" }}" title="Show Instructor's Profile"
-                               aria-label="Show Instructor's Profile">{{ $course->instructor_name }}</a>
-                        </td>
-                        <td>{{ $course->title }}</td>
-                        <td class="text-center">{{ $course->department_title }}</td>
-                        <td class="text-center">
-                            <select id="similarid" name="similarid"
-                                    class="form-control-sm{{ $errors->has('similarid') ? ' is-invalid' : '' }}"
-                                {{ count($similars) == 0 ? 'readonly' : '' }}>
-                                <option
-                                    value="---"{{ count($similars) == 0 ? ' selected' : '' }}>{{ $course->ac_year_pair }}</option>
-                                @foreach($similars as $similar)
-                                    <option
-                                        value="{{ $similar->id }}"{{ old('similarid') == $similar->id }}>{{ $similar->ac_year_pair }}</option>
-                                @endforeach
-                            </select>
-                        </td>
                         <td class="action-cell text-right">
                             @if (!$course->copied())
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
@@ -161,7 +148,7 @@
                 @endif
             </table>
         </div>
-        @if (!Auth::user()->isAdmin() && Auth::user()->ownsCourse($course->id))
+        @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
             <div class="col-sm-12 col-md-12">
                 <a href="{{ url( '/courses/' . $course->id . '/add-student') }}"
                    class="btn btn-success my-2 col-sm-12 d-md-inline mr-md-2">
@@ -175,7 +162,7 @@
         @endif
     </div>
     <div class="row mt-3">
-        @if (Auth::user()->ownsCourse($course->id))
+        @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
             <div class="col-sm-12 col-md-12">
                 @if ($course->students()->getModels())
                     <h3 class="my-3">Enrolled Students</h3>
@@ -232,7 +219,7 @@
         @endif
     </div>
     <div class="row mt-3">
-        @if (Auth::user()->ownsCourse($course->id))
+        @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
             <div class="col-sm-12 col-md-12">
                 @if ($course->sessions()->first())
                     <h3>Linked Sessions</h3>

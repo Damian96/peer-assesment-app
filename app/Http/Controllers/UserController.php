@@ -71,19 +71,34 @@ class UserController extends Controller
      */
     public function rules(String $action, array $options = [])
     {
+        $default = [
+            'fname' => 'required|string|min:3|max:25',
+            'lname' => 'required|string|min:3|max:25',
+            'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|not_in:dummy@citycollege.sheffield.eu',
+            'reg_num' => 'required|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
+            'password' => 'required|string|min:3|max:50',
+            'email_prepend' => [
+                'required',
+                'string',
+                'min:5',
+                'max:50',
+                'regex:/^[a-z]+$/',
+                new PrependedEmailExists()
+            ]
+        ];
         switch ($action) {
             case 'update':
             case 'reset':
                 return [
                     '_method' => 'required|string|in:PUT',
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users|not_in:dummy@citycollege.sheffield.eu',
+                    'email' => $default['email'] . '|exists:users',
                     'token' => 'required|string|min:60|max:60|exists:password_resets',
-                    'password' => 'required|confirmed|min:3|max:50',
+                    'password' => $default['password']
                 ];
             case 'forgot':
             case 'forgotSend':
                 return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|exists:users|not_in:dummy@citycollege.sheffield.eu',
+                    'email' => $default['email'] . '|exists:users',
                 ];
             case 'storeStudent':
             case 'register.student':
@@ -95,10 +110,10 @@ class UserController extends Controller
                 ];
             case 'storeCsv':
                 return [
-                    'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|unique:users,email|not_in:dummy@citycollege.sheffield.eu',
-                    'fname' => 'required|string|min:3|max:25',
-                    'lname' => 'required|string|min:3|max:25',
-                    'reg_num' => 'required|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
+                    'email' => $default['email'] . '|unique:users,email',
+                    'fname' => $default['fname'],
+                    'lname' => $default['lname'],
+                    'reg_num' => $default['reg_num'],
                 ];
             case 'register.user':
             case 'register':
@@ -106,26 +121,19 @@ class UserController extends Controller
             case 'store':
                 return [
                     '_method' => 'required|string|in:POST',
-                    'email' => 'required|regex:/^[a-z]+@citycollege\.sheffield\.eu$/|unique:users|not_in:dummy@citycollege.sheffield.eu',
-                    'password' => 'required|confirmed|string|min:3|max:10',
-                    'fname' => 'required|string|min:3|max:25',
-                    'lname' => 'required|string|min:3|max:25',
-                    'reg_num' => 'required|min:4|regex:/[A-Z0-9]{4,}/',
+                    'email' => $default['email'] . '|unique:users',
+                    'password' => $default['password'],
+                    'fname' => $default['fname'],
+                    'lname' => $default['lname'],
+                    'reg_num' => $default['reg_num'],
                     'instructor' => 'nullable|boolean',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             case 'auth':
             case 'login':
                 return [
-                    'email' => [
-                        'required',
-                        'string',
-                        'min:5',
-                        'max:35',
-                        'regex:/^[a-z]+$/',
-                        new PrependedEmailExists()
-                    ],
-                    'password' => 'required|string|min:3|max:50',
+                    'email' => $default['email_prepend'],
+                    'password' => $default['password'],
                     'remember' => 'nullable|in:0,1,on,off',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];

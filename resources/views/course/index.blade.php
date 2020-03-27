@@ -66,7 +66,19 @@
                 </table>
                 {{ $courses->links() }}
             @else
-                <h2>{{ 'You do not have any Courses yet!' }}</h2>
+                @if (Auth::user()->isStudent())
+                    <h4>You are not enrolled in any courses yet!</h4>
+                    <p class="text-justify">
+                        We will notify you when you are enrolled in a new Course, by sending you an email to:
+                        <strong>{{ Auth::user()->email }}</strong>
+                    </p>
+                @else
+                    <h4>You do not have any Courses yet!</h4>
+                    <a href="{{ url('/courses/create') }}" title="Create new Course" aria-label="Create new Course"
+                       class="btn btn-primary">
+                        Create Course
+                    </a>
+                @endif
             @endif
         </div>
     </div>
