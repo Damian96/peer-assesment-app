@@ -1,5 +1,5 @@
 const mix = require('laravel-mix');
-const webpack = require('webpack');
+// const webpack = require('webpack');
 
 /*
  |--------------------------------------------------------------------------
@@ -24,8 +24,12 @@ if (mix.inProduction()) {
 } else {
     mix.browserSync({
         proxy: process.env.APP_URL,
+        https: false,
+        logFileChanges: true,
+        // tunnel: true,
+        // online: true,
         files: [
-            "public/css/public.css",
+            "public/css/app.css",
             "public/js/*.js",
         ],
         watchEvents: [
