@@ -18,7 +18,6 @@ class Version0620191203Forms extends Migration
             $table->bigInteger('session_id')->unsigned()->nullable()->default(0);
             $table->string('title', 255);
             $table->string('subtitle', 255)->nullable();
-            $table->string('footnote', 255)->nullable();
             $table->char('mark', 1)->nullable()->default('0')->comment('class mark');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
