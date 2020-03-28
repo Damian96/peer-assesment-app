@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Notifications\StudentInviteEmail;
+use App\Notifications\StudentEnrollEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
 use Illuminate\Contracts\Auth\Access\Authorizable;
@@ -770,10 +771,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-//        if (env('APP_ENV', 'local') !== 'local') {
-//            $mailer = new StudentEnrollEmail($this, $course);
-//            Mail::to($this->email)->send($mailer);
-//        }
+        if (env('APP_ENV', 'local') !== 'local') {
+            $mailer = new StudentEnrollEmail($this, $course);
+            Mail::to($this->email)->send($mailer);
+        }
         clock()->info("StudentEnrollEmail sent to {$this->email}");
     }
 
@@ -875,7 +876,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             return !in_array($id, $submitted);
         });
 
-        if (empty($not_submitted) && $total > 0) { // everyone submitted
+        if (empty($not_submitted) && $total > 0) { // everyone submittedStudentEnrollEmail
             return round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
         } elseif ($total == 0) { // this student did not submit
             return 0;

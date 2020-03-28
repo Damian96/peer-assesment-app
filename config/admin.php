@@ -6,11 +6,11 @@ return [
      */
     'mails' => [
         'admin' => [
-            'from' => 'Administrator',
+            'from' => 'WPES Administration',
             'address' => 'damgiankakis@gmail.com',
         ],
         'support' => [
-            'from' => 'Support',
+            'from' => 'WPES Support',
             'address' => 'support@peerassess.test',
         ],
     ],

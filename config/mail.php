@@ -57,7 +57,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'noreply@peerassess.test'),
-        'name' => env('MAIL_FROM_NAME', 'Peer Assessment Platform'),
+        'name' => env('MAIL_FROM_NAME', 'WPES Platform'),
     ],
 
     /*
