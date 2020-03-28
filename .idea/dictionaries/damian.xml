@@ -39,6 +39,7 @@
       <w>movedown</w>
       <w>moveup</w>
       <w>navbar</w>
+      <w>noreply</w>
       <w>paginateroute</w>
       <w>papaparse</w>
       <w>peerassess</w>
@@ -55,6 +56,7 @@
       <w>toggler</w>
       <w>unpkg</w>
       <w>uselect</w>
+      <w>wpes</w>
     </words>
   </dictionary>
 </component>

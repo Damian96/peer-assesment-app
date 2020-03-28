@@ -148,8 +148,16 @@ class Course extends Model
                     return Carbon::createFromTimestamp(strtotime($this->updated_at), config('app.timezone'))->format(config('constants.date.full'));
                 }
             case 'semester':
+            case 'semester_full':
             case 'ac_year_semester':
-                return substr($this->ac_year, -4);
+                switch (substr($this->ac_year, 0, 2)) {
+                    case 'SP':
+                        return 'Spring';
+                    case 'FA':
+                        return 'Fall';
+                    default:
+                        return substr($this->ac_year, 0, 2);
+                }
             case 'year':
             case 'ac_year_int':
             case 'ac_year_time':
@@ -255,11 +263,23 @@ class Course extends Model
     ];
 
     /**
-     * @return mixed|array
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function sessions()
     {
         return $this->hasMany('\App\Session', 'course_id', 'id');
+    }
+
+    /**
+     * Returns whether the specific Course has any opened sessions
+     * @return boolean
+     */
+    public function hasOpenedSessions()
+    {
+        return $this->sessions()
+            ->where('open_date', '>=', date(config('constants.date.stamp')))
+            ->where('deadline', '>=', date(config('Y-m-d 00:00:00')))
+            ->exists();
     }
 
     /**
