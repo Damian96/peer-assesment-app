@@ -667,11 +667,7 @@ class UserController extends Controller
                 'heading' => 'E-mail Verification successful!',
                 'body' => 'You can login with your credentials.'
             ]);
-            if ($request->get('action', false) == 'invite') {
-                return redirect()->action('UserController@login', [], 302, $request->headers->all());
-            } else {
-                return redirect()->action('UserController@login', [], 302, $request->headers->all());
-            }
+            return redirect()->action('UserController@index', [], 302, $request->headers->all());
         } elseif ($request->get('action', false) == 'password') {
             $request->setUserResolver(function () use ($user) {
                 return $user;
@@ -794,10 +790,13 @@ class UserController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function verified(Request $request)
     {
+        if (Auth::user()->hasVerifiedEmail())
+            return redirect()->action('UserController@index', [], 302);
+
         $title = 'Please verify your email';
         if (!$request->session()->has('emailVerifiedSent')) {
             Auth::user()->sendEmailVerificationNotification();
