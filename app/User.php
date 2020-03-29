@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\AppResetPasswordEmail;
 use App\Notifications\StudentInviteEmail;
 use App\Notifications\StudentEnrollEmail;
 use Doctrine\DBAL\Query\QueryException;
@@ -737,10 +738,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password_reset_token = $token;
         try {
-//            if (env('APP_ENV', 'local') !== 'local') {
-//                $mailer = new AppResetPasswordEmail($this);
-//                Mail::to($this->email)->send($mailer);
-//            }
+            if (env('APP_ENV', 'local') !== 'local') {
+                $mailer = new AppResetPasswordEmail($this);
+                Mail::to($this->email)->send($mailer);
+            }
             clock()->info("AppResetPasswordEmail sent to {$this->email}");
         } catch (\Throwable $e) {
             clock()->info("Failed to send AppResetPasswordEmail to {$this->email}", ['trace' => true]);

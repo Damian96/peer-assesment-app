@@ -47,7 +47,7 @@ class UserController extends Controller
             'logout', 'login', 'auth', # login-logout
             'create', 'store', # user-register
             'verify', 'verified', # verify-email/password
-//            'forgot', 'forgotSend', 'reset', 'update', # reset-password
+            'forgot', 'forgotSend', 'reset', 'update', # reset-password
             'attribution'
         ]);
         $this->middleware('role')->except([
@@ -98,7 +98,7 @@ class UserController extends Controller
             case 'forgot':
             case 'forgotSend':
                 return [
-                    'email' => $default['email'] . '|exists:users',
+                    'email' => $default['email_prepend'],
                 ];
             case 'storeStudent':
             case 'register.student':
@@ -757,7 +757,20 @@ class UserController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        $user = User::getUserByEmail($request->get('email'));
+        try {
+            $user = User::whereEmail(sprintf("%s@%s", $request->get('email'), config('app.domain')))->firstOrFail();
+        } catch (\Throwable $e) {
+            throw_if(env('APP_DEBUG', false), $e);
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'This user does not exist in WPES!',
+                'body' => '',
+            ]);
+            return redirect()->back(302)
+                ->withInput($request->all())
+                ->withHeaders($request->headers->all());
+        }
+
         if (!$user->hasVerifiedEmail()) {
             $request->session()->flash('message', [
                 'level' => 'warning',

@@ -24,6 +24,11 @@
                                accept="text/csv">
                     </label>
 
+                    <div class="form-text font-italic text-muted">Required fields are: First Name, Last Name / Surname,
+                        Email / E-mail,
+                        Registration Number (case insensitive)<br>
+                    </div>
+
                     <span class="invalid-feedback d-inline">
                     @if ($errors->has('csv'))
                             <strong>{{ $errors->first('csv') }}</strong>

@@ -8,7 +8,7 @@
 # You have been enrolled to Course {!! $course->code !!}
 
 @component('mail::panel')
-You have been registered to <strong id="course-title">{{ $course->title }}</strong><br>,
+You have been enrolled to <strong id="course-title">{{ $course->title }}</strong><br>,
 {{ $course->semester }} Semester of Academic Year {{ $course->ac_year_pair }}.
 @endcomponent
 
@@ -19,7 +19,7 @@ Please <a href="{{ url('/login/') }}" title="WPES login" aria-label="WPES login"
 @endcomponent
 @endif
 
-<p id="footer-notice">Please do not reply to this email. This address is for the system's automated processes only. If you have any questions, please contact the <a href="mail:to{{ config('admin.mails.admin.address') }}" target="_blank" title="{{ config('admin.mails.admin.from') }}" aria-label="{{ config('admin.mails.admin.address') }}">Administration</a>.</p>
+@component('vendor.mail.html.footer-notice')@endcomponent
 
 Thanks,<br><strong>{{ config('mail.from.name') }}</strong>
 @endcomponent

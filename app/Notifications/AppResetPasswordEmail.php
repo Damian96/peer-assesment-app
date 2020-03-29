@@ -66,7 +66,7 @@ class AppResetPasswordEmail extends Mailable implements Renderable
         }
         $resettingUrl = $this->resettingUrl($this->resettable);
         return $this->from(config('mail.from.address'), config('mail.from.name'))
-            ->subject(config('auth.password_reset.strings.subject'))
+            ->subject(config('auth.password_reset.strings.subject') . ' - ' . config('app.name'))
             ->markdown($this->markdown)
             ->with(['url' => $resettingUrl]);
     }
