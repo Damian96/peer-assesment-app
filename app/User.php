@@ -583,10 +583,10 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEmailVerificationNotification()
     {
-//        if (env('APP_ENV', 'local') !== 'local') {
-//            $mailer = new AppVerifyEmail($this);
-//            Mail::to($this->email)->send($mailer);
-//        }
+        if (env('APP_ENV', 'local') !== 'local') {
+            $mailer = new \App\Notifications\AppVerifyEmail($this);
+            Mail::to($this->email)->send($mailer);
+        }
         clock()->info("Sent email verification to: {$this->email}");
     }
 
