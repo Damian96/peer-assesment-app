@@ -234,7 +234,7 @@ return [
 
     'admin' => [
         'address' => 'support@peerassess.test',
-        'from' => 'PeerAssess Support',
+        'from' => 'WPES Support',
     ],
 
     'domain' => env('ORG_DOMAIN', 'citycollege.sheffield.eu'),

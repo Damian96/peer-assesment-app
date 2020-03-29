@@ -108,7 +108,7 @@ return [
         'expire' => 60,
         'strings' => [
             'subject' => 'Verify Email Address',
-            'heading' => 'Please click the button below to verify your email address.',
+            'heading' => 'Please click the button below to verify your email address',
             'action' => 'Verify Email Address',
             'notice' => 'If you did not register, please send us an email at support@peerassess.test'
         ]
@@ -119,9 +119,9 @@ return [
         'view' => 'emails.reset',
         'expire' => 60, // minutes
         'strings' => [
-            'subject' => 'Reset Password - PeerAssess',
-            'heading' => 'Click the button below to reset your password.',
-            'action' => 'Reset your Password',
+            'subject' => 'Reset Password',
+            'heading' => 'Click the button below to reset your password',
+            'action' => 'Reset Password',
             'notice' => 'This link will only be available for the next hour!<br>' .
                 'If you did not perform this action, please send us an email at support@peerassess.test'
         ]
