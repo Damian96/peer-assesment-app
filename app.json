@@ -1,0 +1,24 @@
+{
+  "name": "Peer Assessment App",
+  "description": "",
+  "website": "http://damp-dusk-04029.herokuapp.com/login",
+  "repository": "https://github.com/Damian96/peer-assesment-app",
+  "success_url": "/",
+  "scripts": {
+    "postdeploy": [
+      "npm install",
+      "npm run prod"
+    ]
+  },
+  "formation": {
+    "web": {
+      "quantity": 2,
+      "size": "Performance-M"
+    }
+  },
+  "image": "heroku/php",
+  "buildpacks": [
+    "heroku/php",
+    "heroku/nodejs"
+  ]
+}
