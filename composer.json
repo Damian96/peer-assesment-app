@@ -96,6 +96,9 @@
     "pre-commit": [
       "@php artisan ide-helper:models",
       "composer cache-store"
+    ],
+    "post-install-cmd": [
+      "bash nano.sh"
     ]
   }
 }
