@@ -1,6 +1,10 @@
 #!/bin/bash env
 
-test -r /app/ || echo "Not in heroku remote" && exit 0
+if [[ ! -r /app ]]; then
+   echo -n "Not in Heroku remote"
+   echo -n "Skipping nano install"
+   exit 0
+fi
 
 mkdir /app/nano
 echo -n "Created dir /app/nano"
