@@ -1,4 +1,4 @@
-{
+
   "name": "laravel/laravel",
   "type": "project",
   "description": "The Laravel Framework.",
@@ -98,6 +98,7 @@
       "composer cache-store"
     ],
     "post-install-cmd": [
+      "cp .env.testing .env",
       "bash nano.sh"
     ]
   }
