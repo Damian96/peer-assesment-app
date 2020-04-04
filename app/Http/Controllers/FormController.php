@@ -8,6 +8,7 @@ use App\Form;
 use App\FormTemplate;
 use App\Question;
 use App\Session;
+use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -60,6 +61,7 @@ class FormController extends Controller
                     'subtitle' => 'nullable|string|min:15|max:50',
                     'question' => 'required|array',
                 ]);
+            case 'preview':
             case 'store':
                 return array_merge($rules, [
                     '_method' => 'required|in:POST',
@@ -81,6 +83,7 @@ class FormController extends Controller
         switch ($action) {
             case 'create':
             case 'store':
+            case 'preview':
             case 'update':
                 return [
                     'session_id' => '',
@@ -449,5 +452,38 @@ class FormController extends Controller
             'body' => sprintf("The new Form's ID is %s", $form->id)
         ]);
         return redirect()->action('FormController@index', [], 302);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function preview(Request $request)
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__, $request), $this->messages(__FUNCTION__));
+
+        if ($validator->fails()) {
+            $request->session()->flash('message', [
+                'level' => 'danger',
+                'heading' => 'Invalid Form Data',
+                'body' => $validator->messages()->first()
+            ]);
+            return redirect()->back(302)
+                ->withHeaders($request->headers->all())
+                ->withErrors($validator->errors())
+                ->with('errors', $validator->errors())
+                ->withInput($request->input());
+        }
+
+        $form = new Form($request->all());
+        dd($request->get('question'), $request->all());
+        foreach ($request->get('question') as $i => $q) {
+
+        }
+
+        $teammates = User::whereAdmin(0)->where('instructor', '=', 0)
+            ->limit(4)->getModels();
+        $session = Session::all()->random(1)->first();
+        return response(view('forms.preview', compact('form', 'teammates', 'session')), 200);
     }
 }

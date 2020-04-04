@@ -56,7 +56,7 @@
                         ])
                     @endforeach
                 </div>
-                <div class="col-sm-12 col-md-12">
+                <div class="col-sm-12 col-md-12 my-2">
                     <button type="submit" class="btn btn-block btn-primary">Update</button>
                 </div>
             </form>

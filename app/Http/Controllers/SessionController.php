@@ -184,13 +184,13 @@ class SessionController extends Controller
                 ->where('student_course.user_id', '=', Auth::user()->id);
             if ($submitted->exists())
                 $sessions->whereNotIn('sessions.id', $submitted->get(['session_id'])->toArray());
-        } elseif (Auth::user()->isInstructor()) {
+        } elseif (!Auth::user()->isAdmin() && Auth::user()->isInstructor()) {
             $sessions->where('courses.user_id', '=', Auth::user()->id);
         }
         $sessions = $sessions->where('sessions.id', '!=', Course::DUMMY_ID)
             ->where('courses.id', '!=', Course::DUMMY_ID)
             ->paginate(self::PER_PAGE);
-//        dd($sessions->items());
+
         return response(view('session.index', compact('title', 'sessions')), 200, $request->headers->all());
     }
 

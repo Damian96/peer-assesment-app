@@ -30,11 +30,20 @@
                         <th>Deadline</th>
                         @if (Auth::user()->isStudent())
                             <th>Group</th>
+                        @elseif (Auth::user()->isAdmin())
+                            <th>Instructor</th>
                         @endif
                         <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody class="tsGroup">
+                    @php
+                        /**
+                          * @var \App\Session $session
+                          * @var \App\User $instructor
+                          */
+                        $instructor = $session->course()->instructor();
+                    @endphp
                     @foreach($sessions as $i => $session)
                         <tr>
                             <th scope="col">{{ $i+1 }}</th>
@@ -42,6 +51,9 @@
                             <td>{{ $session->deadline_uk }}</td>
                             @if (Auth::user()->isStudent())
                                 <td class="font-italic">{{ $session->hasJoinedGroup(Auth::user()) ? $session->getUserGroup(Auth::user())->name : 'N/A' }}</td>
+                            @elseif (Auth::user()->isAdmin())
+                                <td><a href="{{ url("/users/{$instructor->id}/show") }}">{{ $instructor->name }}</a>
+                                </td>
                             @endif
                             @if (!\Illuminate\Support\Facades\Auth::user()->isStudent())
                                 <td class="action-cell">
