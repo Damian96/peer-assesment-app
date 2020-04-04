@@ -49,8 +49,9 @@
                             @endforeach
                         </select>
                     </td>
-                    @if (Auth::user()->isAdmin())
-                        <td class="action-cell text-right">
+                    <td class="action-cell text-right">
+                        @if (Auth::user()->isAdmin() ||  Auth::user()->ownsCourse($course->id))
+                            {{-- Instructor  - Owner --}}
                             @if (!$course->copied())
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
                                     @method('POST')
@@ -65,67 +66,24 @@
                                     </button>
                                 </form>
                             @endif
-                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
-                                <a href="{{ url('/courses/' . $course->id . '/edit') }}"
-                                   class="material-icons text-warning"
-                                   title="Update Course {{ $course->code }}"
-                                   aria-label="Update Course {{ $course->code }}">edit</a>
-                            @endif
+                            <a href="{{ url('/courses/' . $course->id . '/edit') }}"
+                               class="material-icons text-warning"
+                               title="Update Course {{ $course->code }}"
+                               aria-label="Update Course {{ $course->code }}">edit</a>
                             <?php // @TODO: add disable POST link ?>
-                            @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
-                                <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
-                                      class="d-inline-block">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit"
-                                            id="delete-course"
-                                            class="btn btn-lg btn-link material-icons text-danger"
-                                            data-title="Are you sure you want to delete this course?"
-                                            data-content="This action is irreversible."
-                                            title="Delete {{ $course->code }}"
-                                            aria-label="Delete {{ $course->code }}">delete_forever
-                                    </button>
-                                </form>
-                            @endif
-                        </td>
-                    @elseif (!Auth::user()->isAdmin() && Auth::user()->ownsCourse($course->id))
-                        <td class="action-cell text-right">
-                            @if (!$course->copied())
-                                <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
-                                    @method('POST')
-                                    @csrf
-                                    <button type="submit"
-                                            id="copy-course"
-                                            class="btn btn-lg btn-link material-icons text-warning"
-                                            title="Copy to current Academic Year"
-                                            data-title="Copy to current Academic Year?"
-                                            data-content="This will create a duplicate."
-                                            aria-label="Copy to current Academic Year">next_week
-                                    </button>
-                                </form>
-                            @endif
-                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
-                                <a href="{{ url('/courses/' . $course->id . '/edit') }}"
-                                   class="material-icons text-warning"
-                                   title="Update Course {{ $course->code }}"
-                                   aria-label="Update Course {{ $course->code }}">edit</a>
-                            @endif
-                            @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
-                                <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
-                                      class="d-inline-block">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit"
-                                            id="delete-course"
-                                            class="btn btn-lg btn-link material-icons text-danger"
-                                            data-title="Are you sure you want to delete this course?"
-                                            data-content="This action is irreversible."
-                                            title="Delete {{ $course->code }}"
-                                            aria-label="Delete {{ $course->code }}">delete_forever
-                                    </button>
-                                </form>
-                            @endif
-                        </td>
+                            <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
+                                  class="d-inline-block">
+                                @method('DELETE')
+                                @csrf
+                                <button type="submit"
+                                        id="delete-course"
+                                        class="btn btn-lg btn-link material-icons text-danger"
+                                        data-title="Are you sure you want to delete this course?"
+                                        data-content="This action is irreversible."
+                                        title="Delete {{ $course->code }}"
+                                        aria-label="Delete {{ $course->code }}">delete_forever
+                                </button>
+                            </form>
                     @else
                         <td class="text-right">
                             <a href="{{ url( sprintf("/users/%s/show/",$course->instructor)) }}"
@@ -137,15 +95,13 @@
                     @endif
                 </tr>
                 </tbody>
-                @if (Auth::user()->isAdmin())
-                    <tfoot>
-                    <tr>
-                        <td colspan="2">Created: {{ $course->create_date }}</td>
-                        <td colspan="2">Updated: {{ $course->update_date }}</td>
-                        <td colspan="1">Status: {{ $course->status_full }}</td>
-                    </tr>
-                    </tfoot>
-                @endif
+                <tfoot>
+                <tr>
+                    <td colspan="2">Created: {{ $course->create_date }}</td>
+                    <td colspan="2">Updated: {{ $course->update_date }}</td>
+                    <td colspan="1">Status: {{ $course->status_full }}</td>
+                </tr>
+                </tfoot>
             </table>
         </div>
         @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))

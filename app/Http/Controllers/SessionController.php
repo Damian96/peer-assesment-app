@@ -283,7 +283,6 @@ class SessionController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
-            dd($validator->errors());
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
                 ->withErrors($validator->errors())
@@ -296,20 +295,10 @@ class SessionController extends Controller
             'course_id' => $request->get('course', $session->course_id),
             'deadline' => Carbon::createFromTimestamp(strtotime($request->get('deadline', $now)))
                 ->format(config('constants.date.stamp')),
-//            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', $now)))
-//                ->format(config('constants.date.stamp')),
+            'open_date' => Carbon::createFromTimestamp(strtotime($request->get('open_date', $now)))
+                ->format(config('constants.date.stamp')),
         ]);
-//        if ($request->get('form', 0) == 1) {
-//            $form = Form::find(1)->replicate()->fill([
-//                'session_id' => $session->id,
-//                'mark' => '0',
-//            ]);
-//
-//            if (!$form->save()) {
-//                throw_if(env('APP_DEBUG', false), 500, sprintf("Could not update Session %s!", $session->id));
-//                return redirect()->back(302, $request->headers->all());
-//            }
-//        }
+
         if ($session->update($request->except(['course', '_token', '_method', 'form', 'groups', 'min_group_size', 'max_group_size']))) {
             $request->session()->flash('message', [
                 'level' => 'success',
