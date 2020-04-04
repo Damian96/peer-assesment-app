@@ -696,6 +696,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.store':
             case 'session.create':
             case 'form.index':
+            case 'form.preview':
                 return $this->isInstructor();
             case 'course.update':
             case 'course.edit':

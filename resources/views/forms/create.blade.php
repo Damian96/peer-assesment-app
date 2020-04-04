@@ -18,7 +18,7 @@
         <div class="col-sm-12 col-md-12">
             <hr>
             @include('forms.formData', [
-                'errors' => $errors
+                'errors' => isset($errors) ? $errors : null
             ])
         </div>
         <div id="card-container" class="container-fluid">
@@ -43,6 +43,7 @@
         </div>
         <div class="col-sm-12 col-md-12">
             <hr>
+            <button id="preview" type="button" class="btn btn-block btn-secondary">Preview</button>
             <button type="submit" class="btn btn-block btn-primary">Create</button>
         </div>
     </form>
@@ -92,6 +93,16 @@
                 }
             });
             return form.valid();
+        });
+        $('#preview').on('click', function () {
+            let href = '{{ url('/forms/preview') }}';
+            let form = document.querySelector('form');
+
+            if ($(form).valid()) {
+                form.action = href;
+                form.submit();
+            }
+            return true;
         });
     </script>
 @endsection
