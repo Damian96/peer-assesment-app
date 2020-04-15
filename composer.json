@@ -100,6 +100,10 @@
     "post-install-cmd": [
       "cp .env.testing .env",
       "bash nano.sh"
+    ],
+    "start": [
+      "@php artisan cache-store",
+      "@php artisan serve"
     ]
   }
 }
