@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
         DB::table($table)->truncate();
         if ($auto_inc) {
             DB::statement("ALTER TABLE `$table` AUTO_INCREMENT = 1");
+            DB::statement("SHOW VARIABLES LIKE 'auto_inc%';");
+            DB::statement('SET @@auto_increment_increment=1;');
         }
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
