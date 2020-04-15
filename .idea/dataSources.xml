@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="Heroku-ClearDB" uuid="bd676d25-d3b3-403a-841e-3d10fc7892f5">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <remarks>https://www.cleardb.com/database/details?id=28765A7A9B121B6CDDE72BDB5A8197B9</remarks>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/heroku_fa2437dec76d5f6</jdbc-url>
+    </data-source>
+  </component>
+</project>
