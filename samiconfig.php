@@ -1,5 +1,7 @@
 <?php
 
+require "./vendor/autoload.php";
+
 use Sami\Sami;
 use Symfony\Component\Finder\Finder;
 

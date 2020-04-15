@@ -20,12 +20,12 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @if (Route::current() && (env('APP_ENV', false) !== 'local' || ! env('APP_DEBUG', false)) && (Route::current()->named('user.login') || Route::current()->named('user.register')))
+    @if ((env('APP_ENV', false) !== 'local' || ! env('APP_DEBUG', false)) && (Route::current()->named('login') || Route::current()->named('register')))
         {!! htmlScriptTagJsApi([
             'action' => 'homepage',
         ]) !!}
     @endif
-
+)
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
         window.urlParams = urlParams;
