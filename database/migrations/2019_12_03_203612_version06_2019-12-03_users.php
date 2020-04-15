@@ -16,7 +16,7 @@ class Version0620191203Users extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
-            $table->string('email', 255)->unique();
+            $table->string('email', 100)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('fname', 255)->nullable();
             $table->string('lname', 255)->nullable();
