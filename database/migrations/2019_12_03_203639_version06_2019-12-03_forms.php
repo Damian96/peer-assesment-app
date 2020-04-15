@@ -19,8 +19,8 @@ class Version0620191203Forms extends Migration
             $table->string('title', 255);
             $table->string('subtitle', 255)->nullable();
             $table->char('mark', 1)->nullable()->default('0')->comment('class mark');
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
             $table->foreign('session_id', 'forms_sessions_foreign')->references('id')->on('sessions')
                 ->onDelete('SET NULL');

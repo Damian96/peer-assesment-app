@@ -17,8 +17,8 @@ class Version0620191203UserGroup extends Migration
             $table->unsignedBigInteger('id', true);
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('group_id')->unsigned();
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
             $table->foreign('user_id', 'user_group_users_foreign')->references('id')->on('users');
             $table->foreign('group_id', 'user_group_groups_foreign')->references('id')->on('groups')
