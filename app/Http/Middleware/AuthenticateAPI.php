@@ -23,6 +23,8 @@ class AuthenticateAPI
                 Auth::guard('api')->setUser($user->first());
                 return $next($request);
             }
+        } elseif ($request->wantsJson()) {
+            return $next($request);
         }
 
         return redirect()->action('UserController@login', [], 302, $request->headers->all());

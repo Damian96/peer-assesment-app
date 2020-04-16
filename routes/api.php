@@ -18,15 +18,21 @@ use Illuminate\Support\Facades\Auth;
  * auth:api Middleware -> expects always JSON !!
  */
 
-/**
- * @TODO: make APIController
- */
+Route::group(['prefix' => '/fallback'], function () {
+    Route::get('/404', 'ApiController@error404')->name('api.fallback.404');
+    Route::get('/500', 'ApiController@error500')->name('api.fallback.500');
+});
 
-Route::post('/user/login', 'ApiController@login')->name('api.login');
 Route::middleware('api')->get('/user', function (Request $request) {
     return json_encode(Auth::guard('api')->user());
 });
+Route::group(['prefix' => '/user'], function () {
+    Route::post('/login', 'ApiController@login')->name('api.login');
+});
 
+/**
+ * @TODO: make ApiSessionController
+ */
 Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {
     Route::get('/all', function (Request $request) {
         $except = $request->get('except', '');
@@ -40,6 +46,9 @@ Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {
     })->name('sessions.all');
 });
 
+/**
+ * @TODO: make ApiGroupController
+ */
 Route::group(['prefix' => '/groups', 'middleware' => 'api'], function () {
     Route::get('{session}/all', function (Request $request, \App\Session $session) {
         /**

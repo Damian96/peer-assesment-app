@@ -10,7 +10,7 @@ class Kernel extends HttpKernel
 {
     public function __construct(Application $app, Router $router)
     {
-        if (env('APP_ENV', 'local') != 'local') {
+        if (env('APP_ENV', 'local') !== 'local' && \Auth::guard('api')->check()) {
             $this->middlewareGroups['api'][] = \App\Http\Middleware\ResponseCacheMiddleware::class;
         }
 
