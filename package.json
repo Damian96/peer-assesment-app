@@ -1,5 +1,5 @@
 {
-  "name": "WPES",
+  "name": "wpes",
   "version": "1.0.0",
   "homepage": "http://damp-dusk-04029.herokuapp.com/login",
   "private": true,
@@ -24,7 +24,6 @@
     "axios": "^0.19.2",
     "bootstrap": "^4.4.0",
     "browser-sync-webpack-plugin": "^2.2.2",
-    "cross-env": "^5.1",
     "jquery": "^3.4.1",
     "jshint": "^2.11.0",
     "laravel-mix": "^4.1.4",
@@ -39,6 +38,7 @@
     "webpack-jquery-ui": "^2.0.1"
   },
   "dependencies": {
+    "cross-env": "^5.1",
     "@curveballerpacks/tablesorter": "^1.0.0",
     "@myspace-nu/jquery.fancytable": "^1.0.9",
     "browser-sync": "^2.26.7",
