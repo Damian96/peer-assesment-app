@@ -1,4 +1,4 @@
-#!/bin/bash env
+#!/bin/bash
 
 if [[ ! -r /app ]]; then
    echo -n "Not in Heroku remote"
