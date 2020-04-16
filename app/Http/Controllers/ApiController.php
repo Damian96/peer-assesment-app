@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SessionCollection;
+use App\Session;
 use App\User;
-use http\Exception\RuntimeException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -31,6 +31,11 @@ class ApiController extends Controller
                     'method' => 'required|string|in:_POST',
                     'email' => 'required|email|exists:users,email',
                     'password' => 'required|string|max:255',
+                ];
+            case 'sessionCollection':
+                return [
+//                    'method' => 'required|string|in:_GET',
+                    'except' => 'nullable|string|regex:/([0-9],).+,?/i',
                 ];
             default:
                 return [];
@@ -74,14 +79,34 @@ class ApiController extends Controller
                     'token' => $user->api_token,
                     'user' => Auth::guard('api')->user(),
                 ]);
+            } else {
+                return $this->sendResponse(['message' => "Invalid email-password combination provided!"], 200);
             }
         } catch (\Throwable $e) {
             throw_if(env('APP_DEBUG', false), $e);
             return $this->sendResponse(['message' => $e->getMessage(), 'code' => $e->getCode(), 'error' => $e->getTraceAsString()]);
         }
+    }
 
-        // fallback
-        throw new \RuntimeException("Something went wrong!", 500);
+    /**
+     * @param Request $request
+     * @param string $except
+     * @return SessionCollection|\Illuminate\Http\Response
+     */
+    public function sessionCollection(Request $request, string $except = '')
+    {
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+        if ($validator->fails()) {
+            return $this->sendResponse(['message' => $validator->messages()->first(), 'error' => $validator->errors()->first()]);
+        }
+
+        $except = explode(',', $except);
+        $except = array_map(function ($value) {
+            return intval($value);
+        }, $except);
+        return new SessionCollection(Session::whereNotIn('sessions.id', $except)
+            ->where('sessions.id', '!=', \App\Course::DUMMY_ID)
+            ->get('sessions.*'));
     }
 
     /**
@@ -104,23 +129,20 @@ class ApiController extends Controller
 
     /**
      * @param mixed $data
+     * @param int $code
      * @return \Illuminate\Http\Response
      */
-    private function sendResponse($data)
+    private function sendResponse($data, $code = 200)
     {
         try {
-            $json = json_encode($data, JSON_THROW_ON_ERROR);
+            $json = json_encode($data);
+            return \response($json, $code, [
+                'Content-Type' => 'application/json'
+            ]);
         } catch (\Exception $e) {
-            return \response(json_encode(['error']), 200, [
+            return \response(json_encode(['message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTraceAsString()]), $code, [
                 'Content-Type' => 'application/json'
             ]);
         }
-        return $json ? \response($json, 200, [
-            'Content-Type' => 'application/json'
-        ]) : \response(json_encode(['error']), 200,
-            [
-                'Content-Type' => 'application/json',
-            ]);
     }
-
 }

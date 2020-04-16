@@ -30,25 +30,10 @@ Route::group(['prefix' => '/user'], function () {
     Route::post('/login', 'ApiController@login')->name('api.login');
 });
 
-/**
- * @TODO: make ApiSessionController
- */
 Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {
-    Route::get('/all', function (Request $request) {
-        $except = $request->get('except', '');
-        $except = explode(',', $except);
-        $except = array_map(function ($value) {
-            return intval($value);
-        }, $except);
-        return new \App\Http\Resources\SessionCollection(\App\Session::whereNotIn('sessions.id', $except)
-            ->where('sessions.id', '!=', \App\Course::DUMMY_ID)
-            ->get('sessions.*'));
-    })->name('sessions.all');
+    Route::get('/all', 'ApiController@sessionCollection')->name('api.sessionCollection');
 });
 
-/**
- * @TODO: make ApiGroupController
- */
 Route::group(['prefix' => '/groups', 'middleware' => 'api'], function () {
     Route::get('{session}/all', function (Request $request, \App\Session $session) {
         /**
