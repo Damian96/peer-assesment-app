@@ -19,19 +19,19 @@ abstract class TestCase extends BaseTestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        array_push($this->beforeApplicationDestroyedCallbacks, function () {
-            try {
-                $user = \App\User::whereEmail('jdoe@citycollege.sheffield.eu')->firstOrFail();
-                $user->delete();
-            } catch (\Throwable $e) {
+//        array_push($this->beforeApplicationDestroyedCallbacks, function () {
+//            try {
+//                $user = \App\User::whereEmail('jdoe@citycollege.sheffield.eu')->firstOrFail();
+//                $user->delete();
+//            } catch (\Throwable $e) {
+////                throw $e;
+//            }
+//
+//            try {
+//                dd(DB::connection(env('DB_CONNECTION')));
+//            } catch (\Exception $e) {
 //                throw $e;
-            }
-
-            try {
-                dd(DB::connection(env('DB_CONNECTION')));
-            } catch (\Exception $e) {
-                throw $e;
-            }
-        });
+//            }
+//        });
     }
 }
