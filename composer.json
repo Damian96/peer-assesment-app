@@ -96,9 +96,8 @@
       "composer cache-store"
     ],
     "post-install-cmd": [
-      "cp .env.testing .env"
-    ],
-    "start": [
+      "cp .env.testing .env",
+      "npm run prod",
       "composer cache-store"
     ]
   }
