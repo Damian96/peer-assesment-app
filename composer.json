@@ -100,8 +100,7 @@
       "bash nano.sh"
     ],
     "start": [
-      "composer cache-store",
-      "@php artisan serve"
+      "composer cache-store"
     ]
   }
 }
