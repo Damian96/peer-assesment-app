@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Course;
 use App\Rules\FQDN;
 use App\Rules\PrependedEmailExists;
+use App\Rules\PrependEmailUnique;
 use App\StudentCourse;
 use App\User;
 use Carbon\Carbon;
@@ -74,17 +75,30 @@ class UserController extends Controller
         $default = [
             'fname' => 'required|string|min:3|max:25',
             'lname' => 'required|string|min:3|max:25',
-            'email' => 'required|email|regex:/^.+@citycollege\.sheffield\.eu$/im|not_in:dummy@citycollege.sheffield.eu',
+            'email' => [
+                'required',
+                'email',
+                'regex:/^.+@citycollege\.sheffield\.eu$/im',
+                'not_in:dummy@citycollege.sheffield.eu',
+            ],
             'reg_num' => 'required|string|regex:/^[A-Z]{2}[0-9]{5}$/im',
             'password' => 'required|string|min:3|max:50',
-            'email_prepend' => [
+            'email_prepend_exists' => [
                 'required',
                 'string',
                 'min:5',
                 'max:50',
                 'regex:/^[a-z]+$/',
                 new PrependedEmailExists()
-            ]
+            ],
+            'email_prepend_unique' => [
+                'required',
+                'string',
+                'min:5',
+                'max:50',
+                'regex:/^[a-z]+$/',
+                new PrependEmailUnique()
+            ],
         ];
         switch ($action) {
             case 'update':
@@ -98,7 +112,7 @@ class UserController extends Controller
             case 'forgot':
             case 'forgotSend':
                 return [
-                    'email' => $default['email_prepend'],
+                    'email' => $default['email_prepend_exists'],
                 ];
             case 'storeStudent':
             case 'register.student':
@@ -121,7 +135,7 @@ class UserController extends Controller
             case 'store':
                 return [
                     '_method' => 'required|string|in:POST',
-                    'email' => $default['email'] . '|unique:users',
+                    'email' => $default['email_prepend_unique'],
                     'password' => $default['password'],
                     'fname' => $default['fname'],
                     'lname' => $default['lname'],
@@ -132,7 +146,7 @@ class UserController extends Controller
             case 'auth':
             case 'login':
                 return [
-                    'email' => $default['email_prepend'],
+                    'email' => $default['email_prepend_exists'],
                     'password' => $default['password'],
                     'remember' => 'nullable|in:0,1,on,off',
                     'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
@@ -163,6 +177,8 @@ class UserController extends Controller
             'email.required' => 'We need to know your e-mail address!',
             'email.regex' => 'The e-mail is not valid!',
             'email.unique' => 'This email already exists!',
+//            'email.prependemailexists' => 'The email already does not exist!',
+//            'email.prependemailunique' => 'The email already exist!',
 
             'fname.required' => 'We need to know your first name!',
             'lname.required' => 'We need to know your last name!',
@@ -447,7 +463,10 @@ class UserController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        $request->merge(['password' => Hash::make($request->get('password'))]);
+        $request->merge([
+            'email' => sprintf("%s@%s", $request->get('email'), config('app.domain')),
+            'password' => Hash::make($request->get('password'))
+        ]);
         $user = new User($request->all());
         if ($user->save()) {
             $user->sendEmailVerificationNotification();

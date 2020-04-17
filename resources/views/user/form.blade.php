@@ -33,14 +33,26 @@
     </div>
 
     <div class="form-group" title="{{ $messages['email.required'] }}">
-        <label class="control-label" for="email">Email</label>
+        <label id="email-lbl" class="control-label" for="email">Email</label>
 
-        <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" tabindex="0"
-               name="email" value="{{ old('email', isset($user) ? $user->email : '') }}" id="email" required
-               data-rule-required="true"
-               data-msg-required="{{ $messages['email.required'] }}"
-               data-rule-pattern="{{ '^[a-z].+@' . env('ORG_DOMAIN') }}"
-               data-msg-pattern="{{ $messages['email.regex'] }}">
+        <div class="input-group">
+            <input type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                   name="email" value="{{ old('email') }}" id="email" autofocus tabindex="0"
+                   required aria-labelledby="email-lbl"
+                   minlength="3" maxlength="100"
+                   aria-required="true"
+                   data-rule-required="true"
+                   data-msg-required="{!! $messages['email.required'] ?? '' !!}"
+                   data-rule-minlegth="3"
+                   data-msg-minlegth="{!! $messages['email.min'] ?? '' !!}"
+                   data-rule-maxlength="100"
+                   data-msg-maxlength="{!! $messages['email.max'] ?? '' !!}">
+            <div class="input-group-append cursor-con" tabindex="-1">
+                <button class="btn btn-primary cursor-con" type="button"
+                        tabindex="-1">{{ config('app.domain') }}</button>
+            </div>
+        </div>
+
         <span class="invalid-feedback d-block">@if ($errors->has('email'))
                 <strong>{{ $errors->first('email') }}</strong>@endif</span>
     </div>

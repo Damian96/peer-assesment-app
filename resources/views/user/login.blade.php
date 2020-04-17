@@ -16,8 +16,6 @@
                                required aria-labelledby="email-lbl"
                                minlength="3" maxlength="255"
                                aria-required="true"
-                               {{--                               data-rule-pattern=""--}}
-                               {{--                               data-msg-pattern=""--}}
                                data-rule-required="true"
                                data-msg-required="{!! $messages['email.required'] ?? '' !!}"
                                data-rule-minlegth="3"
