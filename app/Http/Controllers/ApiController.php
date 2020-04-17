@@ -80,7 +80,7 @@ class ApiController extends Controller
                     'user' => Auth::guard('api')->user(),
                 ]);
             } else {
-                return $this->sendResponse(['message' => "Invalid email-password combination provided!"], 200);
+                return $this->sendResponse(['message' => "Invalid email-password combination provided!", 'error' => 'Could not authenticate.'], 200);
             }
         } catch (\Throwable $e) {
             throw_if(env('APP_DEBUG', false), $e);
