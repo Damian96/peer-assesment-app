@@ -13,8 +13,7 @@ class CreateSessionsTable extends Migration
      */
     public function up()
     {
-        if (false) {
-//        if (env('APP_ENV') === 'testing') {
+        if (env('APP_ENV', 'local') === 'testing') {
             Schema::create('sessions', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('user_id')->nullable();
