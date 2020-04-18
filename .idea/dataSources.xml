@@ -8,5 +8,14 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://us-cdbr-iron-east-01.cleardb.net:3306/heroku_fa2437dec76d5f6</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="phpmyadmin.test" uuid="d6b844e2-a104-49b2-8941-0d7ab68fb3da">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/wpesDB</jdbc-url>
+      <driver-properties>
+        <property name="serverTimezone" value="Europe/Athens" />
+      </driver-properties>
+    </data-source>
   </component>
 </project>
