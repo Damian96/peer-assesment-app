@@ -651,7 +651,7 @@ class UserController extends Controller
      */
     public function verify(Request $request)
     {
-        if (!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password', 'invite', 'enroll'], true)) {
+        if (!$request->has(['id', 'hash', 'expires', 'action']) || !in_array($request->get('action', false), ['email', 'password', 'invite'], true)) {
             throw abort(401, "The request you sent is invalid.");
         }
 

@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
 {
+    use DatabaseTransactions;
+
     /**
      * Tests a successful Instructor user register attempt
      * @return void
@@ -22,7 +25,7 @@ class RegisterTest extends TestCase
             'password' => '123',
             'password_confirmation' => '123',
             'department' => 'CS',
-            'localhost' => env('APP_ENV', 'local') === 'local' ? '1' : '0',
+            'localhost' => '1',
         ]);
 
         $response->assertLocation('/login');
@@ -32,21 +35,21 @@ class RegisterTest extends TestCase
      * Tests
      * @return void
      */
-//    public function testUnsuccessful()
-//    {
-//        $response = $this->post('/store', [
-//            '_method' => 'POST',
-//            '_token' => csrf_token(),
-//            'fname' => 'Joe',
-//            'lname' => 'Doe',
-//            'email' => 'jdoe@citycollege.sheffield.eu',
-//            'reg_num' => 'CS204' . rand(0, 99),
-//            'password' => '123',
-//            'password_confirmation' => '123',
-//            'department' => 'CS',
-//            'localhost' => '1',
-//        ]);
-//
-//        $response->assertLocation('/login');
-//    }
+    public function testUnsuccessful()
+    {
+        $response = $this->post('/store', [
+            '_method' => 'POST',
+            '_token' => csrf_token(),
+            'fname' => 'Joe',
+            'lname' => 'Doe',
+            'email' => 'jdoe@gmail.com',
+            'reg_num' => 'ABC04' . rand(0, 99),
+            'password' => '123',
+            'password_confirmation' => '123',
+            'department' => 'CS',
+            'localhost' => '1',
+        ]);
+
+        $response->assertLocation('/register');
+    }
 }

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,11 +22,9 @@ Route::group(['prefix' => '/fallback'], function () {
     Route::get('/500', 'ApiController@error500')->name('api.fallback.500');
 });
 
-Route::middleware('api')->get('/user', function (Request $request) {
-    return json_encode(Auth::guard('api')->user());
-});
 Route::group(['prefix' => '/user'], function () {
-    Route::post('/login', 'ApiController@login')->name('api.login');
+    Route::post('/login', 'ApiController@login')->name('api.user.login');
+    Route::get('/check', 'ApiController@check')->name('api.user.check');
 });
 
 Route::group(['prefix' => '/sessions', 'middleware' => 'api'], function () {

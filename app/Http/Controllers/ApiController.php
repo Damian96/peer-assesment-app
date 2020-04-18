@@ -74,6 +74,7 @@ class ApiController extends Controller
             $user = User::whereEmail($request->get('email'))->firstOrFail();
             if (Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')]) && !$user->isStudent()) {
                 $user->generateApiToken();
+                Auth::setUser($user);
                 Auth::guard('api')->setUser($user);
                 return $this->sendResponse([
                     'token' => $user->api_token,
@@ -107,6 +108,16 @@ class ApiController extends Controller
         return new SessionCollection(Session::whereNotIn('sessions.id', $except)
             ->where('sessions.id', '!=', \App\Course::DUMMY_ID)
             ->get('sessions.*'));
+    }
+
+    /**
+     * Private route only for checking authentication
+     * @param Request $request
+     * @return false|string
+     */
+    public function check(Request $request)
+    {
+        return $this->sendResponse(Auth::guard('api')->user());
     }
 
     /**
