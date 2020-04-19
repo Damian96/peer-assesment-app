@@ -19,6 +19,7 @@ before_script:
   - composer install --prefer-source --no-interaction --dev
   - php artisan key:generate
   - php artisan migrate
+  - php artisan db:seed
 #before_install:
 script:
   - vendor/bin/phpunit -c phpunit.xml --verbose
