@@ -1,12 +1,13 @@
 {
-  "name": "laravel/laravel",
+  "name": "Damian96/peer-assessment-app",
   "type": "project",
-  "description": "The Laravel Framework.",
+  "description": "Online Peer Assessment Tool for Group Assignments",
   "keywords": [
-    "framework",
+    "online-peer-review-system",
+    "peer-evaluation",
     "laravel"
   ],
-  "license": "MIT",
+  "license": "GPLv3",
   "require": {
     "biscolab/laravel-recaptcha": "^4.0",
     "davejamesmiller/laravel-breadcrumbs": "5.3.0",
@@ -15,8 +16,7 @@
     "itsgoingd/clockwork": "^4.0",
     "laravel/framework": "^6.0",
     "laravel/tinker": "^1.0",
-    "spatie/laravel-html": "^2.24",
-    "spatie/laravel-paginateroute": "^2.7"
+    "spatie/laravel-html": "^2.24"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^2.6",
