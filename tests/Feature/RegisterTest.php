@@ -28,7 +28,7 @@ class RegisterTest extends TestCase
             'localhost' => '1',
         ]);
 
-        $response->assertLocation('/login');
+        $response->assertStatus(302);
     }
 
     /**
