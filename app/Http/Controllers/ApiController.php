@@ -90,6 +90,7 @@ class ApiController extends Controller
     }
 
     /**
+     * /api/sessions/all
      * @param Request $request
      * @param string $except
      * @return SessionCollection|\Illuminate\Http\Response
@@ -155,5 +156,59 @@ class ApiController extends Controller
                 'Content-Type' => 'application/json'
             ]);
         }
+    }
+
+    /**
+     * /api/sessions/{session}all
+     * @param Request $request
+     * @param Session $session
+     * @return \App\Http\Resources\GroupCollection|\Illuminate\Http\Response
+     */
+    public function groupsOfSession(Request $request, Session $session)
+    {
+        $groups = new \App\Http\Resources\GroupCollection($session->groups()->getModels());
+        $groups->additional(['session' => $session]);
+        return $this->sendResponse($groups);
+    }
+
+    /**
+     * /api/groups/{session}/form
+     * @param Request $request
+     * @param Session $session
+     * @return \Spatie\Html\Elements\Form
+     * Content-Type: text/html
+     */
+    public function formOfSessionsGroups(Request $request, Session $session)
+    {
+        /**
+         * @var \App\Session $session
+         */
+        $groups = $session->groups()->getModels();
+        $select = html()->select('group_id')->addClass('form-control-md')->attribute('required', 'true')->attribute('aria-required', 'true');
+
+        foreach ($groups as $model) {
+            /**
+             * @var \App\Group $model
+             */
+            $select = $select->addChild(html()->option($model->name, $model->id));
+        }
+
+        return html()->form('POST', url("/sessions/{$session->id}/join-group"))
+            ->addChild(html()->div(html()->label('Group')->addClass('form-control-md mr-2'))->addClass('form-group text-center mt-1')
+                ->addChild($select)
+                ->addChild(html()->span()->attribute('class', 'invalid-feedback d-block'))
+                ->addChild(html()->input('hidden', 'session_id', $session->id))
+                ->addChild(html()->input('hidden', '_method', 'POST'))
+                ->addChild(csrf_field()));
+    }
+
+    /**
+     * /api/groups/all
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function groups(Request $request)
+    {
+        return $this->sendResponse(new \App\Http\Resources\GroupCollection(\App\Group::all()->collect()));
     }
 }

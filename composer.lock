@@ -116,17 +116,18 @@
                 "MIT"
             ],
             "authors": [
-                {
-                    "name": "Dave James Miller",
-                    "email": "dave@davejamesmiller.com"
-                }
+              {
+                "name": "Dave James Miller",
+                "email": "dave@davejamesmiller.com"
+              }
             ],
-            "description": "A simple Laravel-style way to create breadcrumbs.",
-            "homepage": "https://github.com/davejamesmiller/laravel-breadcrumbs",
-            "keywords": [
-                "laravel"
-            ],
-            "time": "2019-09-03T15:24:57+00:00"
+          "description": "A simple Laravel-style way to create breadcrumbs.",
+          "homepage": "https://github.com/davejamesmiller/laravel-breadcrumbs",
+          "keywords": [
+            "laravel"
+          ],
+          "abandoned": true,
+          "time": "2019-09-03T15:24:57+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2564,20 +2565,20 @@
             ],
             "time": "2020-01-13T11:15:53+00:00"
         },
-        {
-            "name": "symfony/polyfill-iconv",
-            "version": "v1.14.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-iconv.git",
-                "reference": "926832ce51059bb58211b7b2080a88e0c3b5328e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-iconv/zipball/926832ce51059bb58211b7b2080a88e0c3b5328e",
-                "reference": "926832ce51059bb58211b7b2080a88e0c3b5328e",
-                "shasum": ""
-            },
+      {
+        "name": "symfony/polyfill-iconv",
+        "version": "v1.15.0",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/symfony/polyfill-iconv.git",
+          "reference": "ad6d62792bfbcfc385dd34b424d4fcf9712a32c8"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/symfony/polyfill-iconv/zipball/ad6d62792bfbcfc385dd34b424d4fcf9712a32c8",
+          "reference": "ad6d62792bfbcfc385dd34b424d4fcf9712a32c8",
+          "shasum": ""
+        },
             "require": {
                 "php": ">=5.3.3"
             },
@@ -2587,7 +2588,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.14-dev"
+                  "dev-master": "1.15-dev"
                 }
             },
             "autoload": {
@@ -2612,17 +2613,31 @@
                     "homepage": "https://symfony.com/contributors"
                 }
             ],
-            "description": "Symfony polyfill for the Iconv extension",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "iconv",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "time": "2020-01-13T11:15:53+00:00"
-        },
+        "description": "Symfony polyfill for the Iconv extension",
+        "homepage": "https://symfony.com",
+        "keywords": [
+          "compatibility",
+          "iconv",
+          "polyfill",
+          "portable",
+          "shim"
+        ],
+        "funding": [
+          {
+            "url": "https://symfony.com/sponsor",
+            "type": "custom"
+          },
+          {
+            "url": "https://github.com/fabpot",
+            "type": "github"
+          },
+          {
+            "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+            "type": "tidelift"
+          }
+        ],
+        "time": "2020-03-09T19:04:49+00:00"
+      },
         {
             "name": "symfony/polyfill-intl-idn",
             "version": "v1.15.0",
