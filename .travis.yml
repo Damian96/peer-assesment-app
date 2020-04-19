@@ -3,7 +3,7 @@ git:
   sparse_checkout: .github/sparse-checkout
 branches:
   only:
-    - test
+    - testing
 language: php
 php:
   - 7.3
@@ -14,17 +14,14 @@ cache:
     - vendor
 before_script:
   - cp .env.travis .env
+  - sudo mysql -e 'CREATE DATABASE wpesDB;'
   - composer self-update
   - composer install --prefer-source --no-interaction --dev
   - php artisan key:generate
-  - php artisan serve &
   - php artisan migrate
-  - php artisan db:seed
-  - cat .env
-before_install:
-  - sudo mysql -e 'CREATE DATABASE testing;'
+#before_install:
 script:
   - vendor/bin/phpunit -c phpunit.xml --verbose
-after_script:
-  - kill %1
-  - unset AID
+#after_script:
+#  - kill %1
+#  - unset AID
