@@ -1,6 +1,6 @@
 # Online Peer Assessment Tool for Group Assignments [![Build Status](https://travis-ci.com/Damian96/peer-assesment-app.svg?branch=master)](https://travis-ci.com/Damian96/peer-assesment-app)
 2019-36 - Online Peer Assessment Tool for Group Assignments<br>
-***a.k.a Online Peer Evaluation System (OPES)***
+***a.k.a Web Peer Evaluation System (WPES)***
 
 # Technologies
 * [Laravel](https://github.com/laravel/laravel)

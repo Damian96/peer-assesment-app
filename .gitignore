@@ -31,3 +31,9 @@ Homestead.json
 *.swp
 *.bp
 *.backup
+
+models.php
+_ide_helper.php
+.phpstorm.meta.php
+Procfile
+routes.txt
