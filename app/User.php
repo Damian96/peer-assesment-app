@@ -3,8 +3,8 @@
 namespace App;
 
 use App\Notifications\AppResetPasswordEmail;
-use App\Notifications\StudentInviteEmail;
 use App\Notifications\StudentEnrollEmail;
+use App\Notifications\StudentInviteEmail;
 use Doctrine\DBAL\Query\QueryException;
 use Illuminate\Auth\Passwords\CanResetPassword as Resettable;
 use Illuminate\Contracts\Auth\Access\Authorizable;
@@ -583,7 +583,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEmailVerificationNotification()
     {
-        if (env('APP_ENV', 'local') !== 'local') {
+        if (env('APP_ENV', 'local') === 'testing') {
             $mailer = new \App\Notifications\AppVerifyEmail($this);
             Mail::to($this->email)->send($mailer);
         }
@@ -739,7 +739,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password_reset_token = $token;
         try {
-            if (env('APP_ENV', 'local') !== 'local') {
+            if (env('APP_ENV', 'local') === 'testing') {
                 $mailer = new AppResetPasswordEmail($this);
                 Mail::to($this->email)->send($mailer);
             }
@@ -773,7 +773,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-        if (env('APP_ENV', 'local') !== 'local') {
+        if (env('APP_ENV', 'local') === 'testing') {
             $mailer = new StudentEnrollEmail($this, $course);
             Mail::to($this->email)->send($mailer);
         }
