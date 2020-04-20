@@ -104,13 +104,13 @@
       <path value="$PROJECT_DIR$/vendor/symfony/error-handler" />
       <path value="$PROJECT_DIR$/vendor/spatie/laravel-html" />
       <path value="$PROJECT_DIR$/vendor/spatie/laravel-paginateroute" />
+      <path value="$PROJECT_DIR$/vendor/ralouphie/getallheaders" />
     </include_path>
   </component>
   <component name="PhpProjectServersManager">
     <servers>
       <server host="peerassess.test" id="c7185985-4856-4ece-9ef0-3044fd0ad3dd" name="PeerAsssess">
         <path_mappings>
-          <mapping local-root="$PROJECT_DIR$/public/index.php" remote-root="/home/damian/workspace/peer-assesment-app/public/index.php" />
           <mapping local-root="$PROJECT_DIR$/server.php" remote-root="/home/damian/workspace/peer-assessment-app/server.php" />
         </path_mappings>
       </server>

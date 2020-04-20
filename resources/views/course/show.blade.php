@@ -1,3 +1,9 @@
+@php
+    /**
+     * @var \App\Course $course
+     */
+@endphp
+
 @extends('layouts.app')
 
 @section('breadcrumbs')
@@ -65,14 +71,13 @@
                                     </button>
                                 </form>
                             @endif
-                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
+                            @if(Auth::user()->can('course.edit', ['course' => $course]))
                                 <a href="{{ url('/courses/' . $course->id . '/edit') }}"
                                    class="material-icons text-warning"
                                    title="Update Course {{ $course->code }}"
                                    aria-label="Update Course {{ $course->code }}">edit</a>
                             @endif
-                            <?php // @TODO: add disable POST link ?>
-                            @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
+                            @if(Auth::user()->can('course.delete', ['course' => $course]) && $course->ac_year_int != intval(date('Y')))
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
                                       class="d-inline-block">
                                     @method('DELETE')
@@ -88,7 +93,7 @@
                                 </form>
                             @endif
                         </td>
-                    @elseif (!Auth::user()->isAdmin() && Auth::user()->ownsCourse($course->id))
+                    @elseif (Auth::user()->can('course.edit', ['course' => $course]))
                         <td class="action-cell text-right">
                             @if (!$course->copied())
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/duplicate') }}">
@@ -104,13 +109,13 @@
                                     </button>
                                 </form>
                             @endif
-                            @if(Auth::user()->can('course.edit', ['id'=>$course->id]))
+                            @if(Auth::user()->can('course.edit', ['course' => $course]))
                                 <a href="{{ url('/courses/' . $course->id . '/edit') }}"
                                    class="material-icons text-warning"
                                    title="Update Course {{ $course->code }}"
                                    aria-label="Update Course {{ $course->code }}">edit</a>
                             @endif
-                            @if(Auth::user()->can('course.delete', ['id'=>$course->id]))
+                            @if(Auth::user()->can('course.delete', ['course' => $course]) && !$course->ac_year_int == intval(date('Y')))
                                 <form method="POST" action="{{ url('/courses/' . $course->id . '/delete') }}"
                                       class="d-inline-block">
                                     @method('DELETE')
