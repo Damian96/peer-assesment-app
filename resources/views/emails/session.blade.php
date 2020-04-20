@@ -1,7 +1,9 @@
 @php
 /**
- * @var \App\User $user
+ * @var \App\User $student
+ * @var \App\User $instructor
  * @var \App\Course $course
+ * @var \App\Session $session
  */
 @endphp
 
@@ -10,6 +12,12 @@
 
 @component('mail::panel')
 Please login to <a href="{{ url('/login') }}" title="Login to {{ config('app.name') }}" aria-label="Login to {{ config('app.name') }}">{{ config('app.name') }}</a> to complete the PA Form before the deadline closes!
+@endcomponent
+
+@component('mail::panel')
+Session: {{ $session->title }}<br>
+Department: {{ $session->department_title }}<br>
+Instructor: {{ $instructor->name }}
 @endcomponent
 
 @component('mail::button', ['url' => url('/login')])
