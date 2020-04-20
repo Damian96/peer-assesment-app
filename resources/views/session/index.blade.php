@@ -37,14 +37,14 @@
                     </tr>
                     </thead>
                     <tbody class="tsGroup">
-                    @php
-                        /**
-                          * @var \App\Session $session
-                          * @var \App\User $instructor
-                          */
-                        $instructor = $session->course()->instructor();
-                    @endphp
                     @foreach($sessions as $i => $session)
+                        @php
+                            /**
+                              * @var \App\Session $session
+                              * @var \App\User $instructor
+                              */
+                            $instructor = $session->instructor;
+                        @endphp
                         <tr>
                             <th scope="col">{{ $i+1 }}</th>
                             <td class="{{ $session->studentSession()->exists() ? 'text-success' : null }}">{{ $session->title_full }}</td>

@@ -5,12 +5,17 @@ namespace App\Notifications;
 
 
 use App\Course;
+use App\Session;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
 
+/**
+ * @property  \App\Session session
+ * @property User instructor
+ */
 class SessionStartEmail extends Mailable implements Renderable
 {
     /**
@@ -48,13 +53,17 @@ class SessionStartEmail extends Mailable implements Renderable
     /**
      * StudentInviteEmail constructor.
      * @param MustVerifyEmail $notifiable
+     * @param \App\User $instructor
      * @param Course $course
+     * @param Session $session
      * @param \Closure $toMailCallback The callback to executed when the mail is sent.
      */
-    public function __construct(MustVerifyEmail $notifiable, Course $course, \Closure $toMailCallback = null)
+    public function __construct(MustVerifyEmail $notifiable, \App\User $instructor, Course $course, Session $session, \Closure $toMailCallback = null)
     {
         $this->notifiable = $notifiable;
         $this->course = $course;
+        $this->session = $session;
+        $this->instructor = $instructor;
         self::$toMailCallback = $toMailCallback;
     }
 
@@ -64,17 +73,17 @@ class SessionStartEmail extends Mailable implements Renderable
      */
     public function build()
     {
-//        $verificationUrl = $this->notifiable->verificationUrl($this->action);
-//        if (static::$toMailCallback) {
-//            return call_user_func(static::$toMailCallback, $this->notifiable, $verificationUrl);
-//        }
+        if (static::$toMailCallback) {
+            return call_user_func(static::$toMailCallback, $this->notifiable);
+        }
         return $this->from(config('mail.from.address'), config('mail.from.name'))
             ->subject(sprintf("Course %s has a new Session!", $this->course->code))
-            ->markdown($this->markdown)
+            ->markdown($this->markdown) // emails.session
             ->with([
-//                'url' => $verificationUrl,
                 'user' => $this->notifiable,
-                'course' => $this->course
+                'instructor' => $this->instructor,
+                'course' => $this->course,
+                'session' => $this->session
             ]);
     }
 }

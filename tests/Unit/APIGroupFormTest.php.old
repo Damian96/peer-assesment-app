@@ -1,0 +1,24 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\User;
+use Tests\TestCase;
+
+class APIGroupFormTest extends TestCase
+{
+    /**
+     * Test /api/groups/{session}/form endpoint
+     * Add Bearer Token Authentication because text/html
+     * @return void
+     */
+    public function testSuccessful()
+    {
+        $response = $this->get('/api/groups/1/form', [
+            'Accept' => 'text/html',
+            'Authorization' => sprintf("Bearer: %s", User::whereId(1)->firstOrFail()->api_token)
+        ]);
+
+        $response->assertStatus(200);
+    }
+}
