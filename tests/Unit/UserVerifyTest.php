@@ -42,13 +42,13 @@ class UserVerifyTest extends TestCase
         $query = http_build_query([
             'id' => $notifiable->id,
             'hash' => sha1($notifiable->getEmailForVerification()),
-            'expires' => strtotime('+3 hours', now()),
+            'expires' => strtotime('+3 hours', now()->timestamp),
             'action' => 'email',
         ]);
         $response = $this->get('/verify?' . $query, [
             'Accept' => 'application/json',
         ]);
 
-        $response->assertStatus(401);
+        $response->assertStatus(302);
     }
 }
