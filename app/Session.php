@@ -2,9 +2,11 @@
 
 namespace App;
 
+use App\Notifications\SessionStartEmail;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Class Session
@@ -44,6 +46,7 @@ use Illuminate\Support\Facades\DB;
  * @property int max_groups
  * @property int groups
  * @property float mark_avg
+ * @property \App\User|null instructor
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
  */
 class Session extends Model
@@ -135,6 +138,10 @@ class Session extends Model
         parent::boot();
 
         static::retrieved(function ($session) {
+            /**
+             * @var Session $session
+             * @var Course|null $course
+             */
             $course = $session->course()->exists() ? $session->course()->first()->getModel() : null;
             $session->course = $course;
 
@@ -202,7 +209,7 @@ class Session extends Model
      */
     public function course()
     {
-        return $this->hasOne('App\Course', 'id', 'course_id')->first();
+        return $this->hasOne('App\Course', 'id', 'course_id');
     }
 
     /**
@@ -215,13 +222,24 @@ class Session extends Model
     }
 
     /**
-     * @TODO send session notifications
      * @method void
      * @return boolean
      */
     public function sendEmailNotification()
     {
-//        foreach ($this->course()->students()->get() as $student) { }
+        if (env('APP_ENV', 'local') === 'testing') {
+            /**
+             * @var Course $course
+             */
+            $course = $this->course;
+            foreach ($course->students()->getModels() as $student) {
+                /**
+                 * @var User $student
+                 */
+                $mailer = new SessionStartEmail($student, $course, $this);
+                Mail::to($student->email)->send($mailer);
+            }
+        }
         clock()->info('Students have been notified of the opened Session!');
     }
 

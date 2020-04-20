@@ -1,4 +1,4 @@
-{{-- globals: $method, $action, $errors --}}
+{{-- globals: $method, $action, $errors, $courses --}}
 <form role="form" method="{{ $method }}" action="{{ $action }}">
     @method($method)
     @csrf
@@ -14,7 +14,7 @@
         @php $course = isset($course) ? $course : ((isset($session) && $session->course()->exists()) ? $session->course()->first() : null); @endphp
         <div class="form-group">
             <label class="form-text" for="course">Course</label>
-            @if (!empty($courses->items))
+            @if (!empty($courses))
                 <select name="course" id="course" class="form-control{{ $errors->has('course') ? ' is-invalid' : '' }}"
                         readonly="true"
                         data-rule-required="true"
@@ -141,7 +141,7 @@
                    name="groups"
                    type="number"
                    id="groups"
-                   min="1"
+                   min="2"
                    aria-valuemin="1"
                    max="25"
                    aria-valuemax="25"
@@ -233,7 +233,7 @@
             $('#deadline').datepicker('setDate', {!! isset($session) ? sprintf("'%s'",date('d-m-Y', $session->deadline_int)) : "window.localStorage.getItem('{$action}-deadline')" !!});
             $("#open_date").datepicker({
                 dateFormat: 'dd-mm-yy',
-                minDate: 1,
+                minDate: 0,
                 maxDate: '{!! \App\Session::MAX_SELECT_DATE !!}',
                 onSelect: function (dateText) {
                     window.localStorage.setItem(`{{ $action }}-open_date`, dateText);
