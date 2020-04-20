@@ -223,23 +223,25 @@ class Session extends Model
 
     /**
      * @method void
-     * @return boolean
+     * @return void
      */
     public function sendEmailNotification()
     {
-        if (env('APP_ENV', 'local') === 'testing') {
+//        if (env('APP_ENV', 'local') === 'testing') {
+        /**
+         * @var Course $course
+         */
+        $this->instructor = $this->course->user()->exists() ? $this->course->user()->first()->getModel() : null;
+        if ($this->course == null || $this->instructor == null) return;
+
+        foreach ($this->course->students()->getModels() as $student) {
             /**
-             * @var Course $course
+             * @var User $student
              */
-            $course = $this->course;
-            foreach ($course->students()->getModels() as $student) {
-                /**
-                 * @var User $student
-                 */
-                $mailer = new SessionStartEmail($student, $course, $this);
-                Mail::to($student->email)->send($mailer);
-            }
+            $mailer = new SessionStartEmail($student, $this->instructor, $this->course, $this);
+            Mail::to($student->email)->send($mailer);
         }
+//        }
         clock()->info('Students have been notified of the opened Session!');
     }
 
