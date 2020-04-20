@@ -43,7 +43,7 @@
                               * @var \App\Session $session
                               * @var \App\User $instructor
                               */
-                            $instructor = $session->course()->instructor();
+                            $instructor = $session->instructor;
                         @endphp
                         <tr>
                             <th scope="col">{{ $i+1 }}</th>

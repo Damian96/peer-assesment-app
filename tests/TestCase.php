@@ -3,8 +3,10 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\DB;
 
+/**
+ * @property void deleteTransactions
+ */
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
@@ -19,19 +21,22 @@ abstract class TestCase extends BaseTestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-//        array_push($this->beforeApplicationDestroyedCallbacks, function () {
-//            try {
-//                $user = \App\User::whereEmail('jdoe@citycollege.sheffield.eu')->firstOrFail();
-//                $user->delete();
-//            } catch (\Throwable $e) {
-////                throw $e;
-//            }
-//
-//            try {
-//                dd(DB::connection(env('DB_CONNECTION')));
-//            } catch (\Exception $e) {
-//                throw $e;
-//            }
-//        });
+        array_push($this->beforeApplicationDestroyedCallbacks, array(self::class, 'deleteTransactions'));
+    }
+
+    /**
+     * Delete all transactions made during the test
+     * @return void
+     * @throws \Throwable
+     */
+    public static function deleteTransactions()
+    {
+        try {
+            $user = \App\User::whereEmail('joedoe@' . config('app.domain'))->firstOrFail();
+            $user->delete();
+        } catch (\Throwable $e) {
+            //            throw_if(env('APP_DEBUG', false), $e);
+            return;
+        }
     }
 }
