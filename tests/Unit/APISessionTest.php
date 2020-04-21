@@ -30,5 +30,4 @@ class APISessionTest extends TestCase
 
         $response->assertStatus(200);
     }
-
 }
