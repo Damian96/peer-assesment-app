@@ -30,7 +30,7 @@ class ApiController extends Controller
                 return [
                     'method' => 'required|string|in:_POST',
                     'email' => 'required|email|exists:users,email',
-                    'password' => 'required|string|max:255',
+                    'password' => 'required|string|max:100',
                 ];
             case 'sessionCollection':
                 return [
@@ -48,9 +48,16 @@ class ApiController extends Controller
      */
     private function messages(string $action)
     {
+        $defaults = [
+            'combo' => 'Invalid credentials combination.',
+        ];
         switch ($action) {
             case 'login':
-                return [];
+                return [
+                    'email.required' => $defaults['combo'],
+                    'password.required' => $defaults['combo'],
+                    'method.required' => $defaults['combo'],
+                ];
             default:
                 return [];
         }
@@ -81,11 +88,12 @@ class ApiController extends Controller
                     'user' => Auth::guard('api')->user(),
                 ]);
             } else {
-                return $this->sendResponse(['message' => "Invalid email-password combination provided!", 'error' => 'Could not authenticate.'], 200);
+                return $this->sendResponse(['message' => 'Invalid email-password combination provided.', 'error' => 'Could not authenticate.'], 200);
             }
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e);
-            return $this->sendResponse(['message' => $e->getMessage(), 'code' => $e->getCode(), 'error' => $e->getTraceAsString()]);
+            throw_if(env('APP_DEBUG', false), $e, ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return $this->sendResponse(['message' => 'Invalid email-password combination provided.', 'code' => $e->getCode()]);
+//            return $this->sendResponse(['message' => $e->getMessage(), 'code' => $e->getCode(), 'error' => $e->getTraceAsString()]);
         }
     }
 

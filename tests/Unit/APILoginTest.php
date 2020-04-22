@@ -23,6 +23,8 @@ class APILoginTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+        $response->assertDontSeeText('message');
+        $response->assertSeeText('user');
     }
 
     /**
