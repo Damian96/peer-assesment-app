@@ -31,3 +31,5 @@ Homestead.json
 *.swp
 *.bp
 *.backup
+
+credentials.txt
