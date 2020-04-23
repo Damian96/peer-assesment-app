@@ -428,7 +428,7 @@ class FormController extends Controller
             return redirect()->action('FormController@index', 302);
         }
 
-        foreach ($original->questions() as $q) {
+        foreach ($original->questions as $q) {
             $model = new Question();
             $model->fill([
                 'title' => $q['title'],
