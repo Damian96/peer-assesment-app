@@ -583,7 +583,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEmailVerificationNotification()
     {
-        if (env('APP_ENV', 'local') === 'testing') {
+        if (env('APP_ENV', 'local') == 'testing') {
             $mailer = new \App\Notifications\AppVerifyEmail($this);
             Mail::to($this->email)->send($mailer);
         }
@@ -739,7 +739,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password_reset_token = $token;
         try {
-            if (env('APP_ENV', 'local') === 'testing') {
+            if (env('APP_ENV', 'local') == 'testing') {
                 $mailer = new AppResetPasswordEmail($this);
                 Mail::to($this->email)->send($mailer);
             }
@@ -759,7 +759,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password = $this->generateStudentPassword();
         $this->save();
-        if (env('APP_ENV', 'local') !== 'local') {
+        if (env('APP_ENV', 'local') == 'testing') {
             $mailer = new StudentInviteEmail($this, $course);
             Mail::to($this->email)->send($mailer);
         }
@@ -773,7 +773,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-        if (env('APP_ENV', 'local') === 'testing') {
+        if (env('APP_ENV', 'local') == 'testing') {
             $mailer = new StudentEnrollEmail($this, $course);
             Mail::to($this->email)->send($mailer);
         }
@@ -805,7 +805,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      * @param string $action
      * @return string
      */
-    public function verificationUrl(String $action)
+    public function verificationUrl(string $action)
     {
         return URL::temporarySignedRoute(
             'user.verify',

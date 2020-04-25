@@ -105,7 +105,7 @@ class UserController extends Controller
             case 'reset':
                 return [
                     '_method' => 'required|string|in:PUT',
-                    'email' => $default['email'] . '|exists:users',
+                    'email' => array_merge($default['email'], ['exists:users']),
                     'token' => 'required|string|min:60|max:60|exists:password_resets',
                     'password' => $default['password']
                 ];
@@ -124,7 +124,7 @@ class UserController extends Controller
                 ];
             case 'storeCsv':
                 return [
-                    'email' => $default['email'] . '|unique:users,email',
+                    'email' => array_merge($default['email'], ['unique:users,email']),
                     'fname' => $default['fname'],
                     'lname' => $default['lname'],
                     'reg_num' => $default['reg_num'],
