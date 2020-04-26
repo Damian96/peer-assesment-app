@@ -38,11 +38,11 @@ class SessionsTableSeeder extends Seeder
         } else if (env('APP_ENV', 'local') == 'testing') {
             /* `wpesdb`.`sessions` */
             $sessions = array(
-                array('id' => '1', 'course_id' => '1', 'title' => 'CW1-RTC_Chat_App_Java', 'deadline' => '2020-05-04 00:00:00', 'instructions' => 'Please complete all peer assessment fields. Any feedback about the course is always welcomed!', 'mark_avg' => '0.00', 'groups' => '2', 'min_group_size' => '3', 'max_group_size' => '3', 'open_date' => '2020-05-03 00:00:00', 'created_at' => '2020-04-25 14:40:26', 'updated_at' => '2020-04-25 14:40:26')
+                array('course_id' => '1', 'title' => 'CW1-RTC_Chat_App_Java', 'deadline' => '2020-05-04 00:00:00', 'instructions' => 'Please complete all peer assessment fields. Any feedback about the course is always welcomed!', 'mark_avg' => '0.00', 'groups' => '2', 'min_group_size' => '3', 'max_group_size' => '3', 'open_date' => '2020-05-03 00:00:00', 'created_at' => '2020-04-25 14:40:26', 'updated_at' => '2020-04-25 14:40:26')
             );
         }
 
-        // Insert DUMMY row
+        // Insert DUMMY session
         DB::table($this->table)->insert([
             'id' => Course::DUMMY_ID,
             'course_id' => Course::DUMMY_ID,
