@@ -16,6 +16,8 @@ class GroupsTableSeeder extends Seeder
      */
     public function run()
     {
+        DatabaseSeeder::refreshTable($this->table, true);
+        
         /* `peerassessDB`.`groups` */
         $groups = array(
             array('session_id' => 1, 'name' => 'GROUP#1-Session#1', 'mark' => '0'),
