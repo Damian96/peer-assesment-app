@@ -1,5 +1,6 @@
 <?php
 
+use App\Course;
 use Illuminate\Database\Seeder;
 
 class FormTemplatesTableSeeder extends Seeder

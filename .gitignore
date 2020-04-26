@@ -31,10 +31,7 @@ Homestead.json
 *.swp
 *.bp
 *.backup
+*.zip
+*.7z
 
-models.php
-_ide_helper.php
-.phpstorm.meta.php
-Procfile
-routes.txt
 credentials.txt
