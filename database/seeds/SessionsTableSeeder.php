@@ -42,8 +42,8 @@ class SessionsTableSeeder extends Seeder
             );
             foreach ($sessions as $session) {
                 DB::table($this->table)->insert([
-                    'course_id' => $session->course_id,
-                    'title' => $session->title,
+                    'course_id' => $session['course_id'],
+                    'title' => $session['title'],
                     'instructions' => substr($lipsum, -(rand(0, 50))),
                     'deadline' => Carbon::now(config('app.timezone'))->addMonths(rand(2, 4))->format(config('constants.date.stamp')),
                     'open_date' => Carbon::now(config('app.timezone'))->addDays(rand(1, 5))->format(config('constants.date.stamp')),
