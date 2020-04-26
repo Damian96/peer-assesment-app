@@ -23,7 +23,9 @@ class CreateFormTemplatesTable extends Migration
             $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
             $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
-            $table->foreign('user_id', 'form_template_user_id_foreign')->references('id')->on('users');
+            if (env('APP_ENV', 'local') !== 'testing') {
+                $table->foreign('user_id', 'form_template_user_id_foreign')->references('id')->on('users');
+            }
         });
 
     }

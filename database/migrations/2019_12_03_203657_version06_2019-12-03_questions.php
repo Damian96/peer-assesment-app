@@ -22,7 +22,9 @@ class Version0620191203Questions extends Migration
             $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
             $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
-            $table->foreign('form_id', 'questions_forms_foreign')->references('id')->on('forms');
+            if (env('APP_ENV', 'local') !== 'testing') {
+                $table->foreign('form_id', 'questions_forms_foreign')->references('id')->on('forms');
+            }
         });
     }
 

@@ -26,7 +26,9 @@ class Version0620191203Courses extends Migration
             $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
             $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
-            $table->foreign('user_id', 'courses_users_foreign')->references('id')->on('users');
+            if (env('APP_ENV', 'local') !== 'testing') {
+                $table->foreign('user_id', 'courses_users_foreign')->references('id')->on('users');
+            }
             $table->index('user_id');
             $table->index('ac_year');
         });

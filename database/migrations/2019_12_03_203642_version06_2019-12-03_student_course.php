@@ -22,8 +22,11 @@ class Version0620191203StudentCourse extends Migration
 
             $table->index('user_id', 'user_id_index');
             $table->index('course_id', 'course_id_index');
-            $table->foreign('user_id', 'student_course_users_foreign')->references('id')->on('users');
-            $table->foreign('course_id', 'student_course_courses_foreign')->references('id')->on('courses');
+
+            if (env('APP_ENV', 'local') !== 'testing') {
+                $table->foreign('user_id', 'student_course_users_foreign')->references('id')->on('users');
+                $table->foreign('course_id', 'student_course_courses_foreign')->references('id')->on('courses');
+            }
         });
 
 //        DB::statement('ALTER TABLE `student_course` ADD UNIQUE `student_course_unique` (`user_id`, `course_id`) using BTREE;');

@@ -28,7 +28,9 @@ class Version0620191203Sessions extends Migration
             $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
             $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
-            $table->foreign('course_id', 'sessions_courses_foreign')->references('id')->on('courses');
+            if (env('APP_ENV', 'local') !== 'testing') {
+                $table->foreign('course_id', 'sessions_courses_foreign')->references('id')->on('courses');
+            }
         });
     }
 

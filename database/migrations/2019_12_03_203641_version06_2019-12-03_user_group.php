@@ -20,9 +20,11 @@ class Version0620191203UserGroup extends Migration
             $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
             $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
-            $table->foreign('user_id', 'user_group_users_foreign')->references('id')->on('users');
-            $table->foreign('group_id', 'user_group_groups_foreign')->references('id')->on('groups')
-                ->onDelete('CASCADE');
+            if (env('APP_ENV', 'local') !== 'testing') {
+                $table->foreign('user_id', 'user_group_users_foreign')->references('id')->on('users');
+                $table->foreign('group_id', 'user_group_groups_foreign')->references('id')->on('groups')
+                    ->onDelete('CASCADE');
+            }
         });
 
         DB::statement('ALTER TABLE `user_group` ADD UNIQUE `user_group_unique` (`user_id`, `group_id`) using BTREE;');

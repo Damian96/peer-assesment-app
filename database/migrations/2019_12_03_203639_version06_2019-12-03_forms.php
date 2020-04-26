@@ -22,8 +22,10 @@ class Version0620191203Forms extends Migration
             $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
             $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
 
-            $table->foreign('session_id', 'forms_sessions_foreign')->references('id')->on('sessions')
-                ->onDelete('SET NULL');
+            if (env('APP_ENV', 'local') !== 'testing') {
+                $table->foreign('session_id', 'forms_sessions_foreign')->references('id')->on('sessions')
+                    ->onDelete('SET NULL');
+            }
         });
     }
 
