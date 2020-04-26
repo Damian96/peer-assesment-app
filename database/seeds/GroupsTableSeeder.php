@@ -13,6 +13,7 @@ class GroupsTableSeeder extends Seeder
      *
      * @return void
      * @throws Throwable
+     * @FIXME: https://gist.githubusercontent.com/Damian96/c2f593224525915d88e0ae829cd662a6/raw/f8dfc02e83064c022255f821167e6823f656dd2d/sql.error
      */
     public function run()
     {
