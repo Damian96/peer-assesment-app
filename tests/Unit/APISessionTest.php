@@ -17,6 +17,7 @@ class APISessionTest extends TestCase
 //    public function testSingleSessionResource()
 //    {
 //    }
+
     /**
      * @var null|string
      */

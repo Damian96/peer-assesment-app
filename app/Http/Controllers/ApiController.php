@@ -114,9 +114,9 @@ class ApiController extends Controller
         $except = array_map(function ($value) {
             return intval($value);
         }, $except);
-        return new SessionCollection(Session::whereNotIn('sessions.id', $except)
+        return $this->sendResponse(new SessionCollection(Session::whereNotIn('sessions.id', $except)
             ->where('sessions.id', '!=', \App\Course::DUMMY_ID)
-            ->get('sessions.*'));
+            ->get('sessions.*')), 200);
     }
 
     /**
