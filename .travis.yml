@@ -20,9 +20,7 @@ before_script:
   - php artisan key:generate
   - php artisan migrate:fresh
   - php artisan db:seed
-#before_install:
+  #before_install:
+  #after_script:
 script:
   - vendor/bin/phpunit -c phpunit.xml --verbose
-#after_script:
-#  - kill %1
-#  - unset AID
