@@ -19,7 +19,7 @@ class CoursesTableSeeder extends Seeder
      */
     public function run()
     {
-        if (env('APP_ENV', 'local') == 'local') {
+        if (!strcmp(env('APP_ENV'), 'local')) {
             $instructors = array_column(User::whereInstructor('1')->where('admin', '=', '0')->get(['users.id'])->toArray(), 'id');
             if (empty($instructors)) {
                 throw new Exception("No Instructors in `users` table." . "\n" . "aborting...");
@@ -47,7 +47,7 @@ class CoursesTableSeeder extends Seeder
                     'department' => $departments[array_rand($departments, 1)],
                 ]);
             }
-        } else if (env('APP_ENV', 'local') == 'testing') {
+        } else if (!strcmp(env('APP_ENV'), 'testing')) {
             /* `wpesdb`.`courses` */
             $courses = array(
                 array('id' => '1', 'user_id' => '1', 'title' => '2020-CCP2213-NetworkComputing', 'status' => '1', 'code' => 'CCP2213', 'description' => NULL, 'department' => 'CCP', 'ac_year' => 'SP-2020', 'created_at' => '2020-04-25 14:13:55', 'updated_at' => '2020-04-25 14:13:55')
