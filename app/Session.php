@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Mail;
  * @property int groups
  * @property float mark_avg
  * @property \App\User|null instructor
+ * @property int min_group_size
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
  */
 class Session extends Model
@@ -66,6 +67,8 @@ class Session extends Model
         switch ($name) {
             case 'max_groups':
                 return $this->groups;
+            case 'min_group_size':
+                return $this->getAttribute('min_group_size');
             case 'course_title':
                 return $this->course()->exists() ? $this->course()->first()->title : 'N/A';
             case 'open_date_days':
@@ -167,6 +170,7 @@ class Session extends Model
     protected $attributes = [
         'instructions' => null,
         'mark_avg' => 0,
+        'min_group_size' => 0,
     ];
 
     /**

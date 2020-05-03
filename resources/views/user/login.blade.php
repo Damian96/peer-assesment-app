@@ -23,7 +23,7 @@
                                data-rule-maxlength="255"
                                data-msg-maxlength="{!! $messages['email.max'] ?? '' !!}">
                         <div class="input-group-append cursor-con" tabindex="-1">
-                            <button class="btn btn-primary cursor-con" type="button" tabindex="-1">{{ config('app.domain') }}</button>
+                            <button class="btn btn-primary cursor-con" type="button" tabindex="-1">&commat;{{ config('app.domain') }}</button>
                         </div>
                     </div>
 

@@ -1,3 +1,9 @@
+@php
+/**
+ * @var $teammates \Illuminate\Support\Collection
+ */
+@endphp
+
 @extends('layouts.app')
 
 @section('breadcrumbs')
@@ -10,15 +16,18 @@
         @csrf
 
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 mb-3">
-            <h3 class="d-block">{{ $form->title }}</h3>
+            <h3 class="d-block">{{ $form->title }}
+                @if ($form->subtitle)
+                    <div class="text-muted">
+                        {{ $form->subtitle }}
+                    </div>
+                @endif
+            </h3>
             <div class="d-block instructions">
                 {{ $session->instructions }}
             </div>
         </div>
         @foreach($questions as $i => $q)
-            @php
-                $teammates = Auth::user()->teammates()->collect();
-            @endphp
             <fieldset class="offset-1 col-sm-10 col-md-10 border-dark rounded py-2 my-2">
                 <legend><i class="d-block text-muted">Question #{{ $i+1 }}</i><h4>{{ $q->title }}</h4></legend>
                 @if ($q->type === 'likert-scale')
