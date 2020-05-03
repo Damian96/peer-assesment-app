@@ -38,7 +38,7 @@ class SessionsTableSeeder extends Seeder
         } else if (!strcmp(env('APP_ENV'), 'testing')) {
             /* `wpesdb`.`sessions` */
             $sessions = array(
-                array('course_id' => '1', 'title' => 'CW1-RTC_Chat_App_Java', 'deadline' => '2020-05-04 00:00:00', 'instructions' => 'Please complete all peer assessment fields. Any feedback about the course is always welcomed!', 'mark_avg' => '0.00', 'groups' => '2', 'min_group_size' => '3', 'max_group_size' => '3', 'open_date' => '2020-05-03 00:00:00', 'created_at' => '2020-04-25 14:40:26', 'updated_at' => '2020-04-25 14:40:26')
+                array('course_id' => '1', 'title' => 'CW1-RTC_Chat_App_Java', 'deadline' => '2020-05-04 00:00:00', 'instructions' => 'Please complete all peer assessment fields. Any feedback about the course is always welcomed!', 'mark_avg' => '0.00', 'groups' => '2', 'min_group_size' => '1', 'max_group_size' => '3', 'open_date' => '2020-05-03 00:00:00', 'created_at' => '2020-04-25 14:40:26', 'updated_at' => '2020-04-25 14:40:26')
             );
             foreach ($sessions as $session) {
                 DB::table($this->table)->insert([
@@ -47,9 +47,9 @@ class SessionsTableSeeder extends Seeder
                     'instructions' => substr($lipsum, -(rand(0, 50))),
                     'deadline' => Carbon::now(config('app.timezone'))->addMonths(rand(2, 4))->format(config('constants.date.stamp')),
                     'open_date' => Carbon::now(config('app.timezone'))->addDays(rand(1, 5))->format(config('constants.date.stamp')),
-                    'groups' => 2,
-                    'min_group_size' => 2,
-                    'max_group_size' => 3,
+                    'groups' => $session['groups'],
+                    'min_group_size' => $session['min_group_size'],
+                    'max_group_size' => $session['max_group_size'],
                 ]);
             }
         }
