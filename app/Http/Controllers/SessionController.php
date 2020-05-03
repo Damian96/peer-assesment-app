@@ -283,7 +283,6 @@ class SessionController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
-            dd($validator->errors());
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
                 ->withErrors($validator->errors())
@@ -381,11 +380,17 @@ class SessionController extends Controller
         $title = sprintf("Fill Session %s", $session->title);
 
         throw_if(!$session->form()->exists(), new NotFoundHttpException("This Session does not have an associated Form!"));
-        $form = $session->form()->first();
 //        $questions = $form->questions()->orderBy('updated_at', 'DESC')->getResults();
+        $teammates = Auth::user()->teammates()->collect();
+
+        if (($teammates->count()+1) < $session->min_group_size) {
+            throw new NotFoundHttpException(sprintf("Your group does not have enough members! To complete the minimum group size you need %d more teammates!",
+                ($session->min_group_size - $teammates->count())));
+        }
+        $form = $session->form()->first();
         $questions = $form->questions()->getResults();
 
-        return response(view('session.fill', compact('title', 'questions', 'form', 'session')), 200, $request->headers->all());
+        return response(view('session.fill', compact('title', 'questions', 'form', 'teammates', 'session')), 200, $request->headers->all());
     }
 
     /**

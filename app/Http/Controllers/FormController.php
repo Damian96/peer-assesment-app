@@ -428,7 +428,10 @@ class FormController extends Controller
             return redirect()->action('FormController@index', 302);
         }
 
-        foreach ($original->questions as $q) {
+        if (is_string($original->questions())) {
+            $original->questions = json_decode($original->questions());
+        }
+        foreach ($original->questions() as $q) {
             $model = new Question();
             $model->fill([
                 'title' => $q['title'],

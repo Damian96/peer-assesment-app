@@ -89,11 +89,11 @@
             success: function (data) {
                 console.debug(data);
 
-                // if (data.length == 0) {
-                //     return false;
-                // }
+                if (data.length == 0) {
+                    return false;
+                }
 
-                let sessions = data.data;
+                let sessions = data;
 
                 // Create popup form
                 form.attr('action', "{{ url('forms/#/duplicate') }}")

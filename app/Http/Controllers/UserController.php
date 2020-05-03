@@ -70,7 +70,7 @@ class UserController extends Controller
      *
      * TODO: add strong password regex rule
      */
-    public function rules(String $action, array $options = [])
+    public function rules(string $action, array $options = [])
     {
         $default = [
             'fname' => 'required|string|min:3|max:25',
@@ -541,8 +541,13 @@ class UserController extends Controller
             } else {
                 return redirect('home', 302, $request->headers->all());
             }
+        } else {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors(new MessageBag(['email' => 'Invalid username - password combination.',
+                    'password' => 'Invalid username - password combination.']));
         }
-        throw abort(500, 'Could not authenticate user', $request->headers->all());
+//        throw abort(500, 'Could not authenticate user', $request->headers->all());
     }
 
     /**
