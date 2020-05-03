@@ -283,7 +283,6 @@ class SessionController extends Controller
         $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
-            dd($validator->errors());
             return redirect()->back(302, $request->headers->all())
                 ->withInput($request->input())
                 ->withErrors($validator->errors())

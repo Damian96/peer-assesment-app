@@ -38,7 +38,7 @@ class SessionsTableSeeder extends Seeder
         } else if (!strcmp(env('APP_ENV'), 'testing')) {
             /* `wpesdb`.`sessions` */
             $sessions = array(
-                array('course_id' => '1', 'title' => 'CW1-RTC_Chat_App_Java', 'deadline' => '2020-05-04 00:00:00', 'instructions' => 'Please complete all peer assessment fields. Any feedback about the course is always welcomed!', 'mark_avg' => '0.00', 'groups' => '2', 'min_group_size' => '1', 'max_group_size' => '3', 'open_date' => '2020-05-03 00:00:00', 'created_at' => '2020-04-25 14:40:26', 'updated_at' => '2020-04-25 14:40:26')
+                array('course_id' => '1', 'title' => 'CW1-RTC_Chat_App_Java', 'deadline' => '2020-05-04 00:00:00', 'instructions' => 'Please complete all peer assessment fields. Any feedback about the course is always welcomed!', 'mark_avg' => '0.00', 'groups' => '2', 'min_group_size' => '2', 'max_group_size' => '3', 'open_date' => '2020-05-01 00:00:00', 'created_at' => '2020-04-25 14:40:26', 'updated_at' => '2020-04-25 14:40:26')
             );
             foreach ($sessions as $session) {
                 DB::table($this->table)->insert([
