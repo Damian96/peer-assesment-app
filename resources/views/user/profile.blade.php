@@ -53,7 +53,7 @@
                 </tfoot>
             </table>
         </div>
-        @if (Auth::user()->isAdmin())
+        @if (Auth::user()->isAdmin() || Auth::user()->isInstructor())
             <div class="col-sm-12 col-md-12">
                 <hr>
                 <h4>Mark Configuration</h4>
@@ -97,20 +97,20 @@
                             class="invalid-feedback d-block">{{ $errors->has('group') ? $errors->first('group') : '' }}</span>
                     </div>
 
-                    <div class="form-group">
-                        <label for="domain">Organisation Domain</label>
-                        <p class="form-text text-muted">The domain name of the organisation's institute that hosts the
-                            students' emails</p>
-                        <input type="text" name="domain"
-                               class="form-control{{ $errors->has('domain') ? ' is-invalid' : null }}"
-                               value="{{ old('domain', config('app.domain')) }}"
-                               placeholder="Default: {{ config('app.domain') }}"
-                               aria-placeholder="Default: {{ config('app.domain') }}"
-                               required aria-required="true"
-                               title="Organisation Domain" aria-label="Organisation Domain">
-                        <span
-                            class="invalid-feedback d-block">{{ $errors->has('domain') ? $errors->first('domain') : null }}</span>
-                    </div>
+{{--                    <div class="form-group">--}}
+{{--                        <label for="domain">Organisation Domain</label>--}}
+{{--                        <p class="form-text text-muted">The domain name of the organisation's institute that hosts the--}}
+{{--                            students' emails</p>--}}
+{{--                        <input type="text" name="domain"--}}
+{{--                               class="form-control{{ $errors->has('domain') ? ' is-invalid' : null }}"--}}
+{{--                               value="{{ old('domain', config('app.domain')) }}"--}}
+{{--                               placeholder="Default: {{ config('app.domain') }}"--}}
+{{--                               aria-placeholder="Default: {{ config('app.domain') }}"--}}
+{{--                               required aria-required="true"--}}
+{{--                               title="Organisation Domain" aria-label="Organisation Domain">--}}
+{{--                        <span--}}
+{{--                            class="invalid-feedback d-block">{{ $errors->has('domain') ? $errors->first('domain') : null }}</span>--}}
+{{--                    </div>--}}
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-block">Update</button>

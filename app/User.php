@@ -313,6 +313,17 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * Get the InstructorConfig record associated with the instructor.
+     * @return bool|Model|\Illuminate\Database\Query\Builder|object
+     */
+    public function config()
+    {
+        if (!$this->isInstructor()) return false;
+        $ss = $this->hasOne(\App\InstructorConfig::class, 'user_id', 'id');
+        return $ss->exists() ? $ss->first()->getModel() : false;
+    }
+
+    /**
      * Get the student's teammates from the database
      * @return false|\Illuminate\Database\Eloquent\Relations\HasManyThrough|\Illuminate\Support\Collection
      */
@@ -697,6 +708,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'session.create':
             case 'form.index':
             case 'form.preview':
+            case 'user.config':
                 return $this->isInstructor();
             case 'course.update':
             case 'course.edit':
