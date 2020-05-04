@@ -55,6 +55,7 @@ Route::group(['prefix' => '/courses'], function () {
     Route::match(['get'], '{course}/students', 'CourseController@students')->name('course.students');
     Route::match(['get'], '{course}/add-student', 'UserController@addStudent')->name('course.add-student');
     Route::match(['post'], '{course}/store-student', 'UserController@storeStudent')->name('user.store-student');
+//    Route::get('search', 'CourseController@search')->name('course.search');
 });
 
 # Session

@@ -2,9 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    {{--    @TODO fill out SEO tags --}}
-    {{--    <meta name="description" content="">--}}
-    {{--    <meta name="author" content="">--}}
+    <meta name="robots" content="noimageindex, nofollow, nosnippet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{{ isset($title) ? $title : (isset($error_number) ? 'Error ' . $error_number : '') . ' | ' . config('app.name') }}</title>
@@ -14,9 +12,9 @@
     <script charset="utf-8" src="{{ mix('/js/vendor.js') }}"></script>
     <script charset="utf-8" src="{{ mix('/js/app.js') }}"></script>
 
-    {{--    @if (env('APP_ENV') !== 'local')--}}
-    {{--    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">--}}
-    {{--    @endif--}}
+    @if (strcmp(env('APP_ENV'), 'testing'))
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+    @endif
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -25,7 +23,7 @@
             'action' => 'homepage',
         ]) !!}
     @endif
-)
+
     <script type="text/javascript">
         const urlParams = new URLSearchParams(window.location.search);
         window.urlParams = urlParams;
@@ -97,7 +95,7 @@
 
     @yield('end_head')
 </head>
-<body>
+<body class="{{ Route::current()->getName() }}">
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="{{ url('/') }}">{{ config('app.name') }}</a>
@@ -107,7 +105,7 @@
                 aria-controls="mainMenu"
                 aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2" id="mainMenu">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav">
                 @if(Auth::user()->can('user.home'))
                     @if (strpos(Route::current()->getName(), 'home') !== false)
                         <li class="nav-item active">
@@ -159,6 +157,12 @@
                     </li>
                 @endif
             </ul>
+{{--            <form class="form-inline my-2 my-lg-0 mr-auto" action="{{ url('') }}" method="GET">--}}
+{{--                @csrf--}}
+{{--                @method('GET')--}}
+{{--                <input class="form-control-sm mr-sm-2" type="text" placeholder="Search Course" aria-label="Search Course">--}}
+{{--                <button class="btn btn-sm btn-outline-success my-2 my-sm-0" type="submit">Search</button>--}}
+{{--            </form>--}}
         </div>
         <div class="navbar-collapse collapse w-100 order-2 order-md-1 dual-collapse2" id="userMenu">
             <ul class="navbar-nav ml-auto">
@@ -187,10 +191,4 @@
             </ul>
         </div>
     @endauth
-    {{--    @TODO add course search form right menu --}}
-    {{--        <form class="form-inline my-2 my-lg-0">--}}
-    {{--            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">--}}
-    {{--            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>--}}
-    {{--        </form>--}}
-    {{--    </div>--}}
 </nav>

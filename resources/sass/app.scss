@@ -306,12 +306,16 @@ header {
   overflow-y: hidden;
 }
 
-footer {
-  overflow-y: hidden;
-  position: fixed;
-  bottom: 0;
-  z-index: 2147483640;
+body:not(.login) {
+  footer {
+    overflow-y: hidden;
+    position: fixed;
+    bottom: 0;
+    z-index: 2147483640;
+  }
+}
 
+footer {
   a {
     color: lighten($primary, 25%);
   }
