@@ -58,7 +58,7 @@ class FormController extends Controller
                     'form_id' => 'required|int|exists:forms,id',
                     '_method' => 'required|in:POST',
                     'title' => 'required|string|min:15|max:255',
-                    'subtitle' => 'nullable|string|min:15|max:50',
+                    'subtitle' => 'nullable|string|min:15|max:250',
                     'question' => 'required|array',
                 ]);
             case 'preview':
@@ -131,22 +131,25 @@ class FormController extends Controller
     public function index(Request $request)
     {
         $title = 'My Form Templates';
+
         $forms = DB::table('forms')
-            ->leftJoin('sessions', 'sessions.id', '=', 'forms.session_id')
-            ->leftJoin('courses', 'courses.id', '=', 'sessions.course_id')
-            ->where('courses.user_id', '=', Auth::user()->id)
-            ->orWhere('forms.session_id', '=', Course::DUMMY_ID)
-            ->get([
-                'forms.id',
-                'forms.title',
-                'sessions.id AS session_id',
-                'courses.code',
-                'sessions.title AS session_title',
-                'courses.id AS course_id',
-            ]);
-//        dd($forms->all(), Form::all());
-//        $forms = Form::all();
-//        dd($forms->first()->session()->first());
+            ->join('sessions', 'sessions.id', '=', 'forms.session_id')
+            ->join('courses', 'courses.id', '=', 'sessions.course_id')
+            ->where('courses.id', '!=', Course::DUMMY_ID)
+            ->orWhere('forms.session_id', '=', Course::DUMMY_ID);
+
+        if (!Auth::user()->isAdmin())
+            $forms->where('courses.user_id', '=', Auth::user()->id);
+
+        $forms = $forms->get([
+            'forms.id',
+            'forms.title',
+            'sessions.id AS session_id',
+            'courses.code',
+            'sessions.title AS session_title',
+            'courses.id AS course_id',
+        ]);
+
         $templates = FormTemplate::whereUserId(Course::DUMMY_ID)
             ->orWhere('user_id', '=', Auth::user()->id)
             ->get(['form_templates.*']);

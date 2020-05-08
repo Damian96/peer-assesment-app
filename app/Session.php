@@ -108,7 +108,7 @@ class Session extends Model
             case 'deadline_full':
                 return Carbon::createFromTimeString($this->deadline)->format(config('constants.date.full'));
             case 'title_full':
-                return $this->title . ' | ' . $this->course()->first()->ac_year . ' - ' . $this->course()->first()->code;
+                return $this->title . ' | ' . $this->course->ac_year . ' - ' . $this->course->code;
             case 'instructor_fullname':
             case 'owner_name':
             case 'owner_fullname':
@@ -143,15 +143,16 @@ class Session extends Model
         static::retrieved(function ($session) {
             /**
              * @var Session $session
-             * @var Course|null $course
              */
-            $course = $session->course()->exists() ? $session->course()->first()->getModel() : null;
-            $session->course = $course;
 
-            if ($course)
-                $session->instructor = $course->user()->exists() ? $course->user()->first()->getModel() : null;
-            else
-                $session->instructor = null;
+            $session->course = $session->course()->firstOr(function () {
+                return null;
+            });
+
+            $session->instructor = null;
+            if ($session->course)
+                $session->instructor = $session->course->user()->exists() ?
+                    $session->course->user()->first()->getModel() : null;
         });
     }
 
@@ -213,7 +214,7 @@ class Session extends Model
      */
     public function course()
     {
-        return $this->hasOne('App\Course', 'id', 'course_id');
+        return $this->hasOne(\App\Course::class, 'id', 'course_id');
     }
 
     /**
