@@ -169,6 +169,9 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
              */
             if ($model->hasVerifiedEmail())
                 $model->generateApiToken();
+
+            if ($model->group())
+                $model->group = $model->group();
         });
         parent::boot();
     }
@@ -313,6 +316,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function groups()
+    {
+        return $this->hasMany(\App\StudentGroup::class, 'user_id', 'id');
+    }
+
+    /**
      * Get the InstructorConfig record associated with the instructor.
      * @return bool|Model|\Illuminate\Database\Query\Builder|object
      */
@@ -325,20 +336,28 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the student's teammates from the database
-     * @return false|\Illuminate\Database\Eloquent\Relations\HasManyThrough|\Illuminate\Support\Collection
+     * @param Session $session
+     * @param bool $self
+     * @return \Illuminate\Support\Collection
      */
-    public function teammates()
+    public function teammates(Session $session, bool $self = false)
     {
-        return DB::table('users')
-            ->join('student_course', 'student_course.user_id', '=', 'users.id')
+        $groups = array_column($this->groups()->get(['group_id'])->toArray(), 'group_id');
+        $group_id = DB::table('groups')
+            ->where('session_id', '=', $session->id)
+            ->whereIn('id', $groups)
+            ->first()->id;
+
+        $q = DB::table($this->table)
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
-            ->whereNotNull('users.email_verified_at')
-            ->where('users.id', '!=', $this->id)
-            ->where('user_group.group_id', '=', $this->group()->id)
-            ->selectRaw(self::RAW_FULL_NAME)
-            ->addSelect('users.*')
-            ->distinct()
-            ->get(['users .*']);
+            ->whereNotNull('email_verified_at')
+            ->where('user_group.group_id', '=', $group_id)
+            ->selectRaw(self::RAW_FULL_NAME);
+
+        if ($self)
+            $q = $q->where('users.id', '!=', $this->id);
+
+        return $q->addSelect('users.*')->get(['users.*']);
     }
 
     /**

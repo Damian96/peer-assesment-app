@@ -309,9 +309,9 @@ header {
 body:not(.login) {
   footer {
     overflow-y: hidden;
-    position: fixed;
+    //position: fixed;
     bottom: 0;
-    z-index: 2147483640;
+    //z-index: 2147483640;
   }
 }
 

@@ -1,7 +1,7 @@
 @php
-/**
- * @var $teammates \Illuminate\Support\Collection
- */
+    /**
+     * @var $teammates \Illuminate\Support\Collection
+     */
 @endphp
 
 @extends('layouts.app')
@@ -219,33 +219,39 @@
 @section('end_footer')
     <script type="text/javascript">
         var criterionOnChangeHandler = function () {
-            // console.debug(this);
             let group = $(this).closest('.form-group');
             let points = calculateGroupPoints(group);
-            if (points > 0 && points < 100) {
-                group.find('.invalid-feedback').text('Total points should be exactly 100!');
+            console.debug(this, points, group);
+            if (points >= 0 && points < 100) {
+                group.find('.invalid-feedback').text('Total points should be exactly 100!')
+                    .end().addClass('is-invalid').removeClass('is-valid');
                 $(this).removeClass('is-valid')
                     .addClass('is-invalid')
                     .attr('aria-invalid', 'true');
                 return false;
             } else if (points > 100) {
-                group.find('.invalid-feedback').text('Total points exceed 100 limit!');
+                group.find('.invalid-feedback').text('Total points exceed 100 limit!')
+                    .end().addClass('is-invalid').removeClass('is-valid');
                 $(this).removeClass('is-valid')
                     .addClass('is-invalid')
                     .attr('aria-invalid', 'true');
                 return false;
-            } else {
+            } else { // success
                 $(this).removeClass('is-invalid')
                     .attr('aria-invalid', 'false')
                     .addClass('is-valid');
-                group.find('.invalid-feedback').text('');
+                group.find('.invalid-feedback').text('')
+                    .end().addClass('is-valid').removeClass('is-invalid');
+                group.find('input').removeClass('is-invalid').addClass('is-valid')
+                    .attr('aria-invalid', 'false');
                 return true;
             }
         };
         var calculateGroupPoints = function (group) {
             let sum = 0;
             group.find('input').each(function () {
-                sum += parseInt(this.value);
+                if (this.value.length > 0)
+                    sum += parseInt(this.value);
             });
             group.data('sum', sum);
             return sum;
