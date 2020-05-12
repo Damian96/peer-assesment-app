@@ -32,7 +32,8 @@ class CheckClosedSessions extends Command
     }
 
     /**
-     * Execute the console command.
+     * Calculate the marks of the closing Sessions
+     * @TODO: add API endpoint to manually handle this command
      *
      * @return bool
      */
@@ -68,9 +69,10 @@ class CheckClosedSessions extends Command
                         } catch (\Throwable $e) {
                             $this->error($e->getMessage());
                         }
+                    } else {
+                        $this->line(sprintf("Group '%s' has not been yet marked by the professor. skipping..", $group->title));
                     }
                 }
-                $this->line(sprintf("Finished mark calculation of Group %s", $group->name));
                 $marks[] = $group->mark;
             }
             $session->mark_avg = array_sum($marks) / count($marks);

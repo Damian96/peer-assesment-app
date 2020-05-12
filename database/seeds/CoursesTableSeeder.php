@@ -16,7 +16,6 @@ class CoursesTableSeeder extends Seeder
      *
      * @return void
      * @throws Exception
-     * @throws Throwable
      */
     public function run()
     {
@@ -51,13 +50,8 @@ class CoursesTableSeeder extends Seeder
         } else if (!strcmp(env('APP_ENV'), 'testing')) {
             /* `wpesdb`.`courses` */
             $courses = array(
-                array('id' => '1', 'user_id' => '1', 'title' => '2020-CCP2213-NetworkComputing', 'status' => '1', 'code' => 'CCP2213', 'description' => 'Level 2 Network Computing', 'department' => 'CCP', 'ac_year' => 'SP-2020', 'created_at' => '2020-04-25 14:13:55', 'updated_at' => '2020-04-25 14:13:55')
+                array('id' => '1', 'user_id' => '1', 'title' => '2020-CCP2213-NetworkComputing', 'status' => '1', 'code' => 'CCP2213', 'description' => NULL, 'department' => 'CCP', 'ac_year' => 'SP-2020', 'created_at' => '2020-04-25 14:13:55', 'updated_at' => '2020-04-25 14:13:55')
             );
-
-            foreach ($courses as $course) {
-                $model = new Course($course);
-                $model->saveOrFail();
-            }
         }
 
         // Insert DUMMY row

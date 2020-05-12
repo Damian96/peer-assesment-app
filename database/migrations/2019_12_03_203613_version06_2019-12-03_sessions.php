@@ -18,19 +18,17 @@ class Version0620191203Sessions extends Migration
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('course_id')->unsigned();
             $table->string('title', 255);
-            $table->timestamp('deadline')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('deadline')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->text('instructions');
             $table->float('mark_avg')->nullable()->default(0)->comment('average mark');
             $table->tinyInteger('groups')->comment('maximum groups');
             $table->tinyInteger('min_group_size')->comment('maximum group size');
             $table->tinyInteger('max_group_size')->comment('minimum group size');
-            $table->timestamp('open_date')->nullable()->default(DB::raw('NULL'));
-            $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
-            $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('open_date')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            if (env('APP_ENV', 'local') !== 'testing') {
-                $table->foreign('course_id', 'sessions_courses_foreign')->references('id')->on('courses');
-            }
+            $table->foreign('course_id', 'sessions_courses_foreign')->references('id')->on('courses');
         });
     }
 

@@ -17,16 +17,13 @@ class Version0620191203StudentCourse extends Migration
             $table->bigInteger('id', true, true);
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('course_id')->unsigned();
-            $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
-            $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
             $table->index('user_id', 'user_id_index');
             $table->index('course_id', 'course_id_index');
-
-            if (env('APP_ENV', 'local') !== 'testing') {
-                $table->foreign('user_id', 'student_course_users_foreign')->references('id')->on('users');
-                $table->foreign('course_id', 'student_course_courses_foreign')->references('id')->on('courses');
-            }
+            $table->foreign('user_id', 'student_course_users_foreign')->references('id')->on('users');
+            $table->foreign('course_id', 'student_course_courses_foreign')->references('id')->on('courses');
         });
 
 //        DB::statement('ALTER TABLE `student_course` ADD UNIQUE `student_course_unique` (`user_id`, `course_id`) using BTREE;');

@@ -63,8 +63,12 @@ class FormTemplate extends Model
             /**
              * @var FormTemplate $model
              */
-            if (is_string($model->questions))
+            $model->questions = $model->questions();
+
+            if (is_string($model->questions)) {
                 $model->setAttribute('questions', json_decode($model->questions));
+                $model->questions = json_decode($model->questions);
+            }
         });
         parent::boot();
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Version0620191203Questions extends Migration
+class CreateInstructorConfigs extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,15 @@ class Version0620191203Questions extends Migration
      */
     public function up()
     {
-        Schema::create('questions', function (Blueprint $table) {
-            $table->bigIncrements('id')->unsigned()->autoIncrement();
-            $table->bigInteger('form_id')->unsigned();
-            $table->string('title');
-            $table->string('subtitle')->nullable();
-            $table->text('data');
+        Schema::create('instructor_configs', function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->autoIncrement();
+            $table->unsignedBigInteger('user_id');
+            $table->float('fudge_factor');
+            $table->float('group_weight');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            $table->foreign('form_id', 'questions_forms_foreign')->references('id')->on('forms');
+            $table->foreign('user_id', 'instructor_config_user_foreign')->references('id')->on('users');
         });
     }
 
@@ -33,6 +32,6 @@ class Version0620191203Questions extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('questions');
+        Schema::dropIfExists('instructor_configs');
     }
 }

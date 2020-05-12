@@ -16,7 +16,7 @@ class Version0620191203Users extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
-            $table->string('email', 100)->unique();
+            $table->string('email', 255)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('fname', 255)->nullable();
             $table->string('lname', 255)->nullable();
@@ -29,9 +29,9 @@ class Version0620191203Users extends Migration
             $table->string('remember_token', 100)->nullable();
             $table->string('api_token', 80)->unique()->nullable()
                 ->default(null);
-            $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
-            $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
-            $table->timestamp('last_login')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('last_login')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
     }
 

@@ -18,13 +18,11 @@ class CreateStudentSessionTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('session_id');
             $table->tinyInteger('mark', false, true)->default(0);
-            $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
-            $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            if (env('APP_ENV', 'local') !== 'testing') {
-                $table->foreign('user_id', 'student_session_users_foreign')->references('id')->on('users');
-                $table->foreign('session_id', 'student_session_sessions_foreign')->references('id')->on('sessions');
-            }
+            $table->foreign('user_id', 'student_session_users_foreign')->references('id')->on('users');
+            $table->foreign('session_id', 'student_session_sessions_foreign')->references('id')->on('sessions');
         });
 
         DB::statement('ALTER TABLE `student_session` ADD UNIQUE `student_session_unique` (`user_id`, `session_id`) using BTREE;');

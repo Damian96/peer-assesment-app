@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Course;
-use App\Rules\FQDN;
 use App\Rules\PrependedEmailExists;
 use App\Rules\PrependEmailUnique;
 use App\StudentCourse;
@@ -156,11 +155,11 @@ class UserController extends Controller
                     '_method' => 'required|string|in:PUT',
                     'fudge' => 'required|numeric|min:.5|max:2',
                     'group' => 'required|numeric|min:.5|max:1',
-                    'domain' => [
-                        'required',
-                        'string',
-                        new FQDN()
-                    ],
+//                    'domain' => [
+//                        'required',
+//                        'string',
+//                        new FQDN()
+//                    ],
                 ];
             default:
                 return [];
@@ -839,6 +838,7 @@ class UserController extends Controller
     /**
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Throwable
      */
     public function storeConfig(Request $request)
     {
@@ -851,9 +851,26 @@ class UserController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        parent::updateDotEnv('FUDGE_FACTOR', $request->get('fudge', env('FUDGE_FACTOR')));
-        parent::updateDotEnv('GROUP_WEIGHT', $request->get('group', env('GROUP_WEIGHT')));
-        parent::updateDotEnv('ORG_DOMAIN', $request->get('domain', env('ORG_DOMAIN')));
+        /**
+         * @var \App\InstructorConfig $config
+         */
+        $config = Auth::user()->config();
+        $config->update([
+            'fudge_factor' => $request->get('fudge', env('FUDGE_FACTOR')),
+            'group_weight' => $request->get('group', env('GROUP_WEIGHT')),
+        ]);
+
+        try {
+            $config->saveOrFail();
+        } catch (\Throwable $e) {
+            throw_if(env('APP_DEBUG', false), $e, ['message' => $e->getMessage()]);
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors(new MessageBag(['Something went wrong while updating the configuration!']));
+        }
+
+        // @TODO: implement ORG_DOMAIN for Admin only
+        // parent::updateDotEnv('ORG_DOMAIN', $request->get('domain', env('ORG_DOMAIN')));
 
         $request->session()->flash('message', [
             'level' => 'success',

@@ -6,6 +6,7 @@ use App\Course;
 use App\StudentCourse;
 use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +63,13 @@ class CourseController extends Controller
                 break;
             case 'edit':
                 break;
+            case 'search':
+                return [
+                    'keyword.required' => 'The keyword is required!',
+                    'keyword.min' => 'The keyword should be at least 5 characters long!',
+                    'keyword.max' => 'The keyword should be at most 50 characters long!',
+                    'keyword.regex' => 'The keyword is not valid!',
+                ];
             default:
         }
 
@@ -108,6 +116,11 @@ class CourseController extends Controller
                 } else break;
             case 'edit':
                 break;
+            case 'search':
+                return [
+                    'method' => '_GET',
+                    'keyword' => 'required|string|min:5|max:50|regex:/^[A-Za-z\d\s]*$/g'
+                ];
             default:
         }
         return $rules;
@@ -451,4 +464,25 @@ class CourseController extends Controller
         ]);
         return redirect()->back();
     }
+
+    /**
+     * @param Request $request
+     * @return \Iluminate\Http\Response|Illuminate|Http|RedirectResponse
+     */
+//    public function search(Request $request)
+//    {
+//        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+//        if ($validator->fails()) {
+//            $request->session()->flash('message', [
+//                'heading' => 'Your search is not correct!',
+//                'level' => 'danger',
+//                'body' => $validator->errors()->getMessageBag()->first()
+//            ]);
+//            return redirect()->back()
+//                ->withInput($request->all())
+//                ->withErrors($validator->errors()->getMessageBag());
+//        }
+//
+//        return redirect()->back();
+//    }
 }

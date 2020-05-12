@@ -17,14 +17,12 @@ class Version0620191203UserGroup extends Migration
             $table->unsignedBigInteger('id', true);
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('group_id')->unsigned();
-            $table->timestamp('created_at')->nullable()->default(DB::raw('NULL'));
-            $table->timestamp('updated_at')->nullable()->default(DB::raw('NULL'));
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            if (env('APP_ENV', 'local') !== 'testing') {
-                $table->foreign('user_id', 'user_group_users_foreign')->references('id')->on('users');
-                $table->foreign('group_id', 'user_group_groups_foreign')->references('id')->on('groups')
-                    ->onDelete('CASCADE');
-            }
+            $table->foreign('user_id', 'user_group_users_foreign')->references('id')->on('users');
+            $table->foreign('group_id', 'user_group_groups_foreign')->references('id')->on('groups')
+                ->onDelete('CASCADE');
         });
 
         DB::statement('ALTER TABLE `user_group` ADD UNIQUE `user_group_unique` (`user_id`, `group_id`) using BTREE;');
