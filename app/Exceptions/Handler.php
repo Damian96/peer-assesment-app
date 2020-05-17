@@ -6,7 +6,9 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -69,6 +71,13 @@ class Handler extends ExceptionHandler
         } elseif ($exception instanceof \RuntimeException && $request->isJson()) {
             return Route::respondWithRoute('api.fallback.500');
         }
+
+        if (Auth::guard('web')->check() && Auth::user()->isStudent()) {
+            if ($exception instanceof ModelNotFoundException) {
+                throw new UnauthorizedHttpException('Forbidden');
+            }
+        }
+
         if ($this->shouldReport($exception)) {
             return parent::render($request, $exception);
         } else {

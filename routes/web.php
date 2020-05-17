@@ -35,6 +35,10 @@ Route::match(['post'], '/auth', 'UserController@auth')->name('user.auth');
 Route::match(['get'], '/logout', 'UserController@logout')->name('user.logout');
 Route::match(['get'], '/attribution', 'UserController@attribution')->name('user.attribution');
 
+//Route::group(['prefix' => '/errors'], function() {
+//    Route::get('/503', 'ErrorController@error503')->name('errors.503');
+//});
+
 Route::group(['prefix' => '/users'], function () {
     Route::match(['get'], '/verified', 'UserController@verified')->name('verification.notice');
     Route::match(['get'], '{user}/show', 'UserController@show')->name('user.show');

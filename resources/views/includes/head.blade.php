@@ -95,7 +95,7 @@
 
     @yield('end_head')
 </head>
-<body class="{{ Route::current()->getName() }}">
+<body class="{{ Route::current() ? Route::current()->getName() : 'error' }}">
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="{{ url('/') }}">{{ config('app.name') }}</a>
@@ -157,6 +157,7 @@
                     </li>
                 @endif
             </ul>
+{{--            @TODO: add head menu Search Form--}}
 {{--            <form class="form-inline my-2 my-lg-0 mr-auto" action="{{ url('') }}" method="GET">--}}
 {{--                @csrf--}}
 {{--                @method('GET')--}}
