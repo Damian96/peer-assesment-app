@@ -248,13 +248,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
     });
     $('#collapse-all').on('click', () => {
         $('.close-question').each((i, btn) => {
-            if (btn.getAttribute('aria-expanded') == 'true')
+            if (btn.getAttribute('aria-expanded') === 'true')
                 btn.click();
         });
     });
     $('#expand-all').on('click', () => {
         $('.close-question').each((i, btn) => {
-            if (btn.getAttribute('aria-expanded') != 'true')
+            if (btn.getAttribute('aria-expanded') !== 'true')
                 btn.click();
         });
     });

@@ -154,7 +154,6 @@ class CourseController extends Controller
                 $query->leftJoin('student_course', 'course_id', '=', 'users.id');
                 $query->addSelect(['student_course.user_id AS student_id']);
                 $query->whereIn('courses.id', array_column(Auth::user()->courses()->get('course_id')->toArray(), 'course_id'));
-                $query->where('student_course.user_id', '=', Auth::user()->id);
                 break;
             default:
                 throw abort(404);

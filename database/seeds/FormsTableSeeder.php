@@ -1,9 +1,14 @@
 <?php
 
+use App\Course;
+use App\Session;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class FormsTableSeeder extends Seeder
 {
+    private $table = 'forms';
+
     /**
      * Run the database seeds.
      *
@@ -12,8 +17,17 @@ class FormsTableSeeder extends Seeder
     public function run()
     {
         DatabaseSeeder::refreshTable($this->table, true);
-        if (env('APP_ENV', 'local') == 'testing') {
 
+        $courses = Course::whereAcYear('SP-2020')->get(['courses.id'])->toArray();
+        $session = Session::query()->whereIn('id', array_column($courses, 'id'))->firstOrFail();
+
+        if (!strcmp(env('APP_ENV', 'local'), 'local')) {
+            /* `wpesdb`.`forms` */
+            $forms = array(
+                array('session_id' => $session->id, 'title' => 'Feedback Session for Session#1', 'mark' => '0', 'created_at' => '2020-05-25 11:51:08', 'updated_at' => '2020-05-25 12:00:08')
+            );
+
+            DB::table($this->table)->insert($forms[0]);
         }
     }
 }
