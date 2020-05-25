@@ -82,7 +82,7 @@ class CourseController extends Controller
      * @param String $action
      * @return array
      */
-    private function rules(String $action)
+    private function rules(string $action)
     {
         $rules = [
             'title' => 'required|string|min:5|max:50',
@@ -154,6 +154,7 @@ class CourseController extends Controller
                 $query->leftJoin('student_course', 'course_id', '=', 'users.id');
                 $query->addSelect(['student_course.user_id AS student_id']);
                 $query->whereIn('courses.id', array_column(Auth::user()->courses()->get('course_id')->toArray(), 'course_id'));
+//                $query->where('student_course.user_id', '=', Auth::user()->id);
                 break;
             default:
                 throw abort(404);
