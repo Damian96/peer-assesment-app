@@ -51,9 +51,9 @@
                             $group_name = $session->hasJoinedGroup(Auth::user()) ? $session->getUserGroup(Auth::user())->name : 'N/A';
 
                             /**
-                             * @var \Illuminate\Support\Collection $teammates
+                             * @var array $teammates
                              */
-                            $teammates = Auth::user()->teammates($session, false);
+                            $teammates = array_column(Auth::user()->teammates($session, false)->toArray(), 'full_name');
                         @endphp
                         <tr>
                             <th scope="col">{{ $i+1 }}</th>
@@ -64,7 +64,7 @@
                                     <a href="#"
                                        class="group-cell"
                                        data-title="Group: {{ $group_name }}"
-                                       data-teammates="{{ implode(',', array_column($teammates->toArray(), 'full_name')) }}"
+                                       data-teammates="{{ implode(',', $teammates) }}"
                                        title="Show your teammates on Group: {{ $group_name }}"
                                        aria-label="Group {{ $group_name }}">{{ $group_name }}</a>
                                 </td>
@@ -222,11 +222,12 @@
 
             $('.group-cell').confirm({
                 content: $(document.createElement('ol')),
+                escapeKey: 'close',
                 onContentReady: function () {
                     // let jc = this;
                     let ol = this.$content.find('ol');
 
-                    // already filled
+                    // already filledteammates
                     if (ol.find('li').length > 0) return;
 
                     let mates = this.$target.attr('data-teammates').split(',');

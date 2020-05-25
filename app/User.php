@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -342,11 +343,16 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function teammates(Session $session, bool $self = false)
     {
+        if (!Auth::user()->isStudent()) return new Collection();
         $groups = array_column($this->groups()->get(['group_id'])->toArray(), 'group_id');
+
         $group_id = DB::table('groups')
             ->where('session_id', '=', $session->id)
             ->whereIn('id', $groups)
-            ->first()->id;
+            ->get(['groups.id'])->first()->id;
+
+//        if (empty($group_id))
+//            return new Collection();
 
         $q = DB::table($this->table)
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
