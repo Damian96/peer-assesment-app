@@ -44,13 +44,30 @@
                               * @var \App\User $instructor
                               */
                             $instructor = $session->instructor;
+
+                            /**
+                             * @var string $group_name
+                             */
+                            $group_name = $session->hasJoinedGroup(Auth::user()) ? $session->getUserGroup(Auth::user())->name : 'N/A';
+
+                            /**
+                             * @var \Illuminate\Support\Collection $teammates
+                             */
+                            $teammates = Auth::user()->teammates($session, false);
                         @endphp
                         <tr>
                             <th scope="col">{{ $i+1 }}</th>
                             <td class="{{ $session->studentSession()->exists() ? 'text-success' : null }}">{{ $session->title_full }}</td>
                             <td>{{ $session->deadline_uk }}</td>
                             @if (Auth::user()->isStudent())
-                                <td class="font-italic">{{ $session->hasJoinedGroup(Auth::user()) ? $session->getUserGroup(Auth::user())->name : 'N/A' }}</td>
+                                <td class="font-italic">
+                                    <a href="#"
+                                       class="group-cell"
+                                       data-title="Group: {{ $group_name }}"
+                                       data-teammates="{{ implode(',', array_column($teammates->toArray(), 'full_name')) }}"
+                                       title="Show your teammates on Group: {{ $group_name }}"
+                                       aria-label="Group {{ $group_name }}">{{ $group_name }}</a>
+                                </td>
                             @elseif (Auth::user()->isAdmin())
                                 <td><a href="{{ url("/users/{$instructor->id}/show") }}">{{ $instructor->name }}</a>
                                 </td>
@@ -201,6 +218,35 @@
                 theme: 'material',
                 type: 'red',
                 typeAnimated: true,
+            });
+
+            $('.group-cell').confirm({
+                content: $(document.createElement('ol')),
+                onContentReady: function () {
+                    // let jc = this;
+                    let ol = this.$content.find('ol');
+
+                    // already filled
+                    if (ol.find('li').length > 0) return;
+
+                    let mates = this.$target.attr('data-teammates').split(',');
+
+                    mates.forEach(function (ol, name) {
+                        // console.log(name, ul);
+                        let li = document.createElement('li');
+                        li.title = name;
+                        li.setAttribute('aria-label', `Student: ${name}`);
+                        li.innerText = name;
+                        ol.append(li);
+                    }.bind(null, ol));
+
+                    // console.log(mates, ol);
+
+                    this.$content.find('ol').replace(ol);
+                },
+                theme: 'material',
+                type: 'blue',
+                typeAnimated: true
             });
 
             @if ($sessions->isNotEmpty())
