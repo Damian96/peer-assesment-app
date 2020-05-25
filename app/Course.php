@@ -212,6 +212,7 @@ class Course extends Model
              * @var Course $course
              */
             if ($course->id == self::DUMMY_ID) return;
+            if (empty($course->ac_year)) return;
             $course->ac_year_time = $course->ac_year_int = $course->acYearToTimestamp($course->ac_year);
             $course->ac_year_carbon = Carbon::createFromTimestamp($course->ac_year_time, config('app.timezone'));
         };
@@ -401,11 +402,13 @@ class Course extends Model
     {
         $year = substr($ac_year, -4);
         $se = substr($ac_year, 0, 2);
+//        dd(func_get_args(), $year, $se, $se == 'SP', $se === 'SP');
         if ($se === 'FA') { // Fall
             $carbon = Carbon::createFromDate(intval($year), $end ? 2 : 9, $end ? 14 : 1, config('app.timezone'));
         } else if ($se === 'SP') { // Spring
             $carbon = Carbon::createFromDate(intval($year), $end ? 5 : 2, $end ? 30 : 15, config('app.timezone'));
         } else {
+//            dd(func_get_args(), $year, $se);
             throw new \Exception("Not a valid academic year: {$ac_year}");
         }
         return $carbon->timestamp;

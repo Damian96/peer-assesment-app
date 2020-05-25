@@ -19,7 +19,7 @@ class UsersTableSeeder extends Seeder
     {
         DatabaseSeeder::refreshTable($this->table, true);
 
-        if (!strcmp(env('APP_ENV'), 'testing')) {
+        if (!strcmp(env('APP_ENV', 'local'), 'testing')) {
             /* `wpesdb`.`users` */
             $users = array(
                 array('id' => '1', 'email' => 'kdimopoulos@citycollege.sheffield.eu', 'email_verified_at' => '2020-04-25 23:59:00', 'fname' => 'Konstantinos', 'lname' => 'Dimopoulos', 'department' => 'CS', 'reg_num' => NULL, 'instructor' => '1', 'admin' => '0', 'password' => '$2y$10$gzOhhWIwIluFaQwh/2GyTu3o5ybdCXNDlrEDpLubciyzaZPL7SR4u', 'remember_token' => 'asegviQzPzFMqoJlgTQHQGWCfDh2fzDk8qAtPMInfPXfJHGKRj9BZf1XpFl8', 'api_token' => NULL, 'created_at' => '2020-04-25 14:12:42', 'updated_at' => '2020-04-25 14:13:01', 'last_login' => '2020-04-25 14:13:01'),

@@ -12,7 +12,7 @@
     <script charset="utf-8" src="{{ mix('/js/vendor.js') }}"></script>
     <script charset="utf-8" src="{{ mix('/js/app.js') }}"></script>
 
-    @if (strcmp(env('APP_ENV'), 'testing'))
+    @if (strcmp(env('APP_ENV', 'local'), 'testing'))
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
     @endif
 

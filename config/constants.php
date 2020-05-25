@@ -5,7 +5,7 @@ return [
      * Some predefined date formats
      */
     'date' => [
-        'start' => '2018',
+        'start' => '2019',
 //        'start' => '2016-09-01 00:00:00',
         'full' => DATE_COOKIE,
         'stamp' => 'Y-m-d H:i:s',

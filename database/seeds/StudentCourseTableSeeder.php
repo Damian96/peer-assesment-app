@@ -1,5 +1,6 @@
 <?php
 
+use App\Course;
 use App\StudentCourse;
 use Illuminate\Database\Seeder;
 
@@ -17,11 +18,14 @@ class StudentCourseTableSeeder extends Seeder
     {
         DatabaseSeeder::refreshTable($this->table, true);
 
+        $course = Course::whereAcYear('SP-2020')->where('id', '!=', \App\Course::DUMMY_ID)
+            ->firstOrFail();
+
         /* `peerassessDB`.`student_course` */
         $student_course = array(
-            array('user_id' => '4', 'course_id' => '1'),
-            array('user_id' => '4', 'course_id' => '2'),
-            array('user_id' => '4', 'course_id' => '3'),
+            array('user_id' => '3', 'course_id' => $course->id),
+            array('user_id' => '4', 'course_id' => $course->id),
+            array('user_id' => '5', 'course_id' => $course->id),
         );
 
         foreach ($student_course as $sc) {

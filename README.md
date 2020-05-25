@@ -52,7 +52,14 @@ Now execute the list of commands below, while in the `wpes` directory:
 * `$ /path/to/php-binary artisan serve`
 <br>
 
-The project now is successfully installed and ready to use at [http://127.0.0.1:8000](http://127.0.0.1:8000).
+The project now is installed and ready to use at [http://127.0.0.1:8000](http://127.0.0.1:8000).
+You can login with the following **credentials (username:password)**:
+* Admin: `dgiankakis:everse2309`
+* Instructor: `istamatopoulou:123`
+* Student: `pgrammatikopoulos:123` <!--(password is the same for any other student account) -->
+<br>
+
+Happy Assessing!
 
 # License
 The software is licensed under the [GNU General Public License v3.0](https://github.com/Damian96/peer-assesment-app/blob/master/LICENSE)
