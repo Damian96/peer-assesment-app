@@ -60,7 +60,7 @@
   "prefer-stable": true,
   "scripts": {
     "test": [
-      "vendor/bin/phpunit -c phpunit.xml --verbose"
+      "\"vendor/bin/phpunit\" -c phpunit.xml --verbose"
     ],
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

@@ -36,6 +36,8 @@ From this point onwards you will need a PHP binary to complete the installation,
 If you don't wish to add it, you can open the folder of XAMPP's MySQL installation, with **XAMPP -> PHP Config -> <Browse> (PHP)** as shown in the figure below: 
 * ![](https://user-images.githubusercontent.com/19414954/82142395-bdef5c00-9844-11ea-95e0-607f51e6cbd1.JPG)
 There you can find the path to the PHP binary, and copy it so you can use it more easily.
+Also, you will need to have `npm` and `node` in your computer's PATH. In Windows the installer adds the bin folder automatically to the PATH.
+In Linux, you will have to do some magic yourself. Restart any opened command prompts for the changes to take effects. 
 Now execute the list of commands below, while in the `wpes` directory:
 * `$ composer install`
 * `$ npm install`
@@ -44,9 +46,17 @@ Now execute the list of commands below, while in the `wpes` directory:
 * Open the `phpMyAdmin` webpage from XAMPP's GUI button MySQL -> Admin.
     * Create a new database named `wpesDB`, with encoding `utf8mb4_general_ci` in the webpage's form, as shown in the screenshot below:
     ![phpMyAdmin-createDatabase](https://user-images.githubusercontent.com/19414954/82143004-5687db00-9849-11ea-9ec5-f56a83c201af.JPG)
+* `$ /path/to/php-binary artisan optimize:clear`
 * `$ /path/to/php-binary artisan migrate`
 * `$ /path/to/php-binary artisan db:seed`
+* `$ npm run prod`
+* `$ /path/to/php-binary view:cache`
+* `$ /path/to/php-binary route:cache`
 * `$ /path/to/php-binary artisan serve`
+<br>
+
+As an optional step, you can also conduct the **tests** of the project via:
+* `$ composer test`
 <br>
 
 The project now is installed and ready to use at [http://127.0.0.1:8000](http://127.0.0.1:8000).
