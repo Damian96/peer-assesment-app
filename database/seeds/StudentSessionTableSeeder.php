@@ -19,21 +19,18 @@ class StudentSessionTableSeeder extends Seeder
     {
         DatabaseSeeder::refreshTable($this->table, true);
 
-        if (!strcmp(env('APP_ENV', 'local'), 'local')) {
-            $students = User::whereInstructor('0')->where('admin', '=', '0')
-                ->whereNotNull('email_verified_at')->where('id', '!=', Course::DUMMY_ID)
-                ->get(['users.id'])->toArray();
-            $students = array_column($students, 'id');
-            $courses = Course::whereAcYear('SP-2020')->get(['courses.id'])->toArray();
-            $session = Session::whereIn('id', array_column($courses, 'id'))->firstOrFail();
+        $students = User::whereInstructor('0')->where('admin', '=', '0')
+            ->whereNotNull('email_verified_at')->where('id', '!=', Course::DUMMY_ID)
+            ->get(['users.id'])->toArray();
+        $students = array_column($students, 'id');
+        $courses = Course::whereAcYear('SP-2020')->get(['courses.id'])->toArray();
+        $session = Session::whereIn('id', array_column($courses, 'id'))->firstOrFail();
 
-//            dd($students, $courses, $session);
-            foreach ($students as $id) {
-                DB::table($this->table)->insert([
-                    'user_id' => $id,
-                    'session_id' => $session->id
-                ]);
-            }
+        foreach ($students as $id) {
+            DB::table($this->table)->insert([
+                'user_id' => $id,
+                'session_id' => $session->id
+            ]);
         }
     }
 }

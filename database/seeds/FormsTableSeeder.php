@@ -22,7 +22,7 @@ class FormsTableSeeder extends Seeder
         $session = Session::query()->whereIn('id', array_column($courses, 'id'))
             ->orderBy('id', 'ASC')->firstOrFail();
 
-        if (!strcmp(env('APP_ENV', 'local'), 'local')) {
+        if (!strcmp(env('APP_ENV', 'local'), 'testing')) {
             /* `wpesdb`.`forms` */
             $forms = array(
                 array('id' => '1', 'session_id' => $session->id, 'title' => 'Feedback Session for Session#1', 'mark' => '0', 'created_at' => '2020-05-25 11:51:08', 'updated_at' => '2020-05-25 12:00:08')
