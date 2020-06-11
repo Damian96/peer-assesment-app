@@ -336,6 +336,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     }
 
     /**
+     * Get the Student's \App\StudentSession related record.
+     */
+    public function session()
+    {
+        return $this->hasOne(\App\StudentSession::class, 'user_id', 'id');
+    }
+
+    /**
      * Get the student's teammates from the database
      * @param Session $session
      * @param bool $self

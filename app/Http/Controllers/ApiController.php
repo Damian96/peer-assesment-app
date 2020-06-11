@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Group;
 use App\Http\Resources\SessionCollection;
 use App\Session;
 use App\User;
@@ -11,12 +12,15 @@ use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
+    const ACCEPTED = 202;
+
     /**
      * ApiController constructor.
      */
     public function __construct()
     {
-        $this->middleware('api')->except('login');
+        $this->middleware('api');
+        $this->middleware('auth.api')->except('login');
     }
 
     /**
@@ -120,54 +124,7 @@ class ApiController extends Controller
     }
 
     /**
-     * Private route only for checking authentication
-     * @param Request $request
-     * @return false|string
-     */
-    public function check(Request $request)
-    {
-        return $this->sendResponse(Auth::guard('api')->user());
-    }
-
-    /**
-     * @param \Exception $exception
-     * @return \Illuminate\Http\Response
-     */
-    public function error404(\Exception $exception)
-    {
-        return $this->sendResponse(['message' => $exception->getMessage(), 'code' => $exception->getCode(), 'error' => $exception->getTraceAsString()]);
-    }
-
-    /**
-     * @param \Exception $exception
-     * @return \Illuminate\Http\Response
-     */
-    public function error500(\Exception $exception)
-    {
-        return $this->sendResponse(['message' => $exception->getMessage(), 'code' => $exception->getCode(), 'error' => $exception->getTraceAsString()]);
-    }
-
-    /**
-     * @param mixed $data
-     * @param int $code
-     * @return \Illuminate\Http\Response
-     */
-    private function sendResponse($data, $code = 200)
-    {
-        try {
-            $json = json_encode($data);
-            return \response($json, $code, [
-                'Content-Type' => 'application/json'
-            ]);
-        } catch (\Exception $e) {
-            return \response(json_encode(['message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTraceAsString()]), $code, [
-                'Content-Type' => 'application/json'
-            ]);
-        }
-    }
-
-    /**
-     * /api/sessions/{session}all
+     * URL:/api/sessions/{session}all
      * @param Request $request
      * @param Session $session
      * @return \App\Http\Resources\GroupCollection|\Illuminate\Http\Response
@@ -180,7 +137,7 @@ class ApiController extends Controller
     }
 
     /**
-     * /api/groups/{session}/form
+     * URL:/api/groups/{session}/form
      * @param Request $request
      * @param Session $session
      * @return \Spatie\Html\Elements\Form
@@ -211,12 +168,90 @@ class ApiController extends Controller
     }
 
     /**
-     * /api/groups/all
+     * URL:/api/groups/all
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function groups(Request $request)
     {
         return $this->sendResponse(new \App\Http\Resources\GroupCollection(\App\Group::all()->collect()));
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * @throws \Throwable
+     */
+    public function checkSessions(Request $request)
+    {
+        $closed = \App\Session::whereDeadline(now()->format('Y-m-d 00:00:00.000000'))
+            ->getModels();
+
+        $skipped = 0;
+        $total = 0;
+        $response = ['sessions' => []];
+        foreach ($closed as $session) {
+            /**
+             * @var \App\Session $session
+             */
+            $marks = [];
+            foreach ($session->groups()->getModels() as $group) {
+                /**
+                 * @var \App\Group $group
+                 */
+                if (!$group instanceof Group) continue;
+
+                foreach ($group->students()->get(['users.*']) as $student) {
+                    /**
+                     * @var \App\User $student
+                     */
+                    if ($group->mark && $student->session()->where('session_id', '=', $session->id)->exists()) {
+                        $marks[$group->id] = $group;
+                    } else {
+                        $skipped++;
+                    }
+                }
+            }
+
+            $marked = count($marks);
+            if ($marked > 0) {
+                $session->mark_avg = array_sum($marks) / $marked;
+                $session->saveOrFail();
+            }
+
+            array_push($response['sessions'], [
+                'session' => (object)$session->toArray(),
+                'stats' => (object)[
+                    'marked' => count($marks),
+                    'skipped' => $skipped
+                ]
+            ]);
+            $skipped = 0;
+            $total += $marked;
+        }
+
+        $response['stats'] = [
+            'marked' => $total
+        ];
+        return $this->sendResponse($response, 200);
+    }
+
+    /**
+     * @param mixed $data
+     * @param int $code
+     * @return \Illuminate\Http\Response
+     */
+    private function sendResponse($data, $code = 200)
+    {
+        try {
+            $json = json_encode($data);
+            return \response($json, $code, [
+                'Content-Type' => 'application/json'
+            ]);
+        } catch (\Exception $e) {
+            return \response(json_encode(['message' => $e->getMessage(), 'code' => $e->getCode(), 'trace' => $e->getTraceAsString()]), $code, [
+                'Content-Type' => 'application/json'
+            ]);
+        }
     }
 }

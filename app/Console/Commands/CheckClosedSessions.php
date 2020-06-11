@@ -19,7 +19,7 @@ class CheckClosedSessions extends Command
      *
      * @var string
      */
-    protected $description = 'Check for closed Sessions on midnight';
+    protected $description = 'Check for closed Sessions on today at midnight (00:00)';
 
     /**
      * Create a new command instance.
@@ -34,22 +34,27 @@ class CheckClosedSessions extends Command
     /**
      * Calculate the marks of the closing Sessions
      * @TODO: add API endpoint to manually handle this command
+     * @TODO: add Stack/Monolog Logger https://laravel.com/docs/7.x/logging
      *
+     * @param bool $silent
      * @return bool
+     * @throws \Throwable
      */
-    public function handle()
+    public function handle($silent = false)
     {
-        /**
-         * @var array $closing
-         */
-        $closing = \App\Session::whereDeadline(now()->format('Y-m-d 00:00:00.000000'))
+        $closed = \App\Session::whereDeadline(now()->format('Y-m-d 00:00:00.000000'))
             ->getModels();
-        if (empty($closing)) return false;
+        if (empty($closed)) {
+            $this->info(sprintf("Ran %s command, and there were no closed Sessions.", __CLASS__));
+            return false;
+        }
 
-        $bar = $this->output->createProgressBar(count($closing));
-        $bar->start();
-        $this->line("");
-        foreach ($closing as $session) {
+        if (!$silent) {
+            $bar = $this->output->createProgressBar(count($closed));
+            $bar->start();
+            $this->line("");
+        }
+        foreach ($closed as $session) {
             /**
              * @var \App\Session $session
              */
@@ -81,12 +86,17 @@ class CheckClosedSessions extends Command
             } catch (\Throwable $e) {
                 throw $e;
             }
-            $this->line(sprintf("Finished mark calculation of Session %s", $session->title));
-            $this->line(sprintf("Average class mark was: %d", $session->mark_avg));
-            $bar->advance();
+            if (!$silent) {
+                $this->line(sprintf("Finished mark calculation of Session %s", $session->title));
+                $this->line(sprintf("Average class mark was: %d", $session->mark_avg));
+                $bar->advance();
+            }
         }
-        $bar->finish();
-        $this->line("");
+        if (!$silent) {
+            $bar->finish();
+            $this->line("");
+        }
+
         return true;
     }
 }

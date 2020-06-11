@@ -5,7 +5,6 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -66,12 +65,15 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($exception instanceof ModelNotFoundException && $request->isJson()) {
-            return Route::respondWithRoute('api.fallback.404');
-        } elseif ($exception instanceof \RuntimeException && $request->isJson()) {
-            return Route::respondWithRoute('api.fallback.500');
+        if ($exception instanceof ModelNotFoundException && $request->wantsJson()) {
+            return response()->json(['error' => 'Entry for ' . str_replace('App\\', '', $exception->getModel()) . ' not found'], 404);
+        } elseif ($exception instanceof UnauthorizedHttpException && $request->wantsJson()) {
+            return response()->json(['error' => $exception->getMessage()], 401);
         }
 
+//        elseif ($exception instanceof \RuntimeException && $request->wantsJson()) {
+//            return Route::respondWithRoute('api.fallback.500');
+//        }
         if (Auth::guard('web')->check() && Auth::user()->isStudent()) {
             if ($exception instanceof ModelNotFoundException) {
                 throw new UnauthorizedHttpException('Forbidden');

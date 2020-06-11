@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('auth:clear-resets')->dailyAt('00:00:00');
-        $schedule->command('sessions:check')->dailyAt('00:00:00');
+        $schedule->command('sessions:check')->dailyAt('01:00:00');
     }
 
     /**

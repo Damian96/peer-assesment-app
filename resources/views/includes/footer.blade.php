@@ -1,4 +1,4 @@
-<footer class="container-fluid mt-5 py-2 bg-dark text-white">
+<footer class="container-fluid py-2 bg-dark text-white">
     <div class="row">
         <div class="col-xs-12 col-sm-4 col-md-4">
             Powered by <a title="Laravel" target="_blank" href="https://laravel.com">Laravel Framework</a>
