@@ -8,7 +8,6 @@ use App\Form;
 use App\FormTemplate;
 use App\Question;
 use App\Session;
-use App\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -17,6 +16,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 
+/**
+ * Class FormController
+ * @package App\Http\Controllers
+ */
 class FormController extends Controller
 {
     const PER_PAGE = 10;
@@ -113,6 +116,7 @@ class FormController extends Controller
      * @method _GET
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function create(Request $request)
     {
@@ -120,13 +124,14 @@ class FormController extends Controller
 
         $sessions = Auth::user()->sessions()->get();
         $messages = $this->messages(__FUNCTION__);
-        return \response(view('forms.create', compact('messages', 'title', 'sessions')), 200);
+        return response(view('forms.create', compact('messages', 'title', 'sessions')), 200);
     }
 
     /**
      * @method _GET
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function index(Request $request)
     {
@@ -173,6 +178,7 @@ class FormController extends Controller
      * @method _POST
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function store(Request $request)
     {
@@ -188,9 +194,9 @@ class FormController extends Controller
 
         $request->merge(['session_id' => Course::DUMMY_ID]);
         $form = new Form($request->all());
-        if (!$form->save() && env('APP_DEBUG', false)) {
+        if (!$form->save() && config('env.APP_DEBUG', false)) {
             throw abort(500, sprintf("Could not insert Form in database"));
-        } elseif (!env('APP_DEBUG', false)) {
+        } elseif (!config('env.APP_DEBUG', false)) {
             // fallback
             return redirect()->back(302)
                 ->withHeaders($request->headers->all())
@@ -211,9 +217,9 @@ class FormController extends Controller
                 ],
             ]);
             $question = new Question($data);
-            if (!$question->save() && env('APP_DEBUG', false)) {
+            if (!$question->save() && config('env.APP_DEBUG', false)) {
                 throw abort(500, sprintf("Could not insert Question in database"));
-            } else if (!env('APP_DEBUG', false)) {
+            } else if (!config('env.APP_DEBUG', false)) {
                 return redirect()->back(302)
                     ->withHeaders($request->headers->all())
                     ->withInput($request->all())
@@ -234,6 +240,7 @@ class FormController extends Controller
      * @param Request $request
      * @param Form $form
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function edit(Request $request, Form $form)
     {
@@ -248,6 +255,7 @@ class FormController extends Controller
      * @param Form $form
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      * @throws \Throwable
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function update(Request $request, Form $form)
     {
@@ -272,7 +280,7 @@ class FormController extends Controller
         ]);
 
         if (!$form->save()) {
-            abort_unless(env('APP_DEBUG', false), 500, 'Could not save form!');
+            abort_unless(config('env.APP_DEBUG', false), 500, 'Could not save form!');
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Could not save form!',
@@ -303,7 +311,7 @@ class FormController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                throw_if(env('APP_DEBUG', false), $e);
+                throw_if(config('env.APP_DEBUG', false), $e);
                 $request->session()->flash('message', [
                     'level' => 'danger',
                     'heading' => "Could not save/update/delete Question {$question->id}!",
@@ -321,7 +329,7 @@ class FormController extends Controller
             try {
                 $question->saveOrFail();
             } catch (\Throwable $e) {
-                throw_if(env('APP_DEBUG', false), $e);
+                throw_if(config('env.APP_DEBUG', false), $e);
                 $request->session()->flash('message', [
                     'level' => 'danger',
                     'heading' => "Could not delete Question {$question->id}!",
@@ -343,6 +351,7 @@ class FormController extends Controller
      * @param Form $form
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      * @throws \Throwable
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function delete(Request $request, Form $form)
     {
@@ -369,7 +378,7 @@ class FormController extends Controller
             return redirect()->back(302, $request->headers->all());
         }
 
-        throw_if(env('APP_DEBUG', false), 500, sprintf("Could not delete form: %s", $form->title));
+        throw_if(config('env.APP_DEBUG', false), 500, ['message' => sprintf("Could not delete form: %s", $form->title)]);
         $request->session()->flash('message', [
             'level' => 'danger',
             'heading' => sprintf("Could not delete Form"),
@@ -383,6 +392,7 @@ class FormController extends Controller
      * @param FormTemplate $form
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      * @throws \Throwable
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function duplicate(Request $request, FormTemplate $form)
     {
@@ -400,7 +410,7 @@ class FormController extends Controller
         try {
             $session = Session::whereId($request->get('session_id', false))->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Something went wrong!',
@@ -423,7 +433,7 @@ class FormController extends Controller
         try {
             $form->saveOrFail();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
+            throw_if(config('env.APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Could not duplicate Form!',
@@ -443,7 +453,7 @@ class FormController extends Controller
             ]);
 
             if (!$model->save()) {
-                throw_if(env('APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
+                throw_if(config('env.APP_DEBUG', false), new InternalErrorException('Could not replicate form'));
                 $request->session()->flash('message', [
                     'level' => 'danger',
                     'heading' => 'Could not duplicate Form!',
@@ -461,8 +471,10 @@ class FormController extends Controller
     }
 
     /**
+     * @FIXME: complete
      * @param Request $request
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @noinspection PhpFullyQualifiedNameUsageInspection
      */
     public function preview(Request $request)
     {
@@ -483,13 +495,13 @@ class FormController extends Controller
 
         $form = new Form($request->all());
         dd($request->get('question'), $request->all());
-        foreach ($request->get('question') as $i => $q) {
-
-        }
-
-        $teammates = User::whereAdmin(0)->where('instructor', '=', 0)
-            ->limit(4)->getModels();
-        $session = Session::all()->random(1)->first();
-        return response(view('forms.preview', compact('form', 'teammates', 'session')), 200);
+//        foreach ($request->get('question') as $i => $q) {
+//
+//        }
+//
+//        $teammates = User::whereAdmin(0)->where('instructor', '=', 0)
+//            ->limit(4)->getModels();
+//        $session = Session::all()->random(1)->first();
+//        return response(view('forms.preview', compact('form', 'teammates', 'session')), 200);
     }
 }

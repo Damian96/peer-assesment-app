@@ -329,7 +329,7 @@ class CourseController extends Controller
         try {
             $clone = $course->copyToCurrentYear();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Something went wrong while coping the Course!',
@@ -372,7 +372,7 @@ class CourseController extends Controller
                     'body' => '',
                 ]);
                 return redirect()->action('CourseController@index', [], 302);
-            } elseif (env('APP_DEBUG', false)) {
+            } elseif (config('env.APP_DEBUG', false)) {
                 $request->session()->flash('message', [
                     'level' => 'danger',
                     'heading' => sprintf("Something went wrong while deleting %s!", $course->code),
@@ -381,7 +381,7 @@ class CourseController extends Controller
                 return redirect()->back(302);
             }
         } catch (\Exception $e) {
-            if (env('APP_DEBUG', false)) {
+            if (config('env.APP_DEBUG', false)) {
                 throw abort(500, $e->getMessage());
             } else {
                 return redirect()->back(302);
@@ -448,7 +448,7 @@ class CourseController extends Controller
         try {
             $enrolled->delete();
         } catch (\Exception $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => "Something went wrong.",

@@ -6,7 +6,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Laravel\Scout\Searchable;
 
 /**
  * Class User
@@ -62,6 +61,7 @@ use Laravel\Scout\Searchable;
  * @property int ac_year_year
  * @property string instructor_fullname
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereDepartment($value)
+ * @noinspection PhpFullyQualifiedNameUsageInspection
  */
 class Course extends Model
 {
@@ -320,7 +320,7 @@ class Course extends Model
         try {
             $clone->saveOrFail();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             return false;
         }
         return $clone;
@@ -344,7 +344,7 @@ class Course extends Model
             else
                 $date = $now->setMonth(self::SPRING + 4)->setDay(1)->startOfDay()->format(config('constants.date.stamp'));
         } else {
-            abort_if(env('APP_DEBUG', false), 500, "The academic year {$this->ac_year} is invalid.");
+            abort_if(config('env.APP_DEBUG', false), 500, "The academic year {$this->ac_year} is invalid.");
             return false;
         }
 
@@ -402,13 +402,11 @@ class Course extends Model
     {
         $year = substr($ac_year, -4);
         $se = substr($ac_year, 0, 2);
-//        dd(func_get_args(), $year, $se, $se == 'SP', $se === 'SP');
         if ($se === 'FA') { // Fall
             $carbon = Carbon::createFromDate(intval($year), $end ? 2 : 9, $end ? 14 : 1, config('app.timezone'));
         } else if ($se === 'SP') { // Spring
             $carbon = Carbon::createFromDate(intval($year), $end ? 5 : 2, $end ? 30 : 15, config('app.timezone'));
         } else {
-//            dd(func_get_args(), $year, $se);
             throw new \Exception("Not a valid academic year: {$ac_year}");
         }
         return $carbon->timestamp;

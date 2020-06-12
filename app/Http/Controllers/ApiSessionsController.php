@@ -31,7 +31,12 @@ class ApiSessionsController extends Controller
      */
     public function getAll(Request $request)
     {
-        return response()->json(new SessionCollection(Session::all()), 200, $this->headers);
+        if ($request->has('except'))
+            $ids = array_map('intval', explode(',', $request->get('except', '')));
+        else
+            $ids = [];
+
+        return response()->json(new SessionCollection(Session::all()->whereNotIn('id', $ids)), 200, $this->headers);
     }
 
     /**
@@ -73,7 +78,7 @@ class ApiSessionsController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
     public function checkSessions(Request $request)

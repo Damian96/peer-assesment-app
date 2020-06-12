@@ -97,7 +97,7 @@ class ApiController extends Controller
             } else
                 return response()->json(['message' => 'Invalid email-password combination provided.', 'error' => 'Could not authenticate.'], 200, $this->headers);
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e, ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            throw_if(config('env.APP_DEBUG', false), $e, ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             return response()->json(['message' => 'Invalid email-password combination provided.', 'code' => $e->getCode()], 200, $this->headers);
         }
     }

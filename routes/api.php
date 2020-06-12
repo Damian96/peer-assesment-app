@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +15,6 @@
  * auth:api Middleware -> expects always JSON !!
  */
 
-// Route::middleware('api')->get('/user', function (Request $request) {
-//     return json_encode(Auth::guard('api')->user());
-// });
 Route::group(['prefix' => '/user'], function () {
     Route::post('/login', 'ApiController@login')->name('api.login');
 });

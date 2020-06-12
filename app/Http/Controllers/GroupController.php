@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Group;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 
 class GroupController extends Controller
@@ -81,10 +82,10 @@ class GroupController extends Controller
      */
     public function storeMark(Request $request, Group $group)
     {
-        $validator = \Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
-            throw_if(env('APP_DEBUG', false), new InternalErrorException($validator->errors()->first()));
+            throw_if(config('env.APP_DEBUG', false), new InternalErrorException($validator->errors()->first()));
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Could not store the Group\'s mark!',
@@ -100,7 +101,7 @@ class GroupController extends Controller
             $group->mark = $request->get('mark', 0);
             $group->saveOrFail();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Oops!',

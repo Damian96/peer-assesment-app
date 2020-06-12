@@ -140,7 +140,7 @@ class UserController extends Controller
                     'lname' => $default['lname'],
                     'reg_num' => $default['reg_num'],
                     'instructor' => 'nullable|boolean',
-                    'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
+                    'g-recaptcha-response' => config('env.APP_ENV', false) == 'local' || config('env.APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             case 'auth':
             case 'login':
@@ -148,7 +148,7 @@ class UserController extends Controller
                     'email' => $default['email_prepend_exists'],
                     'password' => $default['password'],
                     'remember' => 'nullable|in:0,1,on,off',
-                    'g-recaptcha-response' => env('APP_ENV', false) == 'local' || env('APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
+                    'g-recaptcha-response' => config('env.APP_ENV', false) == 'local' || config('env.APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             case 'storeConfig':
                 return [
@@ -359,7 +359,7 @@ class UserController extends Controller
             try {
                 $course = Course::findOrFail($request->get('course_id', false));
             } catch (ModelNotFoundException $e) {
-                throw_if(env('APP_DEBUG', false), $e);
+                throw_if(config('env.APP_DEBUG', false), $e);
             }
             $success = 0;
             $fail = 0;
@@ -496,7 +496,7 @@ class UserController extends Controller
         if (Auth::guard('web')->check()) {
             return redirect()->action('UserController@index', [], 302);
         }
-        $title = sprintf("Login to %s", env('APP_NAME'));
+        $title = sprintf("Login to %s", config('env.APP_NAME'));
         $messages = $this->messages(__FUNCTION__);
         return response(view('user.login', compact('title', 'messages')), 200, $request->headers->all());
     }
@@ -525,7 +525,7 @@ class UserController extends Controller
             try {
                 $user = User::whereEmail($email)->firstOrFail();
             } catch (ModelNotFoundException $e) {
-                throw_if(env('APP_DEBUG', false), $e);
+                throw_if(config('env.APP_DEBUG', false), $e);
                 return redirect()->back()
                     ->withInput($request->all())
                     ->withErrors($validator->errors());
@@ -779,7 +779,7 @@ class UserController extends Controller
         try {
             $user = User::whereEmail(sprintf("%s@%s", $request->get('email'), config('app.domain')))->firstOrFail();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'This user does not exist in WPES!',
@@ -856,21 +856,21 @@ class UserController extends Controller
          */
         $config = Auth::user()->config();
         $config->update([
-            'fudge_factor' => $request->get('fudge', env('FUDGE_FACTOR')),
-            'group_weight' => $request->get('group', env('GROUP_WEIGHT')),
+            'fudge_factor' => $request->get('fudge', config('mark.fudge')),
+            'group_weight' => $request->get('group', config('mark.group')),
         ]);
 
         try {
             $config->saveOrFail();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e, ['message' => $e->getMessage()]);
+            throw_if(config('env.APP_DEBUG', false), $e, ['message' => $e->getMessage()]);
             return redirect()->back()
                 ->withInput($request->all())
                 ->withErrors(new MessageBag(['Something went wrong while updating the configuration!']));
         }
 
         // @TODO: implement ORG_DOMAIN for Admin only
-        // parent::updateDotEnv('ORG_DOMAIN', $request->get('domain', env('ORG_DOMAIN')));
+        // parent::updateDotconfig('env.ORG_DOMAIN', $request->get('domain', config('env.ORG_DOMAIN')));
 
         $request->session()->flash('message', [
             'level' => 'success',

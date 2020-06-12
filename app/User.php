@@ -81,6 +81,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @property Group group
  * @property string fullname
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
+ * @noinspection PhpFullyQualifiedNameUsageInspection
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
 {
@@ -627,7 +628,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEmailVerificationNotification()
     {
-        if (env('APP_ENV', 'local') == 'testing') {
+        if (config('env.APP_ENV', 'local') == 'testing') {
             $mailer = new \App\Notifications\AppVerifyEmail($this);
             Mail::to($this->email)->send($mailer);
         }
@@ -665,7 +666,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $token = Hash::make($this->email . ':' . $this->lname . ':' . time());
         if (!DB::table('password_resets')->insert(['email' => $this->getEmailForPasswordReset(), 'token' => $token])) {
-            throw_if(env('APP_DEBUG', false), new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token)));
+            throw_if(config('env.APP_DEBUG', false), new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token)));
             return false;
         }
         return $token;
@@ -784,14 +785,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password_reset_token = $token;
         try {
-            if (env('APP_ENV', 'local') == 'testing') {
+            if (config('env.APP_ENV', 'local') == 'testing') {
                 $mailer = new AppResetPasswordEmail($this);
                 Mail::to($this->email)->send($mailer);
             }
             clock()->info("AppResetPasswordEmail sent to {$this->email}");
         } catch (\Throwable $e) {
             clock()->info("Failed to send AppResetPasswordEmail to {$this->email}", ['trace' => true]);
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
         }
     }
 
@@ -804,7 +805,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password = $this->generateStudentPassword();
         $this->save();
-        if (env('APP_ENV', 'local') == 'testing') {
+        if (config('env.APP_ENV', 'local') == 'testing') {
             $mailer = new StudentInviteEmail($this, $course);
             Mail::to($this->email)->send($mailer);
         }
@@ -818,7 +819,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-        if (env('APP_ENV', 'local') == 'testing') {
+        if (config('env.APP_ENV', 'local') == 'testing') {
             $mailer = new StudentEnrollEmail($this, $course);
             Mail::to($this->email)->send($mailer);
         }
@@ -929,7 +930,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             return 0;
         } else { // calculate with fudge factor
             $factor = round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
-            return round($factor * floatval(env('FUDGE_FACTOR')), 2);
+            return round($factor * floatval(\config('mark.fudge')), 2);
         }
     }
 
@@ -948,7 +949,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
         // [e]valuation (0-5), crite[r]ion (0-100)
         $total_factor = $this->getMarkFactor($session_id, 'r') + $this->getMarkFactor($session_id, 'e');
-        $group_weight = floatval(env('GROUP_WEIGHT'));
+        $group_weight = floatval(\config('env.GROUP_WEIGHT'));
         $mark = ($group_weight * $group_mark) + ($total_factor * ($group_weight * $group_mark));
         $mark = $mark > 100 ? 100 : $mark;
 

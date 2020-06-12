@@ -49,6 +49,8 @@ use Illuminate\Support\Facades\Mail;
  * @property \App\User|null instructor
  * @property int min_group_size
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Session whereOpenDate($value)
+ * @noinspection PhpFullyQualifiedNameUsageInspection
+ * @noinspection PhpUnnecessaryFullyQualifiedNameInspection
  */
 class Session extends Model
 {
@@ -209,6 +211,17 @@ class Session extends Model
     ];
 
     /**
+     * Get all of the models from the database.
+     *
+     * @param array|mixed $columns
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public static function all($columns = ['*'])
+    {
+        return parent::all()->where('id', '!=', Course::DUMMY_ID);
+    }
+
+    /**
      * Get the associated \App\Course
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -232,21 +245,21 @@ class Session extends Model
      */
     public function sendEmailNotification()
     {
-//        if (env('APP_ENV', 'local') === 'testing') {
-        /**
-         * @var Course $course
-         */
-        $this->instructor = $this->course->user()->exists() ? $this->course->user()->first()->getModel() : null;
-        if ($this->course == null || $this->instructor == null) return;
-
-        foreach ($this->course->students()->getModels() as $student) {
+        if (config('env.APP_ENV', 'local') === 'testing') {
             /**
-             * @var User $student
+             * @var Course $course
              */
-            $mailer = new SessionStartEmail($student, $this->instructor, $this->course, $this);
-            Mail::to($student->email)->send($mailer);
+            $this->instructor = $this->course->user()->exists() ? $this->course->user()->first()->getModel() : null;
+            if ($this->course == null || $this->instructor == null) return;
+
+            foreach ($this->course->students()->getModels() as $student) {
+                /**
+                 * @var User $student
+                 */
+                $mailer = new SessionStartEmail($student, $this->instructor, $this->course, $this);
+                Mail::to($student->email)->send($mailer);
+            }
         }
-//        }
         clock()->info('Students have been notified of the opened Session!');
     }
 

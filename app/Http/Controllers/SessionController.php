@@ -159,7 +159,6 @@ class SessionController extends Controller
      */
     public function all(Request $request)
     {
-        $user = Auth::user();
         $sessions = Session::all()->collect();
 
         return response(view('session.all', compact('title', 'sessions')), 200, $request->headers->all());
@@ -266,7 +265,7 @@ class SessionController extends Controller
             return redirect()->action('FormController@index', [], 302);
         }
 
-        abort_if(env('APP_DEBUG', false), 500, sprintf("Could not save Session %s!", $session->id));
+        abort_if(config('env.APP_DEBUG', false), 500, sprintf("Could not save Session %s!", $session->id));
         return redirect()->back(302)
             ->withInput($request->all());
     }
@@ -305,7 +304,7 @@ class SessionController extends Controller
 //            ]);
 //
 //            if (!$form->save()) {
-//                throw_if(env('APP_DEBUG', false), 500, sprintf("Could not update Session %s!", $session->id));
+//                throw_if(config('env.APP_DEBUG', false), 500, sprintf("Could not update Session %s!", $session->id));
 //                return redirect()->back(302, $request->headers->all());
 //            }
 //        }
@@ -319,7 +318,7 @@ class SessionController extends Controller
             return redirect()->back(302, $request->headers->all());
         }
 
-        throw_if(env('APP_DEBUG', false), 500, sprintf("Could not update Session %s!", $session->id));
+        throw_if(config('env.APP_DEBUG', false), 500, ['message' => sprintf("Could not update Session %s!", $session->id)]);
         return redirect()->back(302, $request->headers->all());
     }
 
@@ -362,7 +361,7 @@ class SessionController extends Controller
             return redirect()->back(302, [], false);
         }
 
-        throw_if(env('APP_DEBUG', false), 500, 'Could not delete Session ' . $session->id);
+        throw_if(config('env.APP_DEBUG', false), 500, ['message' => 'Could not delete Session ' . $session->id]);
         $request->session()->flash('message', [
             'level' => 'danger',
             'heading' => sprintf("Could not delete Session: %s", $session->title),
@@ -416,7 +415,7 @@ class SessionController extends Controller
             try {
                 $question = Question::findOrFail($id);
             } catch (ModelNotFoundException $e) {
-                throw_if(env('APP_DEBUG', false), $e);
+                throw_if(config('env.APP_DEBUG', false), $e);
                 continue;
             }
             $review = new Review([
@@ -462,7 +461,7 @@ class SessionController extends Controller
                         try {
                             $r->saveOrFail();
                         } catch (\Throwable $e) {
-                            throw_if(env('APP_DEBUG', false), $e);
+                            throw_if(config('env.APP_DEBUG', false), $e);
                             $request->session()->flash('message', array(
                                 'level' => 'danger',
                                 'heading' => 'Could not save review!',
@@ -482,7 +481,7 @@ class SessionController extends Controller
                 if ($review instanceof Review && $review->type)
                     $review->saveOrFail();
             } catch (\Throwable $e) {
-                throw_if(env('APP_DEBUG', false), $e);
+                throw_if(config('env.APP_DEBUG', false), $e);
                 $request->session()->flash('message', array(
                     'level' => 'danger',
                     'heading' => 'Could not save review!',
@@ -562,7 +561,7 @@ class SessionController extends Controller
             $joined = new StudentGroup(['user_id' => Auth::user()->id, 'group_id' => $group->id]);
             $joined->saveOrFail();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => 'Error!',
@@ -579,6 +578,7 @@ class SessionController extends Controller
     }
 
     /**
+     * @FIXME: Remove $session, add $group parameter
      * @param Request $request
      * @param Session $session
      * @return Response|RedirectResponse
@@ -606,7 +606,7 @@ class SessionController extends Controller
 
             $group = Group::whereId($request->get('group_id'))->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             $request->session()->flash('message', [
                 'level' => 'danger',
                 'heading' => "Error while joining Group!",
