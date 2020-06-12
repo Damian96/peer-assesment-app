@@ -19,7 +19,6 @@ class Handler extends ExceptionHandler
      */
     protected $dontReport = [
         \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException::class,
-//        \Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException::class,
     ];
 
     /**
@@ -44,23 +43,11 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Report or log an exception.
-     *
-     * @param \Exception $exception
-     * @return void
-     * @throws Exception
-     */
-    public function report(Exception $exception)
-    {
-        parent::report($exception);
-    }
-
-    /**
      * Render an exception into an HTTP response.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Exception $exception
-     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
+     * @return \Symfony\Component\HttpFoundation\Response
      * @throws Exception
      */
     public function render($request, Exception $exception)
@@ -70,14 +57,13 @@ class Handler extends ExceptionHandler
         } elseif ($exception instanceof UnauthorizedHttpException && $request->wantsJson()) {
             return response()->json(['error' => $exception->getMessage()], 401);
         }
-
 //        elseif ($exception instanceof \RuntimeException && $request->wantsJson()) {
-//            return Route::respondWithRoute('api.fallback.500');
-//        }
+
         if (Auth::guard('web')->check() && Auth::user()->isStudent()) {
-            if ($exception instanceof ModelNotFoundException) {
+            if ($exception instanceof NotFoundHttpException)
+                return parent::render($request, $exception);
+            else
                 throw new UnauthorizedHttpException('Forbidden');
-            }
         }
 
         if ($this->shouldReport($exception)) {

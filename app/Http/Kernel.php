@@ -2,16 +2,18 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\ResponseCacheMiddleware;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Auth;
 
 class Kernel extends HttpKernel
 {
     public function __construct(Application $app, Router $router)
     {
-        if (env('APP_ENV', 'local') !== 'local' && \Auth::guard('api')->check()) {
-            $this->middlewareGroups['api'][] = \App\Http\Middleware\ResponseCacheMiddleware::class;
+        if (env('APP_ENV', 'local') !== 'local' && Auth::guard('api')->check()) {
+            $this->middlewareGroups['api'][] = ResponseCacheMiddleware::class;
         }
 
         parent::__construct($app, $router);
@@ -89,6 +91,7 @@ class Kernel extends HttpKernel
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\Authenticate::class,
+        \App\Http\Middleware\AuthenticateAPI::class,
         \Illuminate\Routing\Middleware\ThrottleRequests::class,
         \Illuminate\Session\Middleware\AuthenticateSession::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,

@@ -7,6 +7,10 @@ use Closure;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
+/**
+ * Class AuthenticateAPI
+ * @package App\Http\Middleware
+ */
 class AuthenticateAPI
 {
     /**
@@ -35,16 +39,6 @@ class AuthenticateAPI
         } else {
             throw new UnauthorizedHttpException('Bearer', "You are not authorized to view this resource.");
         }
-
-//        return response()->json([
-//            'error' => 'Entry for '.str_replace('App\\', '', $exception->getModel()).' not found'], 404);
-//        elseif ($request->route()->getAction()['as'] !== 'api.fallback.404') {
-//            return Route::respondWithRoute('api.fallback.404');
-//        } elseif ($request->route()->getAction()['as'] === 'api.fallback.404') {
-//            $exception = new NotFoundHttpException("not found");
-//            $request->request->add(['exception' => $exception]);
-//            return $next($request);
-//        }
 
         return redirect()->action('UserController@login', [], 302, $request->headers->all());
     }

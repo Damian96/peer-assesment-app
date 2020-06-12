@@ -229,7 +229,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Html' => Spatie\Html\Facades\Html::class,
-        'PaginateRoute' => Spatie\PaginateRoute\PaginateRouteFacade::class,
     ],
 
     'admin' => [

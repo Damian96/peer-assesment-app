@@ -95,5 +95,7 @@ Route::group(['prefix' => '/forms'], function () {
 
 Route::group(['prefix' => '/groups'], function () {
 //    Route::match(['get'], '/{group}', 'GroupController@show')->name('group.show');
-    Route::match(['post'], '/{group}/store-mark', 'GroupController@storeMark')->name('group.show');
+    Route::post('/{group}/store-mark', 'GroupController@storeMark')->name('group.show');
+    // @FIXME:
+//    Route::get('/{session}/form', 'ApiSessionsController@getSessionForm')->name('api.sessionForm');
 });

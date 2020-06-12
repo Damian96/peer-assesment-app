@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Group;
 use App\Http\Resources\GroupCollection;
 use App\Session;
 use Illuminate\Http\Request;
@@ -29,10 +30,19 @@ class ApiGroupsController extends Controller
      * @param Session $session
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAll(Request $request, Session $session)
+    public function getSessionGroups(Request $request, Session $session)
     {
         $groups = new GroupCollection($session->groups()->getModels());
         $groups->additional(['session' => $session]);
         return response()->json($groups, 200, array_merge($this->headers, $request->session()->get('wpes_headers')));
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAll(Request $request)
+    {
+        return response()->json(new GroupCollection(Group::all()), 200, array_merge($this->headers, $request->session()->get('wpes_headers')));
     }
 }
