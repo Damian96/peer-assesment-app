@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class Version0620191203Sessions extends Migration
@@ -24,7 +23,7 @@ class Version0620191203Sessions extends Migration
             $table->tinyInteger('groups')->comment('maximum groups');
             $table->tinyInteger('min_group_size')->comment('maximum group size');
             $table->tinyInteger('max_group_size')->comment('minimum group size');
-            $table->timestamp('open_date')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('open_date');
             $table->timestamps();
 
             $table->foreign('course_id', 'sessions_courses_foreign')->references('id')->on('courses');
