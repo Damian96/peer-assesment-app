@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class Version0620191203Courses extends Migration
@@ -23,8 +22,7 @@ class Version0620191203Courses extends Migration
             $table->string('description', 150)->nullable();
             $table->string('department', 50);
             $table->string('ac_year', 7)->nullable(false)->comment('[SE]-[YYYY]');
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
             $table->foreign('user_id', 'courses_users_foreign')->references('id')->on('users');
             $table->index('user_id');
