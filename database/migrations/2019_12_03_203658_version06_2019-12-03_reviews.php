@@ -24,8 +24,7 @@ class Version0620191203Reviews extends Migration
             $table->char('type', 1)->comment('[e]valuation/[p]aragraph/likert-[s]cale/[c]hoice/crite[r]ia');
             $table->text('comment')->nullable()->comment('paragraph');
             $table->string('answer', 255)->nullable()->default(null)->comment('multiple-choice');
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
             $table->foreign('sender_id', 'reviews_users_sender_foreign')->references('id')->on('users');
             $table->foreign('recipient_id', 'reviews_users_recipient_foreign')->references('id')->on('users');

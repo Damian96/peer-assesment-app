@@ -18,8 +18,7 @@ class CreateInstructorConfigs extends Migration
             $table->unsignedBigInteger('user_id');
             $table->float('fudge_factor');
             $table->float('group_weight');
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
             $table->foreign('user_id', 'instructor_config_user_foreign')->references('id')->on('users');
         });

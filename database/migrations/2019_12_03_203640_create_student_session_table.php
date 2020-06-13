@@ -18,8 +18,7 @@ class CreateStudentSessionTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('session_id');
             $table->tinyInteger('mark', false, true)->default(0);
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
             $table->foreign('user_id', 'student_session_users_foreign')->references('id')->on('users');
             $table->foreign('session_id', 'student_session_sessions_foreign')->references('id')->on('sessions');

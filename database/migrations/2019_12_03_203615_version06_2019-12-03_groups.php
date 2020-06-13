@@ -18,8 +18,7 @@ class Version0620191203Groups extends Migration
             $table->bigInteger('session_id')->unsigned();
             $table->string('name', 255);
             $table->tinyInteger('mark')->unsigned()->nullable()->default(0);
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
             $table->foreign('session_id', 'groups_sessions_foreign')->references('id')->on('sessions')
                 ->onDelete('CASCADE');

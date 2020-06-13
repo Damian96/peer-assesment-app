@@ -20,8 +20,7 @@ class CreateFormTemplatesTable extends Migration
             $table->string('subtitle', 255)->nullable();
             $table->string('footnote', 255)->nullable();
             $table->text('questions');
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps();
 
             $table->foreign('user_id', 'form_template_user_id_foreign')->references('id')->on('users');
         });
