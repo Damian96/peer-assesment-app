@@ -26,6 +26,7 @@ Homestead.json
 .rocketeer/
 
 # Custom
+/docs/
 /dbdiagram.info
 /*.sh
 /*.bat
