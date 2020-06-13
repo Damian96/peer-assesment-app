@@ -28,7 +28,7 @@ class SessionsTableSeeder extends Seeder
             DB::table($this->table)->insert([
                 'course_id' => $course->id,
                 'title' => "{$course->code} -Session- {$course->id}",
-//                    'instructions' => null,
+                'instructions' => '',
                 'deadline' => Carbon::now(config('app.timezone'))->addDays(rand(3, 10))->format(config('constants.date.stamp')),
                 'open_date' => Carbon::now(config('app.timezone'))->addDays(rand(1, 3))->format(config('constants.date.stamp')),
                 'groups' => 2,
