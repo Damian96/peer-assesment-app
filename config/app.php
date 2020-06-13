@@ -166,7 +166,6 @@ return [
          * Package Service Providers...
          */
         Spatie\Html\HtmlServiceProvider::class,
-        Spatie\PaginateRoute\PaginateRouteServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -228,7 +227,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        'Html' => Spatie\Html\Facades\Html::class,
+        'Html' => Spatie\Html\Facades\Html::class
     ],
 
     'admin' => [

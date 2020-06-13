@@ -37,8 +37,10 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
-            'ignore_exceptions' => false,
+            'name' => 'StackLogger',
+            'channels' => ['single', 'stack'],
+            'path' => storage_path('logs/laravel.log'),
+            //'ignore_exceptions' => false,
         ],
 
         'single' => [

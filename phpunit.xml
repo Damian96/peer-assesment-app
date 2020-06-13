@@ -12,9 +12,9 @@
         <testsuite name="Unit">
             <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
-        <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
-        </testsuite>
+        <!--        <testsuite name="Feature">-->
+        <!--            <directory suffix="Test.php">./tests/Feature</directory>-->
+        <!--        </testsuite>-->
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
@@ -23,6 +23,7 @@
     </filter>
     <php>
         <server name="APP_ENV" value="testing"/>
+        <server name="APP_DEBUG" value="false"/>
         <server name="DB_CONNECTION" value="testing"/>
         <server name="QUEUE_CONNECTION" value="sync"/>
         <server name="CACHE_DRIVER" value="file"/>

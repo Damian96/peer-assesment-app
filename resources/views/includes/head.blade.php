@@ -12,13 +12,13 @@
     <script charset="utf-8" src="{{ mix('/js/vendor.js') }}"></script>
     <script charset="utf-8" src="{{ mix('/js/app.js') }}"></script>
 
-    @if (strcmp(env('APP_ENV', 'local'), 'testing'))
+    @if (strcmp(config('env.APP_ENV', 'local'), 'testing'))
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
     @endif
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @if ((env('APP_ENV', false) !== 'local' || ! env('APP_DEBUG', false)) && (Route::current()->named('login') || Route::current()->named('register')))
+    @if ((config('env.APP_ENV', false) !== 'local' || ! config('env.APP_DEBUG', false)) && Route::current() && (Route::current()->named('login') || Route::current()->named('register')))
         {!! htmlScriptTagJsApi([
             'action' => 'homepage',
         ]) !!}
@@ -157,13 +157,13 @@
                     </li>
                 @endif
             </ul>
-{{--            @TODO: add head menu Search Form--}}
-{{--            <form class="form-inline my-2 my-lg-0 mr-auto" action="{{ url('') }}" method="GET">--}}
-{{--                @csrf--}}
-{{--                @method('GET')--}}
-{{--                <input class="form-control-sm mr-sm-2" type="text" placeholder="Search Course" aria-label="Search Course">--}}
-{{--                <button class="btn btn-sm btn-outline-success my-2 my-sm-0" type="submit">Search</button>--}}
-{{--            </form>--}}
+            {{--            @TODO: add head menu Search Form--}}
+            {{--            <form class="form-inline my-2 my-lg-0 mr-auto" action="{{ url('') }}" method="GET">--}}
+            {{--                @csrf--}}
+            {{--                @method('GET')--}}
+            {{--                <input class="form-control-sm mr-sm-2" type="text" placeholder="Search Course" aria-label="Search Course">--}}
+            {{--                <button class="btn btn-sm btn-outline-success my-2 my-sm-0" type="submit">Search</button>--}}
+            {{--            </form>--}}
         </div>
         <div class="navbar-collapse collapse w-100 order-2 order-md-1 dual-collapse2" id="userMenu">
             <ul class="navbar-nav ml-auto">

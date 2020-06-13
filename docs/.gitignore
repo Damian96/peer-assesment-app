@@ -1,1 +1,5 @@
-/cache/
+/app/
+/tests/
+/fonts/
+
+!.gitignore

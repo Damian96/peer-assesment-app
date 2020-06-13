@@ -16,7 +16,6 @@ Route::match(['get'], '/', 'UserController@index')->name('user.home');
 Route::match(['get'], '/home', 'UserController@index')->name('user.home');
 Route::match(['get'], '/index', 'UserController@index')->name('user.home');
 
-// FIXME: make private
 Route::match(['get'], '/register', 'UserController@create')->name('user.register');
 Route::match(['get'], '/register', 'UserController@create')->name('register');
 
@@ -96,6 +95,5 @@ Route::group(['prefix' => '/forms'], function () {
 Route::group(['prefix' => '/groups'], function () {
 //    Route::match(['get'], '/{group}', 'GroupController@show')->name('group.show');
     Route::post('/{group}/store-mark', 'GroupController@storeMark')->name('group.show');
-    // @FIXME:
-//    Route::get('/{session}/form', 'ApiSessionsController@getSessionForm')->name('api.sessionForm');
+    Route::get('/{session}/form', 'ApiSessionsController@getSessionForm')->name('api.sessionForm');
 });

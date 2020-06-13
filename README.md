@@ -5,54 +5,33 @@
 # Technologies
 * [Laravel](https://github.com/laravel/laravel)
 * [Webpack](https://webpack.js.org/)
+* [PHPUnit](https://phpunit.cn)
 
 # Installation
-First install the requirements in your personal computer (all requirements are installable in every platform):
+
+## Environment Setup
+* [XAMPP stack](https://www.apachefriends.org/index.html)
 * [PHPv7.3.18](https://www.php.net/downloads.php#v7.3.18)
 * [Composer](https://getcomposer.org/download/)
 * [Node Package Manager](https://www.npmjs.com/get-npm)
-* [XAMPP stack](https://www.apachefriends.org/index.html)
+* Grab the `.env` [file](https://gist.github.com/Damian96/ad15a3315494cf0d912ef833b7d29ff9)
 
-<!-- * Next install grab the project's zip file and unzip it into the `htdocs` folder of XAMPP, in a folder named `wpes`. You can navigate into the htdocs folder through XAMPP's GUI explorer button. as shown in the screenshot below: -->
-<!-- * Open the Apache configuration `httpd-xampp.conf` through XAMPP's config button and append the following snippet into the configuration file:
-    ```
-    <VirtualHost *:80>
-    DocumentRoot "/path/to/wpes/public"
-    ServerName wpes.test
-    <Directory "/path/to/wpes/public">
-        DirectoryIndex index.php index.html
-        AllowOverride All
-        Options +FollowSymLinks +Indexes
-        Order allow,deny
-        Allow from all
-        Require all granted
-    </Directory>
-    </VirtualHost>
-    ``` -->
-* Rename the project's folder to: `wpes`. 
-* Download the `.env` file from [here](https://gist.github.com/Damian96/ad15a3315494cf0d912ef833b7d29ff9) into the root folder of the project.
-
-From this point onwards you will need a PHP binary to complete the installation, so I suggest you add the PHP binary to your system's PATH. <br>
-If you don't wish to add it, you can open the folder of XAMPP's MySQL installation, with **XAMPP -> PHP Config -> <Browse> (PHP)** as shown in the figure below: 
-* ![](https://user-images.githubusercontent.com/19414954/82142395-bdef5c00-9844-11ea-95e0-607f51e6cbd1.JPG)
-There you can find the path to the PHP binary, and copy it so you can use it more easily.
-Also, you will need to have `npm` and `node` in your computer's PATH. In Windows the installer adds the bin folder automatically to the PATH.
-In Linux, you will have to do some magic yourself. Restart any opened command prompts for the changes to take effects. 
-Now execute the list of commands below, while in the `wpes` directory:
+## Dependencies
 * `$ composer install`
 * `$ npm install`
-* ***If you are on Linux***, execute the following command into the `wpes` directory: `$ chmod 775 storage/ bootstrap/ -R` 
-* `$ /path/to/php-binary artisan key:generate`
-* Open the `phpMyAdmin` webpage from XAMPP's GUI button MySQL -> Admin.
-    * Create a new database named `wpesDB`, with encoding `utf8mb4_general_ci` in the webpage's form, as shown in the screenshot below:
-    ![phpMyAdmin-createDatabase](https://user-images.githubusercontent.com/19414954/82143004-5687db00-9849-11ea-9ec5-f56a83c201af.JPG)
-* `$ /path/to/php-binary artisan optimize:clear`
-* `$ /path/to/php-binary artisan migrate`
-* `$ /path/to/php-binary artisan db:seed`
+* `$ chmod 775 storage/ bootstrap/ -R`
+* PHP extensions: [mysqli](https://www.php.net/manual/en/mysqli.setup.php), [curl](https://www.php.net/manual/en/curl.setup.php), [mbstring](https://www.php.net/manual/en/mbstring.setup.php)
+* MySQL Client 7.4.4
+* Apache v2.4
+* Create a database named `wpesDB` with collation `utf8mb4_general_ci`
+
+## Preparing
+* `$ php artisan key:generate`
+* `$ php artisan migrate`
+* `$ php artisan db:seed`
 * `$ npm run prod`
-* `$ /path/to/php-binary view:cache`
-* `$ /path/to/php-binary route:cache`
-* `$ /path/to/php-binary artisan serve`
+* `$ composer cache:store`
+* `$ php artisan serve`
 <br>
 
 As an optional step, you can also conduct the **tests** of the project via:

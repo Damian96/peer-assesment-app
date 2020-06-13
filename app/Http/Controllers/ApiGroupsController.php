@@ -26,6 +26,7 @@ class ApiGroupsController extends Controller
     }
 
     /**
+     * Get the specified Session's Groups (/api/groups/{session}/all).
      * @param Request $request
      * @param Session $session
      * @return \Illuminate\Http\JsonResponse
@@ -38,6 +39,7 @@ class ApiGroupsController extends Controller
     }
 
     /**
+     * Get the specified Session's Groups (/api/groups/all).
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */

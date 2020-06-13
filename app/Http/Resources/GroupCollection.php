@@ -32,7 +32,7 @@ class GroupCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return ['data' => parent::toArray($request), 'additional' => $this->additional];
     }
 
     /**
@@ -42,14 +42,4 @@ class GroupCollection extends ResourceCollection
      * @return array
      */
 //    public function resolve($request = null) {}
-
-    /**
-     * Add additional meta data to the resource response.
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function additional(array $data)
-    {
-    }
 }

@@ -22,7 +22,7 @@ class ApiSessionsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['api', 'auth.api'])->except('getSessionForm');
+        $this->middleware(['api', 'auth.api']);
     }
 
     /**
@@ -46,7 +46,6 @@ class ApiSessionsController extends Controller
      */
     public function getSessionForm(Request $request, Session $session)
     {
-        dd(func_get_args());
         /**
          * @var \App\Session $session
          */
@@ -71,7 +70,6 @@ class ApiSessionsController extends Controller
                 ->addChild(html()->input('hidden', '_method', 'POST'))
                 ->addChild(csrf_field()));
 
-        dd($output);
         return response($output, 200, ['Content-Type' => 'text/html'])->send();
     }
 

@@ -47,6 +47,7 @@
       "App\\": "app/"
     },
     "classmap": [
+      "database/migrations",
       "database/seeds",
       "database/factories"
     ]
@@ -60,7 +61,13 @@
   "prefer-stable": true,
   "scripts": {
     "test": [
-      "\"vendor/bin/phpunit\" -c phpunit.xml --verbose"
+      "\"./vendor/bin/phpunit\" -c phpunit.xml --verbose"
+    ],
+    "test-unit": [
+      "\"./vendor/bin/phpunit\" -c phpunit.xml --verbose --filter Unit"
+    ],
+    "test-feature": [
+      "\"./vendor/bin/phpunit\" -c phpunit.xml --verbose --filter Feature"
     ],
     "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -72,25 +79,20 @@
     "post-create-project-cmd": [
       "@php artisan key:generate --ansi"
     ],
-    "cache-clear": [
-      "@php artisan optimize:clear",
-      "@php artisan cache:clear",
-      "@php artisan view:clear",
-      "@php artisan event:clear",
-      "@php artisan config:clear",
-      "@php artisan route:clear",
-      "@php artisan clockwork:clean",
-      "@php artisan auth:clear-resets"
-    ],
     "cache-store": [
       "@php artisan optimize",
       "@php artisan view:cache",
-      "@php artisan event:cache",
-      "@php artisan config:cache",
       "@php artisan route:cache"
     ],
-    "laravel-init": [
-      "composer cache-clear"
+    "cache-clear": [
+      "@php artisan optimize:clear",
+      "@php artisan view:clear",
+      "@php artisan route:clear"
+    ],
+    "document": [
+      "@php -r \"file_exists('./phpDocumentor.phar') || die('Please install ./phpDocumentor.phar.');\"",
+      "@php \"./phpDocumentor.phar\" -d ./app -t ./docs/app",
+      "@php \"./phpDocumentor.phar\" -d ./tests -t ./docs/tests"
     ],
     "pre-commit": [
       "@php artisan ide-helper:models",

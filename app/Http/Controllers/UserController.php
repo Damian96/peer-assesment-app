@@ -148,7 +148,7 @@ class UserController extends Controller
                     'email' => $default['email_prepend_exists'],
                     'password' => $default['password'],
                     'remember' => 'nullable|in:0,1,on,off',
-                    'g-recaptcha-response' => config('env.APP_ENV', false) == 'local' || config('env.APP_DEBUG', false) ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
+                    'g-recaptcha-response' => config('env.APP_ENV', false) == 'local' ? 'required_without:localhost|sometimes|string|recaptcha' : 'required|string|recaptcha'
                 ];
             case 'storeConfig':
                 return [
