@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Course;
-use App\Rules\PrependedEmailExists;
+use App\Rules\PrependEmailExists;
 use App\Rules\PrependEmailUnique;
 use App\StudentCourse;
 use App\User;
@@ -88,7 +88,7 @@ class UserController extends Controller
                 'min:5',
                 'max:50',
                 'regex:/^[a-z]+$/',
-                new PrependedEmailExists()
+                new PrependEmailExists()
             ],
             'email_prepend_unique' => [
                 'required',

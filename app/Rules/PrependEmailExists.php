@@ -5,7 +5,7 @@ namespace App\Rules;
 use App\User;
 use Illuminate\Contracts\Validation\Rule;
 
-class PrependedEmailExists implements Rule
+class PrependEmailExists implements Rule
 {
     /**
      * @var string|null $message
@@ -42,6 +42,6 @@ class PrependedEmailExists implements Rule
      */
     public function message()
     {
-        return $this->message ? $this->message : 'The :attribute is not a valid email or it already exist!';
+        return $this->message ? $this->message : 'The :attribute is not a valid email or does not exist!';
     }
 }
