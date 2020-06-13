@@ -18,7 +18,7 @@ class Version0620191203Sessions extends Migration
             $table->bigIncrements('id')->unsigned()->autoIncrement();
             $table->bigInteger('course_id')->unsigned();
             $table->string('title', 255);
-            $table->timestamp('deadline')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('deadline');
             $table->text('instructions');
             $table->float('mark_avg')->nullable()->default(0)->comment('average mark');
             $table->tinyInteger('groups')->comment('maximum groups');
