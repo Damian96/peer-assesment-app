@@ -17,7 +17,7 @@ class CoursesTableSeeder extends Seeder
      */
     public function run()
     {
-        DatabaseSeeder::refreshTable($this->table, true);
+        DatabaseSeeder::refreshTable($this->table);
 
 //        if (!strcmp(env('APP_ENV', 'local'), 'local')) {
 //            $instructors = array_column(User::whereInstructor('1')->where('admin', '=', '0')->get(['users.id'])->toArray(), 'id');

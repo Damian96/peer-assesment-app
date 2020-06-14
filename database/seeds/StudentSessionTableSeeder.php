@@ -17,7 +17,7 @@ class StudentSessionTableSeeder extends Seeder
      */
     public function run()
     {
-        DatabaseSeeder::refreshTable($this->table, true);
+        DatabaseSeeder::refreshTable($this->table);
 
         $students = User::whereInstructor('0')->where('admin', '=', '0')
             ->whereNotNull('email_verified_at')->where('id', '!=', Course::DUMMY_ID)

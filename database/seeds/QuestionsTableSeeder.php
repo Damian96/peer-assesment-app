@@ -15,7 +15,7 @@ class QuestionsTableSeeder extends Seeder
      */
     public function run()
     {
-        DatabaseSeeder::refreshTable($this->table, true);
+        DatabaseSeeder::refreshTable($this->table);
 
         /* `wpesdb`.`questions` */
         $questions = array(

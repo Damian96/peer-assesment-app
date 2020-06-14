@@ -16,7 +16,7 @@ class FormsTableSeeder extends Seeder
      */
     public function run()
     {
-        DatabaseSeeder::refreshTable($this->table, true);
+        DatabaseSeeder::refreshTable($this->table);
 
         $courses = Course::whereAcYear('SP-2020')->get(['courses.id'])->toArray();
         $session = Session::query()->whereIn('id', array_column($courses, 'id'))
