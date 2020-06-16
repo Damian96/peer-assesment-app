@@ -88,7 +88,8 @@ Route::group(['prefix' => '/forms'], function () {
     Route::match(['post'], '{form}/update', 'FormController@update')->name('form.update');
     Route::match(['get'], '/{form}/edit', 'FormController@edit')->name('form.edit');
     Route::match(['post'], '/preview', 'FormController@preview')->name('form.preview');
-    Route::match(['delete'], '/{form}/delete', 'FormController@delete')->name('form.delete');
+    Route::delete('/{form}/delete', 'FormController@delete')->name('form.delete');
+    Route::post('/{form}/trash', 'FormController@trash')->name('form.trash');
     Route::match(['post'], '/{form}/duplicate', 'FormController@duplicate')->name('form.duplicate');
 });
 

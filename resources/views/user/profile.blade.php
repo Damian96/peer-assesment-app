@@ -73,9 +73,9 @@
                         <input id="fudge" name="fudge"
                                class="form-control{{ $errors->has('fudge') ? ' is-invalid' : null }}"
                                type="number" step=".15" min=".5" max="2"
-                               value="{{ old('fudge', config('mark.fudge')) }}"
-                               placeholder="Default: {{ config('mark.group') }}"
-                               aria-placeholder="Default: {{ config('mark.group') }}"
+                               value="{{ old('fudge', $user->config->fudge_factor) }}"
+                               placeholder="Default: {{ config('mark.fudge') }}"
+                               aria-placeholder="Default: {{ config('mark.fudge') }}"
                                required aria-required="true"
                                title="Fudge Factor" aria-label="Fudge Factor">
                         <span
@@ -88,7 +88,7 @@
                             of every individual's mark.</p>
                         <input type="number" name="group"
                                class="form-control{{ $errors->has('domain') ? ' is-invalid' : null }}"
-                               step=".1" min=".5" max="1" value="{{ old('group', config('mark.group')) }}"
+                               step=".1" min=".5" max="1" value="{{ old('group', $user->config->group_weight) }}"
                                placeholder="Default: {{ config('mark.group') }}"
                                aria-placeholder="Default: {{ config('mark.group') }}"
                                required aria-required="true"
@@ -96,21 +96,6 @@
                         <span
                             class="invalid-feedback d-block">{{ $errors->has('group') ? $errors->first('group') : '' }}</span>
                     </div>
-
-{{--                    <div class="form-group">--}}
-{{--                        <label for="domain">Organisation Domain</label>--}}
-{{--                        <p class="form-text text-muted">The domain name of the organisation's institute that hosts the--}}
-{{--                            students' emails</p>--}}
-{{--                        <input type="text" name="domain"--}}
-{{--                               class="form-control{{ $errors->has('domain') ? ' is-invalid' : null }}"--}}
-{{--                               value="{{ old('domain', config('app.domain')) }}"--}}
-{{--                               placeholder="Default: {{ config('app.domain') }}"--}}
-{{--                               aria-placeholder="Default: {{ config('app.domain') }}"--}}
-{{--                               required aria-required="true"--}}
-{{--                               title="Organisation Domain" aria-label="Organisation Domain">--}}
-{{--                        <span--}}
-{{--                            class="invalid-feedback d-block">{{ $errors->has('domain') ? $errors->first('domain') : null }}</span>--}}
-{{--                    </div>--}}
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary btn-block">Update</button>

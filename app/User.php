@@ -80,6 +80,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @property string password_reset_token
  * @property Group group
  * @property string fullname
+ * @property InstructorConfig config
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
  * @noinspection PhpFullyQualifiedNameUsageInspection
  */
@@ -165,9 +166,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public static function boot()
     {
+        parent::boot();
+
         self::created(function ($model) {
             /**
-             * @var User $model
+             * @var \App\User $model
              */
             if ($model->hasVerifiedEmail())
                 $model->generateApiToken();
@@ -175,7 +178,15 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             if ($model->group())
                 $model->group = $model->group();
         });
-        parent::boot();
+
+        self::retrieved(function ($model) {
+            /**
+             * @var \App\User $model
+             */
+            $config = $model->config();
+            if ($config instanceof InstructorConfig)
+                $model->config = $config;
+        });
     }
 
     /**
@@ -327,7 +338,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the InstructorConfig record associated with the instructor.
-     * @return bool|Model|\Illuminate\Database\Query\Builder|object
+     * @return bool|\App\User
      */
     public function config()
     {
@@ -766,6 +777,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.view':
             case 'form.duplicate':
             case 'form.delete':
+            case 'form.trash':
             case 'course.disenroll':
                 return isset($cid) && ($cid == \App\Course::DUMMY_ID || ($this->isInstructor() && $this->ownsCourse($cid)));
             case 'config.store':

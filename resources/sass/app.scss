@@ -24,6 +24,19 @@ body {
     min-height: 70vh;
     background: white;
     margin-bottom: 12vh;
+    position: relative;
+
+    &[data-status='404'] {
+      svg {
+        height: 100%;
+        width: 100%;
+        background: #a9a4fa;
+        z-index: 0;
+        position: relative;
+        top: 0;
+        padding: 15px;
+      }
+    }
 
     @include media-breakpoint-down('sm') {
       margin-bottom: 16vh;
@@ -32,13 +45,25 @@ body {
     .title {
       border-bottom: 1px solid $primary-fg-aria;
       padding-bottom: 9px;
-      position: relative;
       font-family: $font-family-monospace;
       font-size: 20px;
       font-weight: 300;
       margin-bottom: 15px;
       margin-top: 20px;
       text-transform: uppercase;
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      transform: translateY(0%);
+      width: 100%;
+    }
+
+    .content {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      transform: translateY(200%);
+      width: 100%;
     }
 
     h2, h3, h4, h5, hr {

@@ -26,5 +26,9 @@ class AppServiceProvider extends ServiceProvider
     {
 //        Resource::withoutWrapping();
         date_default_timezone_set(config('app.timezone'));
+
+        $this->publishes([
+            __DIR__ . '/../../resources/images/' => public_path('images')
+        ], 'images');
     }
 }

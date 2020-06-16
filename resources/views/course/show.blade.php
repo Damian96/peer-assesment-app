@@ -44,16 +44,20 @@
                     <td>{{ $course->title }}</td>
                     <td class="text-center">{{ $course->department_title }}</td>
                     <td class="text-center">
-                        <select id="similarid" name="similarid"
-                                class="form-control-sm{{ $errors->has('similarid') ? ' is-invalid' : '' }}"
-                            {{ count($similars) == 0 ? 'readonly' : '' }}>
-                            <option
-                                value="---"{{ count($similars) == 0 ? ' selected' : '' }}>{{ $course->ac_year_pair }}</option>
-                            @foreach($similars as $similar)
+                        @if (count($similars))
+                            <select id="similarid" name="similarid"
+                                    class="form-control-sm{{ $errors->has('similarid') ? ' is-invalid' : '' }}"
+                                {{ count($similars) == 0 ? 'readonly' : '' }}>
                                 <option
-                                    value="{{ $similar->id }}"{{ old('similarid') == $similar->id }}>{{ $similar->ac_year_pair }}</option>
-                            @endforeach
-                        </select>
+                                    value="---"{{ count($similars) == 0 ? ' selected' : '' }}>{{ $course->ac_year_pair }}</option>
+                                @foreach($similars as $similar)
+                                    <option
+                                        value="{{ $similar->id }}"{{ old('similarid') == $similar->id }}>{{ $similar->ac_year_pair }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            {{ $course->ac_year_pair }}
+                        @endif
                     </td>
                     @if (Auth::user()->isAdmin())
                         <td class="action-cell text-right">
@@ -153,124 +157,117 @@
                 @endif
             </table>
         </div>
-        @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
-            <div class="col-sm-12 col-md-12">
-                <a href="{{ url( '/courses/' . $course->id . '/add-student') }}"
-                   class="btn btn-success my-2 col-sm-12 d-md-inline mr-md-2">
-                    Add Students to {{ $course->code }}
-                </a>
-                <a href="{{ url( '/sessions/create/' . $course->id ) }}"
-                   class="btn btn-success my-2 col-sm-12 d-md-inline mr-md-2">
-                    Add Sessions to {{ $course->code }}
-                </a>
-            </div>
-        @endif
     </div>
-    <div class="row mt-3">
-        @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
-            <div class="col-sm-12 col-md-12">
-                @if ($course->students()->getModels())
-                    <h3 class="my-3">Enrolled Students</h3>
-                    <table class="table table-striped table-responsive-sm">
-                        <caption>Enrolled Students to {{ $course->code }}</caption>
-                        <thead>
-                        <tr>
-                            <th scope="row">#</th>
-                            <th>Name</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($course->students()->getModels() as $i => $s)
+    @if ($course->isCurrentYears())
+        <div class="row mt-3">
+            @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
+                <div class="col-sm-12 col-md-12">
+                    @if ($course->students()->getModels())
+                        <h3 class="my-3">Enrolled Students</h3>
+                        <table class="table table-striped table-responsive-sm">
+                            <caption>Enrolled Students to {{ $course->code }}</caption>
+                            <thead>
                             <tr>
-                                <th scope="row">{{ $i+1 }}</th>
-                                <td class="text-left">
-                                    <a href="{{ url('/users/' . $s->user_id . '/show') }}"
-                                       title="Show {{ $s->name }}'s Profile"
-                                       aria-label="Show {{ $s->name }}'s Profile">{{ $s->name }} <i
-                                            class="material-icons icon-sm">link</i></a>
-                                </td>
-                                <td class="action-cell">
-                                    <form method="POST"
-                                          action="{{ url('/courses/' . $course->id . '/disenroll/') }}"
-                                          class="d-inline-block">
-                                        @method('DELETE')
-                                        @csrf
-                                        {{ html()->hidden('user_id', $s->user_id) }}
-                                        <button type="submit"
-                                                class="btn btn-lg btn-link material-icons text-danger disenroll-student"
-                                                data-title="Are you sure you want to disenroll {{ $s->full_name }}?"
-                                                data-content="This action is irreversible."
-                                                title="Disenroll {{ $s->lname }}"
-                                                aria-label="Disenroll {{ $s->lname }}">highlight_off
-                                        </button>
-                                    </form>
-                                </td>
+                                <th scope="row">#</th>
+                                <th>Name</th>
+                                <th>Actions</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <h3 class="my-3">This course does not have any Students</h3>
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                        <a href="{{ url('/courses/' . $course->id . '/add-student') }}"
-                           class="btn btn-secondary btn-block"
-                           title="Add Students to {{ $course->code }}" aria-label="Add Students to {{ $course->code }}">
-                            <i class="material-icons">person</i>Add Students to {{ $course->code }}
-                        </a>
-                    </div>
-                @endif
-            </div>
-        @endif
-    </div>
-    <div class="row mt-3">
-        @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
-            <div class="col-sm-12 col-md-12">
-                @if ($course->sessions()->first())
-                    <h3>Linked Sessions</h3>
-                    <table class="table table-striped table-responsive-sm">
-                        <caption>This course has {{ $course->sessions()->count() }} Sessions</caption>
-                        <thead>
-                        <tr>
-                            <th scope="row">ID</th>
-                            <th class="text-center">Title</th>
-                            <th class="text-center">Deadline</th>
-                            <th class="text-center">Open Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($course->sessions()->orderBy('deadline', 'ASC')->getModels() as $i => $s)
+                            </thead>
+                            <tbody>
+                            @foreach($course->students()->getModels() as $i => $s)
+                                <tr>
+                                    <th scope="row">{{ $i+1 }}</th>
+                                    <td class="text-left">
+                                        <a href="{{ url('/users/' . $s->user_id . '/show') }}"
+                                           title="Show {{ $s->name }}'s Profile"
+                                           aria-label="Show {{ $s->name }}'s Profile">{{ $s->name }} <i
+                                                class="material-icons icon-sm">link</i></a>
+                                    </td>
+                                    <td class="action-cell">
+                                        <form method="POST"
+                                              action="{{ url('/courses/' . $course->id . '/disenroll/') }}"
+                                              class="d-inline-block">
+                                            @method('DELETE')
+                                            @csrf
+                                            {{ html()->hidden('user_id', $s->user_id) }}
+                                            <button type="submit"
+                                                    class="btn btn-lg btn-link material-icons text-danger disenroll-student"
+                                                    data-title="Are you sure you want to disenroll {{ $s->full_name }}?"
+                                                    data-content="This action is irreversible."
+                                                    title="Disenroll {{ $s->lname }}"
+                                                    aria-label="Disenroll {{ $s->lname }}">highlight_off
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <h3 class="my-3">This course does not have any Students</h3>
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <a href="{{ url('/courses/' . $course->id . '/add-student') }}"
+                               class="btn btn-secondary btn-block"
+                               title="Add Students to {{ $course->code }}"
+                               aria-label="Add Students to {{ $course->code }}">
+                                <i class="material-icons">person</i>Add Students to {{ $course->code }}
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        </div>
+        <div class="row mt-3">
+            @if (Auth::user()->isAdmin() || Auth::user()->ownsCourse($course->id))
+                <div class="col-sm-12 col-md-12">
+                    @if ($course->sessions()->first())
+                        <h3>Linked Sessions</h3>
+                        <table class="table table-striped table-responsive-sm">
+                            <caption>This course has {{ $course->sessions()->count() }} Sessions</caption>
+                            <thead>
                             <tr>
-                                <th scope="row">{{ $s->id }}</th>
-                                <td class="text-center">{{ $s->title }}</td>
-                                <td class="text-center">{{ $s->deadline_uk  }}<i
-                                        class="text-muted">{{ $s->deadline_days ? ' (' . $s->deadline_days . ')' : null }}</i>
-                                </td>
-                                <td class="text-center">{{ $s->open_date_uk }}<i
-                                        class="text-muted">{{ $s->open_date_days ? ' (' . $s->open_date_days . ')' : null }}</i>
-                                </td>
+                                <th scope="row">ID</th>
+                                <th class="text-center">Title</th>
+                                <th class="text-center">Deadline</th>
+                                <th class="text-center">Open Date</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                        <td class="text-center text-muted" colspan="4">Note: Sessions' deadline and open date are always
-                            at midnight
-                        </td>
-                        </tfoot>
-                    </table>
-                @else
-                    <h3 class="my-3">This course does not have any Sessions</h3>
-                    <div class="col-sm-12 col-md-12 col-lg-12">
-                        <a href="{{ url('/sessions/create/' . $course->id) }}"
-                           class="btn btn-secondary btn-block"
-                           title="Add Sessions to {{ $course->code }}" aria-label="Add Sessions to {{ $course->code }}">
-                            <i class="material-icons">assignment</i>Add Sessions to {{ $course->code }}
-                        </a>
-                    </div>
-                @endif
-            </div>
-        @endif
-    </div>
+                            </thead>
+                            <tbody>
+                            @foreach($course->sessions()->orderBy('deadline', 'ASC')->getModels() as $i => $s)
+                                <tr>
+                                    <th scope="row">{{ $s->id }}</th>
+                                    <td class="text-center">{{ $s->title }}</td>
+                                    <td class="text-center">{{ $s->deadline_uk  }}<i
+                                            class="text-muted">{{ $s->deadline_days ? ' (' . $s->deadline_days . ')' : null }}</i>
+                                    </td>
+                                    <td class="text-center">{{ $s->open_date_uk }}<i
+                                            class="text-muted">{{ $s->open_date_days ? ' (' . $s->open_date_days . ')' : null }}</i>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                            <tfoot>
+                            <td class="text-center text-muted" colspan="4">Note: Sessions' deadline and open date are
+                                always
+                                at midnight
+                            </td>
+                            </tfoot>
+                        </table>
+                    @else
+                        <h3 class="my-3">This course does not have any Sessions</h3>
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <a href="{{ url('/sessions/create/' . $course->id) }}"
+                               class="btn btn-secondary btn-block"
+                               title="Add Sessions to {{ $course->code }}"
+                               aria-label="Add Sessions to {{ $course->code }}">
+                                <i class="material-icons">assignment</i>Add Sessions to {{ $course->code }}
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        </div>
+    @endif
 @endsection
 
 @section('end_footer')

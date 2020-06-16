@@ -44,24 +44,51 @@ class Form extends Model
         'session_id', 'title', 'subtitle', 'mark'
     ];
 
-    protected $casts = [
-        'session_id' => 'int',
-        'name' => 'string',
-        'mark' => 'int'
-    ];
-
     protected $hidden = [
         'id',
         'created_at',
         'updated_at',
     ];
 
+    protected $attributes = [
+        'session_id' => Course::DUMMY_ID,
+        'title' => null,
+        'subtitle' => null,
+        'mark' => 0,
+    ];
+
+    protected $casts = [
+        'session_id' => 'int',
+        'title' => 'string',
+        'subtitle' => 'string',
+        'mark' => 'int',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * @return void
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        self::retrieved(function ($model) {
+            /**
+             * @var \App\Session model
+             */
+            if ($model->session() instanceof Session && $model->session()->exists) {
+                $model->session = $model->session();
+            }
+        });
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function session()
     {
-        return $this->hasOne('\App\Session', 'id', 'session_id');
+        return $this->hasOne(\App\Session::class, 'id', 'session_id');
     }
 
     /**
@@ -69,6 +96,26 @@ class Form extends Model
      */
     public function questions()
     {
-        return $this->hasMany('\App\Question', 'form_id', 'id');
+        return $this->hasMany(\App\Question::class, 'form_id', 'id');
+    }
+
+    /**
+     * Get all of the models from the database.
+     *
+     * @param array|mixed $columns
+     * @return \Illuminate\Support\Collection
+     */
+    public static function all($columns = ['*'])
+    {
+        return self::query()->where('id', '!=', Course::DUMMY_ID)->get($columns)->collect();
+    }
+
+    /**
+     * @param string[] $columns
+     * @return \Illuminate\Support\Collection
+     */
+    public static function trashed($columns = ['*'])
+    {
+        return self::query()->where('session_id', '=', Course::DUMMY_ID)->get($columns)->collect();
     }
 }

@@ -504,4 +504,33 @@ class FormController extends Controller
 //        $session = Session::all()->random(1)->first();
 //        return response(view('forms.preview', compact('form', 'teammates', 'session')), 200);
     }
+
+    /**
+     * @TODO: add soft-deletes
+     * @param Request $request
+     * @param $form
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function trash(Request $request, Form $form)
+    {
+        if ($form->session instanceof Session && $form->session->exists) {
+            if (!$form->update(['session_id' => 11])) {
+                $request->session()->flash('message', [
+                    'level' => 'danger',
+                    'heading' => 'Something went wrong!',
+                    'body' => sprintf("Could not trash '%s'", $form->title),
+                ]);
+                return redirect()->back(302);
+            }
+
+            $request->session()->flash('message', [
+                'level' => 'success',
+                'heading' => 'Success!',
+                'body' => sprintf("Form '%s' was trashed!", $form->title),
+            ]);
+            return redirect()->back(302);
+        }
+
+        return redirect()->back(302);
+    }
 }

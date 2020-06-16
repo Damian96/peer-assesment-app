@@ -327,7 +327,18 @@ class Course extends Model
     }
 
     /**
-     * Returns whether the course has been already copied to the current academic year
+     * Returns whether the Course is of the current academic year.
+     *
+     * @return bool
+     */
+    public function isCurrentYears()
+    {
+        $ac_year = self::toAcademicYear(time());
+        return $this->ac_year === $ac_year;
+    }
+
+    /**
+     * Returns whether the course has been already copied to the current academic year.
      * @return bool
      * @throws \Throwable
      */

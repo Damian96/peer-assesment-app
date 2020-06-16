@@ -53,8 +53,8 @@
                                        class="material-icons text-warning"
                                        title="Update Form {{ $form->id }}"
                                        aria-label="Update Form {{ $form->id }}">edit</a>
-                                    <form method="POST" action="{{ url('/forms/' . $form->id . '/delete') }}">
-                                        @method('DELETE')
+                                    <form method="POST" action="{{ url('/forms/' . $form->id . '/trash') }}">
+                                        @method('POST')
                                         {{ $csrf }}
                                         <button type="submit"
                                                 class="btn btn-lg btn-link material-icons text-danger delete-form"
