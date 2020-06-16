@@ -16,9 +16,9 @@ class StudentCourseTableSeeder extends Seeder
      */
     public function run()
     {
-        DatabaseSeeder::refreshTable($this->table, true);
+        DatabaseSeeder::refreshTable($this->table);
 
-        $course = Course::whereAcYear('SP-2020')->where('id', '!=', \App\Course::DUMMY_ID)
+        $course = Course::whereAcYear(Course::toAcademicYear(time()))->where('id', '!=', \App\Course::DUMMY_ID)
             ->firstOrFail();
 
         /* `peerassessDB`.`student_course` */

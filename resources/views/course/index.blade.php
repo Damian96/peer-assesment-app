@@ -27,7 +27,10 @@
             @if ($courses->total() || ! Auth::user()->isStudent())
                 <table id="my-courses" class="table table-striped ts">
                     <caption
-                        class="">{{ sprintf("Showing results %s-%s of total %s Courses", $courses->firstItem(), $courses->lastItem(), $courses->total()) }}</caption>
+                        class="">{{ sprintf("Showing results %s-%s of total %s Courses", $courses->firstItem(), $courses->lastItem(), $courses->total()) }}
+                        <br>
+                        Current Academic Year : <b>{{ \App\Course::toAcademicYear(time()) }}</b>
+                    </caption>
                     <thead>
                     <tr class="tsTitles">
                         <th scope="col">#</th>

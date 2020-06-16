@@ -161,6 +161,7 @@ class Session extends Model
     /**
      * The attributes that aren't mass assignable.
      *
+     * @FIXME: remove guarded, keep only fillable
      * @var array
      */
     protected $guarded = ['id', 'course', 'instructor'];

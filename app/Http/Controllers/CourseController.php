@@ -148,13 +148,12 @@ class CourseController extends Controller
                 $query->selectRaw("CONCAT(SUBSTR(fname, 1, 1), '. ', lname) AS instructor_name");
                 break;
             case 'instructor':
-                $query->where('courses.user_id', '=', Auth::user()->id, 'and');
+                $query->where('courses.user_id', '=', Auth::user()->id);
                 break;
             case 'student':
                 $query->leftJoin('student_course', 'course_id', '=', 'users.id');
                 $query->addSelect(['student_course.user_id AS student_id']);
                 $query->whereIn('courses.id', array_column(Auth::user()->courses()->get('course_id')->toArray(), 'course_id'));
-//                $query->where('student_course.user_id', '=', Auth::user()->id);
                 break;
             default:
                 throw abort(404);

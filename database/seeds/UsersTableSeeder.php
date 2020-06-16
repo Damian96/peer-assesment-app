@@ -17,7 +17,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        DatabaseSeeder::refreshTable($this->table, true);
+        DatabaseSeeder::refreshTable($this->table);
 
         $users = array(
             array('email' => 'dgiankakis@citycollege.sheffield.eu', 'email_verified_at' => '2020-01-05 14:06:22', 'fname' => 'Damianos', 'lname' => 'Giankakis', 'department' => 'CS', 'reg_num' => NULL, 'instructor' => '1', 'admin' => '1', 'password' => '$2y$10$aRhprjpSXD5aqQJfi0j/Je09chffkKNKBuAU3ZvsE3OsD31sSjj7a', 'remember_token' => 'PfVsnllUpVYfsPc8FsBh0ARyUjJhJiP63gApa8V3Vs3vSElIPLIeyk8JTGGg', 'api_token' => '15ec9f8582faca5ca4fca96cc9e03f36e5bdee37722a4c03bc2e6d0c8f70b8e5'),

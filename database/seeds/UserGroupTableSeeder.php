@@ -15,7 +15,7 @@ class UserGroupTableSeeder extends Seeder
      */
     public function run()
     {
-        DatabaseSeeder::refreshTable($this->table, true);
+        DatabaseSeeder::refreshTable($this->table);
 
         /* `peerassessDB`.`user_group` */
         $user_group = array(
