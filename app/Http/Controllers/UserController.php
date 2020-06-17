@@ -851,16 +851,15 @@ class UserController extends Controller
                 ->with('errors', $validator->errors());
         }
 
-        /**
-         * @var \App\InstructorConfig $config
-         */
-        $config = Auth::user()->config();
-        $config->update([
-            'fudge_factor' => $request->get('fudge', config('mark.fudge')),
-            'group_weight' => $request->get('group', config('mark.group')),
-        ]);
-
         try {
+            /**
+             * @var \App\InstructorConfig $config
+             */
+            $config = Auth::user()->config()->firstOrFail();
+            $config->update([
+                'fudge_factor' => $request->get('fudge', config('mark.fudge')),
+                'group_weight' => $request->get('group', config('mark.group')),
+            ]);
             $config->saveOrFail();
         } catch (\Throwable $e) {
             throw_if(config('env.APP_DEBUG', false), $e, ['message' => $e->getMessage()]);

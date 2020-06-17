@@ -1,0 +1,44 @@
+.instructions {
+  color: darken($primary, 25%);
+}
+
+fieldset {
+  legend {
+
+  }
+
+  .form-group {
+    margin-top: 10px;
+
+    i {
+      font-size: .65em;
+    }
+
+    &.is-invalid {
+      &:before {
+        border-top: 5px solid $danger !important;
+      }
+    }
+
+    &.is-valid {
+      &:before {
+        border-top: 5px solid $success !important;
+      }
+    }
+
+    &:before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      height: 5px;
+      width: 50%;
+    }
+
+    &:not(.is-invalid):not(.is-valid) {
+      &:before {
+        border-top: 5px solid mix($primary, orange);
+      }
+    }
+  }
+}

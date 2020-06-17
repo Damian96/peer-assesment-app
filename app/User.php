@@ -187,6 +187,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             if ($config instanceof InstructorConfig)
                 $model->config = $config;
         });
+
+        self::saving(function ($model) {
+            if ($model->config instanceof InstructorConfig)
+                unset($model->config);
+        });
     }
 
     /**
@@ -338,13 +343,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the InstructorConfig record associated with the instructor.
-     * @return bool|\App\User
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function config()
     {
-        if (!$this->isInstructor()) return false;
-        $ss = $this->hasOne(\App\InstructorConfig::class, 'user_id', 'id');
-        return $ss->exists() ? $ss->first()->getModel() : false;
+        return $this->hasOne(\App\InstructorConfig::class, 'user_id', 'id');
+//        if ($this->isStudent()) return false;
+//        $ss = $this->hasOne(\App\InstructorConfig::class, 'user_id', 'id');
+//        return $ss->exists() ? $ss->first()->getModel() : false;
     }
 
     /**
@@ -513,7 +519,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function isInstructor()
     {
-        return $this->instructor == 1;
+        return $this->instructor == 1 && $this->admin == 0;
     }
 
     /**

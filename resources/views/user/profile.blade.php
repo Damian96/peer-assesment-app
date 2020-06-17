@@ -53,7 +53,7 @@
                 </tfoot>
             </table>
         </div>
-        @if (Auth::user()->isAdmin() || Auth::user()->isInstructor())
+        @if (Auth::user()->isInstructor())
             <div class="col-sm-12 col-md-12">
                 <hr>
                 <h4>Mark Configuration</h4>

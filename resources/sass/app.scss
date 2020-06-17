@@ -2,6 +2,7 @@
 @import "~normalize.css/normalize.css";
 @import "~bootstrap/scss/bootstrap";
 @import 'variables';
+@import 'fill';
 @import "~jquery-confirm/dist/jquery-confirm.min.css";
 @import "~@curveballerpacks/tablesorter/dst/css/main.css";
 @import "~material-design-icons/iconfont/material-icons.css";
@@ -25,16 +26,34 @@ body {
     background: white;
     margin-bottom: 12vh;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
-    &[data-status='404'] {
+    &[data-status] {
       svg {
         height: 100%;
         width: 100%;
         background: #a9a4fa;
         z-index: 0;
-        position: relative;
+        position: absolute;
         top: 0;
-        padding: 15px;
+        padding: 0 5%;
+      }
+
+      .title {
+        position: relative;
+        z-index: 1;
+        //top: 0;
+        width: 100%;
+      }
+
+      .content {
+        position: relative;
+        z-index: 1;
+        //top: 0;
+        //transform: translateY(200%);
+        width: 100%;
       }
     }
 
@@ -51,19 +70,6 @@ body {
       margin-bottom: 15px;
       margin-top: 20px;
       text-transform: uppercase;
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      transform: translateY(0%);
-      width: 100%;
-    }
-
-    .content {
-      position: absolute;
-      z-index: 1;
-      top: 0;
-      transform: translateY(200%);
-      width: 100%;
     }
 
     h2, h3, h4, h5, hr {
@@ -481,45 +487,6 @@ footer {
   &:active,
   &.active {
     background: darken($primary-bg-dark, 15%);
-  }
-}
-
-// Fill Session
-.instructions {
-  color: darken($primary, 25%);
-}
-
-.form-group.criterion {
-  i {
-    font-size: .65em;
-  }
-
-  &.is-invalid {
-    &:before {
-      border-top: 5px solid $danger !important;
-    }
-  }
-
-  &.is-valid {
-    &:before {
-      border-top: 5px solid $success !important;
-    }
-  }
-
-  &:before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    height: 5px;
-    width: 50%;
-  }
-
-  &:not(.is-invalid):not(.is-valid) {
-    &:before {
-      border-top: 5px solid mix($primary, orange);
-    }
-
   }
 }
 

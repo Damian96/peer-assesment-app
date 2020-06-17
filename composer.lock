@@ -698,19 +698,19 @@
             "time": "2018-09-29T18:48:56+00:00"
         },
         {
-            "name": "laravel/framework",
-            "version": "v6.18.19",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laravel/framework.git",
-                "reference": "69321afec31f4a908112e5dc8995fc91024fd971"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/69321afec31f4a908112e5dc8995fc91024fd971",
-                "reference": "69321afec31f4a908112e5dc8995fc91024fd971",
-                "shasum": ""
-            },
+          "name": "laravel/framework",
+          "version": "v6.18.20",
+          "source": {
+            "type": "git",
+            "url": "https://github.com/laravel/framework.git",
+            "reference": "2862a9857533853bb2851bac39d65e3bfb8ba6cd"
+          },
+          "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/laravel/framework/zipball/2862a9857533853bb2851bac39d65e3bfb8ba6cd",
+            "reference": "2862a9857533853bb2851bac39d65e3bfb8ba6cd",
+            "shasum": ""
+          },
             "require": {
                 "doctrine/inflector": "^1.4|^2.0",
                 "dragonmantank/cron-expression": "^2.0",
@@ -788,18 +788,19 @@
                 "symfony/cache": "^4.3.4"
             },
             "suggest": {
-                "aws/aws-sdk-php": "Required to use the SQS queue driver, DynamoDb failed job storage and SES mail driver (^3.0).",
-                "doctrine/dbal": "Required to rename columns and drop SQLite columns (^2.6).",
-                "ext-gd": "Required to use Illuminate\\Http\\Testing\\FileFactory::image().",
-                "ext-memcached": "Required to use the memcache cache driver.",
-                "ext-pcntl": "Required to use all features of the queue worker.",
-                "ext-posix": "Required to use all features of the queue worker.",
-                "ext-redis": "Required to use the Redis cache and queue drivers (^4.0|^5.0).",
-                "filp/whoops": "Required for friendly error pages in development (^2.4).",
-                "fzaninotto/faker": "Required to use the eloquent factory builder (^1.9.1).",
-                "guzzlehttp/guzzle": "Required to use the Mailgun mail driver and the ping methods on schedules (^6.0|^7.0).",
-                "laravel/tinker": "Required to use the tinker console command (^2.0).",
-                "league/flysystem-aws-s3-v3": "Required to use the Flysystem S3 driver (^1.0).",
+              "aws/aws-sdk-php": "Required to use the SQS queue driver, DynamoDb failed job storage and SES mail driver (^3.0).",
+              "doctrine/dbal": "Required to rename columns and drop SQLite columns (^2.6).",
+              "ext-ftp": "Required to use the Flysystem FTP driver.",
+              "ext-gd": "Required to use Illuminate\\Http\\Testing\\FileFactory::image().",
+              "ext-memcached": "Required to use the memcache cache driver.",
+              "ext-pcntl": "Required to use all features of the queue worker.",
+              "ext-posix": "Required to use all features of the queue worker.",
+              "ext-redis": "Required to use the Redis cache and queue drivers (^4.0|^5.0).",
+              "filp/whoops": "Required for friendly error pages in development (^2.4).",
+              "fzaninotto/faker": "Required to use the eloquent factory builder (^1.9.1).",
+              "guzzlehttp/guzzle": "Required to use the Mailgun mail driver and the ping methods on schedules (^6.0|^7.0).",
+              "laravel/tinker": "Required to use the tinker console command (^2.0).",
+              "league/flysystem-aws-s3-v3": "Required to use the Flysystem S3 driver (^1.0).",
                 "league/flysystem-cached-adapter": "Required to use the Flysystem cache (^1.0).",
                 "league/flysystem-sftp": "Required to use the Flysystem SFTP driver (^1.0).",
                 "moontoast/math": "Required to use ordered UUIDs (^1.1).",
@@ -842,7 +843,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2020-06-09T13:59:34+00:00"
+          "time": "2020-06-16T13:21:33+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -2027,19 +2028,19 @@
             ],
             "time": "2020-05-30T20:06:45+00:00"
         },
-        {
-            "name": "symfony/css-selector",
-            "version": "v5.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/css-selector.git",
-                "reference": "e544e24472d4c97b2d11ade7caacd446727c6bf9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/e544e24472d4c97b2d11ade7caacd446727c6bf9",
-                "reference": "e544e24472d4c97b2d11ade7caacd446727c6bf9",
-                "shasum": ""
+      {
+        "name": "symfony/css-selector",
+        "version": "v5.1.2",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/symfony/css-selector.git",
+          "reference": "e544e24472d4c97b2d11ade7caacd446727c6bf9"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/symfony/css-selector/zipball/e544e24472d4c97b2d11ade7caacd446727c6bf9",
+          "reference": "e544e24472d4c97b2d11ade7caacd446727c6bf9",
+          "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5"
@@ -2615,19 +2616,19 @@
             ],
             "time": "2020-06-12T11:15:37+00:00"
         },
-        {
-            "name": "symfony/mime",
-            "version": "v5.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/mime.git",
-                "reference": "c0c418f05e727606e85b482a8591519c4712cf45"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mime/zipball/c0c418f05e727606e85b482a8591519c4712cf45",
-                "reference": "c0c418f05e727606e85b482a8591519c4712cf45",
-                "shasum": ""
+      {
+        "name": "symfony/mime",
+        "version": "v5.1.2",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/symfony/mime.git",
+          "reference": "c0c418f05e727606e85b482a8591519c4712cf45"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/symfony/mime/zipball/c0c418f05e727606e85b482a8591519c4712cf45",
+          "reference": "c0c418f05e727606e85b482a8591519c4712cf45",
+          "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5",
@@ -4751,20 +4752,20 @@
             ],
             "time": "2020-03-05T12:39:07+00:00"
         },
-        {
-            "name": "filp/whoops",
-            "version": "2.7.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/filp/whoops.git",
-                "reference": "17d0d3f266c8f925ebd035cd36f83cf802b47d4a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/17d0d3f266c8f925ebd035cd36f83cf802b47d4a",
-                "reference": "17d0d3f266c8f925ebd035cd36f83cf802b47d4a",
-                "shasum": ""
-            },
+      {
+        "name": "filp/whoops",
+        "version": "2.7.3",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/filp/whoops.git",
+          "reference": "5d5fe9bb3d656b514d455645b3addc5f7ba7714d"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/filp/whoops/zipball/5d5fe9bb3d656b514d455645b3addc5f7ba7714d",
+          "reference": "5d5fe9bb3d656b514d455645b3addc5f7ba7714d",
+          "shasum": ""
+        },
             "require": {
                 "php": "^5.5.9 || ^7.0",
                 "psr/log": "^1.0.1"
@@ -4810,7 +4811,7 @@
                 "throwable",
                 "whoops"
             ],
-            "time": "2020-05-05T12:28:07+00:00"
+        "time": "2020-06-14T09:00:00+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -5788,20 +5789,20 @@
             ],
             "time": "2019-09-17T06:23:10+00:00"
         },
-        {
-            "name": "phpunit/phpunit",
-            "version": "8.5.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "63dda3b212a0025d380a745f91bdb4d8c985adb7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/63dda3b212a0025d380a745f91bdb4d8c985adb7",
-                "reference": "63dda3b212a0025d380a745f91bdb4d8c985adb7",
-                "shasum": ""
-            },
+      {
+        "name": "phpunit/phpunit",
+        "version": "8.5.6",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/sebastianbergmann/phpunit.git",
+          "reference": "3f9c4079d1407cd84c51c02c6ad1df6ec2ed1348"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3f9c4079d1407cd84c51c02c6ad1df6ec2ed1348",
+          "reference": "3f9c4079d1407cd84c51c02c6ad1df6ec2ed1348",
+          "shasum": ""
+        },
             "require": {
                 "doctrine/instantiator": "^1.2.0",
                 "ext-dom": "*",
@@ -5879,7 +5880,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-05-22T13:51:52+00:00"
+        "time": "2020-06-15T10:45:47+00:00"
         },
         {
             "name": "scrivo/highlight.php",
@@ -6674,19 +6675,19 @@
             ],
             "time": "2020-02-14T15:25:33+00:00"
         },
-        {
-            "name": "symfony/filesystem",
-            "version": "v5.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/filesystem.git",
-                "reference": "6e4320f06d5f2cce0d96530162491f4465179157"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/6e4320f06d5f2cce0d96530162491f4465179157",
-                "reference": "6e4320f06d5f2cce0d96530162491f4465179157",
-                "shasum": ""
+      {
+        "name": "symfony/filesystem",
+        "version": "v5.1.2",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/symfony/filesystem.git",
+          "reference": "6e4320f06d5f2cce0d96530162491f4465179157"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/symfony/filesystem/zipball/6e4320f06d5f2cce0d96530162491f4465179157",
+          "reference": "6e4320f06d5f2cce0d96530162491f4465179157",
+          "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5",
@@ -6778,26 +6779,27 @@
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
             "time": "2019-06-13T22:48:21+00:00"
         },
-        {
-            "name": "webmozart/assert",
-            "version": "1.8.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
-                "reference": "ab2cb0b3b559010b75981b1bdce728da3ee90ad6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/ab2cb0b3b559010b75981b1bdce728da3ee90ad6",
-                "reference": "ab2cb0b3b559010b75981b1bdce728da3ee90ad6",
-                "shasum": ""
-            },
+      {
+        "name": "webmozart/assert",
+        "version": "1.9.0",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/webmozart/assert.git",
+          "reference": "9dc4f203e36f2b486149058bade43c851dd97451"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/webmozart/assert/zipball/9dc4f203e36f2b486149058bade43c851dd97451",
+          "reference": "9dc4f203e36f2b486149058bade43c851dd97451",
+          "shasum": ""
+        },
             "require": {
                 "php": "^5.3.3 || ^7.0",
                 "symfony/polyfill-ctype": "^1.8"
             },
             "conflict": {
-                "vimeo/psalm": "<3.9.1"
+              "phpstan/phpstan": "<0.12.20",
+              "vimeo/psalm": "<3.9.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.8.36 || ^7.5.13"
@@ -6824,7 +6826,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2020-04-18T12:12:48+00:00"
+        "time": "2020-06-16T10:16:42+00:00"
         }
     ],
     "aliases": [],

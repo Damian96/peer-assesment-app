@@ -10,8 +10,8 @@
     <section class="title px-2">
         @yield('title')
     </section>
-    <section class="content px-2 mt-2">
-        @yield('content')
+        <section class="content px-2 mt-5">
+            @yield('content')
     </section>
 </main>
 

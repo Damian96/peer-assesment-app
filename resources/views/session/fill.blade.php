@@ -260,6 +260,10 @@
             $(document).on('submit', 'form', function (e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
+                if ($('.criterion').length == 0) {
+                    this.submit();
+                    return true;
+                }
                 $('.criterion').each((i, group) => {
                     if (criterionOnChangeHandler.call(group)) {
                         this.submit();

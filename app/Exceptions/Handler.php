@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
      * @param \Illuminate\Http\Request $request
      * @param \Exception $exception
      * @return \Symfony\Component\HttpFoundation\Response
-     * @throws Exception
+     * @throws \Exception
      */
     public function render($request, Exception $exception)
     {
@@ -57,19 +57,17 @@ class Handler extends ExceptionHandler
         } elseif ($exception instanceof UnauthorizedHttpException && $request->wantsJson()) {
             return response()->json(['error' => $exception->getMessage()], 401);
         }
-//        elseif ($exception instanceof \RuntimeException && $request->wantsJson()) {
 
         if (Auth::guard('web')->check() && Auth::user()->isStudent()) {
             if ($exception instanceof NotFoundHttpException)
                 return parent::render($request, $exception);
             else
-                throw new UnauthorizedHttpException('Forbidden');
+                return parent::render($request, new UnauthorizedHttpException('Forbidden'));
         }
 
-        if ($this->shouldReport($exception)) {
+        if ($this->shouldReport($exception))
             return parent::render($request, $exception);
-        } else {
+        else
             return parent::render($request, new NotFoundHttpException('The requested page was not found'));
-        }
     }
 }

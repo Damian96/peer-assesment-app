@@ -402,7 +402,7 @@ class SessionController extends Controller
      */
     public function fillin(Request $request, Session $session)
     {
-        $validator = Validator::make($this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
+        $validator = Validator::make($request->all(), $this->rules(__FUNCTION__), $this->messages(__FUNCTION__));
 
         if ($validator->fails()) {
             return redirect()->back(302)
@@ -435,7 +435,7 @@ class SessionController extends Controller
                 case 'multiple-choice': // answer
                     $review->fill([
                         'recipient_id' => Course::DUMMY_ID,
-                        'answer' => $question->data['choices'][current($q)[0]],
+                        'answer' => $question->choices[current($q)[0]],
                         'type' => 'c',
                     ]);
                     break;
@@ -480,7 +480,7 @@ class SessionController extends Controller
             try {
                 if ($review instanceof Review && $review->type)
                     $review->saveOrFail();
-            } catch (\Throwable $e) {
+            } catch (\Exception $e) {
                 throw_if(config('env.APP_DEBUG', false), $e);
                 $request->session()->flash('message', array(
                     'level' => 'danger',
@@ -494,13 +494,12 @@ class SessionController extends Controller
         }
 
         $filled = new StudentSession(['user_id' => Auth::user()->id, 'session_id' => $session->id, 'mark' => 0]);
-        $filled->save();
+        $filled->saveOrFail();
         $request->session()->flash('message', [
             'level' => 'success',
             'heading' => 'You have successfully submitted the Form!',
         ]);
-        return redirect()->action('SessionController@index')
-            ->withHeaders($request->headers->all());
+        return redirect()->action('SessionController@index');
     }
 
 //    /**
