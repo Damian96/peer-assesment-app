@@ -35,7 +35,7 @@ class UserVerifyTest extends TestCase
         try {
             $notifiable = User::whereId(3)->firstOrFail();
         } catch (\Throwable $e) {
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
             return;
         }
 

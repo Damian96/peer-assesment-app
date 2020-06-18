@@ -8,7 +8,7 @@
                 @csrf
 
                 <div class="form-group">
-                    <label id="email-lbl" class="control-label" for="email">Email</label>
+                    <label id="email-lbl" class="control-label" for="email">Email / Username</label>
 
                     <div class="input-group">
                         <input type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"

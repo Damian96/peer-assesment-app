@@ -16,8 +16,8 @@ class APILoginTest extends TestCase
     {
         $response = $this->post('/api/user/login', [
             'method' => '_POST',
-            'email' => env('APP_ENV', 'local') == 'testing' ? 'kdimopoulos@citycollege.sheffield.eu' : 'dgiankakis@citycollege.sheffield.eu',
-            'password' => env('APP_ENV', 'local') == 'testing' ? '123' : 'everse2309',
+            'email' => config('env.APP_ENV', 'local') == 'testing' ? 'kdimopoulos@citycollege.sheffield.eu' : 'dgiankakis@citycollege.sheffield.eu',
+            'password' => config('env.APP_ENV', 'local') == 'testing' ? '123' : 'everse2309',
         ], [
             'Accept' => 'application/json',
         ]);
