@@ -61,6 +61,7 @@ use Laravel\Scout\Searchable;
  * @property-read int|null $students_count
  * @property int ac_year_year
  * @property string instructor_fullname
+ * @property string semester
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereDepartment($value)
  */
 class Course extends Model
@@ -171,7 +172,11 @@ class Course extends Model
             case 'ac_year_month':
                 return $this->ac_year_carbon->month;
             case 'ac_year_pair':
-                return sprintf("%s-%s", $this->ac_year_carbon->year - 1, substr($this->ac_year_carbon->year, -2));
+                if (strtolower($this->semester) === 'fall') {
+                    return sprintf("%s-%s", $this->ac_year_carbon->year, substr($this->ac_year_carbon->year + 1, -2));
+                } else {
+                    return sprintf("%s-%s", $this->ac_year_carbon->year - 1, substr($this->ac_year_carbon->year, -2));
+                }
             case 'status_full':
                 return $this->status ? 'Enabled' : 'Disabled';
             case 'department_title':
@@ -423,5 +428,18 @@ class Course extends Model
         $se = $ac_year[0];
         if ($se === 'SP') $year = intval($year) - 1;
         return sprintf("%s-%s", $year, substr(intval($year) + 1, -2));
+    }
+
+    /**
+     * @param int $time
+     * @return string
+     */
+    public static function toAcademicYearFull(int $time)
+    {
+        $ac_year = explode('-', self::toAcademicYear($time));
+        if ($ac_year[0] === 'SP')
+            return sprintf("%s of %s", 'Spring', $ac_year[1]);
+        else
+            return sprintf("%s of %s", 'Fall', $ac_year[1]);
     }
 }

@@ -166,7 +166,6 @@ return [
          * Package Service Providers...
          */
         Spatie\Html\HtmlServiceProvider::class,
-        Spatie\PaginateRoute\PaginateRouteServiceProvider::class,
 
         /*
          * Application Service Providers...

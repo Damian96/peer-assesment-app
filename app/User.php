@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +80,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @property string password_reset_token
  * @property Group group
  * @property string fullname
+ * @property InstructorConfig config
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereLastLogin($value)
+ * @noinspection PhpFullyQualifiedNameUsageInspection
  */
 class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPassword, Authorizable
 {
@@ -163,9 +166,11 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public static function boot()
     {
+        parent::boot();
+
         self::created(function ($model) {
             /**
-             * @var User $model
+             * @var \App\User $model
              */
             if ($model->hasVerifiedEmail())
                 $model->generateApiToken();
@@ -173,7 +178,20 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             if ($model->group())
                 $model->group = $model->group();
         });
-        parent::boot();
+
+        self::retrieved(function ($model) {
+            /**
+             * @var \App\User $model
+             */
+            $config = $model->config();
+            if ($config instanceof InstructorConfig)
+                $model->config = $config;
+        });
+
+        self::saving(function ($model) {
+            if ($model->config instanceof InstructorConfig)
+                unset($model->config);
+        });
     }
 
     /**
@@ -325,13 +343,22 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
     /**
      * Get the InstructorConfig record associated with the instructor.
-     * @return bool|Model|\Illuminate\Database\Query\Builder|object
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function config()
     {
-        if (!$this->isInstructor()) return false;
-        $ss = $this->hasOne(\App\InstructorConfig::class, 'user_id', 'id');
-        return $ss->exists() ? $ss->first()->getModel() : false;
+        return $this->hasOne(\App\InstructorConfig::class, 'user_id', 'id');
+//        if ($this->isStudent()) return false;
+//        $ss = $this->hasOne(\App\InstructorConfig::class, 'user_id', 'id');
+//        return $ss->exists() ? $ss->first()->getModel() : false;
+    }
+
+    /**
+     * Get the Student's \App\StudentSession related record.
+     */
+    public function session()
+    {
+        return $this->hasOne(\App\StudentSession::class, 'user_id', 'id');
     }
 
     /**
@@ -342,11 +369,16 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function teammates(Session $session, bool $self = false)
     {
+        if (!Auth::user()->isStudent()) return new Collection();
         $groups = array_column($this->groups()->get(['group_id'])->toArray(), 'group_id');
+
         $group_id = DB::table('groups')
             ->where('session_id', '=', $session->id)
             ->whereIn('id', $groups)
-            ->first()->id;
+            ->get(['groups.id'])->first()->id;
+
+//        if (empty($group_id))
+//            return new Collection();
 
         $q = DB::table($this->table)
             ->join('user_group', 'user_group.user_id', '=', 'users.id')
@@ -487,7 +519,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function isInstructor()
     {
-        return $this->instructor == 1;
+        return $this->instructor == 1 && $this->admin == 0;
     }
 
     /**
@@ -613,7 +645,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEmailVerificationNotification()
     {
-        if (env('APP_ENV', 'local') == 'testing') {
+        if (config('env.APP_ENV', 'local') == 'testing') {
             $mailer = new \App\Notifications\AppVerifyEmail($this);
             Mail::to($this->email)->send($mailer);
         }
@@ -651,7 +683,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $token = Hash::make($this->email . ':' . $this->lname . ':' . time());
         if (!DB::table('password_resets')->insert(['email' => $this->getEmailForPasswordReset(), 'token' => $token])) {
-            throw_if(env('APP_DEBUG', false), new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token)));
+            throw_if(config('env.APP_DEBUG', false), new QueryException(sprintf('%s [Values: email:"%s",token:"%s"]', 'Error inserting token into password_resets.', $this->email, $token)));
             return false;
         }
         return $token;
@@ -751,6 +783,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             case 'form.view':
             case 'form.duplicate':
             case 'form.delete':
+            case 'form.trash':
             case 'course.disenroll':
                 return isset($cid) && ($cid == \App\Course::DUMMY_ID || ($this->isInstructor() && $this->ownsCourse($cid)));
             case 'config.store':
@@ -770,14 +803,14 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password_reset_token = $token;
         try {
-            if (env('APP_ENV', 'local') == 'testing') {
+            if (config('env.APP_ENV', 'local') == 'testing') {
                 $mailer = new AppResetPasswordEmail($this);
                 Mail::to($this->email)->send($mailer);
             }
             clock()->info("AppResetPasswordEmail sent to {$this->email}");
         } catch (\Throwable $e) {
             clock()->info("Failed to send AppResetPasswordEmail to {$this->email}", ['trace' => true]);
-            throw_if(env('APP_DEBUG', false), $e);
+            throw_if(config('env.APP_DEBUG', false), $e);
         }
     }
 
@@ -790,7 +823,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
     {
         $this->password = $this->generateStudentPassword();
         $this->save();
-        if (env('APP_ENV', 'local') == 'testing') {
+        if (config('env.APP_ENV', 'local') == 'testing') {
             $mailer = new StudentInviteEmail($this, $course);
             Mail::to($this->email)->send($mailer);
         }
@@ -804,7 +837,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
      */
     public function sendEnrollmentEmail(Course $course)
     {
-        if (env('APP_ENV', 'local') == 'testing') {
+        if (config('env.APP_ENV', 'local') == 'testing') {
             $mailer = new StudentEnrollEmail($this, $course);
             Mail::to($this->email)->send($mailer);
         }
@@ -915,7 +948,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
             return 0;
         } else { // calculate with fudge factor
             $factor = round(floatval($self / $total), 2, PHP_ROUND_HALF_DOWN);
-            return round($factor * floatval(env('FUDGE_FACTOR')), 2);
+            return round($factor * floatval(\config('mark.fudge')), 2);
         }
     }
 
@@ -934,7 +967,7 @@ class User extends Model implements Authenticatable, MustVerifyEmail, CanResetPa
 
         // [e]valuation (0-5), crite[r]ion (0-100)
         $total_factor = $this->getMarkFactor($session_id, 'r') + $this->getMarkFactor($session_id, 'e');
-        $group_weight = floatval(env('GROUP_WEIGHT'));
+        $group_weight = floatval(\config('env.GROUP_WEIGHT'));
         $mark = ($group_weight * $group_mark) + ($total_factor * ($group_weight * $group_mark));
         $mark = $mark > 100 ? 100 : $mark;
 
