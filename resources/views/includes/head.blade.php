@@ -95,7 +95,7 @@
 
     @yield('end_head')
 </head>
-<body class="{{ Route::current() ? Route::current()->getName() : 'error' }}">
+<body class="{{ Route::current() ? str_replace('.', '-', Route::current()->getName()) : 'error' }}">
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
     <a class="navbar-brand" href="{{ url('/') }}">{{ config('app.name') }}</a>

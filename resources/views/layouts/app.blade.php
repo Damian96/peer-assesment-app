@@ -1,6 +1,10 @@
 @include('includes.head')
 
-<main class="container card" role="main">
+<main class="container card {{ Route::current() ? str_replace('.', '-', Route::current()->getName()) : 'error' }}"
+      role="main">
+    @if (Route::current()->getName() === 'user.attribution')
+        @php include_once public_path('/images/undraw_open_source_1qxw.svg') @endphp
+    @endif
     <section class="container-fluid px-md-0 pb-2 overflow-y-scroll">
         @yield('breadcrumbs')
         @if (isset($title) && !Route::current()->named('user.login'))

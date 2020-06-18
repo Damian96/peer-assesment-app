@@ -30,7 +30,12 @@ body {
     flex-direction: column;
     align-items: flex-start;
 
-    &[data-status] {
+    &[data-status],
+    &.user-attribution {
+      min-height: 100vh;
+      padding: 0;
+      border: 0;
+
       svg {
         height: 100%;
         width: 100%;
