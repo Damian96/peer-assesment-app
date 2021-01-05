@@ -13,7 +13,7 @@
     "test": "jshint hello.js"
   },
   "devDependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.4.0",
     "browser-sync-webpack-plugin": "^2.2.2",
     "cross-env": "^5.1",
